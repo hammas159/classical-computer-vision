@@ -1,0 +1,32 @@
+[project]
+name = "classical-computer-vision"
+version = "0.1.0"
+description = "Classical computer vision: measured comparisons of ~120 algorithms across 14 families. No deep learning, no training, no GPU."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+dependencies = [
+    # pinned below 5.0 deliberately: OpenCV 5 dropped the bundled Haar cascade
+    # XML files from cv2/data/, which projects 02 and 57 load at runtime.
+    "opencv-python-headless>=4.8,<5",
+    "scikit-image>=0.22",
+    "matplotlib>=3.7",
+    "numpy>=1.24,<2.3",
+    "scipy>=1.10",
+    "streamlit>=1.30",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "projects"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.setuptools]
+packages = ["shared"]

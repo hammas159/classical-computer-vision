@@ -1,0 +1,229 @@
+{
+  "project": "01_document_scanner",
+  "generated_utc": "2026-09-14T11:08:23+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "n_scenes": 30,
+  "detectors": [
+    {
+      "method": "Canny + contour",
+      "success_rate": 1.0,
+      "usable_rate": 1.0,
+      "success_pct": "100%",
+      "usable_pct": "100%",
+      "n_success": 30,
+      "n_scenes": 30,
+      "corner_error_px_mean": 2.703,
+      "corner_error_px_median": 2.701,
+      "corner_error_px_p90": 2.844,
+      "area_iou_mean": 0.982,
+      "median_ms": 2.019
+    },
+    {
+      "method": "Otsu + contour",
+      "success_rate": 1.0,
+      "usable_rate": 1.0,
+      "success_pct": "100%",
+      "usable_pct": "100%",
+      "n_success": 30,
+      "n_scenes": 30,
+      "corner_error_px_mean": 1.112,
+      "corner_error_px_median": 1.055,
+      "corner_error_px_p90": 1.361,
+      "area_iou_mean": 0.9931,
+      "median_ms": 1.55
+    },
+    {
+      "method": "Morph gradient",
+      "success_rate": 1.0,
+      "usable_rate": 1.0,
+      "success_pct": "100%",
+      "usable_pct": "100%",
+      "n_success": 30,
+      "n_scenes": 30,
+      "corner_error_px_mean": 1.302,
+      "corner_error_px_median": 1.268,
+      "corner_error_px_p90": 1.499,
+      "area_iou_mean": 0.9915,
+      "median_ms": 1.808
+    },
+    {
+      "method": "Saturation (HSV)",
+      "success_rate": 1.0,
+      "usable_rate": 1.0,
+      "success_pct": "100%",
+      "usable_pct": "100%",
+      "n_success": 30,
+      "n_scenes": 30,
+      "corner_error_px_mean": 1.02,
+      "corner_error_px_median": 0.993,
+      "corner_error_px_p90": 1.422,
+      "area_iou_mean": 0.9932,
+      "median_ms": 2.321
+    },
+    {
+      "method": "Hough lines",
+      "success_rate": 1.0,
+      "usable_rate": 0.6333,
+      "success_pct": "100%",
+      "usable_pct": "63%",
+      "n_success": 30,
+      "n_scenes": 30,
+      "corner_error_px_mean": 46.644,
+      "corner_error_px_median": 1.622,
+      "corner_error_px_p90": 159.837,
+      "area_iou_mean": 0.8142,
+      "median_ms": 6.993
+    },
+    {
+      "method": "minAreaRect (baseline)",
+      "success_rate": 1.0,
+      "usable_rate": 0.1667,
+      "success_pct": "100%",
+      "usable_pct": "17%",
+      "n_success": 30,
+      "n_scenes": 30,
+      "corner_error_px_mean": 19.486,
+      "corner_error_px_median": 21.79,
+      "corner_error_px_p90": 27.029,
+      "area_iou_mean": 0.8996,
+      "median_ms": 1.393
+    }
+  ],
+  "binarisers": [
+    {
+      "method": "Otsu (global)",
+      "text_iou_mean": 0.9977,
+      "text_iou_median": 0.9989,
+      "median_ms": 0.15
+    },
+    {
+      "method": "Adaptive mean",
+      "text_iou_mean": 0.8111,
+      "text_iou_median": 0.8126,
+      "median_ms": 0.283
+    },
+    {
+      "method": "Adaptive Gaussian",
+      "text_iou_mean": 0.9408,
+      "text_iou_median": 0.9428,
+      "median_ms": 0.911
+    },
+    {
+      "method": "Sauvola",
+      "text_iou_mean": 0.9067,
+      "text_iou_median": 0.9059,
+      "median_ms": 12.032
+    }
+  ],
+  "illumination_sweep": {
+    "n_scenes_per_level": 10,
+    "ink_reflectance": 0.1837,
+    "rows": [
+      {
+        "illum_min": 1.0,
+        "page_ratio": 1.0,
+        "Best global (oracle)": 0.9995,
+        "Otsu (global)": 0.999,
+        "Adaptive mean": 0.793,
+        "Adaptive Gaussian": 0.9323,
+        "Sauvola": 0.8701
+      },
+      {
+        "illum_min": 0.7,
+        "page_ratio": 0.853,
+        "Best global (oracle)": 0.9989,
+        "Otsu (global)": 0.9972,
+        "Adaptive mean": 0.8056,
+        "Adaptive Gaussian": 0.9366,
+        "Sauvola": 0.8989
+      },
+      {
+        "illum_min": 0.5,
+        "page_ratio": 0.7395,
+        "Best global (oracle)": 0.9978,
+        "Otsu (global)": 0.9949,
+        "Adaptive mean": 0.8181,
+        "Adaptive Gaussian": 0.9406,
+        "Sauvola": 0.9153
+      },
+      {
+        "illum_min": 0.35,
+        "page_ratio": 0.6444,
+        "Best global (oracle)": 0.995,
+        "Otsu (global)": 0.9893,
+        "Adaptive mean": 0.8317,
+        "Adaptive Gaussian": 0.9443,
+        "Sauvola": 0.9253
+      },
+      {
+        "illum_min": 0.22,
+        "page_ratio": 0.5539,
+        "Best global (oracle)": 0.989,
+        "Otsu (global)": 0.9793,
+        "Adaptive mean": 0.8485,
+        "Adaptive Gaussian": 0.9482,
+        "Sauvola": 0.9325
+      },
+      {
+        "illum_min": 0.12,
+        "page_ratio": 0.4785,
+        "Best global (oracle)": 0.9817,
+        "Otsu (global)": 0.9022,
+        "Adaptive mean": 0.865,
+        "Adaptive Gaussian": 0.9518,
+        "Sauvola": 0.9368
+      },
+      {
+        "illum_min": 0.06,
+        "page_ratio": 0.4305,
+        "Best global (oracle)": 0.9742,
+        "Otsu (global)": 0.7772,
+        "Adaptive mean": 0.8759,
+        "Adaptive Gaussian": 0.9543,
+        "Sauvola": 0.9391
+      },
+      {
+        "illum_min": 0.03,
+        "page_ratio": 0.4057,
+        "Best global (oracle)": 0.9679,
+        "Otsu (global)": 0.4588,
+        "Adaptive mean": 0.8817,
+        "Adaptive Gaussian": 0.956,
+        "Sauvola": 0.9401
+      },
+      {
+        "illum_min": 0.015,
+        "page_ratio": 0.3931,
+        "Best global (oracle)": 0.9638,
+        "Otsu (global)": 0.4296,
+        "Adaptive mean": 0.8847,
+        "Adaptive Gaussian": 0.9569,
+        "Sauvola": 0.9404
+      }
+    ]
+  },
+  "aspect_recovery": [
+    {
+      "method": "Edge lengths (tutorial method)",
+      "true_ratio": 0.7143,
+      "mean_ratio": 0.738,
+      "rel_error_pct": 8.01,
+      "rel_error_pct_max": 22.68,
+      "n": 30
+    },
+    {
+      "method": "Perspective (closed form)",
+      "true_ratio": 0.7143,
+      "mean_ratio": 0.7138,
+      "rel_error_pct": 0.07,
+      "rel_error_pct_max": 0.07,
+      "n": 30,
+      "n_degenerate_fallback": 0
+    }
+  ]
+}
