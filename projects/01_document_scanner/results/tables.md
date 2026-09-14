@@ -3,20 +3,20 @@
 | Method | Found a quad | Usable (≤10 px) | Mean corner err (px) | Median (px) | p90 (px) | Area IoU | Time (ms) |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Canny + contour | 100% | 100% | 2.703 | 2.701 | 2.844 | 0.982 | 2.019 |
-| Otsu + contour | 100% | 100% | 1.112 | 1.055 | 1.361 | 0.9931 | 1.55 |
-| Morph gradient | 100% | 100% | 1.302 | 1.268 | 1.499 | 0.9915 | 1.808 |
-| Saturation (HSV) | 100% | 100% | 1.02 | 0.993 | 1.422 | 0.9932 | 2.321 |
-| Hough lines | 100% | 63% | 46.644 | 1.622 | 159.837 | 0.8142 | 6.993 |
-| minAreaRect (baseline) | 100% | 17% | 19.486 | 21.79 | 27.029 | 0.8996 | 1.393 |
+| Otsu + contour | 100% | 100% | 1.112 | 1.055 | 1.361 | 0.9931 | 1.476 |
+| Morph gradient | 100% | 100% | 1.302 | 1.268 | 1.499 | 0.9915 | 1.832 |
+| Saturation (HSV) | 100% | 100% | 1.02 | 0.993 | 1.422 | 0.9932 | 2.422 |
+| Hough lines | 100% | 63% | 46.644 | 1.622 | 159.837 | 0.8142 | 7.08 |
+| minAreaRect (baseline) | 100% | 17% | 19.486 | 21.79 | 27.029 | 0.8996 | 1.387 |
 
 ### Binarisation (30 scenes, illumination ratio 0.62)
 
 | Method | Text IoU (mean) | Text IoU (median) | Time (ms) |
 |---|---:|---:|---:|
-| Otsu (global) | 0.9977 | 0.9989 | 0.15 |
-| Adaptive mean | 0.8111 | 0.8126 | 0.283 |
-| Adaptive Gaussian | 0.9408 | 0.9428 | 0.911 |
-| Sauvola | 0.9067 | 0.9059 | 12.032 |
+| Otsu (global) | 0.9977 | 0.9989 | 0.134 |
+| Adaptive mean | 0.8111 | 0.8126 | 0.282 |
+| Adaptive Gaussian | 0.9408 | 0.9428 | 0.909 |
+| Sauvola | 0.9067 | 0.9059 | 12.255 |
 
 ### Binarisation vs illumination (10 scenes per level, text IoU)
 

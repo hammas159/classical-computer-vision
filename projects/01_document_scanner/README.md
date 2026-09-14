@@ -66,6 +66,16 @@ binariser, and read the error in pixels live:
   lighting gradient. Its four true corner positions are known exactly.
 * **your own photo** of any page, uploaded through the UI.
 
+The app also carries four live analysis views under **Distributions and
+matrices**, all recomputed as you move the sliders:
+
+| Tab | What it shows |
+|---|---|
+| Pixel distribution | ink and paper populations with Otsu's cut and the best possible cut drawn on |
+| Pixel matrix | a 12x12 patch of raw grey values, before and after binarisation |
+| Comparison matrix | all six detectors x every metric for *this* image, downloadable as CSV |
+| Confusion matrix | where each binariser's pixels actually went, as counts and as recall |
+
 **Output** — four images plus numbers:
 
 | # | Output | What it is |
@@ -91,11 +101,11 @@ written to [`results/results.json`](results/results.json) and
 | Method | Found a quad | Usable (≤10 px) | Mean corner err (px) | Median (px) | p90 (px) | Area IoU | Time (ms) |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Canny + contour | 100% | 100% | 2.703 | 2.701 | 2.844 | 0.982 | 2.019 |
-| **Otsu + contour** | 100% | **100%** | **1.112** | 1.055 | 1.361 | **0.9931** | **1.55** |
-| Morph gradient | 100% | 100% | 1.302 | 1.268 | 1.499 | 0.9915 | 1.808 |
-| **Saturation (HSV)** | 100% | **100%** | **1.02** | 0.993 | 1.422 | 0.9932 | 2.321 |
-| Hough lines | 100% | 63% | 46.644 | 1.622 | 159.837 | 0.8142 | 6.993 |
-| minAreaRect (baseline) | 100% | 17% | 19.486 | 21.79 | 27.029 | 0.8996 | 1.393 |
+| **Otsu + contour** | 100% | **100%** | **1.112** | 1.055 | 1.361 | **0.9931** | **1.476** |
+| Morph gradient | 100% | 100% | 1.302 | 1.268 | 1.499 | 0.9915 | 1.832 |
+| **Saturation (HSV)** | 100% | **100%** | **1.02** | 0.993 | 1.422 | 0.9932 | 2.422 |
+| Hough lines | 100% | 63% | 46.644 | 1.622 | 159.837 | 0.8142 | 7.08 |
+| minAreaRect (baseline) | 100% | 17% | 19.486 | 21.79 | 27.029 | 0.8996 | 1.387 |
 
 ![Detector comparison](docs/images/detectors.png)
 
@@ -103,7 +113,7 @@ written to [`results/results.json`](results/results.json) and
 
 1. **The tutorial method is not the best one.** Canny + contour — what almost
    every "build a document scanner" article uses — lands at 2.70 px. Plain Otsu
-   on brightness gets **1.11 px** and is **24% faster**. Saturation does best at
+   on brightness gets **1.11 px** and is **27% faster**. Saturation does best at
    **1.02 px**, which makes physical sense: HSV saturation is `(max−min)/max`, so
    multiplying a pixel by a shading factor leaves it unchanged. It is the one
    channel the lighting gradient cannot touch.
@@ -166,9 +176,47 @@ over all 255 values — confirms it directly: at ratio 0.39 the oracle scores
 
 Otsu floods the shadowed half of the page solid black. The oracle, at `t = 64`,
 returns a clean page. **The separation was available; Otsu's between-class
-variance criterion chose the wrong cut**, because the shading creates a spurious
-bimodality between the lit and shadowed halves of the *paper* that is stronger
-than the real one between paper and ink.
+variance criterion chose the wrong cut.**
+
+### Why, in one histogram
+
+![Intensity histogram under shadow](docs/images/histogram_shadow.png)
+
+This is the distribution Otsu has to cut. The ink sits below 75 and the paper
+above 80 — **a valley still exists**, and the oracle finds it at 64. But the
+shadow has smeared the paper across a *wide* band (roughly 80–170) that holds
+most of the image's pixels, and splitting that wide band yields more
+between-class variance than peeling off the small ink population does. So Otsu
+cuts at **100 — inside the paper** — and everything darker is called ink.
+
+Under flat light the same page has two clean modes and Otsu lands correctly:
+
+![Intensity histogram, flat light](docs/images/histogram_flat.png)
+
+### The same thing, read as numbers
+
+![Pixel value matrix](docs/images/pixel_matrix.png)
+
+A 12x12 patch from each half of the page. The lit half reads paper ≈ 161, ink
+≈ 30. The shadowed half reads paper ≈ 74, ink ≈ 28. A single global cut anywhere
+between **50 and 73** separates both halves correctly — which is exactly where
+the oracle put it. Otsu chose 100, so in the shadowed half *every* pixel falls
+below the threshold and the output is solid zeros. Sauvola, computing a local
+threshold, recovers the same patch cleanly.
+
+### Everything at once
+
+![Detector matrix](docs/images/detector_matrix.png)
+
+![Binariser matrix](docs/images/binariser_matrix.png)
+
+Each column is scaled on its own and coloured by rank, so green always means
+"better in that column". The disagreement between columns is the point:
+`Saturation (HSV)` wins mean error, `Otsu + contour` wins the median and p90,
+`minAreaRect` wins only on speed — and is unusable.
+
+Per-binariser confusion matrices are in
+[`docs/images/`](docs/images/) as `confusion_*.png`.
 
 ### Aspect-ratio recovery
 

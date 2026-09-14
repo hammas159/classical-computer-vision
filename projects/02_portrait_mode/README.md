@@ -61,6 +61,16 @@ trained by someone else, it is not a neural network, and nothing here is trained
   hair-only mask and the clean background plate are all known;
 * **your own photo**, uploaded through the UI.
 
+The app also carries four live analysis views under **Distributions and
+matrices**, recomputed as you change the controls:
+
+| Tab | What it shows |
+|---|---|
+| Region matrix | all six methods x body / hair / background / IoU / time, downloadable as CSV |
+| Halo distribution | error in the ring outside the subject, naive vs masked compositing |
+| Kernel matrix | each aperture printed as raw numbers at a radius you choose |
+| Confusion matrix | where each method's pixels went, as counts and as recall |
+
 **Output** — the matte, the final portrait, and numbers:
 
 | Output | What it is |
@@ -80,12 +90,12 @@ Produced by `run.py` over 12 scenes; mirrored in
 
 | Method | Subject found | IoU | Dice | Body recall | Hair recall | Background FPR | Boundary F1 | Time (ms) |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Face rect (baseline) | 100% | 0.5654 | 0.7224 | 0.9422 | 0.97 | 0.3441 | 0.0236 | 34.56 |
-| **Face ellipse prior** | 100% | **0.928** | **0.9627** | 0.9664 | 0.0624 | **0.0091** | 0.1659 | **39.2** |
-| Haar + GrabCut | 100% | 0.8721 | 0.929 | 0.9343 | 0.4823 | 0.0368 | 0.5849 | 1092 |
-| **GrabCut (centre rect)** | 100% | 0.7985 | 0.8716 | 0.8683 | **0.5285** | 0.0454 | **0.6362** | 1156 |
-| Skin colour (YCrCb) | 100% | 0.1735 | 0.2914 | 0.2227 | 0.947 | 0.3288 | 0.25 | **3.0** |
-| Watershed + markers | 100% | 0.7155 | 0.833 | 0.7876 | 0.2362 | 0.0452 | 0.3728 | 49.5 |
+| Face rect (baseline) | 100% | 0.5654 | 0.7224 | 0.9422 | 0.97 | 0.3441 | 0.0236 | 37.9 |
+| **Face ellipse prior** | 100% | **0.928** | **0.9627** | 0.9664 | 0.0624 | **0.0091** | 0.1659 | **39.1** |
+| Haar + GrabCut | 100% | 0.8721 | 0.929 | 0.9343 | 0.4823 | 0.0368 | 0.5849 | 1095 |
+| **GrabCut (centre rect)** | 100% | 0.7985 | 0.8716 | 0.8683 | **0.5285** | 0.0454 | **0.6362** | 1147 |
+| Skin colour (YCrCb) | 100% | 0.1735 | 0.2914 | 0.2227 | 0.947 | 0.3288 | 0.25 | **2.7** |
+| Watershed + markers | 100% | 0.7155 | 0.833 | 0.7876 | 0.2362 | 0.0452 | 0.3728 | 49.8 |
 
 ![Matting methods](docs/images/mattes.png)
 
@@ -111,6 +121,24 @@ physically cannot see the failure. This is the same reason IoU is a poor metric
 for blood vessels, wires and text strokes.
 
 ![Hair recall](docs/images/hair_recall.png)
+
+### The same six methods, split by region
+
+![Region matrix](docs/images/region_matrix.png)
+
+One row per method, one column per region, each column scaled on its own. Read
+across any row and the trade-off is immediate: the ellipse prior is near-perfect
+on body and background and **near-zero on hair**; skin colour is the mirror image,
+catching the hair region while missing the body entirely. No method is good at
+all three.
+
+![Matte matrix](docs/images/matte_matrix.png)
+
+Every method against every metric at once. **No two columns agree on a winner** —
+which is the finding, stated as a picture.
+
+Per-method confusion matrices (background/subject, counts and recall) are in
+[`docs/images/`](docs/images/) as `confusion_*.png`.
 
 ### GrabCut is not deterministic
 
@@ -150,6 +178,12 @@ paper reporting one GrabCut number without a seed or a spread is reporting luck.
 
 ![Bokeh kernels](docs/images/bokeh_kernels.png)
 
+The same four kernels printed as matrices, which makes the numbers above
+self-evident — a disc is a flat plateau of identical weights, a Gaussian falls
+from 100 at the centre to 2 at the corner:
+
+![Kernel matrix](docs/images/kernel_matrix.png)
+
 A real out-of-focus highlight is a **flat disc with a hard rim** — that is what a
 circular aperture does to a point of light. A Gaussian is a soft bump: its
 peak-to-mean ratio is **2.94** against the disc's **1.00**, and it puts only
@@ -166,6 +200,11 @@ are a single `filter2D` call.
 | **Masked (normalised convolution)** | **1.576** | **0.271** | 45.5 |
 
 ![Compositing](docs/images/compositing.png)
+
+As distributions rather than two averages — the naive method's error has a long
+tail that a mean alone understates:
+
+![Halo distribution](docs/images/halo_distribution.png)
 
 Blurring the whole image and pasting the sharp subject back on top — what nearly
 every tutorial does — lets the kernel reach *across* the subject boundary, so

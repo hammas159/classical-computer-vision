@@ -383,6 +383,50 @@ COMPOSITORS: dict[str, Callable] = {
 }
 
 
+def matte_confusion(pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
+    """2x2 confusion counts for a matte: rows actual, columns predicted.
+
+    Layout::
+
+        [[background->background, background->subject],
+         [subject->background,    subject->subject   ]]
+
+    Worth looking at in raw counts rather than rates: background is the majority
+    class by a wide margin, so a method can lose the entire subject boundary and
+    still show a high overall accuracy.
+    """
+    p = pred > 0
+    t = truth > 0
+    return np.array(
+        [
+            [int((~t & ~p).sum()), int((~t & p).sum())],
+            [int((t & ~p).sum()), int((t & p).sum())],
+        ],
+        dtype=np.int64,
+    )
+
+
+def region_recall(pred: np.ndarray, scene: synth.PortraitScene) -> dict[str, float]:
+    """Fraction of each region the prediction got right.
+
+    Splitting the score by region is the entire point of this project: body,
+    hair and background are wildly different in size and in difficulty, and one
+    blended number hides which of them a method actually failed at.
+    """
+    return {
+        "body": float((pred[scene.body > 0] > 0).mean()),
+        "hair": float((pred[scene.hair > 0] > 0).mean()) if (scene.hair > 0).any() else 0.0,
+        "background": float((pred[scene.mask == 0] == 0).mean()),
+    }
+
+
+def halo_error_map(
+    composited: np.ndarray, ideal: np.ndarray
+) -> np.ndarray:
+    """Per-pixel absolute error against the ideal composite, in 0-255 units."""
+    return np.abs(to_float(composited) - to_float(ideal)).mean(axis=-1) * 255.0
+
+
 def halo_ring(mask: np.ndarray, width: int) -> np.ndarray:
     """The band of background pixels within ``width`` px outside the subject."""
     dilated = cv2.dilate(mask, np.ones((width * 2 + 1, width * 2 + 1), np.uint8))

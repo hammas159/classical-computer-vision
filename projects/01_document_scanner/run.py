@@ -161,6 +161,123 @@ def main() -> None:
         ),
     )
 
+    # ------------------------------------------------------------------ #
+    # distributions and matrices
+    # ------------------------------------------------------------------ #
+
+    # 1. the intensity histogram that explains the whole Otsu result
+    flat_photo, flat_page, flat_truth = synth.document_scene(seed=0, illum_min=1.0)
+    fp_h, fp_w = flat_page.shape[:2]
+    flat_gray = to_gray(ds.rectify(flat_photo, flat_truth, (fp_w, fp_h)))
+    flat_text = ds.text_mask(to_gray(flat_page))
+    flat_pop = ds.page_intensities(flat_gray, flat_text)
+    figures.histogram(
+        {"paper (flat light)": flat_pop["paper"], "ink (flat light)": flat_pop["ink"]},
+        IMAGES / "histogram_flat.png",
+        vlines={"Otsu picks": ds.otsu_threshold(flat_gray)},
+        title="Flat light: two clean modes, and Otsu cuts between them",
+    )
+
+    hard_pop = ds.page_intensities(hard_gray, hard_truth_text)
+    _, oracle_t_hard = ds.binarise_best_global(hard_gray, hard_truth_text)
+    figures.histogram(
+        {"paper (deep shadow)": hard_pop["paper"], "ink (deep shadow)": hard_pop["ink"]},
+        IMAGES / "histogram_shadow.png",
+        vlines={
+            "Otsu picks": ds.otsu_threshold(hard_gray),
+            "best possible": oracle_t_hard,
+        },
+        title=(
+            f"Page illumination ratio {hard_ratio:.2f}: a valley still exists, "
+            "but Otsu cuts inside the paper instead"
+        ),
+    )
+
+    # 2. raw pixel values, so the mechanism is readable as numbers
+    def patch_with_text(gray, text, prefer_bright: bool, size: int = 12):
+        """Locate a size x size patch containing both ink and paper, in the
+        brightest (or darkest) part of the page. Returns (patch, (y, x))."""
+        best, best_score = None, None
+        h, w = gray.shape
+        for y in range(0, h - size, 7):
+            for x in range(0, w - size, 7):
+                t = text[y : y + size, x : x + size]
+                ink = (t > 0).sum()
+                if not (size * 2 <= ink <= size * size * 0.6):
+                    continue
+                paper_mean = float(gray[y : y + size, x : x + size][t == 0].mean())
+                score = paper_mean if prefer_bright else -paper_mean
+                if best_score is None or score > best_score:
+                    best_score, best = score, (y, x)
+        if best is None:
+            return gray[:size, :size], (0, 0)
+        y, x = best
+        return gray[y : y + size, x : x + size], (y, x)
+
+    lit_patch, _ = patch_with_text(hard_gray, hard_truth_text, prefer_bright=True)
+    dark_patch, (dy, dx) = patch_with_text(hard_gray, hard_truth_text, prefer_bright=False)
+    sz = dark_patch.shape[0]
+    otsu_t_hard = ds.otsu_threshold(hard_gray)
+
+    # Crop the full-page binarisations at the same location, so each panel is
+    # what that method genuinely produced there rather than a re-thresholded patch.
+    otsu_crop = ds.binarise_otsu(hard_gray)[dy : dy + sz, dx : dx + sz]
+    sauvola_crop = ds.binarise_sauvola(hard_gray)[dy : dy + sz, dx : dx + sz]
+
+    lit_paper = int(np.median(lit_patch[lit_patch > otsu_t_hard]))
+    dark_paper = int(np.median(dark_patch))
+    figures.value_matrix(
+        [
+            (f"Lit half: paper ~{lit_paper}, ink ~30", lit_patch),
+            (f"Shadowed half: paper ~{dark_paper}, ink ~28", dark_patch),
+            (f"Otsu (global t={otsu_t_hard})\n0 = called ink", otsu_crop),
+            ("Sauvola (local)\n0 = called ink", sauvola_crop),
+        ],
+        IMAGES / "pixel_matrix.png",
+        title=(
+            f"One page, two halves. A global cut near {oracle_t_hard} would serve both "
+            f"(lit ink ~30 < {oracle_t_hard} < shadowed paper ~{dark_paper}); "
+            f"Otsu chose {otsu_t_hard} and called the whole shadow ink"
+        ),
+    )
+
+    # 3. confusion matrices, one per binariser, at the hard illumination
+    for name, fn in ds.BINARISERS.items():
+        cm = ds.text_confusion(fn(hard_gray), hard_truth_text)
+        slug = name.lower().replace(" ", "_").replace("(", "").replace(")", "")
+        figures.confusion_matrix(
+            cm,
+            IMAGES / f"confusion_{slug}.png",
+            row_labels=["paper", "ink"],
+            col_labels=["paper", "ink"],
+            title=f"{name} at illumination ratio {hard_ratio:.2f}",
+        )
+
+    # 4. the comparative matrix: every method against every metric
+    figures.comparison_matrix(
+        [r for r in detector_rows if r["corner_error_px_mean"] is not None],
+        [
+            ("Usable %", "usable_rate", True),
+            ("Mean err (px)", "corner_error_px_mean", False),
+            ("Median (px)", "corner_error_px_median", False),
+            ("p90 (px)", "corner_error_px_p90", False),
+            ("Area IoU", "area_iou_mean", True),
+            ("Time (ms)", "median_ms", False),
+        ],
+        IMAGES / "detector_matrix.png",
+        title="Page detectors x metrics",
+    )
+    figures.comparison_matrix(
+        binariser_rows,
+        [
+            ("Text IoU", "text_iou_mean", True),
+            ("Median IoU", "text_iou_median", True),
+            ("Time (ms)", "median_ms", False),
+        ],
+        IMAGES / "binariser_matrix.png",
+        title="Binarisers x metrics (illumination ratio 0.62)",
+    )
+
     ok = [r for r in detector_rows if r["corner_error_px_mean"] is not None]
     figures.metric_bars(
         [r["method"] for r in ok],

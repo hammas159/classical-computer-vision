@@ -1,6 +1,6 @@
 {
   "project": "01_document_scanner",
-  "generated_utc": "2026-09-14T11:08:23+00:00",
+  "generated_utc": "2026-09-14T23:42:12+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -35,7 +35,7 @@
       "corner_error_px_median": 1.055,
       "corner_error_px_p90": 1.361,
       "area_iou_mean": 0.9931,
-      "median_ms": 1.55
+      "median_ms": 1.476
     },
     {
       "method": "Morph gradient",
@@ -49,7 +49,7 @@
       "corner_error_px_median": 1.268,
       "corner_error_px_p90": 1.499,
       "area_iou_mean": 0.9915,
-      "median_ms": 1.808
+      "median_ms": 1.832
     },
     {
       "method": "Saturation (HSV)",
@@ -63,7 +63,7 @@
       "corner_error_px_median": 0.993,
       "corner_error_px_p90": 1.422,
       "area_iou_mean": 0.9932,
-      "median_ms": 2.321
+      "median_ms": 2.422
     },
     {
       "method": "Hough lines",
@@ -77,7 +77,7 @@
       "corner_error_px_median": 1.622,
       "corner_error_px_p90": 159.837,
       "area_iou_mean": 0.8142,
-      "median_ms": 6.993
+      "median_ms": 7.08
     },
     {
       "method": "minAreaRect (baseline)",
@@ -91,7 +91,7 @@
       "corner_error_px_median": 21.79,
       "corner_error_px_p90": 27.029,
       "area_iou_mean": 0.8996,
-      "median_ms": 1.393
+      "median_ms": 1.387
     }
   ],
   "binarisers": [
@@ -99,25 +99,25 @@
       "method": "Otsu (global)",
       "text_iou_mean": 0.9977,
       "text_iou_median": 0.9989,
-      "median_ms": 0.15
+      "median_ms": 0.134
     },
     {
       "method": "Adaptive mean",
       "text_iou_mean": 0.8111,
       "text_iou_median": 0.8126,
-      "median_ms": 0.283
+      "median_ms": 0.282
     },
     {
       "method": "Adaptive Gaussian",
       "text_iou_mean": 0.9408,
       "text_iou_median": 0.9428,
-      "median_ms": 0.911
+      "median_ms": 0.909
     },
     {
       "method": "Sauvola",
       "text_iou_mean": 0.9067,
       "text_iou_median": 0.9059,
-      "median_ms": 12.032
+      "median_ms": 12.255
     }
   ],
   "illumination_sweep": {

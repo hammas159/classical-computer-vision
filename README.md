@@ -131,10 +131,29 @@ rather than 41 copies of the same boilerplate.
 | [`shared/io.py`](shared/io.py) | loading, saving, dtype conversion, and **one BGR/RGB convention** enforced everywhere |
 | [`shared/synth.py`](shared/synth.py) | every ground-truth generator: noise, blur kernels, haze, low light, known homographies and flow fields, copy-move forgery, damage masks, and a camera-accurate document scene |
 | [`shared/metrics.py`](shared/metrics.py) | PSNR, SSIM, IoU, Dice, edge P/R/F1 **with a pixel tolerance**, Pratt's FOM, endpoint error, repeatability, reprojection error |
-| [`shared/figures.py`](shared/figures.py) | comparison grids, before/after pairs, error heatmaps, sweep line plots |
+| [`shared/figures.py`](shared/figures.py) | comparison grids, before/after pairs, error heatmaps, sweep line plots, **pixel-value distributions, confusion matrices, numeric pixel matrices, and methods-x-metrics comparison matrices** |
+| [`shared/ui.py`](shared/ui.py) | the same distributions and matrices as **live** components for the apps — returns matplotlib figures and pandas Stylers, and deliberately does not import Streamlit so the shared layer stays testable headless |
 | [`shared/bench.py`](shared/bench.py) | timing harness — warm-up discarded, median of N runs |
 | [`shared/report.py`](shared/report.py) | markdown tables, `results.json` with version provenance, a UTF-8-safe console |
 | [`tools/screenshot.py`](tools/screenshot.py) | headless screenshots of the Streamlit apps, driven over the DevTools Protocol |
+
+### Every project shows its results four ways
+
+A table alone hides mechanism, so each project also renders:
+
+* **a distribution** — the pixel populations a method actually has to separate,
+  with the threshold it chose drawn on top;
+* **a pixel matrix** — a small patch of the image printed as raw numbers,
+  because at some point the argument *is* the numbers;
+* **a confusion matrix** — counts and per-class recall, so a high headline
+  accuracy built on a majority class is visible rather than implied;
+* **a comparison matrix** — every method against every metric, each column
+  scaled on its own and coloured by rank so one catastrophic outlier cannot
+  flatten the scale. Ties share a shade, so the colouring never invents an
+  ordering the numbers do not support.
+
+All four are live in the Streamlit apps as well as static figures in the
+READMEs, and the comparison matrix downloads as CSV.
 
 Three conventions are enforced by the shared layer because getting them wrong
 produces a *plausible wrong answer* rather than an error:

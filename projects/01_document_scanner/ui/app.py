@@ -20,8 +20,10 @@ import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 import streamlit as st  # noqa: E402
 
+import matplotlib.pyplot as plt  # noqa: E402
+
 import document_scanner as ds  # noqa: E402
-from shared import synth  # noqa: E402
+from shared import synth, ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 from shared.io import to_gray  # noqa: E402
 from shared.metrics import corner_error, iou  # noqa: E402
@@ -195,6 +197,137 @@ else:
 # --------------------------------------------------------------------------- #
 # compare every method on this image
 # --------------------------------------------------------------------------- #
+
+# --------------------------------------------------------------------------- #
+# distributions and matrices
+# --------------------------------------------------------------------------- #
+
+st.divider()
+st.subheader("Distributions and matrices")
+
+d_tab, m_tab, c_tab, x_tab = st.tabs(
+    ["Pixel distribution", "Pixel matrix", "Comparison matrix", "Confusion matrix"]
+)
+
+gray_rect = to_gray(rect)
+otsu_t = ds.otsu_threshold(gray_rect)
+
+with d_tab:
+    st.caption(
+        "The distribution a thresholding method has to cut. Drag **Lighting** down "
+        "and watch the paper spread across the axis until Otsu's cut lands inside it."
+    )
+    if truth_corners is not None:
+        pop = ds.page_intensities(ideal, truth_text)
+        _, oracle_t = ds.binarise_best_global(ideal, truth_text)
+        fig = ui.histogram_figure(
+            {"paper": pop["paper"], "ink": pop["ink"]},
+            vlines={"Otsu picks": ds.otsu_threshold(ideal), "best possible": oracle_t},
+            title="Ink and paper populations, with the chosen thresholds",
+        )
+        st.pyplot(fig, width="stretch")
+        plt.close(fig)
+        st.markdown(
+            f"Otsu chose **{ds.otsu_threshold(ideal)}**; the best possible global "
+            f"threshold is **{oracle_t}**. A perfect global cut exists whenever the page "
+            f"illumination ratio stays above **{ds.INK_REFLECTANCE:.2f}**."
+        )
+    else:
+        fig = ui.histogram_figure(
+            {"all pixels": gray_rect},
+            vlines={"Otsu picks": otsu_t},
+            title="Rectified page intensity distribution",
+        )
+        st.pyplot(fig, width="stretch")
+        plt.close(fig)
+        st.caption("Ink/paper populations need ground truth — use a generated scene.")
+
+with m_tab:
+    st.caption(
+        "The image as a matrix. A 12x12 patch of the rectified page, before and after "
+        "binarisation — the numbers are the argument."
+    )
+    size = 12
+    h, w = gray_rect.shape
+    y0 = max(0, min(h - size, h // 3))
+    x0 = max(0, min(w - size, w // 4))
+    before = gray_rect[y0 : y0 + size, x0 : x0 + size]
+    after = binary[y0 : y0 + size, x0 : x0 + size]
+    g1, g2 = st.columns(2)
+    with g1:
+        st.markdown(f"**Before** — raw greys (Otsu's cut = {otsu_t})")
+        st.dataframe(ui.pixel_grid(before), width="stretch")
+    with g2:
+        st.markdown(f"**After** — `{binariser}`, 0 = ink")
+        st.dataframe(ui.pixel_grid(after), width="stretch")
+
+with c_tab:
+    st.caption("Every detector run on **this** image, scored on every metric at once.")
+    live_rows = []
+    for name, fn in ds.DETECTORS.items():
+        got, t = timeit(lambda f=fn: f(image), runs=3, warmup=1)
+        row = {"method": name, "time_ms": round(t.median_ms, 2)}
+        if got is None:
+            row.update({"corner_err_px": None, "area_iou": None, "aspect_wh": None})
+        else:
+            row["aspect_wh"] = ds.aspect_from_perspective(got, image.shape)
+            if truth_corners is not None:
+                row["corner_err_px"] = round(corner_error(got, truth_corners), 3)
+                row["area_iou"] = round(
+                    iou(ds.quad_mask(got, image.shape), ds.quad_mask(truth_corners, image.shape)), 4
+                )
+        live_rows.append(row)
+
+    cols = [("Time (ms)", "time_ms", False), ("Recovered w/h", "aspect_wh", True)]
+    if truth_corners is not None:
+        cols = [
+            ("Corner error (px)", "corner_err_px", False),
+            ("Area IoU", "area_iou", True),
+        ] + cols
+    styler, frame = ui.comparison_table(live_rows, cols)
+    st.dataframe(styler, width="stretch")
+    st.caption("Green is better in each column; each column is scaled on its own.")
+    st.download_button(
+        "Download this matrix as CSV",
+        frame.to_csv().encode("utf-8"),
+        file_name="detector_comparison.csv",
+        mime="text/csv",
+    )
+
+with x_tab:
+    if truth_corners is None:
+        st.info("A confusion matrix needs ground truth — switch to a generated scene.")
+    else:
+        st.caption(
+            "Where the binariser's pixels actually went. Rows are the truth, columns "
+            "are what the method predicted."
+        )
+        cm_rows = []
+        for name, fn in ds.BINARISERS.items():
+            cm = ds.text_confusion(fn(ideal), truth_text)
+            cm_rows.append((name, cm))
+        # an explicit key is required: Streamlit derives element IDs from the
+        # widget type and its parameters, so a second selectbox labelled
+        # "Binariser" collides with the one in the controls above
+        pick = st.selectbox(
+            "Binariser", [n for n, _ in cm_rows], index=3, key="confusion_binariser"
+        )
+        cm = dict(cm_rows)[pick]
+        styler, counts, _ = ui.confusion_frame(cm, ["paper", "ink"], ["paper", "ink"])
+        cc1, cc2 = st.columns([1, 1])
+        cc1.markdown("**Row-normalised (recall per class)**")
+        cc1.dataframe(styler, width="stretch")
+        cc2.markdown("**Raw pixel counts**")
+        cc2.dataframe(counts, width="stretch")
+        total = int(counts.values.sum())
+        correct = int(counts.values.trace())
+        st.markdown(
+            f"`{pick}` put **{correct:,}** of **{total:,}** pixels in the right class "
+            f"({correct / total * 100:.2f}%). Note how little that number moves even when "
+            "the ink is destroyed — paper is the overwhelming majority class."
+        )
+
+st.divider()
 
 with st.expander("Compare all six detectors on this image"):
     cols = st.columns(3)

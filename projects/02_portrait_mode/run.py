@@ -141,6 +141,97 @@ def main() -> None:
         suptitle=f"End-to-end: {best_matte['method']} -> disc bokeh r={args.radius} -> masked composite",
     )
 
+    # ------------------------------------------------------------------ #
+    # distributions and matrices
+    # ------------------------------------------------------------------ #
+
+    # 1. confusion matrix per matting method
+    for name, fn in pm.MATTES.items():
+        m = fn(scene.image)
+        if m is None:
+            continue
+        slug = name.lower().replace(" ", "_").replace("(", "").replace(")", "").replace("+", "")
+        figures.confusion_matrix(
+            pm.matte_confusion(m, scene.mask),
+            IMAGES / f"confusion_{slug}.png",
+            row_labels=["background", "subject"],
+            col_labels=["background", "subject"],
+            title=f"{name} — where every pixel went",
+        )
+
+    # 2. the region breakdown: body vs hair vs background, per method.
+    # Built from the aggregated rows, not from one scene: scene 0 is the
+    # pathological one for GrabCut, and a single-scene figure would flatly
+    # contradict the table above it.
+    region_rows = [
+        {
+            "method": r["method"],
+            "body": r["body_recall"],
+            "hair": r["hair_recall"],
+            "background": round(1.0 - r["background_fpr"], 4),
+        }
+        for r in matte_rows
+        if r["iou"] is not None
+    ]
+    figures.comparison_matrix(
+        region_rows,
+        [("Body", "body", True), ("Hair", "hair", True), ("Background", "background", True)],
+        IMAGES / "region_matrix.png",
+        title=(
+            f"Fraction of each region recovered, mean over {args.scenes} scenes — "
+            "hair is where they all fail"
+        ),
+    )
+
+    # 3. the halo, as a distribution rather than two numbers
+    band = pm.halo_ring(scene.mask, 12) > 0
+    figures.histogram(
+        {
+            "Naive (blur all, paste back)": pm.halo_error_map(naive, ideal)[band],
+            "Masked (normalised convolution)": pm.halo_error_map(masked, ideal)[band],
+        },
+        IMAGES / "halo_distribution.png",
+        bins=80,
+        value_range=(0, 60),
+        xlabel="absolute error vs the ideal composite (0-255)",
+        title="Error in the 12 px ring outside the subject",
+    )
+
+    # 4. the bokeh kernels as actual numbers
+    # radius 7, not 5: a hexagon rasterised onto an 11x11 grid is visibly
+    # lopsided and reads as a bug rather than as coarse sampling
+    small_r = 7
+    figures.value_matrix(
+        [
+            (name, (make(small_r) / make(small_r).max() * 100))
+            for name, make in pm.BOKEH_KERNELS.items()
+        ],
+        IMAGES / "kernel_matrix.png",
+        cmap="magma",
+        vmin=0,
+        vmax=100,
+        title=(
+            f"The four apertures as matrices (radius {small_r}, scaled to 100). "
+            "A disc is flat; a Gaussian peaks in the middle"
+        ),
+    )
+
+    # 5. the comparative matrix
+    figures.comparison_matrix(
+        [r for r in matte_rows if r["iou"] is not None],
+        [
+            ("IoU", "iou", True),
+            ("Dice", "dice", True),
+            ("Body recall", "body_recall", True),
+            ("Hair recall", "hair_recall", True),
+            ("Background FPR", "background_fpr", False),
+            ("Boundary F1", "boundary_f1", True),
+            ("Time (ms)", "median_ms", False),
+        ],
+        IMAGES / "matte_matrix.png",
+        title="Matting methods x metrics — note that no column agrees with another",
+    )
+
     ok = [r for r in matte_rows if r["iou"] is not None]
     figures.metric_bars(
         [r["method"] for r in ok],

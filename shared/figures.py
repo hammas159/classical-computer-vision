@@ -184,6 +184,325 @@ def lines(
     return out_path
 
 
+def merge_close_marks(
+    vlines: dict[str, float] | None, tol: float = 4.0
+) -> list[tuple[str, float]]:
+    """Group threshold markers that nearly coincide into one labelled line.
+
+    Two thresholds landing within a few grey levels of each other is not an edge
+    case — it is what happens when a method is performing *well*, which is
+    exactly when you least want the figure to look broken. Rotated labels
+    stacked on top of each other are illegible, so near-coincident marks are
+    drawn once and labelled together.
+    """
+    if not vlines:
+        return []
+    items = sorted(vlines.items(), key=lambda kv: kv[1])
+    groups: list[list[tuple[str, float]]] = [[items[0]]]
+    for label, x in items[1:]:
+        if abs(x - groups[-1][-1][1]) <= tol:
+            groups[-1].append((label, x))
+        else:
+            groups.append([(label, x)])
+
+    out = []
+    for g in groups:
+        x = float(np.mean([v for _, v in g]))
+        if len(g) == 1:
+            out.append((f"{g[0][0]} = {g[0][1]:.0f}", x))
+        else:
+            out.append((" = ".join(f"{lbl} {v:.0f}" for lbl, v in g), x))
+    return out
+
+
+def histogram(
+    series: dict[str, np.ndarray],
+    out_path: str | Path,
+    bins: int = 128,
+    value_range: tuple[float, float] = (0, 255),
+    xlabel: str = "pixel value",
+    ylabel: str = "fraction of pixels",
+    title: str = "",
+    vlines: dict[str, float] | None = None,
+    fill: bool = True,
+) -> Path:
+    """Overlaid pixel-value distributions, with optional labelled thresholds.
+
+    This is the figure that turns "the histogram stopped being bimodal" from an
+    assertion into evidence. A thresholding method picks a single number on this
+    axis; drawing that number on the distribution shows immediately whether it
+    landed in the valley between two classes or somewhere arbitrary.
+
+    Densities are normalised to fractions so distributions over different-sized
+    regions can be compared on one pair of axes.
+    """
+    fig, ax = plt.subplots(figsize=(7.2, 4.4))
+    colours = ["#2f6f9f", "#c2632c", "#2f6f4f", "#8b4a8b", "#7a7a7a"]
+
+    for i, (label, values) in enumerate(series.items()):
+        v = np.asarray(values).ravel()
+        counts, edges = np.histogram(v, bins=bins, range=value_range)
+        counts = counts / max(counts.sum(), 1)
+        centres = 0.5 * (edges[:-1] + edges[1:])
+        c = colours[i % len(colours)]
+        ax.plot(centres, counts, color=c, linewidth=1.7, label=label)
+        if fill:
+            ax.fill_between(centres, counts, color=c, alpha=0.18)
+
+    for label, xv in merge_close_marks(vlines):
+        ax.axvline(xv, color="#b03030", linestyle="--", linewidth=1.5)
+        ax.annotate(
+            label,
+            xy=(xv, 0.97),
+            xycoords=("data", "axes fraction"),
+            fontsize=_TITLE_SIZE - 2,
+            color="#b03030",
+            rotation=90,
+            ha="right",
+            va="top",
+        )
+
+    ax.set_xlabel(xlabel, fontsize=_TITLE_SIZE)
+    ax.set_ylabel(ylabel, fontsize=_TITLE_SIZE)
+    if title:
+        ax.set_title(title, fontsize=_TITLE_SIZE + 1)
+    ax.legend(fontsize=_TITLE_SIZE - 1, frameon=False)
+    ax.grid(alpha=0.2, linestyle=":")
+    for spine in ("top", "right"):
+        ax.spines[spine].set_visible(False)
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=_DPI, bbox_inches="tight")
+    plt.close(fig)
+    return out_path
+
+
+def confusion_matrix(
+    matrix: np.ndarray,
+    out_path: str | Path,
+    row_labels: list[str],
+    col_labels: list[str],
+    title: str = "",
+    normalise: str = "row",
+    cmap: str = "Blues",
+) -> Path:
+    """An annotated confusion matrix showing both counts and percentages.
+
+    Both are shown deliberately. Counts alone hide how unbalanced the classes
+    are; percentages alone hide that a whole row may rest on a handful of pixels.
+    For a subject/background split the background is usually the large majority,
+    so a 99% background score and a 5% hair score can sit in the same table and
+    only the counts explain why the overall number still looks good.
+
+    ``normalise`` is "row" (recall per true class), "all", or "none".
+    """
+    m = np.asarray(matrix, dtype=np.float64)
+    if normalise == "row":
+        denom = m.sum(axis=1, keepdims=True)
+        shown = np.divide(m, np.maximum(denom, 1e-9))
+    elif normalise == "all":
+        shown = m / max(m.sum(), 1e-9)
+    else:
+        shown = m
+
+    fig, ax = plt.subplots(figsize=(1.9 * len(col_labels) + 2.2, 1.5 * len(row_labels) + 1.9))
+    im = ax.imshow(shown, cmap=cmap, vmin=0, vmax=shown.max() if shown.max() > 0 else 1)
+
+    ax.set_xticks(range(len(col_labels)), col_labels, fontsize=_TITLE_SIZE - 1)
+    ax.set_yticks(range(len(row_labels)), row_labels, fontsize=_TITLE_SIZE - 1)
+    ax.set_xlabel("predicted", fontsize=_TITLE_SIZE)
+    ax.set_ylabel("actual", fontsize=_TITLE_SIZE)
+    if title:
+        ax.set_title(title, fontsize=_TITLE_SIZE + 1)
+
+    threshold = (shown.max() if shown.max() > 0 else 1) * 0.55
+    for i in range(m.shape[0]):
+        for j in range(m.shape[1]):
+            colour = "white" if shown[i, j] > threshold else "#222222"
+            count = m[i, j]
+            label = f"{count / 1000:.1f}k" if count >= 10_000 else f"{count:,.0f}"
+            ax.text(
+                j, i - 0.12, label, ha="center", va="center", fontsize=_TITLE_SIZE, color=colour
+            )
+            ax.text(
+                j,
+                i + 0.20,
+                f"{shown[i, j] * 100:.1f}%",
+                ha="center",
+                va="center",
+                fontsize=_TITLE_SIZE - 2,
+                color=colour,
+            )
+
+    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=_DPI, bbox_inches="tight")
+    plt.close(fig)
+    return out_path
+
+
+def value_matrix(
+    panels: list[tuple[str, np.ndarray]],
+    out_path: str | Path,
+    cmap: str = "gray",
+    vmin: float = 0,
+    vmax: float = 255,
+    fmt: str = "{:.0f}",
+    title: str = "",
+) -> Path:
+    """Render small 2-D arrays as colour-coded grids with the numbers printed.
+
+    An image is a matrix, and at some point it is worth showing it as one. A
+    12x12 patch of a page printed as raw values makes concrete what "the shadow
+    pushed the paper below the ink" actually means, in a way no rendered picture
+    can: the reader can read the two numbers and compare them.
+    """
+    n = len(panels)
+    if n == 0:
+        raise ValueError("value_matrix() needs at least one panel")
+
+    rows, cols = panels[0][1].shape
+    fig, axes = plt.subplots(1, n, figsize=(n * (cols * 0.42 + 0.9), rows * 0.42 + 1.4))
+    axes = np.atleast_1d(axes).ravel()
+
+    for ax, (label, patch) in zip(axes, panels):
+        p = np.asarray(patch)
+        ax.imshow(p, cmap=cmap, vmin=vmin, vmax=vmax)
+        mid = (vmin + vmax) / 2
+        for i in range(p.shape[0]):
+            for j in range(p.shape[1]):
+                ax.text(
+                    j,
+                    i,
+                    fmt.format(p[i, j]),
+                    ha="center",
+                    va="center",
+                    fontsize=max(4.5, 9 - 0.22 * p.shape[1]),
+                    color="#111111" if p[i, j] > mid else "#f2f2f2",
+                )
+        ax.set_title(label, fontsize=_TITLE_SIZE)
+        ax.set_xticks([])
+        ax.set_yticks([])
+
+    if title:
+        fig.suptitle(title, fontsize=_TITLE_SIZE + 2, y=1.02)
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=_DPI, bbox_inches="tight")
+    plt.close(fig)
+    return out_path
+
+
+def comparison_matrix(
+    rows: list[dict],
+    columns: list[tuple[str, str, bool]],
+    out_path: str | Path,
+    row_key: str = "method",
+    title: str = "",
+    cmap: str = "RdYlGn",
+    scale: str = "rank",
+) -> Path:
+    """A methods x metrics heatmap with the real values printed in each cell.
+
+    ``columns`` is a list of ``(header, key, higher_is_better)``. Each column is
+    normalised **independently** to [0, 1] for colour only — the printed number is
+    always the true value. Independent scaling is what makes the grid readable at
+    all: milliseconds, IoU and decibels do not share an axis, and colouring them
+    on one scale would make every cell the same shade.
+
+    ``higher_is_better`` flips the colour ramp per column, so green always means
+    "better" whether the metric is an accuracy or an error.
+
+    This is the figure that answers "which method should I use" in one look, and
+    it is also the figure that exposes when different columns disagree about the
+    winner — which happens more often than method comparisons usually admit.
+    """
+    if not rows or not columns:
+        raise ValueError("comparison_matrix() needs rows and columns")
+
+    labels = [str(r.get(row_key, "?")) for r in rows]
+    raw = np.full((len(rows), len(columns)), np.nan)
+    for j, (_, key, _) in enumerate(columns):
+        for i, r in enumerate(rows):
+            v = r.get(key)
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                raw[i, j] = float(v)
+
+    shaded = np.full_like(raw, np.nan)
+    for j, (_, _, higher_better) in enumerate(columns):
+        col = raw[:, j]
+        idx = np.flatnonzero(np.isfinite(col))
+        if idx.size == 0:
+            continue
+        vals = col[idx]
+
+        if idx.size == 1 or float(vals.max() - vals.min()) < 1e-12:
+            shaded[idx, j] = 0.5
+            continue
+
+        if scale == "rank":
+            # Dense rank, not min-max. One catastrophic outlier (a baseline 20x
+            # worse than everything else) compresses a linear scale until every
+            # real method is the same shade of green. Ranking keeps the ordering
+            # visible; the exact value is printed in the cell anyway.
+            #
+            # np.unique gives the *dense* rank, which matters: ordinal ranking
+            # would hand five methods tied at 100% five different shades and
+            # invent a ranking that the numbers do not support.
+            uniq, inv = np.unique(vals, return_inverse=True)
+            if uniq.size == 1:
+                shaded[idx, j] = 0.5
+                continue
+            norm = inv / (uniq.size - 1)
+        else:
+            lo, hi = float(vals.min()), float(vals.max())
+            norm = (vals - lo) / (hi - lo)
+
+        shaded[idx, j] = norm if higher_better else 1.0 - norm
+
+    fig, ax = plt.subplots(
+        figsize=(1.55 * len(columns) + 3.4, 0.62 * len(rows) + 1.9)
+    )
+    ax.imshow(np.ma.masked_invalid(shaded), cmap=cmap, vmin=0, vmax=1, aspect="auto")
+
+    ax.set_xticks(range(len(columns)), [c[0] for c in columns], fontsize=_TITLE_SIZE - 1)
+    ax.set_yticks(range(len(labels)), labels, fontsize=_TITLE_SIZE - 1)
+    ax.tick_params(axis="x", labelrotation=22)
+
+    for i in range(raw.shape[0]):
+        for j in range(raw.shape[1]):
+            v = raw[i, j]
+            if not np.isfinite(v):
+                ax.text(j, i, "n/a", ha="center", va="center", fontsize=_TITLE_SIZE - 1,
+                        color="#777777")
+                continue
+            text = f"{v:,.0f}" if abs(v) >= 100 else (f"{v:.3g}" if abs(v) >= 0.01 else f"{v:.2e}")
+            ax.text(j, i, text, ha="center", va="center", fontsize=_TITLE_SIZE - 1,
+                    color="#141414")
+
+    for j in range(len(columns) + 1):
+        ax.axvline(j - 0.5, color="white", linewidth=2)
+    for i in range(len(labels) + 1):
+        ax.axhline(i - 0.5, color="white", linewidth=2)
+
+    if title:
+        ax.set_title(title, fontsize=_TITLE_SIZE + 1, pad=12)
+    ax.set_xlabel("green = better in that column", fontsize=_TITLE_SIZE - 2, labelpad=8)
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=_DPI, bbox_inches="tight")
+    plt.close(fig)
+    return out_path
+
+
 def metric_bars(
     labels: list[str],
     values: list[float],

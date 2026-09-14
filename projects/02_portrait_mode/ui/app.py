@@ -20,8 +20,10 @@ import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 import streamlit as st  # noqa: E402
 
+import matplotlib.pyplot as plt  # noqa: E402
+
 import portrait_mode as pm  # noqa: E402
-from shared import synth  # noqa: E402
+from shared import synth, ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 from shared.io import to_uint8  # noqa: E402
 from shared.metrics import dice, iou  # noqa: E402
@@ -149,6 +151,135 @@ if matte_name.startswith(("Haar + GrabCut", "GrabCut")):
         "same image can return anything from a near-perfect matte to a failed one — "
         "see the seed-stability table in the README."
     )
+
+# --------------------------------------------------------------------------- #
+# distributions and matrices
+# --------------------------------------------------------------------------- #
+
+st.divider()
+st.subheader("Distributions and matrices")
+
+r_tab, h_tab, k_tab, c_tab = st.tabs(
+    ["Region matrix", "Halo distribution", "Kernel matrix", "Confusion matrix"]
+)
+
+with r_tab:
+    if scene is None:
+        st.info("Region scores need a known matte — switch to a generated portrait.")
+    else:
+        st.caption(
+            "Every method on **this** image, split by region. Hair is ~2.5% of the "
+            "subject's pixels, so whole-image IoU cannot see a method losing all of it."
+        )
+        rows = []
+        for name, fn in pm.MATTES.items():
+            got, t = timeit(lambda f=fn: f(image), runs=1, warmup=0)
+            if got is None:
+                continue
+            rr = pm.region_recall(got, scene)
+            rows.append(
+                {"method": name, **rr, "iou": round(iou(got, scene.mask), 4),
+                 "ms": round(t.median_ms, 1)}
+            )
+        styler, frame = ui.comparison_table(
+            rows,
+            [
+                ("IoU", "iou", True),
+                ("Body", "body", True),
+                ("Hair", "hair", True),
+                ("Background", "background", True),
+                ("Time (ms)", "ms", False),
+            ],
+        )
+        st.dataframe(styler, width="stretch")
+        st.caption(
+            "Green is better per column. Look for the row that wins IoU and loses Hair — "
+            "that disagreement is this project's central finding."
+        )
+        st.download_button(
+            "Download this matrix as CSV",
+            frame.to_csv().encode("utf-8"),
+            file_name="matte_region_matrix.csv",
+            mime="text/csv",
+        )
+
+with h_tab:
+    if scene is None:
+        st.info("Halo error needs the clean background plate — use a generated portrait.")
+    else:
+        st.caption(
+            "Blurring across the subject boundary smears subject colour outward. "
+            "This is the error in the 12 px ring outside the subject, against the "
+            "ideal composite built from the true background plate."
+        )
+        ideal_c = pm.composite_reference(scene, kernel)
+        band = pm.halo_ring(scene.mask, 12) > 0
+        series = {}
+        for cname, cfn in pm.COMPOSITORS.items():
+            out_c = cfn(image, scene.mask, kernel)
+            series[cname] = pm.halo_error_map(out_c, ideal_c)[band]
+        fig = ui.histogram_figure(
+            series,
+            bins=80,
+            value_range=(0, 60),
+            xlabel="absolute error vs the ideal composite (0-255)",
+            title="Halo error distribution in the ring outside the subject",
+        )
+        st.pyplot(fig, width="stretch")
+        plt.close(fig)
+        means = {k: float(np.mean(v)) for k, v in series.items()}
+        for k, v in means.items():
+            st.markdown(f"- `{k}` — mean **{v:.2f}**")
+
+with k_tab:
+    st.caption(
+        "The aperture as a matrix. A real lens maps a point of light to the shape of "
+        "its aperture — a **flat disc**, not a Gaussian bump."
+    )
+    show_r = st.slider("Kernel radius to display", 3, 9, 5, key="kernel_display_radius")
+    kcols = st.columns(len(pm.BOKEH_KERNELS))
+    for i, (kname, make) in enumerate(pm.BOKEH_KERNELS.items()):
+        k = make(show_r)
+        prof = pm.highlight_profile(k)
+        with kcols[i]:
+            st.markdown(f"**{kname}**")
+            st.caption(f"peak/mean {prof['peak_to_mean']:.2f} · rim {prof['edge_sharpness']:.2f}")
+            st.dataframe(
+                ui.pixel_grid(k / k.max() * 100, cmap="magma", fmt="{:.0f}"),
+                width="stretch",
+            )
+
+with c_tab:
+    if scene is None:
+        st.info("A confusion matrix needs a known matte — use a generated portrait.")
+    else:
+        st.caption("Rows are the truth, columns are what the method predicted.")
+        pick = st.selectbox(
+            "Matting method", list(pm.MATTES), index=2, key="confusion_matte_method"
+        )
+        got = pm.MATTES[pick](image)
+        if got is None:
+            st.warning(f"{pick} found no subject in this image.")
+        else:
+            cm = pm.matte_confusion(got, scene.mask)
+            styler, counts, _ = ui.confusion_frame(
+                cm, ["background", "subject"], ["background", "subject"]
+            )
+            cc1, cc2 = st.columns(2)
+            cc1.markdown("**Row-normalised (recall per class)**")
+            cc1.dataframe(styler, width="stretch")
+            cc2.markdown("**Raw pixel counts**")
+            cc2.dataframe(counts, width="stretch")
+            total = int(counts.values.sum())
+            correct = int(counts.values.trace())
+            st.markdown(
+                f"`{pick}` classified **{correct:,}** of **{total:,}** pixels correctly "
+                f"({correct / total * 100:.2f}%). Background is the majority class by a "
+                "wide margin, which is why that headline percentage stays high even when "
+                "the whole boundary is wrong."
+            )
+
+st.divider()
 
 with st.expander("Compare all six matting methods on this image"):
     cols = st.columns(3)

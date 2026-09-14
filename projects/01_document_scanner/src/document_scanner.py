@@ -349,6 +349,19 @@ def quad_mask(corners: np.ndarray, shape: tuple[int, int]) -> np.ndarray:
 # --------------------------------------------------------------------------- #
 
 
+def otsu_threshold(gray: np.ndarray) -> int:
+    """The grey level Otsu actually picks, so it can be drawn on a histogram.
+
+    Otsu chooses the threshold maximising between-class variance. Plotting that
+    number on the page's intensity distribution is what turns "Otsu cut in the
+    wrong place" from a claim into something the reader can see: under a shadow
+    the chosen value sits between *bright paper and dark paper*, not between
+    paper and ink.
+    """
+    t, _ = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    return int(t)
+
+
 def binarise_otsu(gray: np.ndarray) -> np.ndarray:
     _, out = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     return out
@@ -496,6 +509,40 @@ def evaluate_detectors(
 def text_mask(gray_page: np.ndarray) -> np.ndarray:
     """Ground-truth text pixels of a clean page: anything clearly darker than paper."""
     return (gray_page < 128).astype(np.uint8) * 255
+
+
+def text_confusion(binary: np.ndarray, truth_text: np.ndarray) -> np.ndarray:
+    """2x2 confusion counts for a binarised page: rows actual, columns predicted.
+
+    Layout::
+
+        [[paper->paper, paper->ink],
+         [ink->paper,   ink->ink  ]]
+
+    Binarisers in this project return **white paper, black ink**, so predicted
+    ink is ``binary == 0``. Getting that inversion backwards silently transposes
+    the matrix and makes a perfect method look like a total failure, which is
+    why it is done in exactly one place.
+    """
+    pred_ink = binary == 0
+    true_ink = truth_text > 0
+    return np.array(
+        [
+            [int((~true_ink & ~pred_ink).sum()), int((~true_ink & pred_ink).sum())],
+            [int((true_ink & ~pred_ink).sum()), int((true_ink & pred_ink).sum())],
+        ],
+        dtype=np.int64,
+    )
+
+
+def page_intensities(gray: np.ndarray, truth_text: np.ndarray) -> dict[str, np.ndarray]:
+    """Split a rectified page's pixels into the ink and paper populations.
+
+    These two distributions are the whole story of thresholding: a global cut can
+    only work if some grey level separates them, and a shadow is what pushes them
+    into each other.
+    """
+    return {"paper": gray[truth_text == 0].ravel(), "ink": gray[truth_text > 0].ravel()}
 
 
 def evaluate_binarisers(n_scenes: int = 30, illum_min: float = 0.62) -> list[dict]:
