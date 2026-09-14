@@ -363,6 +363,154 @@ def shapes(size: int = 512, seed: int | None = 0) -> tuple[np.ndarray, np.ndarra
     return img, edges
 
 
+_FACE_CROP_CACHE: np.ndarray | None = None
+
+
+def _astronaut_face_crop() -> np.ndarray:
+    """A tight crop of the real face in ``skimage.data.astronaut``.
+
+    The crop box is found by running OpenCV's own frontal-face cascade rather
+    than hard-coding pixel coordinates: hard-coded numbers silently included the
+    white helmet behind the head, which made the composited subject look like a
+    face floating in a white oval. Deriving the box means the crop is correct by
+    construction and self-documents what it contains.
+    """
+    global _FACE_CROP_CACHE
+    if _FACE_CROP_CACHE is not None:
+        return _FACE_CROP_CACHE
+
+    from .io import sample, to_gray
+
+    src = sample("astronaut")
+    cascade = cv2.CascadeClassifier(
+        cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+    )
+    faces = cascade.detectMultiScale(to_gray(src), scaleFactor=1.1, minNeighbors=5)
+
+    if len(faces):
+        x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
+        # expand to include chin, forehead and a little hair
+        pad_x, pad_y = int(w * 0.30), int(h * 0.42)
+        x0, y0 = max(0, x - pad_x), max(0, y - pad_y)
+        x1, y1 = min(src.shape[1], x + w + pad_x), min(src.shape[0], y + h + pad_y)
+    else:  # pragma: no cover - only if the bundled cascade ever changes
+        x0, y0, x1, y1 = 170, 40, 350, 250
+
+    _FACE_CROP_CACHE = src[y0:y1, x0:x1].copy()
+    return _FACE_CROP_CACHE
+
+
+@dataclass
+class PortraitScene:
+    """A composited portrait with an exact alpha matte.
+
+    ``hair`` is tracked separately from ``body`` because thin structures are
+    where every segmentation method actually fails, and a single whole-image IoU
+    hides that completely: hair is a small fraction of the pixels, so losing all
+    of it barely moves the overall score.
+    """
+
+    image: np.ndarray
+    mask: np.ndarray       # full subject: body + hair
+    body: np.ndarray       # the solid silhouette alone
+    hair: np.ndarray       # the thin strands alone
+    face_box: tuple[int, int, int, int]  # (x, y, w, h) of the pasted real face
+    background: np.ndarray  # the clean plate, with no subject composited onto it
+
+
+def portrait_scene(
+    size: tuple[int, int] = (640, 640),
+    background: str = "coffee",
+    n_strands: int = 90,
+    strand_thickness: int = 1,
+    seed: int | None = 0,
+) -> PortraitScene:
+    """Composite a subject over a cluttered background with a **known** matte.
+
+    The subject is a synthetic head-and-shoulders silhouette with a *real* face
+    pasted into the head, so a Haar cascade has something genuine to detect while
+    the alpha matte stays exact. Fine hair strands are drawn around the head,
+    because "portrait mode fails on hair" is the standard caveat and this makes
+    it a number instead of a caveat.
+    """
+    from .io import ensure_rgb, sample, to_float
+
+    rng = _rng(seed)
+    W, H = size
+
+    bg = cv2.resize(sample(background), (W, H), interpolation=cv2.INTER_AREA)
+
+    body = np.zeros((H, W), np.uint8)
+    head_c = (W // 2, int(H * 0.36))
+    head_ax = (int(W * 0.135), int(H * 0.175))
+    cv2.ellipse(body, head_c, head_ax, 0, 0, 360, 255, -1)
+
+    # shoulders: a wide rounded trapezoid running off the bottom of the frame
+    sh_top, sh_w = int(H * 0.56), int(W * 0.42)
+    shoulders = np.array(
+        [
+            [W // 2 - int(W * 0.12), sh_top - int(H * 0.04)],
+            [W // 2 + int(W * 0.12), sh_top - int(H * 0.04)],
+            [W // 2 + sh_w, H - 1],
+            [W // 2 - sh_w, H - 1],
+        ],
+        np.int32,
+    )
+    cv2.fillPoly(body, [shoulders], 255)
+    body = cv2.GaussianBlur(body, (0, 0), 2.0)
+    body = (body > 127).astype(np.uint8) * 255
+
+    # hair: thin strands radiating from the top of the head
+    hair = np.zeros((H, W), np.uint8)
+    for _ in range(n_strands):
+        angle = rng.uniform(np.pi * 0.95, np.pi * 2.05)  # upper hemisphere
+        length = rng.uniform(0.25, 0.75) * head_ax[1]
+        x = head_c[0] + head_ax[0] * np.cos(angle) * rng.uniform(0.75, 1.0)
+        y = head_c[1] + head_ax[1] * np.sin(angle) * rng.uniform(0.75, 1.0)
+        pts = [(int(x), int(y))]
+        for _ in range(4):
+            angle += rng.uniform(-0.35, 0.35)
+            x += np.cos(angle) * length / 4
+            y += np.sin(angle) * length / 4
+            pts.append((int(np.clip(x, 0, W - 1)), int(np.clip(y, 0, H - 1))))
+        cv2.polylines(hair, [np.array(pts, np.int32)], False, 255, strand_thickness)
+    hair = cv2.bitwise_and(hair, cv2.bitwise_not(body))  # strands outside the head only
+
+    mask = cv2.bitwise_or(body, hair)
+
+    # paint the subject: a real face in the head, flat clothing below
+    subject = np.zeros((H, W, 3), np.uint8)
+    subject[:] = (54, 62, 96)  # clothing
+    # "Cover" fit, not "fit inside": scale by the larger factor and centre-crop,
+    # so the face fills the whole head ellipse. A plain resize leaves the face
+    # photo's own pale background visible at the sides of the head.
+    src_face = _astronaut_face_crop()
+    tw, th = head_ax[0] * 2, head_ax[1] * 2
+    scale = max(tw / src_face.shape[1], th / src_face.shape[0])
+    grown = cv2.resize(src_face, (0, 0), fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+    oy = max(0, (grown.shape[0] - th) // 2)
+    ox = max(0, (grown.shape[1] - tw) // 2)
+    face = grown[oy : oy + th, ox : ox + tw]
+    if face.shape[:2] != (th, tw):  # guard against a one-pixel rounding shortfall
+        face = cv2.resize(face, (tw, th), interpolation=cv2.INTER_AREA)
+    hx0, hy0 = head_c[0] - head_ax[0], head_c[1] - head_ax[1]
+    subject[hy0 : hy0 + face.shape[0], hx0 : hx0 + face.shape[1]] = face
+    subject[hair > 0] = (38, 28, 22)  # dark hair
+
+    grain = rng.normal(0, 2.5 / 255, bg.shape)  # the same grain on both plates
+    out = bg.copy()
+    out[mask > 0] = subject[mask > 0]
+
+    return PortraitScene(
+        image=ensure_rgb(to_uint8(to_float(out) + grain)),
+        mask=mask,
+        body=body,
+        hair=hair,
+        face_box=(hx0, hy0, head_ax[0] * 2, head_ax[1] * 2),
+        background=ensure_rgb(to_uint8(to_float(bg) + grain)),
+    )
+
+
 def _rotation(rx_deg: float, ry_deg: float, rz_deg: float) -> np.ndarray:
     """Rotation matrix from XYZ Euler angles in degrees."""
     rx, ry, rz = np.deg2rad([rx_deg, ry_deg, rz_deg])

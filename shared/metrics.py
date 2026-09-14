@@ -93,6 +93,28 @@ def mean_brightness(img: np.ndarray) -> float:
     return float(np.mean(to_float(to_gray(img))))
 
 
+def estimate_noise_sigma(img: np.ndarray) -> float:
+    """Estimate the additive noise standard deviation, in 0-255 units.
+
+    Uses the Immerkaer (1996) fast estimator: convolve with a kernel that is
+    zero-response to any locally linear intensity ramp, so edges and gradients
+    contribute nothing and only noise survives. The scaling factor converts the
+    mean absolute response back to a Gaussian sigma.
+
+    This matters for enhancement work: brightening a dark photo also multiplies
+    whatever noise was in the shadows, and a method that "wins" on brightness
+    while tripling the noise has not actually improved the image.
+    """
+    g = to_gray(img).astype(np.float64)
+    if min(g.shape) < 3:
+        return 0.0
+    laplacian_like = np.array([[1, -2, 1], [-2, 4, -2], [1, -2, 1]], np.float64)
+    response = cv2.filter2D(g, -1, laplacian_like, borderType=cv2.BORDER_REFLECT)
+    # discard a 1-px frame, where the border mode biases the response
+    response = response[1:-1, 1:-1]
+    return float(np.sqrt(np.pi / 2.0) * np.mean(np.abs(response)) / 6.0)
+
+
 # --------------------------------------------------------------------------- #
 # segmentation
 # --------------------------------------------------------------------------- #

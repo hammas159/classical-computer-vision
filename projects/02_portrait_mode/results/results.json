@@ -1,0 +1,160 @@
+{
+  "project": "02_portrait_mode",
+  "generated_utc": "2026-09-14T11:52:37+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "n_scenes": 12,
+  "bokeh_radius_px": 15,
+  "haar_cascade": "D:\\github\\classical-computer-vision\\.venv\\Lib\\site-packages\\cv2\\data\\haarcascade_frontalface_default.xml",
+  "grabcut_seed_used": 0,
+  "mattes": [
+    {
+      "method": "Face rect (baseline)",
+      "detected_pct": "100%",
+      "iou": 0.5654,
+      "dice": 0.7224,
+      "body_recall": 0.9422,
+      "hair_recall": 0.97,
+      "background_fpr": 0.3441,
+      "boundary_f1": 0.0236,
+      "median_ms": 34.56
+    },
+    {
+      "method": "Face ellipse prior",
+      "detected_pct": "100%",
+      "iou": 0.928,
+      "dice": 0.9627,
+      "body_recall": 0.9664,
+      "hair_recall": 0.0624,
+      "background_fpr": 0.0091,
+      "boundary_f1": 0.1659,
+      "median_ms": 39.224
+    },
+    {
+      "method": "Haar + GrabCut",
+      "detected_pct": "100%",
+      "iou": 0.8721,
+      "dice": 0.929,
+      "body_recall": 0.9343,
+      "hair_recall": 0.4823,
+      "background_fpr": 0.0368,
+      "boundary_f1": 0.5849,
+      "median_ms": 1092.209
+    },
+    {
+      "method": "GrabCut (centre rect)",
+      "detected_pct": "100%",
+      "iou": 0.7985,
+      "dice": 0.8716,
+      "body_recall": 0.8683,
+      "hair_recall": 0.5285,
+      "background_fpr": 0.0454,
+      "boundary_f1": 0.6362,
+      "median_ms": 1156.478
+    },
+    {
+      "method": "Skin colour (YCrCb)",
+      "detected_pct": "100%",
+      "iou": 0.1735,
+      "dice": 0.2914,
+      "body_recall": 0.2227,
+      "hair_recall": 0.947,
+      "background_fpr": 0.3288,
+      "boundary_f1": 0.25,
+      "median_ms": 3.041
+    },
+    {
+      "method": "Watershed + markers",
+      "detected_pct": "100%",
+      "iou": 0.7155,
+      "dice": 0.833,
+      "body_recall": 0.7876,
+      "hair_recall": 0.2362,
+      "background_fpr": 0.0452,
+      "boundary_f1": 0.3728,
+      "median_ms": 49.524
+    }
+  ],
+  "grabcut_stability": [
+    {
+      "scene": "0 (coffee)",
+      "n_seeds": 24,
+      "iou_mean": 0.6634,
+      "iou_std": 0.1162,
+      "iou_min": 0.1515,
+      "iou_max": 0.9039,
+      "iou_spread": 0.7524
+    },
+    {
+      "scene": "1 (rocket)",
+      "n_seeds": 24,
+      "iou_mean": 0.8905,
+      "iou_std": 0.0177,
+      "iou_min": 0.8491,
+      "iou_max": 0.9064,
+      "iou_spread": 0.0574
+    },
+    {
+      "scene": "2 (grass)",
+      "n_seeds": 24,
+      "iou_mean": 0.9148,
+      "iou_std": 0.0054,
+      "iou_min": 0.8926,
+      "iou_max": 0.92,
+      "iou_spread": 0.0273
+    },
+    {
+      "scene": "3 (brick)",
+      "n_seeds": 24,
+      "iou_mean": 0.941,
+      "iou_std": 0.0008,
+      "iou_min": 0.9402,
+      "iou_max": 0.9421,
+      "iou_spread": 0.0019
+    }
+  ],
+  "bokeh_kernels": [
+    {
+      "kernel": "Gaussian",
+      "radius_px": 15,
+      "peak_to_mean": 2.9419,
+      "edge_sharpness": 0.2023
+    },
+    {
+      "kernel": "Box",
+      "radius_px": 15,
+      "peak_to_mean": 1.0,
+      "edge_sharpness": 0.3205
+    },
+    {
+      "kernel": "Disc (circular aperture)",
+      "radius_px": 15,
+      "peak_to_mean": 1.0,
+      "edge_sharpness": 0.4344
+    },
+    {
+      "kernel": "Hexagon (6-blade)",
+      "radius_px": 15,
+      "peak_to_mean": 1.0,
+      "edge_sharpness": 0.3317
+    }
+  ],
+  "compositing": [
+    {
+      "method": "Naive (blur all, paste back)",
+      "halo_err_0_255": 9.48,
+      "background_err_0_255": 1.636,
+      "median_ms": 15.81
+    },
+    {
+      "method": "Masked (normalised convolution)",
+      "halo_err_0_255": 1.576,
+      "background_err_0_255": 0.271,
+      "median_ms": 45.523
+    }
+  ]
+}
