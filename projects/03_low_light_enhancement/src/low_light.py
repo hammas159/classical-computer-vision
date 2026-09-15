@@ -253,12 +253,26 @@ def match_exposure(pred: np.ndarray, truth: np.ndarray) -> np.ndarray:
 
     Matching exposure first removes that offset and leaves the question that
     actually matters: is the detail there?
+
+    The scale factor is found by bisection rather than as ``target/current``,
+    because the result is clipped to [0, 1]. Scaling up saturates the highlights,
+    which pulls the mean back down, so the naive ratio systematically
+    undershoots — by about 0.025 in practice, which is the same order as the
+    differences between methods being compared.
     """
     p, t = to_float(pred), to_float(truth)
-    pm, tm = float(p.mean()), float(t.mean())
-    if pm < EPS:
+    target = float(t.mean())
+    if float(p.mean()) < EPS:
         return pred
-    return to_uint8(p * (tm / pm))
+
+    lo, hi = 0.0, 32.0
+    for _ in range(40):
+        mid = 0.5 * (lo + hi)
+        if float(np.clip(p * mid, 0.0, 1.0).mean()) < target:
+            lo = mid
+        else:
+            hi = mid
+    return to_uint8(p * (0.5 * (lo + hi)))
 
 
 def _score(pred: np.ndarray, truth: np.ndarray) -> dict[str, float]:

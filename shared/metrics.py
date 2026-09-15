@@ -104,6 +104,19 @@ def estimate_noise_sigma(img: np.ndarray) -> float:
     This matters for enhancement work: brightening a dark photo also multiplies
     whatever noise was in the shadows, and a method that "wins" on brightness
     while tripling the noise has not actually improved the image.
+
+    🚨 **It measures luminance noise, not per-channel noise.** A colour image is
+    converted to grayscale first, and that averages the three channels. If the
+    noise is independent per channel — which is what
+    :func:`shared.synth.gaussian_noise` produces — averaging reduces its standard
+    deviation by roughly ``sqrt(3)``, so a per-channel sigma of 10 reads back as
+    about 6. That is correct behaviour and the right quantity for judging how
+    noisy a picture *looks*, but it is not the number you passed in. Feed a
+    grayscale image if you want to recover the sigma you set.
+
+    There is also a floor: a textured image has real high-frequency content that
+    this kernel cannot distinguish from noise, so a clean photograph reads as a
+    few units rather than zero.
     """
     g = to_gray(img).astype(np.float64)
     if min(g.shape) < 3:
