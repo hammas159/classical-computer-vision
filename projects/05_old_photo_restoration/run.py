@@ -147,6 +147,34 @@ def main() -> None:
         ),
     )
 
+    # four different photographs, end to end. A single before/after lets the
+    # reader assume that one image was representative; these four are the same
+    # four the tables average over, so the pictures and the numbers describe the
+    # same thing.
+    gallery_names = rs.COLOUR_IMAGES
+    g_truth, g_input, g_mask, g_inpainted, g_restored = [], [], [], [], []
+    for i, name in enumerate(gallery_names):
+        src = io.sample(name)
+        aged, _ = rs.add_damage_and_fade(src, thickness=args.thickness, seed=i)
+        det, inp, res = rs.restore(aged)
+        g_truth.append(src)
+        g_input.append(aged)
+        g_mask.append(det)
+        g_inpainted.append(inp)
+        g_restored.append(res)
+    figures.gallery(
+        list(gallery_names),
+        [
+            ("original", g_truth),
+            ("faded + damaged", g_input),
+            ("damage found", g_mask),
+            ("inpainted", g_inpainted),
+            ("restored", g_restored),
+        ],
+        IMAGES / "samples.png",
+        suptitle="Four photographs, the same pipeline, nothing hand-picked",
+    )
+
     # both degradations, the end-to-end result a user actually sees
     both, both_mask = rs.add_damage_and_fade(clean, thickness=args.thickness, seed=0)
     detected, inpainted, restored = rs.restore(both)

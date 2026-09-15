@@ -1,6 +1,6 @@
 {
   "project": "03_low_light_enhancement",
-  "generated_utc": "2026-09-15T03:15:32+00:00",
+  "generated_utc": "2026-09-15T10:54:44+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -41,7 +41,7 @@
       "rms_contrast": 0.1821,
       "brightness": 0.3488,
       "noise_sigma": 8.491,
-      "median_ms": 11.468
+      "median_ms": 10.899
     },
     {
       "method": "Gamma (auto-estimated)",
@@ -53,7 +53,7 @@
       "rms_contrast": 0.2125,
       "brightness": 0.4559,
       "noise_sigma": 15.57,
-      "median_ms": 40.855
+      "median_ms": 37.479
     },
     {
       "method": "Histogram equalisation",
@@ -65,7 +65,7 @@
       "rms_contrast": 0.2839,
       "brightness": 0.4851,
       "noise_sigma": 15.076,
-      "median_ms": 0.668
+      "median_ms": 0.692
     },
     {
       "method": "CLAHE",
@@ -77,7 +77,7 @@
       "rms_contrast": 0.2026,
       "brightness": 0.3007,
       "noise_sigma": 8.939,
-      "median_ms": 0.997
+      "median_ms": 0.881
     },
     {
       "method": "Single-scale Retinex",
@@ -89,7 +89,7 @@
       "rms_contrast": 0.1963,
       "brightness": 0.7589,
       "noise_sigma": 24.373,
-      "median_ms": 114.254
+      "median_ms": 110.389
     },
     {
       "method": "Multi-scale Retinex",
@@ -101,7 +101,7 @@
       "rms_contrast": 0.2008,
       "brightness": 0.7672,
       "noise_sigma": 25.298,
-      "median_ms": 428.72
+      "median_ms": 422.111
     },
     {
       "method": "MSRCR",
@@ -113,7 +113,7 @@
       "rms_contrast": 0.1638,
       "brightness": 0.5999,
       "noise_sigma": 16.08,
-      "median_ms": 455.017
+      "median_ms": 440.287
     },
     {
       "method": "LIME",
@@ -125,7 +125,7 @@
       "rms_contrast": 0.2204,
       "brightness": 0.3805,
       "noise_sigma": 13.228,
-      "median_ms": 21.86
+      "median_ms": 20.456
     },
     {
       "method": "Inverse gamma (oracle)",
@@ -137,7 +137,7 @@
       "rms_contrast": 0.1887,
       "brightness": 0.4278,
       "noise_sigma": 11.353,
-      "median_ms": 11.403
+      "median_ms": 11.151
     }
   ],
   "gamma_sweep": [

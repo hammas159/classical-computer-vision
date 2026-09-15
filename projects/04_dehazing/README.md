@@ -65,6 +65,32 @@ by actually inverting the scattering.
 All captures of the **live app**. Every number was computed at the moment the
 screenshot was taken.
 
+### 0 · Four scenes, end to end
+
+![Four sample dehazings](docs/images/samples.png)
+
+Four scenes with different depth structure, which is what a transmission
+estimate actually depends on — a night launch pad with point lights, a close
+still life, a portrait against a flat backdrop, and an animal close-up with
+almost no depth range at all. The bottom row is the oracle, handed the *true*
+transmission map, so every column shows both the result and its ceiling.
+
+The dark channel prior assumes that in any patch of a haze-free image some pixel
+is nearly black in some channel. How true that is changes scene by scene, and
+four scenes is the minimum needed to see it: the two with real depth gain
+**+10.4 dB**, the two nearly flat ones gain 6.6–6.8.
+
+Each column is scored before it goes in — a candidate has to gain at least 2 dB
+over the hazy input, and `run.py` prints the decision:
+
+```
+gallery candidate rocket       KEEP —  9.3 dB hazy -> 19.7 dB (+10.4)
+gallery candidate coffee       KEEP — 11.5 dB hazy -> 21.9 dB (+10.4)
+gallery candidate astronaut    KEEP — 12.7 dB hazy -> 19.5 dB (+6.8)
+gallery candidate chelsea      KEEP — 12.3 dB hazy -> 18.9 dB (+6.6)
+gallery candidate retina       FULL — 10.2 dB hazy -> 16.5 dB (+6.3)
+```
+
 ### 1 · Original, hazy, dehazed, oracle
 
 ![Dehazing pipeline](results/screenshots/01_dehazing.png)

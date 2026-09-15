@@ -2,10 +2,10 @@
 
 | Method | PSNR whole (dB) | PSNR on damage (dB) | SSIM | Time (ms) |
 |---|---:|---:|---:|---:|
-| Telea (fast marching) | 38.11 | 26.555 | 0.9826 | 14.701 |
-| Navier-Stokes | 38.405 | 26.85 | 0.9838 | 14.735 |
-| Iterative masked mean | 37.328 | 25.773 | 0.9808 | 79.759 |
-| Harmonic diffusion | 38.21 | 26.655 | 0.983 | 392.74 |
+| Telea (fast marching) | 38.11 | 26.555 | 0.9826 | 15.332 |
+| Navier-Stokes | 38.405 | 26.85 | 0.9838 | 15.083 |
+| Iterative masked mean | 37.328 | 25.773 | 0.9808 | 77.643 |
+| Harmonic diffusion | 38.21 | 26.655 | 0.983 | 396.14 |
 
 ### PSNR on damaged pixels vs scratch width
 
@@ -25,7 +25,8 @@
 |---|---:|---:|---:|---:|---:|---:|
 | Intensity threshold | 0.4199 | 0.602 | 0.5711 | 0.066 | 9.882 | 20.768 |
 | Top-hat + black-hat | 0.3797 | 0.4182 | 0.7722 | 0.1378 | 12.706 | 21.925 |
-| Median residual | 0.4185 | 0.4664 | 0.776 | 0.122 | 12.865 | 21.772 |
+| Median residual (one scale) | 0.4185 | 0.4664 | 0.776 | 0.122 | 12.865 | 21.772 |
+| Median residual (multi-scale) | 0.3486 | 0.3595 | 0.8866 | 0.1867 | 19.368 | 22.756 |
 
 ### Median-residual detector vs its window size (3 px damage)
 
@@ -43,12 +44,12 @@
 
 | Method | PSNR (dB) | SSIM | Cast error (deg) | Chroma | RMS contrast | Time (ms) |
 |---|---:|---:|---:|---:|---:|---:|
-| None (control) | 18.189 | 0.731 | 7.718 | 18.933 | 0.0983 | 0.031 |
-| Gray-world balance | 16.476 | 0.7167 | 14.282 | 5.625 | 0.0945 | 5.658 |
-| CLAHE on L only | 18.844 | 0.7258 | 7.75 | 18.944 | 0.1471 | 1.717 |
-| Per-channel stretch | 20.916 | 0.6994 | 6.573 | 23.025 | 0.2271 | 10.017 |
-| Stretch + CLAHE | 18.072 | 0.5622 | 5.88 | 22.977 | 0.2329 | 11.831 |
-| Stretch + saturate | 21.245 | 0.6601 | 7.028 | 26.213 | 0.2278 | 18.846 |
+| None (control) | 18.189 | 0.731 | 7.718 | 18.933 | 0.0983 | 0.033 |
+| Gray-world balance | 16.476 | 0.7167 | 14.282 | 5.625 | 0.0945 | 5.46 |
+| CLAHE on L only | 18.844 | 0.7258 | 7.75 | 18.944 | 0.1471 | 1.942 |
+| Per-channel stretch | 20.916 | 0.6994 | 6.573 | 23.025 | 0.2271 | 9.741 |
+| Stretch + CLAHE | 18.072 | 0.5622 | 5.88 | 22.977 | 0.2329 | 12.339 |
+| Stretch + saturate | 21.245 | 0.6601 | 7.028 | 26.213 | 0.2278 | 17.776 |
 
 ### Both degradations together, and the order they are undone in
 

@@ -11,12 +11,14 @@ render identically in CI, where there is no display.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Sequence
 
 import matplotlib
 
 matplotlib.use("Agg")  # must precede the pyplot import; CI has no display
 
 import matplotlib.pyplot as plt  # noqa: E402
+import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 
 from .io import ensure_rgb, to_float  # noqa: E402
@@ -527,6 +529,108 @@ def metric_bars(
     ax.tick_params(axis="x", labelrotation=30, labelsize=_TITLE_SIZE - 1)
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=_DPI, bbox_inches="tight")
+    plt.close(fig)
+    return out_path
+
+
+def gallery(
+    columns: Sequence[str],
+    rows: Sequence[tuple[str, Sequence[np.ndarray]]],
+    out_path: str | Path,
+    suptitle: str = "",
+    figsize_scale: float = 3.4,
+    cell_notes: Sequence[Sequence[str]] | None = None,
+    numbered: bool = True,
+) -> Path:
+    """A samples-across, stages-down gallery: one column per image, one row per stage.
+
+    ``columns`` names the images; ``rows`` is ``[(stage_label, [img_per_column])]``.
+
+    This exists because a single before/after picture is not evidence. Every
+    project in this repo aggregates its *numbers* over four to six images and
+    then illustrated them with **one**, which lets the reader assume the one was
+    representative — and in several projects it is not. Project 10's advantage is
+    +20 points on `chelsea` and −1 on `coffee`; project 01's best detector fails
+    on a real photograph. Showing four columns makes the variance part of the
+    figure instead of a caveat in the text.
+    """
+    if not columns or not rows:
+        raise ValueError("gallery() needs at least one column and one row")
+    ncols, nrows = len(columns), len(rows)
+
+    # Letterbox every panel onto one common canvas. Source images have different
+    # aspect ratios, and without this the rows do not line up and the stage
+    # labels on the left point at nothing in particular.
+    # Per ROW, not globally: a pipeline's stages legitimately change shape (a
+    # photo is landscape, the page rectified out of it is portrait), and padding
+    # everything to one canvas wastes most of the figure on black bars. Within a
+    # row the panels share a size, so the columns still line up.
+    def fit_row(imgs):
+        box_h = max(im.shape[0] for im in imgs)
+        box_w = max(im.shape[1] for im in imgs)
+        out = []
+        for im in imgs:
+            h, w = im.shape[:2]
+            if (h, w) == (box_h, box_w):
+                out.append(im)
+                continue
+            scale = min(box_h / h, box_w / w)
+            new = cv2.resize(
+                im,
+                (max(1, int(round(w * scale))), max(1, int(round(h * scale)))),
+                interpolation=cv2.INTER_AREA,
+            )
+            canvas = np.zeros((box_h, box_w) + im.shape[2:], im.dtype)
+            y0 = (box_h - new.shape[0]) // 2
+            x0 = (box_w - new.shape[1]) // 2
+            canvas[y0 : y0 + new.shape[0], x0 : x0 + new.shape[1]] = new
+            out.append(canvas)
+        return out
+
+    rows = [(label, fit_row(list(imgs))) for label, imgs in rows]
+    if numbered:
+        # "Sr 1", "Sr 2", ... down the left margin. This figure is a comparison
+        # table made of pictures, and a table's rows are numbered so a reader can
+        # point at one -- "row 3 is where Hough breaks" -- instead of describing
+        # it.
+        rows = [
+            ("Sr " + str(i) + "\n" + label, imgs)
+            for i, (label, imgs) in enumerate(rows, start=1)
+        ]
+
+    fig, axes = plt.subplots(
+        nrows, ncols, figsize=(ncols * figsize_scale, nrows * figsize_scale), squeeze=False
+    )
+    for r, (label, images) in enumerate(rows):
+        if len(images) != ncols:
+            raise ValueError(f"row {label!r} has {len(images)} images, expected {ncols}")
+        for c, img in enumerate(images):
+            ax = axes[r][c]
+            # the column name on the top row, and a per-cell score underneath it
+            # wherever the caller supplied one — a comparison grid without the
+            # numbers in it makes the reader estimate by eye what the code
+            # already measured
+            head = columns[c] if r == 0 else ""
+            note = cell_notes[r][c] if cell_notes is not None else ""
+            title = "\n".join(t for t in (head, note) if t)
+            _show(ax, img, title)
+            if c == 0:
+                # the stage label goes on the left margin, once per row, rather
+                # than being repeated in every panel title
+                ax.set_ylabel(label, fontsize=_TITLE_SIZE, rotation=90, labelpad=8)
+                ax.axis("on")
+                ax.set_xticks([])
+                ax.set_yticks([])
+                for spine in ax.spines.values():
+                    spine.set_visible(False)
+
+    if suptitle:
+        fig.suptitle(suptitle, fontsize=_TITLE_SIZE + 3, y=0.998)
 
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)

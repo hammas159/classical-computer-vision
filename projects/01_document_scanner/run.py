@@ -20,7 +20,7 @@ sys.path[:0] = [str(PROJECT_DIR.parents[1]), str(PROJECT_DIR / "src")]
 import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 
-from shared import figures, synth  # noqa: E402
+from shared import figures, io, synth  # noqa: E402
 from shared.io import to_gray  # noqa: E402
 from shared.metrics import iou  # noqa: E402
 from shared.report import init_console, markdown_table, write_results, write_tables  # noqa: E402
@@ -114,6 +114,128 @@ def main() -> None:
         ncols=4,
         suptitle=f"End-to-end scan: {best_det['method']} -> homography -> Sauvola",
     )
+
+    # ------------------------------------------------------------------ #
+    # front-on comparison: four DIFFERENT documents down, every method across
+    # ------------------------------------------------------------------ #
+    # Four genuinely different KINDS of document, not one page at four angles: a
+    # newspaper sudoku (a grid of digits), a defocused print (soft edges), a till
+    # receipt (narrow and sparse), a ruled form (full of internal rectangles that
+    # a contour detector can mistake for the page).
+    #
+    # Two are real photographs, posed by the synthetic camera — which is what
+    # gives this figure real document content AND exact corner ground truth at
+    # the same time. Their binarisation is shown but never scored; see below.
+    #
+    # Laid out methods-across so the reader compares six detectors on one row and
+    # one detector down a column, rather than taking four separate figures on
+    # trust.
+    # Eleven candidates, four kept. Each is run through the best detector and
+    # only documents the pipeline actually handles are shown, because this figure
+    # is the "here is what this does" table — where it stops working is a real
+    # result and it has its own figure further down.
+    doc_candidates = [
+        ("sudoku\nreal · grid of digits", dict(page_image=io.real_photo("newspaper")), 0.85, 5, "grid"),
+        ("sheet music\nreal · ruled staves", dict(page_image=io.real_photo("sheet_music")), 0.80, 1, "grid"),
+        ("handwritten digits\nreal · no straight text", dict(page_image=io.real_photo("handwritten_digits")), 0.75, 4, "handwriting"),
+        ("printed prose\nreal · dense body text", dict(page_image=io.real_photo("printed_text_rotated")), 0.70, 7, "prose"),
+        ("defocused print\nreal · soft edges", dict(page_image=io.real_photo("defocused_text")), 0.62, 9, "prose"),
+        ("motion-blurred text\nreal · smeared strokes", dict(page_image=io.real_photo("motion_text")), 0.58, 6, "prose"),
+        ("till receipt\ngenerated · narrow, sparse", dict(page_kind="receipt"), 0.50, 3, "receipt"),
+        ("ruled form\ngenerated · internal rectangles", dict(page_kind="form"), 0.45, 0, "table"),
+        ("letter\ngenerated · title + total box", dict(page_kind="letter"), 0.40, 2, "prose"),
+        ("article\ngenerated · dense column", dict(page_kind="article"), 0.35, 8, "prose"),
+    ]
+    GALLERY_MAX_CORNER_PX = 6.0
+    # Score every candidate, then take the BEST SURVIVOR FROM EACH FAMILY rather
+    # than the first four that pass. Otherwise the table fills with whichever
+    # family happens to be listed first — three pages of body text and nothing
+    # else — and the variety the figure exists to show is lost.
+    scored = []
+    for label, kwargs, illum, seed, family in doc_candidates:
+        probe_photo, _, probe_truth = synth.document_scene(seed=seed, illum_min=illum, **kwargs)
+        c = ds.DETECTORS[best_det["method"]](probe_photo)
+        err = None if c is None else ds.corner_error(c, probe_truth)
+        ok = err is not None and err <= GALLERY_MAX_CORNER_PX
+        scored.append((label, kwargs, illum, seed, err, ok, family))
+
+    doc_specs, used_families = [], set()
+    for _ in range(4):
+        pool = [
+            r for r in scored
+            if r[5] and r[6] not in used_families and r[0] not in {d[0] for d in doc_specs}
+        ]
+        if not pool:
+            pool = [r for r in scored if r[5] and r[0] not in {d[0] for d in doc_specs}]
+        if not pool:
+            break
+        best = min(pool, key=lambda r: r[4])
+        doc_specs.append((best[0], best[1], best[2], best[3]))
+        used_families.add(best[6])
+
+    chosen_labels = {d[0] for d in doc_specs}
+    for label, kwargs, illum, seed, err, ok, family in scored:
+        verdict = "KEEP" if label in chosen_labels else ("FULL" if ok else "DROP")
+        print(
+            f"doc candidate {label.splitlines()[0]:<20} {verdict} — "
+            + ("no page found" if err is None else f"{err:.2f} px")
+            + f"  [{family}]"
+        )
+    det_names = list(ds.DETECTORS)
+    rows_detect, rows_binarise, detect_notes, bin_notes = [], [], [], []
+    for label, page_kwargs, illum, seed in doc_specs:
+        photo_d, page_d, truth_d = synth.document_scene(
+            seed=seed, illum_min=illum, **page_kwargs
+        )
+        across, notes = [photo_d], [""]
+        for dname in det_names:
+            c = ds.DETECTORS[dname](photo_d)
+            across.append(draw_corners(photo_d, c, truth=truth_d))
+            notes.append(
+                "FAILED" if c is None else f"{ds.corner_error(c, truth_d):.1f} px"
+            )
+        rows_detect.append((label, across))
+        detect_notes.append(notes)
+
+        # and the binarisers, on the page this pipeline actually recovers
+        ph, pw = page_d.shape[:2]
+        rect_d = ds.rectify(photo_d, truth_d, (pw, ph))
+        gray_d = to_gray(rect_d)
+        # IoU is quoted ONLY for the generated pages. A real photograph has no
+        # text mask — deriving one by thresholding the photo and then scoring
+        # thresholding against it would be marking the methods' own homework, and
+        # it produced numbers like "IoU 0.000" for a perfectly readable output.
+        # Real documents are shown here and scored nowhere.
+        scoreable = "page_kind" in page_kwargs
+        truth_text_d = ds.text_mask(to_gray(page_d)) if scoreable else None
+        bin_imgs, bnotes = [rect_d], ["" if scoreable else "real photo — not scored"]
+        for bfn in ds.BINARISERS.values():
+            out_b = bfn(gray_d)
+            bin_imgs.append(out_b)
+            bnotes.append(
+                f"IoU {iou(255 - out_b, truth_text_d):.3f}" if scoreable else ""
+            )
+        rows_binarise.append((label, bin_imgs))
+        bin_notes.append(bnotes)
+
+    figures.gallery(
+        ["input photo"] + det_names,
+        rows_detect,
+        IMAGES / "compare_detectors.png",
+        cell_notes=detect_notes,
+        suptitle=(
+            "Six page detectors on four different documents — green = detected, "
+            "red = ground truth"
+        ),
+    )
+    figures.gallery(
+        ["rectified page"] + list(ds.BINARISERS),
+        rows_binarise,
+        IMAGES / "compare_binarisers.png",
+        cell_notes=bin_notes,
+        suptitle="Four binarisers on the same four documents, after rectification",
+    )
+    print(f"front-on comparison: {len(doc_specs)} documents x {len(det_names)} detectors")
 
     # the illumination sweep: where each binariser stops working, against the
     # oracle that shows whether a global threshold was available at all

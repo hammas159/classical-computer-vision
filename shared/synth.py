@@ -781,8 +781,23 @@ _WORDS = (
 )
 
 
+#: The kinds of document `render_text_page` can produce, with the page shape each
+#: one naturally has. A document scanner meets all of these, and they stress it
+#: differently: a form is full of internal rectangles that a contour detector can
+#: mistake for the page, a receipt is narrow and sparse, a two-column article has
+#: a very different ink distribution from a letter.
+PAGE_KINDS = {
+    "letter": (400, 560),
+    "receipt": (260, 620),
+    "form": (560, 400),
+    "article": (460, 600),
+}
+
+
 def render_text_page(
-    size: tuple[int, int] = (400, 560), rng: np.random.Generator | None = None
+    size: tuple[int, int] = (400, 560),
+    rng: np.random.Generator | None = None,
+    kind: str = "letter",
 ) -> np.ndarray:
     """A page of **real rendered glyphs**, not stand-in strokes.
 
@@ -847,6 +862,54 @@ def render_text_page(
             x += tw + 7
         y += line_height
 
+    if kind == "receipt":
+        # a till receipt: narrow, sparse, right-aligned figures, dashed rules.
+        # Very different ink density from a letter, and a different page shape.
+        cv2.putText(page, "CLASSICAL MART", (margin, 46),
+                    cv2.FONT_HERSHEY_DUPLEX, 0.46, ink, 1, cv2.LINE_AA)
+        y = 78
+        for _ in range(int(rng.integers(9, 14))):
+            item = str(_WORDS[int(rng.integers(0, len(_WORDS)))])[:11]
+            price = f"{rng.uniform(0.6, 24.0):.2f}"
+            cv2.putText(page, item, (margin, y),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.40, ink, 1, cv2.LINE_AA)
+            (tw, _), _ = cv2.getTextSize(price, cv2.FONT_HERSHEY_SIMPLEX, 0.40, 1)
+            cv2.putText(page, price, (page_w - margin - tw, y),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.40, ink, 1, cv2.LINE_AA)
+            y += 26
+        for yy in (y + 6, y + 40):
+            for x0 in range(margin, page_w - margin, 10):
+                cv2.line(page, (x0, yy), (x0 + 5, yy), 120, 1)
+        cv2.putText(page, "TOTAL", (margin, y + 30),
+                    cv2.FONT_HERSHEY_DUPLEX, 0.46, ink, 1, cv2.LINE_AA)
+        cv2.putText(page, f"{rng.uniform(40, 180):.2f}", (page_w - margin - 70, y + 30),
+                    cv2.FONT_HERSHEY_DUPLEX, 0.46, ink, 1, cv2.LINE_AA)
+        return page
+
+    if kind == "form":
+        # a ruled table: the hard case for contour detection, because the page
+        # now contains many strong rectangles of its own and the page border
+        # still has to win.
+        cv2.putText(page, "INSPECTION RECORD", (margin, 46),
+                    cv2.FONT_HERSHEY_DUPLEX, 0.58, ink, 1, cv2.LINE_AA)
+        top, rows_n = 70, 9
+        row_h = (page_h - top - 40) // rows_n
+        col_x = [margin, margin + 150, margin + 270, page_w - margin]
+        for r in range(rows_n + 1):
+            yy = top + r * row_h
+            cv2.line(page, (margin, yy), (page_w - margin, yy), 110, 1)
+        for cx in col_x:
+            cv2.line(page, (cx, top), (cx, top + rows_n * row_h), 110, 1)
+        for r in range(rows_n):
+            yy = top + r * row_h + int(row_h * 0.68)
+            cv2.putText(page, str(_WORDS[int(rng.integers(0, len(_WORDS)))])[:12],
+                        (col_x[0] + 8, yy), cv2.FONT_HERSHEY_SIMPLEX, 0.40, ink, 1, cv2.LINE_AA)
+            cv2.putText(page, f"{rng.uniform(0.1, 9.9):.2f}",
+                        (col_x[1] + 8, yy), cv2.FONT_HERSHEY_SIMPLEX, 0.40, ink, 1, cv2.LINE_AA)
+            cv2.putText(page, "PASS" if rng.random() > 0.3 else "FAIL",
+                        (col_x[2] + 8, yy), cv2.FONT_HERSHEY_SIMPLEX, 0.40, ink, 1, cv2.LINE_AA)
+        return page
+
     # a boxed block, which gives contour-based methods a rectangle INSIDE the
     # page to be confused by -- the page border must still win
     box_top = page_h - 96
@@ -867,6 +930,8 @@ def document_scene(
     seed: int | None = 0,
     illum_min: float = 0.62,
     focal_ratio: float = 0.9,
+    page_image: np.ndarray | None = None,
+    page_kind: str = "letter",
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """A flat "page" photographed at an angle on a cluttered desk.
 
@@ -889,9 +954,21 @@ def document_scene(
     rng = _rng(seed)
     W, H = size
 
-    page_h, page_w = 560, 400
-    page = render_text_page((page_w, page_h), rng)
-    page = cv2.cvtColor(page, cv2.COLOR_GRAY2RGB)
+    if page_image is None:
+        page_w, page_h = PAGE_KINDS.get(page_kind, PAGE_KINDS["letter"])
+        page = render_text_page((page_w, page_h), rng, kind=page_kind)
+        page = cv2.cvtColor(page, cv2.COLOR_GRAY2RGB)
+    else:
+        # A REAL document, posed by the same synthetic camera. This is what lets
+        # the project show genuine document variety — a newspaper sudoku, a page
+        # of printed prose, a form — while keeping the exact corner ground truth
+        # that a real photograph of a page cannot give you. The content is real;
+        # only the pose and the lighting are ours, and those are the two things
+        # being measured.
+        page = page_image if page_image.ndim == 3 else cv2.cvtColor(page_image, cv2.COLOR_GRAY2RGB)
+        longest = 560.0 / max(page.shape[:2])
+        page = cv2.resize(page, None, fx=longest, fy=longest, interpolation=cv2.INTER_AREA)
+        page_h, page_w = page.shape[:2]
 
     desk = np.zeros((H, W, 3), np.uint8)
     desk[:, :] = (96, 74, 58)
@@ -905,29 +982,39 @@ def document_scene(
     # corners land inside the frame, so no scene is silently cropped.
     src = np.float32([[0, 0], [page_w - 1, 0], [page_w - 1, page_h - 1], [0, page_h - 1]])
     M, dst = None, None
-    for _ in range(60):
-        angles = (
-            float(rng.uniform(-26, 26)),  # tilt away from / towards the camera
-            float(rng.uniform(-26, 26)),  # tilt left / right
-            float(rng.uniform(-14, 14)),  # roll
-        )
-        shift = (float(rng.uniform(-0.10, 0.10)), float(rng.uniform(-0.10, 0.10)))
-        candidate, _K = camera_homography(
-            (page_w, page_h), (W, H), focal_ratio=focal_ratio, angles_deg=angles, shift=shift
-        )
-        corners = cv2.perspectiveTransform(src.reshape(-1, 1, 2), candidate).reshape(-1, 2)
-        margin = 20
-        if (
-            corners[:, 0].min() > margin
-            and corners[:, 0].max() < W - margin
-            and corners[:, 1].min() > margin
-            and corners[:, 1].max() < H - margin
-        ):
-            M, dst = candidate, corners.astype(np.float32)
+    margin = 20
+
+    # Widen the field of view until the page fits, instead of giving up and
+    # posing it off-frame. A supplied real document can have any aspect ratio —
+    # `printed_text` is 2.2:1 — and at the default focal ratio a wide page simply
+    # cannot be tilted and still land inside the frame. The old fallback posed it
+    # anyway, so the corners ran off the edge and EVERY detector "failed" on a
+    # scene that was never solvable. That is a broken sample, not a hard one.
+    for focal in (focal_ratio, focal_ratio * 0.78, focal_ratio * 0.60, focal_ratio * 0.46):
+        for _ in range(60):
+            angles = (
+                float(rng.uniform(-26, 26)),  # tilt away from / towards the camera
+                float(rng.uniform(-26, 26)),  # tilt left / right
+                float(rng.uniform(-14, 14)),  # roll
+            )
+            shift = (float(rng.uniform(-0.10, 0.10)), float(rng.uniform(-0.10, 0.10)))
+            candidate, _K = camera_homography(
+                (page_w, page_h), (W, H), focal_ratio=focal, angles_deg=angles, shift=shift
+            )
+            corners = cv2.perspectiveTransform(src.reshape(-1, 1, 2), candidate).reshape(-1, 2)
+            if (
+                corners[:, 0].min() > margin
+                and corners[:, 0].max() < W - margin
+                and corners[:, 1].min() > margin
+                and corners[:, 1].max() < H - margin
+            ):
+                M, dst = candidate, corners.astype(np.float32)
+                break
+        if M is not None:
             break
     if M is None:  # fall back to a gentle head-on pose rather than fail
         M, _K = camera_homography(
-            (page_w, page_h), (W, H), focal_ratio=focal_ratio, angles_deg=(12.0, -10.0, 4.0)
+            (page_w, page_h), (W, H), focal_ratio=focal_ratio * 0.46, angles_deg=(8.0, -6.0, 3.0)
         )
         dst = cv2.perspectiveTransform(src.reshape(-1, 1, 2), M).reshape(-1, 2).astype(np.float32)
 

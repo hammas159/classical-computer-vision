@@ -2,12 +2,12 @@
 
 | Method | PSNR (dB) | SSIM | RMS contrast | Transmission MAE | Time (ms) |
 |---|---:|---:|---:|---:|---:|
-| Dark channel prior | 18.936 | 0.8356 | 0.1471 | 0.1113 | 30.944 |
-| DCP + guided refine | 19.496 | 0.8724 | 0.1559 | 0.1059 | 39.803 |
-| CLAHE (contrast only) | 12.926 | 0.724 | 0.1811 | n/a | 0.876 |
-| Multi-scale Retinex | 8.94 | 0.6383 | 0.154 | n/a | 426.15 |
-| Gamma curve (control) | 15.703 | 0.7988 | 0.169 | n/a | 10.601 |
-| True transmission (oracle) | 50.799 | 0.995 | 0.1928 | n/a | 10.179 |
+| Dark channel prior | 18.936 | 0.8356 | 0.1471 | 0.1113 | 29.788 |
+| DCP + guided refine | 19.496 | 0.8724 | 0.1559 | 0.1059 | 38.407 |
+| CLAHE (contrast only) | 12.926 | 0.724 | 0.1811 | n/a | 0.903 |
+| Multi-scale Retinex | 8.94 | 0.6383 | 0.154 | n/a | 421.238 |
+| Gamma curve (control) | 15.703 | 0.7988 | 0.169 | n/a | 10.574 |
+| True transmission (oracle) | 50.799 | 0.995 | 0.1928 | n/a | 9.389 |
 
 ### PSNR vs haze density, with the oracle ceiling
 

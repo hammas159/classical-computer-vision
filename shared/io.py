@@ -157,6 +157,13 @@ REAL_PHOTOS = {
     "newspaper": ("sudoku.png", "a newspaper page photographed at an angle"),
     "printed_text": ("imageTextN.png", "a page of clean printed text"),
     "defocused_text": ("text_defocus.jpg", "printed text, defocused"),
+    "squirrel": ("squirrel.jpg", "a squirrel on a branch against bright foliage"),
+    "butterfly": ("butterfly.jpg", "a butterfly on a leaf — a flat subject on a busy background"),
+    "fruits": ("fruits.jpg", "a cut orange among other fruit — a still life with no face"),
+    "sheet_music": ("sheet_music.png", "a page of musical notation — ruled staves, no prose"),
+    "handwritten_digits": ("handwritten_digits.png", "a grid of handwritten digits"),
+    "printed_text_rotated": ("printed_text_rotated.png", "printed prose, already rotated"),
+    "motion_text": ("motion_text.jpg", "printed text smeared by camera motion"),
 }
 
 

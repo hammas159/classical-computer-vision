@@ -15,6 +15,7 @@ sys.path[:0] = [str(PROJECT_DIR.parents[1]), str(PROJECT_DIR / "src")]
 import numpy as np  # noqa: E402
 
 from shared import figures, io, synth  # noqa: E402
+from shared.metrics import psnr  # noqa: E402
 from shared.io import to_gray  # noqa: E402
 from shared.report import init_console, markdown_table, write_results, write_tables  # noqa: E402
 
@@ -49,6 +50,53 @@ def main() -> None:
     # ------------------------------------------------------------------ #
     clean = io.sample("rocket")
     hazy, true_t = synth.add_haze(clean, beta=args.beta, airlight=dz.AIRLIGHT)
+
+    # ------------------------------------------------------------------ #
+    # four scenes, end to end
+    # ------------------------------------------------------------------ #
+    # Four scenes with different depth structure, which is what a transmission
+    # estimate actually depends on: a night launch pad with point lights, a
+    # close still life, a portrait against a flat backdrop, an animal close-up
+    # with almost no depth range at all. The dark channel prior assumes some
+    # patch somewhere is dark, and how true that is varies by scene.
+    #
+    # Each column is scored before it goes in — a "dehazed" image that does not
+    # beat the hazy input is a broken sample, not an example.
+    GALLERY_MIN_GAIN_DB = 2.0
+    gallery_pool = ("rocket", "coffee", "astronaut", "chelsea", "retina")
+    best_named = max(
+        (r for r in method_rows if r["method"] != dz.ORACLE_NAME),
+        key=lambda r: r["psnr_db"],
+    )["method"]
+
+    g_labels, g_hazy, g_out, g_oracle = [], [], [], []
+    for name in gallery_pool:
+        src = io.sample(name)
+        h, t_true = synth.add_haze(src, beta=args.beta, airlight=dz.AIRLIGHT)
+        out = dz.METHODS[best_named](h)
+        gain = psnr(out, src) - psnr(h, src)
+        passes = gain >= GALLERY_MIN_GAIN_DB
+        verdict = "KEEP" if passes and len(g_labels) < 4 else ("FULL" if passes else "DROP")
+        print(
+            f"gallery candidate {name:<12} {verdict} — "
+            f"{psnr(h, src):.1f} dB hazy -> {psnr(out, src):.1f} dB ({gain:+.1f})"
+        )
+        if verdict != "KEEP":
+            continue
+        g_labels.append(f"{name}\n{psnr(out, src):.1f} dB ({gain:+.1f})")
+        g_hazy.append(h)
+        g_out.append(out)
+        g_oracle.append(dz.dehaze_oracle(h, dz.AIRLIGHT, t_true))
+
+    figures.gallery(
+        g_labels,
+        [("hazy input", g_hazy), (best_named, g_out), ("oracle — true transmission", g_oracle)],
+        IMAGES / "samples.png",
+        suptitle=(
+            f"Four scenes at beta {args.beta}, recovered by the best named method, "
+            "against the oracle that was handed the true transmission map"
+        ),
+    )
 
     panels = [("Original (truth)", clean), (f"Hazy, beta={args.beta}", hazy)]
     for name, fn in dz.METHODS.items():

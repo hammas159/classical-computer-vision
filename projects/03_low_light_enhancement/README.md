@@ -57,6 +57,34 @@ The degradation is **generated**, so the original is known exactly:
 All four are captures of the **live app**. Every number was computed at the
 moment the screenshot was taken.
 
+### 0 · Four images, end to end
+
+![Four sample recoveries](docs/images/samples.png)
+
+Four photographs that are bright in *different ways* — a dark still life, a
+mid-key portrait, a light animal close-up, and a night scene with point
+highlights — each darkened by gamma 3.0 and recovered by the best named method,
+with the exact-inverse oracle underneath as the ceiling.
+
+The four tonalities are the point. This project's central finding is that an
+adaptive method beats a fixed constant by **+5.46 dB** where its brightness
+assumption holds and loses by **−7.70 dB** where it does not, and that only
+becomes visible across images whose tone distributions differ.
+
+Every column is checked before it goes in: a candidate has to gain at least 3 dB
+over the darkened input, and `run.py` prints the decision for each —
+
+```
+gallery candidate coffee       KEEP — 11.9 dB dark -> 20.0 dB (+8.2)
+gallery candidate astronaut    KEEP — 11.6 dB dark -> 20.5 dB (+8.9)
+gallery candidate chelsea      KEEP —  9.6 dB dark -> 18.9 dB (+9.3)
+gallery candidate rocket       KEEP — 12.5 dB dark -> 18.5 dB (+6.0)
+gallery candidate retina       FULL — 12.8 dB dark -> 19.3 dB (+6.5)
+```
+
+`FULL` means the gallery already had four; `DROP` would mean the sample failed
+the bar and was excluded.
+
 ### 1 · Original, darkened, enhanced, oracle
 
 Four panels side by side. The grain visible in panels 3 and 4 is not compression

@@ -1,6 +1,6 @@
 {
   "project": "04_dehazing",
-  "generated_utc": "2026-09-15T04:58:08+00:00",
+  "generated_utc": "2026-09-15T10:57:12+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -28,7 +28,7 @@
       "ssim": 0.8356,
       "rms_contrast": 0.1471,
       "transmission_mae": 0.1113,
-      "median_ms": 30.944
+      "median_ms": 29.788
     },
     {
       "method": "DCP + guided refine",
@@ -36,7 +36,7 @@
       "ssim": 0.8724,
       "rms_contrast": 0.1559,
       "transmission_mae": 0.1059,
-      "median_ms": 39.803
+      "median_ms": 38.407
     },
     {
       "method": "CLAHE (contrast only)",
@@ -44,7 +44,7 @@
       "ssim": 0.724,
       "rms_contrast": 0.1811,
       "transmission_mae": null,
-      "median_ms": 0.876
+      "median_ms": 0.903
     },
     {
       "method": "Multi-scale Retinex",
@@ -52,7 +52,7 @@
       "ssim": 0.6383,
       "rms_contrast": 0.154,
       "transmission_mae": null,
-      "median_ms": 426.15
+      "median_ms": 421.238
     },
     {
       "method": "Gamma curve (control)",
@@ -60,7 +60,7 @@
       "ssim": 0.7988,
       "rms_contrast": 0.169,
       "transmission_mae": null,
-      "median_ms": 10.601
+      "median_ms": 10.574
     },
     {
       "method": "True transmission (oracle)",
@@ -68,7 +68,7 @@
       "ssim": 0.995,
       "rms_contrast": 0.1928,
       "transmission_mae": null,
-      "median_ms": 10.179
+      "median_ms": 9.389
     }
   ],
   "beta_sweep": [

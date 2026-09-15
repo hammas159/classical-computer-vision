@@ -1,6 +1,6 @@
 {
   "project": "05_old_photo_restoration",
-  "generated_utc": "2026-09-15T05:40:54+00:00",
+  "generated_utc": "2026-09-15T10:58:32+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -40,28 +40,28 @@
       "psnr_db": 38.11,
       "ssim": 0.9826,
       "damage_psnr_db": 26.555,
-      "median_ms": 14.701
+      "median_ms": 15.332
     },
     {
       "method": "Navier-Stokes",
       "psnr_db": 38.405,
       "ssim": 0.9838,
       "damage_psnr_db": 26.85,
-      "median_ms": 14.735
+      "median_ms": 15.083
     },
     {
       "method": "Iterative masked mean",
       "psnr_db": 37.328,
       "ssim": 0.9808,
       "damage_psnr_db": 25.773,
-      "median_ms": 79.759
+      "median_ms": 77.643
     },
     {
       "method": "Harmonic diffusion",
       "psnr_db": 38.21,
       "ssim": 0.983,
       "damage_psnr_db": 26.655,
-      "median_ms": 392.74
+      "median_ms": 396.14
     }
   ],
   "thickness_sweep": [
@@ -144,7 +144,7 @@
       "whole_psnr_db": 21.925
     },
     {
-      "detector": "Median residual",
+      "detector": "Median residual (one scale)",
       "mask_iou": 0.4185,
       "mask_dice": 0.5794,
       "precision": 0.4664,
@@ -152,6 +152,16 @@
       "flagged_fraction": 0.122,
       "damage_psnr_db": 12.865,
       "whole_psnr_db": 21.772
+    },
+    {
+      "detector": "Median residual (multi-scale)",
+      "mask_iou": 0.3486,
+      "mask_dice": 0.5069,
+      "precision": 0.3595,
+      "recall": 0.8866,
+      "flagged_fraction": 0.1867,
+      "damage_psnr_db": 19.368,
+      "whole_psnr_db": 22.756
     }
   ],
   "detector_window_sweep": [
@@ -213,7 +223,7 @@
       "cast_error_deg": 7.718,
       "chroma": 18.933,
       "rms_contrast": 0.0983,
-      "median_ms": 0.031
+      "median_ms": 0.033
     },
     {
       "method": "Gray-world balance",
@@ -222,7 +232,7 @@
       "cast_error_deg": 14.282,
       "chroma": 5.625,
       "rms_contrast": 0.0945,
-      "median_ms": 5.658
+      "median_ms": 5.46
     },
     {
       "method": "CLAHE on L only",
@@ -231,7 +241,7 @@
       "cast_error_deg": 7.75,
       "chroma": 18.944,
       "rms_contrast": 0.1471,
-      "median_ms": 1.717
+      "median_ms": 1.942
     },
     {
       "method": "Per-channel stretch",
@@ -240,7 +250,7 @@
       "cast_error_deg": 6.573,
       "chroma": 23.025,
       "rms_contrast": 0.2271,
-      "median_ms": 10.017
+      "median_ms": 9.741
     },
     {
       "method": "Stretch + CLAHE",
@@ -249,7 +259,7 @@
       "cast_error_deg": 5.88,
       "chroma": 22.977,
       "rms_contrast": 0.2329,
-      "median_ms": 11.831
+      "median_ms": 12.339
     },
     {
       "method": "Stretch + saturate",
@@ -258,7 +268,7 @@
       "cast_error_deg": 7.028,
       "chroma": 26.213,
       "rms_contrast": 0.2278,
-      "median_ms": 18.846
+      "median_ms": 17.776
     }
   ],
   "pipeline": [

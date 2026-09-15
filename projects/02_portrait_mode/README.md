@@ -66,6 +66,41 @@ trained by someone else, it is not a neural network, and nothing here is trained
 All captures of the **live app**. Every number in them was computed at the moment
 the screenshot was taken.
 
+### 0 · Every matting method, on four subjects
+
+![Six mattes on four subjects](docs/images/compare_mattes.png)
+
+![The portrait each matte produces](docs/images/compare_portraits.png)
+
+Four different subject *shapes* on four different backgrounds down the rows — a
+person mid-stride against a crowd, a round still life, a small animal against
+bright foliage, a flat insect on leaves — with all six matting methods across the
+columns.
+
+> **Four of the six methods only work on humans.** `Face rect`, `Face ellipse
+> prior`, `Haar + GrabCut` and `Watershed + markers` return **NO SUBJECT** on
+> every one of the three non-human subjects. On a single photograph of a person
+> they look like six alternatives; across four subjects, two of them are the only
+> ones that run at all.
+
+That is the finding this layout exists to expose, and it is invisible in a
+one-image figure. Of the two that do run everywhere, `Skin colour (YCrCb)` is
+looking for skin and finds leaf and fruit instead — look at the butterfly row,
+where it blurs the subject and keeps the background sharp. **`GrabCut (centre
+rect)` is the only method in the project that is actually general.**
+
+> **And it beats the face-guided method on the real photograph too.** Against the
+> reference matte, `GrabCut (centre rect)` scores **0.712 IoU** where
+> `Haar + GrabCut` scores **0.476** — the face box anchors the head and GrabCut
+> then shrinks to the torso, losing the legs. The naive centre rectangle wins on
+> a real image *and* is the only one that generalises.
+
+**No IoU is printed in these two figures**, and that is deliberate: only the
+footballer has a reference matte. Inventing ground truth for the other three by
+running one method and calling its output the truth would be marking the methods'
+own homework. The area found is reported instead — it needs no annotation — and
+the portraits are there to be looked at.
+
 ### 1 · Matte, blur, composite
 
 Pick a matting method and an aperture, and read the IoU, the hair recovered and

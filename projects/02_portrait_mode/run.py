@@ -17,7 +17,7 @@ sys.path[:0] = [str(PROJECT_DIR.parents[1]), str(PROJECT_DIR / "src")]
 import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 
-from shared import figures, synth  # noqa: E402
+from shared import figures, io, synth  # noqa: E402
 from shared.io import to_float  # noqa: E402
 from shared.report import init_console, markdown_table, write_results, write_tables  # noqa: E402
 
@@ -67,6 +67,63 @@ def main() -> None:
     # ------------------------------------------------------------------ #
     scene = synth.portrait_scene(background="coffee", seed=0)
     kernel = pm.kernel_disc(args.radius)
+
+    # ------------------------------------------------------------------ #
+    # front-on comparison: four subjects down, every matting method across
+    # ------------------------------------------------------------------ #
+    # Four different subject SHAPES on four different backgrounds — a person
+    # mid-stride against a crowd, a round still life, a small animal against
+    # foliage, a flat insect on leaves. Laid out methods-across so a reader can
+    # compare six matting methods on one subject and one method down four.
+    #
+    # No IoU is printed. Only the footballer has a reference matte, and inventing
+    # one for the other three by running a method and calling it truth would be
+    # marking the methods' own homework. The area found is reported instead,
+    # which needs no annotation, and the outputs are there to be looked at.
+    subject_specs = [
+        ("footballer\nperson · crowd behind", scene.image),
+        ("fruit bowl\nstill life · cluttered", io.real_photo("fruits")),
+        ("squirrel\nanimal · foliage", io.real_photo("squirrel")),
+        ("butterfly\nflat subject · leaves", io.real_photo("butterfly")),
+    ]
+    matte_names = list(pm.MATTES)
+    rows_matte, rows_portrait, matte_notes, portrait_notes = [], [], [], []
+    for label, src in subject_specs:
+        m_imgs, m_notes = [src], [""]
+        p_imgs, p_notes = [src], [""]
+        for mname in matte_names:
+            mask = pm.MATTES[mname](src)
+            if mask is None:
+                blank = np.zeros(src.shape[:2], np.uint8)
+                m_imgs.append(blank)
+                p_imgs.append(src)
+                m_notes.append("NO SUBJECT")
+                p_notes.append("NO SUBJECT")
+                continue
+            m_imgs.append(mask)
+            p_imgs.append(pm.COMPOSITORS["Masked (normalised convolution)"](src, mask, kernel))
+            m_notes.append(f"{float((mask > 0).mean()):.1%} of frame")
+            p_notes.append("")
+        rows_matte.append((label, m_imgs))
+        rows_portrait.append((label, p_imgs))
+        matte_notes.append(m_notes)
+        portrait_notes.append(p_notes)
+
+    figures.gallery(
+        ["input"] + matte_names,
+        rows_matte,
+        IMAGES / "compare_mattes.png",
+        cell_notes=matte_notes,
+        suptitle="Six matting methods on four subjects — what each one thinks the subject is",
+    )
+    figures.gallery(
+        ["input"] + matte_names,
+        rows_portrait,
+        IMAGES / "compare_portraits.png",
+        cell_notes=portrait_notes,
+        suptitle=f"The portrait each matte produces (disc aperture r={args.radius})",
+    )
+    print(f"front-on comparison: {len(subject_specs)} subjects x {len(matte_names)} mattes")
 
     panels = [("Input", scene.image), ("True matte", scene.mask)]
     for name, fn in pm.MATTES.items():

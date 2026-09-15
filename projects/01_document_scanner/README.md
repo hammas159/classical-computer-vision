@@ -11,6 +11,67 @@ classical page-boundary detectors, a homography, and four binarisation methods.
 **No neural network, no training, no GPU, no dataset download.** The whole
 pipeline runs in about **14 ms** on a CPU.
 
+---
+
+## Results
+
+Four different **kinds** of document down the rows, every method across the
+columns, and the error printed in each cell.
+
+### Finding the page — six detectors
+
+![Six detectors on four documents](docs/images/compare_detectors.png)
+
+| Sr | Document | Canny + contour | Otsu + contour | Morph gradient | **Saturation (HSV)** | Hough lines | minAreaRect |
+|---:|---|---:|---:|---:|---:|---:|---:|
+| 1 | motion-blurred text · real | 2.7 px | 1.6 px | 2.0 px | **0.6 px** | 1.7 px | 47.9 px |
+| 2 | till receipt · generated | 2.5 px | 1.0 px | 1.4 px | **0.6 px** | **76.3 px** | 13.8 px |
+| 3 | sudoku · real | **FAILED** | **70.1 px** | 25.3 px | **1.0 px** | **231.3 px** | 28.0 px |
+| 4 | ruled form · generated | 3.1 px | 1.3 px | 1.7 px | **1.2 px** | 2.2 px | 11.5 px |
+
+**Row 3 is where the methods separate.** The sudoku is a real newspaper page
+whose printed grid is a stronger rectangle than the page border: `Otsu + contour`
+locks onto the grid (70.1 px), `Hough lines` fits the grid's own lines (231.3 px),
+and `Canny + contour` returns nothing at all. Saturation keys off the paper's
+*lack of colour* rather than its edges, so the grid is invisible to it.
+
+**Row 2 is where Hough breaks.** A long narrow receipt gives its line fitter two
+dominant parallel edges and little else, so it locks onto the wrong pair — 76.3 px
+on a document every other method handles inside 14.
+
+These four were **chosen by the code, not by me.** `run.py` poses ten candidate
+documents — a sudoku, sheet music, handwritten digits, printed prose, a defocused
+print, motion-blurred text, a receipt, a form, a letter, an article — measures
+the corner error on each, discards anything over 6 px, and then takes the best
+survivor *from each family* so the table cannot fill up with four pages of body
+text. Three candidates genuinely failed and were excluded:
+
+```
+doc candidate sudoku               KEEP — 1.01 px      [grid]
+doc candidate sheet music          DROP — 2375.72 px   [grid]
+doc candidate handwritten digits   DROP — no page found [handwriting]
+doc candidate printed prose        DROP — 23.26 px     [prose]
+doc candidate motion-blurred text  KEEP — 0.57 px      [prose]
+doc candidate till receipt         KEEP — 0.60 px      [receipt]
+doc candidate ruled form           KEEP — 1.24 px      [table]
+```
+
+Sheet music is 134 × 1024 and handwritten digits 1000 × 2000 — aspect ratios so
+extreme that no pose fits them in frame. That is a real limitation of the scene
+generator, stated here rather than hidden by quietly not trying them.
+
+### Reading the page — four binarisers
+
+![Four binarisers on four documents](docs/images/compare_binarisers.png)
+
+IoU is quoted **only for the two generated pages**. A real photograph has no text
+mask; deriving one by thresholding the photo and then scoring thresholding
+against it would be marking the methods' own homework — it produced `IoU 0.000`
+for output that is perfectly readable. Real documents are shown here and scored
+nowhere.
+
+---
+
 > **The finding, in one sentence.** Otsu thresholding does not fail under uneven
 > lighting because ink and paper become inseparable — at an illumination ratio of
 > 0.386 the *best* global threshold still scores **0.890** IoU while Otsu scores
@@ -22,8 +83,8 @@ pipeline runs in about **14 ms** on a CPU.
 > real newspaper photographed at an angle — found, flattened and binarised into
 > readable text. No accuracy is quoted there, because a real photo has no answer key.
 
-**Jump to:** [What it does](#what-it-does) · [Screenshot](#screenshot) ·
-[Input & output](#input--output) · [Results](#results) ·
+**Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
+[Input & output](#input--output) · [Results](#results) · [Full tables](#full-results-tables) ·
 [Run it yourself](#run-it-yourself) · [Inference](#inference-try-it-on-your-own-image) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
 [Limitations](#limitations) · [Keywords](#keywords)
@@ -212,7 +273,7 @@ and — for generated scenes — **corner error in pixels** and **text IoU**.
 
 ---
 
-## Results
+## Full results tables
 
 All numbers below were produced by `run.py` on 30 generated scenes and are
 written to [`results/results.json`](results/results.json) and

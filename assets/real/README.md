@@ -16,7 +16,7 @@ A number quoted against a real photo here would be invented, so none is.
 
 ## Provenance
 
-All four come from [`opencv/opencv/samples/data`](https://github.com/opencv/opencv/tree/4.x/samples/data),
+All of these come from [`opencv/opencv/samples/data`](https://github.com/opencv/opencv/tree/4.x/samples/data),
 distributed under the **BSD 3-Clause** licence with OpenCV itself.
 
 | File | What it is | Used by |
@@ -25,3 +25,6 @@ distributed under the **BSD 3-Clause** licence with OpenCV itself.
 | `sudoku.png` | a newspaper page photographed at an angle | 01 document scanner |
 | `imageTextN.png` | a page of clean printed text | 01 document scanner |
 | `text_defocus.jpg` | printed text, defocused | 01, 20 deblurring |
+| `squirrel.jpg` | a squirrel on a branch against foliage | 02 portrait mode |
+| `butterfly.jpg` | a butterfly on a leaf — a flat subject on a busy background | 02 portrait mode |
+| `fruits.jpg` | a cut orange among other fruit — a still life with no face | 02 portrait mode |
