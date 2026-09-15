@@ -4,7 +4,7 @@
 [![OpenCV 4.14](https://img.shields.io/badge/OpenCV-4.14-5C3EE8?logo=opencv&logoColor=white)](https://opencv.org/)
 [![No deep learning](https://img.shields.io/badge/deep%20learning-none-success)](#the-rules)
 [![CPU only](https://img.shields.io/badge/hardware-CPU%20only-lightgrey)](#the-rules)
-[![Tests](https://img.shields.io/badge/tests-57%20passing-brightgreen)](#running-the-tests)
+[![Tests](https://img.shields.io/badge/tests-162%20passing-brightgreen)](#running-the-tests)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **Measured comparisons of classical computer vision algorithms.** Every project
@@ -75,7 +75,7 @@ claims:**
 | [01](projects/01_document_scanner/) | **Document scanner** | 6 page detectors · 4 binarisers · 2 aspect estimators | Otsu's failure on shadowed pages is **not** because a global threshold is impossible — the best global cut scores **0.890** where Otsu scores **0.678**. Also: the detector that wins on the benchmark (`Otsu + contour`, 1.07 px) **fails on a real photograph** | ✅ |
 | [02](projects/02_portrait_mode/) | **Portrait mode** | 6 matting methods · 4 aperture shapes · 2 compositors | Runs on **one real photograph of one real person**. Naive compositing looks fine and is **6.2× worse** (12.5 vs 2.04) in the ring outside the subject. A Gaussian blur renders highlights at peak/mean **2.94** where a real aperture is **1.00** | ✅ |
 | [03](projects/03_low_light_enhancement/) | **Low-light enhancement** | 8 methods: fixed/auto gamma, HE, CLAHE, SSR/MSR/MSRCR, LIME | The ceiling is **not** the algorithms: at gamma 3 only **158 of 256** tone levels survive, so even an exact inverse reaches **22.31 dB**. And an adaptive method beats a fixed constant by **+5.46 dB** where its assumption holds, loses by **−7.70 dB** where it does not — averaging to a number that describes neither | ✅ |
-| [04](projects/04_dehazing/) | Dehazing | dark channel prior, guided refine, CLAHE, Retinex | scored on **transmission recovery**, not just output contrast | 🟡 |
+| [04](projects/04_dehazing/) | **Dehazing** | dark channel prior, guided refine, CLAHE, Retinex, gamma | A **more accurate** airlight and transmission map produce a **worse** image — 19.50 dB falls to 18.50 dB when the airlight error is cut from 0.063 to 0.051; the two errors cancel. And CLAHE wins the contrast column (0.181 vs 0.156) while losing by **6.6 dB** | ✅ |
 | [05](projects/05_old_photo_restoration/) | Old photo restoration | Telea, Navier–Stokes, median, harmonic diffusion | swept over **damage width** — the axis that separates the methods | 🟡 |
 | [07](projects/07_copy_move_forgery/) | Copy-move forgery | block matching, SIFT, ORB self-match | swept over rotation **and** scale | 🟡 |
 | [09](projects/09_coin_counting/) | Coin counting & measurement | Otsu, watershed, Hough circles, adaptive | counting is objectively right or wrong; then calibrated to mm | 🟡 |

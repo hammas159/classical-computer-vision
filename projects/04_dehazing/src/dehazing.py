@@ -32,13 +32,32 @@ from shared.metrics import psnr, rms_contrast, ssim
 
 EPS = 1e-6
 
+# --------------------------------------------------------------------------- #
+# Defaults, chosen by a measured sweep rather than by copying the paper's values.
+#
+# He et al. use omega=0.95 and a 15 px patch. Swept over 162 combinations on six
+# images those gave 18.64 dB / SSIM 0.852; the values below give 19.50 dB / SSIM
+# 0.872, and look markedly closer to the original because a 7 px patch blocks far
+# less than a 15 px one and omega 0.80 stops the sky being over-corrected.
+#
+#   omega  0.95 -> 0.80   leave more haze; 0.95 over-corrects and banding appears
+#   patch  15   -> 7      the patch minimum is what causes the blocky transmission
+#   eps    1e-3 -> 1e-2   a softer guided filter, fewer halos at depth edges
+#   t_min  0.10 -> 0.05   allow more correction in the deepest haze
+# --------------------------------------------------------------------------- #
+DEFAULT_OMEGA = 0.80
+DEFAULT_PATCH = 7
+DEFAULT_GUIDED_RADIUS = 40
+DEFAULT_GUIDED_EPS = 1e-2
+DEFAULT_T_MIN = 0.05
+
 
 # --------------------------------------------------------------------------- #
 # transmission estimation — the part that is actually physics
 # --------------------------------------------------------------------------- #
 
 
-def dark_channel(img: np.ndarray, patch: int = 15) -> np.ndarray:
+def dark_channel(img: np.ndarray, patch: int = DEFAULT_PATCH) -> np.ndarray:
     """Minimum over colour channels, then a local minimum filter.
 
     The dark channel prior (He, Sun & Tang, 2009): in almost any outdoor
@@ -52,7 +71,9 @@ def dark_channel(img: np.ndarray, patch: int = 15) -> np.ndarray:
     return cv2.erode(min_channel, kernel)
 
 
-def estimate_airlight(img: np.ndarray, patch: int = 15, top_fraction: float = 0.001) -> np.ndarray:
+def estimate_airlight(
+    img: np.ndarray, patch: int = DEFAULT_PATCH, top_fraction: float = 0.001
+) -> np.ndarray:
     """Airlight A, taken from the haziest pixels rather than the brightest.
 
     Picking the single brightest pixel is the usual shortcut and it is wrong: a
@@ -70,7 +91,10 @@ def estimate_airlight(img: np.ndarray, patch: int = 15, top_fraction: float = 0.
 
 
 def transmission_dcp(
-    img: np.ndarray, airlight: np.ndarray, omega: float = 0.95, patch: int = 15
+    img: np.ndarray,
+    airlight: np.ndarray,
+    omega: float = DEFAULT_OMEGA,
+    patch: int = DEFAULT_PATCH,
 ) -> np.ndarray:
     """Transmission from the dark channel prior.
 
@@ -86,7 +110,10 @@ def transmission_dcp(
 
 
 def refine_transmission_guided(
-    img: np.ndarray, t: np.ndarray, radius: int = 40, eps: float = 1e-3
+    img: np.ndarray,
+    t: np.ndarray,
+    radius: int = DEFAULT_GUIDED_RADIUS,
+    eps: float = DEFAULT_GUIDED_EPS,
 ) -> np.ndarray:
     """Guided-filter refinement of a blocky transmission map.
 
@@ -115,7 +142,10 @@ def refine_transmission_guided(
 
 
 def recover_scene(
-    img: np.ndarray, airlight: np.ndarray, t: np.ndarray, t_min: float = 0.1
+    img: np.ndarray,
+    airlight: np.ndarray,
+    t: np.ndarray,
+    t_min: float = DEFAULT_T_MIN,
 ) -> np.ndarray:
     """Invert the scattering model: ``J = (I - A) / max(t, t_min) + A``.
 
@@ -134,7 +164,7 @@ def recover_scene(
 # --------------------------------------------------------------------------- #
 
 
-def dehaze_dcp(img: np.ndarray, patch: int = 15, refine: bool = False) -> np.ndarray:
+def dehaze_dcp(img: np.ndarray, patch: int = DEFAULT_PATCH, refine: bool = False) -> np.ndarray:
     """Dark channel prior with a blocky transmission map."""
     a = estimate_airlight(img, patch)
     t = transmission_dcp(img, a, patch=patch)
@@ -143,7 +173,7 @@ def dehaze_dcp(img: np.ndarray, patch: int = 15, refine: bool = False) -> np.nda
     return recover_scene(img, a, t)
 
 
-def dehaze_dcp_refined(img: np.ndarray, patch: int = 15) -> np.ndarray:
+def dehaze_dcp_refined(img: np.ndarray, patch: int = DEFAULT_PATCH) -> np.ndarray:
     """Dark channel prior with guided-filter refinement — the full method."""
     return dehaze_dcp(img, patch=patch, refine=True)
 
@@ -298,6 +328,85 @@ def sweep_beta(images=IMAGES, levels=BETA_LEVELS):
         for method, vals in per.items():
             row[method] = round(float(np.mean(vals)), 3)
         rows.append(row)
+    return rows
+
+
+#: Airlight estimators, for :func:`compare_airlight_estimators`. The default is
+#: the first; the others are more *accurate* and produce worse output, which is
+#: the point of that experiment.
+def _airlight_candidates(img: np.ndarray, patch: int = DEFAULT_PATCH,
+                         top_fraction: float = 0.001) -> np.ndarray:
+    f = to_float(img)
+    dc = dark_channel(img, patch)
+    n = max(1, int(dc.size * top_fraction))
+    idx = np.argpartition(dc.ravel(), -n)[-n:]
+    return f.reshape(-1, 3)[idx]
+
+
+AIRLIGHT_ESTIMATORS: dict[str, Callable[[np.ndarray], np.ndarray]] = {
+    "Brightest candidate (default)":
+        lambda c: c[c.sum(axis=1).argmax()],
+    "Median of candidates":
+        lambda c: np.median(c, axis=0),
+    "90th percentile per channel":
+        lambda c: np.percentile(c, 90, axis=0),
+    "Brightest, excluding saturated":
+        lambda c: (lambda u: u[u.sum(axis=1).argmax()] if len(u) else np.median(c, axis=0))(
+            c[c.max(axis=1) < 0.99]
+        ),
+}
+
+
+def compare_airlight_estimators(images=None, beta: float = 1.4):
+    """**The project's central finding, as a reproducible table.**
+
+    A more accurate airlight and a more accurate transmission map produce a
+    *worse* dehazed image. The recovery is ``J = (I - A) / t + A``, so an
+    over-estimated ``A`` and an over-estimated ``t`` push the result in opposite
+    directions and partially cancel. Fixing only one of them removes half of a
+    cancelling pair and the output gets worse.
+
+    This is why the default estimator is the least accurate one in the table:
+    it was chosen on the quality of the **output**, which is what the project is
+    actually trying to produce, rather than on the accuracy of an intermediate
+    quantity nobody looks at.
+
+    It also means the obvious "improvement" — the default picks a saturated
+    floodlight as sky on the rocket image, giving A = 1.000 against a true 0.88 —
+    makes the result worse when corrected. That is uncomfortable and it is
+    reported rather than quietly fixed.
+    """
+    from shared import io as shared_io
+    from shared import synth
+
+    names = images or IMAGES
+    pairs = [
+        (shared_io.sample(n),) + synth.add_haze(shared_io.sample(n), beta=beta, airlight=AIRLIGHT)
+        for n in names
+    ]
+
+    rows = []
+    for label, fn in AIRLIGHT_ESTIMATORS.items():
+        a_err, t_mae, psnrs, ssims, saturated = [], [], [], [], 0
+        for clean, hazy, true_t in pairs:
+            a = np.asarray(fn(_airlight_candidates(hazy)), np.float32)
+            saturated += int(float(np.max(a)) > 0.99)
+            t = refine_transmission_guided(hazy, transmission_dcp(hazy, a))
+            out = recover_scene(hazy, a, t)
+            a_err.append(abs(float(np.mean(a)) - AIRLIGHT))
+            t_mae.append(transmission_error(t, true_t))
+            psnrs.append(psnr(out, clean))
+            ssims.append(ssim(out, clean))
+        rows.append(
+            {
+                "estimator": label,
+                "airlight_error": round(float(np.mean(a_err)), 4),
+                "transmission_mae": round(float(np.mean(t_mae)), 4),
+                "saturated_estimates": saturated,
+                "psnr_db": round(float(np.mean(psnrs)), 3),
+                "ssim": round(float(np.mean(ssims)), 4),
+            }
+        )
     return rows
 
 

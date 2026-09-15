@@ -41,6 +41,9 @@ def main() -> None:
     print(f"Sweeping beta over {len(dz.BETA_LEVELS)} levels ...")
     sweep_rows = dz.sweep_beta(images=images)
 
+    print(f"Comparing {len(dz.AIRLIGHT_ESTIMATORS)} airlight estimators ...")
+    airlight_rows = dz.compare_airlight_estimators(images=images, beta=args.beta)
+
     # ------------------------------------------------------------------ #
     # figures
     # ------------------------------------------------------------------ #
@@ -153,6 +156,7 @@ def main() -> None:
             "hazy_input": hazy_stats,
             "methods": method_rows,
             "beta_sweep": sweep_rows,
+            "airlight_estimators": airlight_rows,
         },
     )
 
@@ -173,11 +177,23 @@ def main() -> None:
         + [(n, n) for n in dz.METHODS]
         + [(dz.ORACLE_NAME, dz.ORACLE_NAME)],
     )
+    airlight_table = markdown_table(
+        airlight_rows,
+        [
+            ("Airlight estimator", "estimator"),
+            ("Airlight error", "airlight_error"),
+            ("Transmission MAE", "transmission_mae"),
+            ("Saturated", "saturated_estimates"),
+            ("PSNR (dB)", "psnr_db"),
+            ("SSIM", "ssim"),
+        ],
+    )
     write_tables(
         RESULTS,
         [
             (f"Methods at beta {args.beta} ({len(images)} images)", method_table),
             ("PSNR vs haze density, with the oracle ceiling", sweep_table),
+            ("A better airlight makes the OUTPUT worse", airlight_table),
         ],
     )
     print("\n" + method_table + "\n\n" + sweep_table)

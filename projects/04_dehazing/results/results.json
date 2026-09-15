@@ -1,0 +1,170 @@
+{
+  "project": "04_dehazing",
+  "generated_utc": "2026-09-15T04:58:08+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "beta": 1.4,
+  "airlight": 0.88,
+  "images": [
+    "rocket",
+    "coffee",
+    "astronaut",
+    "chelsea",
+    "immunohistochemistry",
+    "retina"
+  ],
+  "hazy_input": {
+    "psnr": 11.7312,
+    "contrast": 0.1574
+  },
+  "methods": [
+    {
+      "method": "Dark channel prior",
+      "psnr_db": 18.936,
+      "ssim": 0.8356,
+      "rms_contrast": 0.1471,
+      "transmission_mae": 0.1113,
+      "median_ms": 30.944
+    },
+    {
+      "method": "DCP + guided refine",
+      "psnr_db": 19.496,
+      "ssim": 0.8724,
+      "rms_contrast": 0.1559,
+      "transmission_mae": 0.1059,
+      "median_ms": 39.803
+    },
+    {
+      "method": "CLAHE (contrast only)",
+      "psnr_db": 12.926,
+      "ssim": 0.724,
+      "rms_contrast": 0.1811,
+      "transmission_mae": null,
+      "median_ms": 0.876
+    },
+    {
+      "method": "Multi-scale Retinex",
+      "psnr_db": 8.94,
+      "ssim": 0.6383,
+      "rms_contrast": 0.154,
+      "transmission_mae": null,
+      "median_ms": 426.15
+    },
+    {
+      "method": "Gamma curve (control)",
+      "psnr_db": 15.703,
+      "ssim": 0.7988,
+      "rms_contrast": 0.169,
+      "transmission_mae": null,
+      "median_ms": 10.601
+    },
+    {
+      "method": "True transmission (oracle)",
+      "psnr_db": 50.799,
+      "ssim": 0.995,
+      "rms_contrast": 0.1928,
+      "transmission_mae": null,
+      "median_ms": 10.179
+    }
+  ],
+  "beta_sweep": [
+    {
+      "beta": 0.4,
+      "min_transmission": 0.6703,
+      "Dark channel prior": 19.964,
+      "DCP + guided refine": 20.731,
+      "CLAHE (contrast only)": 16.91,
+      "Multi-scale Retinex": 10.799,
+      "Gamma curve (control)": 21.934,
+      "True transmission (oracle)": 55.74
+    },
+    {
+      "beta": 0.8,
+      "min_transmission": 0.4493,
+      "Dark channel prior": 20.518,
+      "DCP + guided refine": 21.319,
+      "CLAHE (contrast only)": 15.096,
+      "Multi-scale Retinex": 10.006,
+      "Gamma curve (control)": 20.35,
+      "True transmission (oracle)": 53.25
+    },
+    {
+      "beta": 1.2,
+      "min_transmission": 0.3012,
+      "Dark channel prior": 19.639,
+      "DCP + guided refine": 20.286,
+      "CLAHE (contrast only)": 13.566,
+      "Multi-scale Retinex": 9.263,
+      "Gamma curve (control)": 17.009,
+      "True transmission (oracle)": 51.851
+    },
+    {
+      "beta": 1.6,
+      "min_transmission": 0.2019,
+      "Dark channel prior": 18.101,
+      "DCP + guided refine": 18.589,
+      "CLAHE (contrast only)": 12.295,
+      "Multi-scale Retinex": 8.678,
+      "Gamma curve (control)": 14.637,
+      "True transmission (oracle)": 49.736
+    },
+    {
+      "beta": 2.2,
+      "min_transmission": 0.1108,
+      "Dark channel prior": 15.915,
+      "DCP + guided refine": 16.225,
+      "CLAHE (contrast only)": 10.799,
+      "Multi-scale Retinex": 8.019,
+      "Gamma curve (control)": 12.429,
+      "True transmission (oracle)": 46.146
+    },
+    {
+      "beta": 3.0,
+      "min_transmission": 0.0498,
+      "Dark channel prior": 13.569,
+      "DCP + guided refine": 13.725,
+      "CLAHE (contrast only)": 9.463,
+      "Multi-scale Retinex": 7.422,
+      "Gamma curve (control)": 10.771,
+      "True transmission (oracle)": 40.749
+    }
+  ],
+  "airlight_estimators": [
+    {
+      "estimator": "Brightest candidate (default)",
+      "airlight_error": 0.0631,
+      "transmission_mae": 0.1059,
+      "saturated_estimates": 1,
+      "psnr_db": 19.496,
+      "ssim": 0.8724
+    },
+    {
+      "estimator": "Median of candidates",
+      "airlight_error": 0.0508,
+      "transmission_mae": 0.0967,
+      "saturated_estimates": 0,
+      "psnr_db": 18.495,
+      "ssim": 0.8619
+    },
+    {
+      "estimator": "90th percentile per channel",
+      "airlight_error": 0.0452,
+      "transmission_mae": 0.1002,
+      "saturated_estimates": 0,
+      "psnr_db": 18.73,
+      "ssim": 0.865
+    },
+    {
+      "estimator": "Brightest, excluding saturated",
+      "airlight_error": 0.0607,
+      "transmission_mae": 0.1054,
+      "saturated_estimates": 0,
+      "psnr_db": 19.464,
+      "ssim": 0.8721
+    }
+  ]
+}
