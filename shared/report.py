@@ -40,11 +40,21 @@ def markdown_table(
     ``columns`` is a sequence of ``(header, key)`` pairs. The first column is
     left-aligned (it holds the method name) and the rest are right-aligned, which
     is what makes a column of numbers readable.
+
+    **Every cell and header is pipe-escaped.** A raw ``|`` inside a cell silently
+    terminates it, so the row renders with the wrong number of columns and every
+    later cell shifts left — invisible in the source, obvious only once someone
+    opens the page. This has bitten three projects in this repo: a
+    ``|A error|`` header, a ``median |t| = 18.8`` value, and an energy function
+    named ``Gradient |dx|+|dy|``. Escaping here fixes the whole class.
     """
     if not columns:
         raise ValueError("markdown_table needs at least one column")
 
-    head = "| " + " | ".join(label for label, _ in columns) + " |"
+    def cell(text: str) -> str:
+        return text.replace("|", r"\|")
+
+    head = "| " + " | ".join(cell(label) for label, _ in columns) + " |"
     rule = "|" + "|".join("---" if i == 0 else "---:" for i in range(len(columns))) + "|"
 
     body = []
@@ -57,7 +67,7 @@ def markdown_table(
             elif isinstance(v, float):
                 cells.append(f"{v:g}")
             else:
-                cells.append(str(v))
+                cells.append(cell(str(v)))
         body.append("| " + " | ".join(cells) + " |")
 
     return "\n".join([head, rule, *body])

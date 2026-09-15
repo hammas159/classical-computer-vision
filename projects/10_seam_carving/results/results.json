@@ -1,0 +1,180 @@
+{
+  "project": "10_seam_carving",
+  "generated_utc": "2026-09-15T07:03:46+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "reduction": 0.2,
+  "images": [
+    "coffee",
+    "rocket",
+    "chelsea",
+    "astronaut"
+  ],
+  "energies": [
+    {
+      "energy": "Gradient |dx|+|dy|",
+      "subject_kept": 0.9158,
+      "aspect_ratio": 0.9344,
+      "energy_kept": 0.9488,
+      "median_ms": 1364.2
+    },
+    {
+      "energy": "Sobel magnitude",
+      "subject_kept": 0.9148,
+      "aspect_ratio": 0.9341,
+      "energy_kept": 0.949,
+      "median_ms": 1308.3
+    },
+    {
+      "energy": "Laplacian",
+      "subject_kept": 0.9199,
+      "aspect_ratio": 0.9375,
+      "energy_kept": 0.9567,
+      "median_ms": 1159.7
+    },
+    {
+      "energy": "Local std (entropy-like)",
+      "subject_kept": 0.9187,
+      "aspect_ratio": 0.9328,
+      "energy_kept": 0.9503,
+      "median_ms": 1313.8
+    },
+    {
+      "energy": "Plain rescale (control)",
+      "subject_kept": 0.8002,
+      "aspect_ratio": 0.8002,
+      "energy_kept": 0.7938,
+      "median_ms": 0.4
+    }
+  ],
+  "reduction_sweep": [
+    {
+      "reduction": 0.05,
+      "carved_subject_kept": 0.9854,
+      "rescale_subject_kept": 0.9499,
+      "carved_aspect": 0.9917,
+      "rescale_aspect": 0.9499,
+      "carved_energy_kept": 0.9897,
+      "rescale_energy_kept": 0.9115
+    },
+    {
+      "reduction": 0.1,
+      "carved_subject_kept": 0.966,
+      "rescale_subject_kept": 0.9,
+      "carved_aspect": 0.976,
+      "rescale_aspect": 0.9,
+      "carved_energy_kept": 0.9778,
+      "rescale_energy_kept": 0.8724
+    },
+    {
+      "reduction": 0.2,
+      "carved_subject_kept": 0.9158,
+      "rescale_subject_kept": 0.8002,
+      "carved_aspect": 0.9344,
+      "rescale_aspect": 0.8002,
+      "carved_energy_kept": 0.9488,
+      "rescale_energy_kept": 0.7938
+    },
+    {
+      "reduction": 0.3,
+      "carved_subject_kept": 0.864,
+      "rescale_subject_kept": 0.6988,
+      "carved_aspect": 0.8891,
+      "rescale_aspect": 0.6988,
+      "carved_energy_kept": 0.9078,
+      "rescale_energy_kept": 0.7113
+    },
+    {
+      "reduction": 0.45,
+      "carved_subject_kept": 0.7444,
+      "rescale_subject_kept": 0.5493,
+      "carved_aspect": 0.7916,
+      "rescale_aspect": 0.5493,
+      "carved_energy_kept": 0.8279,
+      "rescale_energy_kept": 0.5859
+    },
+    {
+      "reduction": 0.6,
+      "carved_subject_kept": 0.5995,
+      "rescale_subject_kept": 0.4006,
+      "carved_aspect": 0.66,
+      "rescale_aspect": 0.4006,
+      "carved_energy_kept": 0.7165,
+      "rescale_energy_kept": 0.4579
+    },
+    {
+      "reduction": 0.7,
+      "carved_subject_kept": 0.4831,
+      "rescale_subject_kept": 0.2996,
+      "carved_aspect": 0.5509,
+      "rescale_aspect": 0.2996,
+      "carved_energy_kept": 0.617,
+      "rescale_energy_kept": 0.3715
+    }
+  ],
+  "cost": [
+    {
+      "method": "Seam carving",
+      "subject_kept": 0.9158,
+      "aspect_ratio": 0.9344,
+      "energy_kept": 0.9488,
+      "median_ms": 1194.39
+    },
+    {
+      "method": "Plain rescale",
+      "subject_kept": 0.8002,
+      "aspect_ratio": 0.8002,
+      "energy_kept": 0.7938,
+      "median_ms": 0.42
+    },
+    {
+      "method": "Difference",
+      "subject_kept": 0.1156,
+      "aspect_ratio": 0.1342,
+      "energy_kept": 0.155,
+      "median_ms": 2844.0
+    }
+  ],
+  "per_image": [
+    {
+      "image": "coffee",
+      "roi_fraction": 0.16,
+      "carved_kept": 0.7896,
+      "rescale_kept": 0.8,
+      "advantage": -0.0104,
+      "carved_energy_kept": 0.9342,
+      "rescale_energy_kept": 0.7795
+    },
+    {
+      "image": "rocket",
+      "roi_fraction": 0.1602,
+      "carved_kept": 0.9245,
+      "rescale_kept": 0.8008,
+      "advantage": 0.1237,
+      "carved_energy_kept": 0.974,
+      "rescale_energy_kept": 0.7469
+    },
+    {
+      "image": "chelsea",
+      "roi_fraction": 0.1596,
+      "carved_kept": 1.0,
+      "rescale_kept": 0.8,
+      "advantage": 0.2,
+      "carved_energy_kept": 0.9315,
+      "rescale_energy_kept": 0.8086
+    },
+    {
+      "image": "astronaut",
+      "roi_fraction": 0.1603,
+      "carved_kept": 0.9492,
+      "rescale_kept": 0.8,
+      "advantage": 0.1492,
+      "carved_energy_kept": 0.9554,
+      "rescale_energy_kept": 0.8401
+    }
+  ]
+}

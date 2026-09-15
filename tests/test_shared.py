@@ -7,6 +7,8 @@ here would corrupt every result in the repo at once.
 
 from __future__ import annotations
 
+import re
+
 import numpy as np
 import pytest
 
@@ -527,3 +529,27 @@ def test_figure_helpers_write_png_files(tmp_path):
 
     for path in (g, p, h, b):
         assert path.exists() and path.stat().st_size > 1000
+
+
+# --------------------------------------------------------------------------- #
+# report
+# --------------------------------------------------------------------------- #
+
+
+def test_markdown_table_escapes_pipes_in_cells_and_headers():
+    """Guards a bug that has silently broken three tables in this repo.
+
+    A raw pipe inside a cell terminates it, so the row renders with the wrong
+    column count and every later cell shifts left. It is invisible in the source
+    and obvious only once someone opens the rendered page.
+    """
+    from shared.report import markdown_table
+
+    table = markdown_table(
+        [{"name": "Gradient |dx|+|dy|", "v": 1.0}],
+        [("Energy |units|", "name"), ("Value", "v")],
+    )
+    unescaped = re.compile(r"(?<!\\)\|")
+    for line in table.split("\n"):
+        assert len(unescaped.split(line)) - 2 == 2, line
+    assert "Gradient \\|dx\\|+\\|dy\\|" in table
