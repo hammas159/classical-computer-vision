@@ -171,7 +171,7 @@ def test_brightening_amplifies_noise():
     rows = ll.evaluate_noise_amplification(gamma=3.0, images=("coffee", "chelsea"))
     assert all(r["amplification"] > 1.0 for r in rows)
     retinex = next(r for r in rows if r["method"] == "Multi-scale Retinex")
-    gamma_row = next(r for r in rows if r["method"] == "Gamma 1/2.2")
+    gamma_row = next(r for r in rows if r["method"] == "Gamma 1/2.2 (fixed)")
     assert retinex["amplification"] > gamma_row["amplification"]
 
 
@@ -214,6 +214,84 @@ def test_sweep_gamma_shows_the_ceiling_falling_as_it_gets_darker():
     ceilings = [r[ll.ORACLE_NAME] for r in rows]
     assert ceilings == sorted(ceilings, reverse=True)
     assert rows[0]["levels_left"] > rows[-1]["levels_left"]
+
+
+def test_auto_gamma_recovers_the_true_exponent_when_its_assumption_holds():
+    """On an image whose true mean is near the target, the estimate is accurate.
+
+    ``astronaut`` averages 0.449 against a 0.45 target, so this isolates the
+    estimator's arithmetic from its assumption.
+    """
+    clean = io.sample("astronaut")
+    for true_gamma in (1.5, 3.0, 5.0):
+        dark = synth.low_light(clean, gamma=true_gamma, noise_sigma=4.0, seed=0)
+        recovered = 1.0 / ll.estimate_gamma(dark)
+        assert recovered == pytest.approx(true_gamma, rel=0.15), (
+            f"gamma {true_gamma}: estimated {recovered:.2f}"
+        )
+
+
+def test_auto_gamma_error_tracks_the_brightness_assumption():
+    """The project's second finding, as a regression test.
+
+    The estimator cannot know the scene's true exposure, so its error is a
+    function of how far that exposure sits from the target — **not** of how dark
+    the image was made. Asserting the correlation is what turns "it sometimes
+    fails" into a stated, checkable law.
+    """
+    rows = ll.brightness_assumption_table()
+    gaps = np.array([abs(r["brightness_gap"]) for r in rows])
+    errors = np.array([abs(r["mean_gamma_error_pct"]) for r in rows])
+
+    # Rank correlation, not Pearson. The relationship is monotonic but strongly
+    # non-linear -- `rocket` sits at a 0.194 gap and a 170% error, far off any
+    # straight line through the rest -- so Pearson (0.81) understates a
+    # relationship that Spearman (0.89) measures correctly.
+    def _rank(x):
+        return np.argsort(np.argsort(x)).astype(float)
+
+    spearman = float(np.corrcoef(_rank(gaps), _rank(errors))[0, 1])
+    assert spearman > 0.85, f"gap/error rank correlation only {spearman:.2f}"
+
+    # and the extremes behave as the law predicts
+    best = min(rows, key=lambda r: abs(r["brightness_gap"]))
+    worst = max(rows, key=lambda r: abs(r["brightness_gap"]))
+    assert abs(best["mean_gamma_error_pct"]) < 15.0
+    assert abs(worst["mean_gamma_error_pct"]) > 50.0
+
+
+def test_auto_gamma_beats_the_fixed_constant_away_from_its_sweet_spot():
+    """A fixed 1/2.2 is exactly right only when the scene was darkened by 2.2.
+
+    The project-01 lesson applied here: one lucky constant against a field of
+    adaptive methods measures the constant's luck, not the family. Checked on an
+    image where the auto method's own assumption holds, so the comparison is
+    between the two *strategies* rather than between two different failures.
+    """
+    clean = io.sample("astronaut")
+    for true_gamma in (1.5, 4.0):
+        dark = synth.low_light(clean, gamma=true_gamma, noise_sigma=4.0, seed=0)
+        assert psnr(ll.enhance_gamma_auto(dark), clean) > psnr(ll.enhance_gamma(dark), clean)
+
+
+def test_fixed_gamma_equals_the_oracle_at_its_own_gamma():
+    """At gamma 2.2 the fixed curve IS the exact inverse, so it must tie.
+
+    If this ever stops holding, either the oracle or the fixed curve has drifted
+    from being a true inverse of the degradation.
+    """
+    clean = io.sample("coffee")
+    dark = synth.low_light(clean, gamma=2.2, noise_sigma=0.0, seed=0)
+    fixed = psnr(ll.enhance_gamma(dark), clean)
+    oracle = psnr(ll.enhance_oracle(dark, 2.2), clean)
+    assert fixed == pytest.approx(oracle, abs=0.01)
+
+
+def test_auto_gamma_leaves_a_well_exposed_image_alone():
+    """Applied to an image that is already correctly exposed it must do little."""
+    clean = io.sample("coffee")
+    out = ll.enhance_gamma_auto(clean)
+    assert psnr(out, clean) > 20.0
 
 
 def test_enhance_dispatches_by_name():

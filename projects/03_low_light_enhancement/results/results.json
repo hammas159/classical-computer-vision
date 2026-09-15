@@ -1,6 +1,6 @@
 {
   "project": "03_low_light_enhancement",
-  "generated_utc": "2026-09-14T23:47:34+00:00",
+  "generated_utc": "2026-09-15T03:15:32+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -12,12 +12,15 @@
   "images": [
     "astronaut",
     "coffee",
-    "chelsea"
+    "chelsea",
+    "rocket",
+    "retina",
+    "immunohistochemistry"
   ],
   "darkened_input": {
-    "entropy": 6.684,
-    "brightness": 0.1764,
-    "noise": 3.9614
+    "entropy": 6.2909,
+    "brightness": 0.1739,
+    "noise": 3.4065
   },
   "levels_surviving_at_gamma": {
     "1.5": 218,
@@ -29,216 +32,327 @@
   },
   "methods": [
     {
-      "method": "Gamma 1/2.2",
-      "psnr_db": 19.778,
-      "ssim": 0.6415,
-      "psnr_matched_db": 21.731,
-      "ssim_matched": 0.6146,
-      "entropy_bits": 7.45,
-      "rms_contrast": 0.2035,
-      "brightness": 0.3651,
-      "noise_sigma": 8.295,
-      "median_ms": 10.065
+      "method": "Gamma 1/2.2 (fixed)",
+      "psnr_db": 19.609,
+      "ssim": 0.5789,
+      "psnr_matched_db": 20.961,
+      "ssim_matched": 0.5447,
+      "entropy_bits": 7.198,
+      "rms_contrast": 0.1821,
+      "brightness": 0.3488,
+      "noise_sigma": 8.491,
+      "median_ms": 11.468
+    },
+    {
+      "method": "Gamma (auto-estimated)",
+      "psnr_db": 17.327,
+      "ssim": 0.533,
+      "psnr_matched_db": 19.692,
+      "ssim_matched": 0.5477,
+      "entropy_bits": 7.36,
+      "rms_contrast": 0.2125,
+      "brightness": 0.4559,
+      "noise_sigma": 15.57,
+      "median_ms": 40.855
     },
     {
       "method": "Histogram equalisation",
-      "psnr_db": 17.348,
-      "ssim": 0.596,
-      "psnr_matched_db": 18.621,
-      "ssim_matched": 0.6282,
-      "entropy_bits": 6.558,
-      "rms_contrast": 0.288,
-      "brightness": 0.4844,
-      "noise_sigma": 10.657,
-      "median_ms": 0.571
+      "psnr_db": 15.33,
+      "ssim": 0.499,
+      "psnr_matched_db": 18.03,
+      "ssim_matched": 0.5417,
+      "entropy_bits": 6.211,
+      "rms_contrast": 0.2839,
+      "brightness": 0.4851,
+      "noise_sigma": 15.076,
+      "median_ms": 0.668
     },
     {
       "method": "CLAHE",
-      "psnr_db": 15.773,
-      "ssim": 0.5717,
-      "psnr_matched_db": 16.845,
-      "ssim_matched": 0.5324,
-      "entropy_bits": 7.531,
-      "rms_contrast": 0.233,
-      "brightness": 0.3296,
-      "noise_sigma": 9.726,
-      "median_ms": 0.784
+      "psnr_db": 15.578,
+      "ssim": 0.5101,
+      "psnr_matched_db": 17.276,
+      "ssim_matched": 0.4554,
+      "entropy_bits": 7.099,
+      "rms_contrast": 0.2026,
+      "brightness": 0.3007,
+      "noise_sigma": 8.939,
+      "median_ms": 0.997
     },
     {
       "method": "Single-scale Retinex",
-      "psnr_db": 8.392,
-      "ssim": 0.4593,
-      "psnr_matched_db": 14.571,
-      "ssim_matched": 0.4785,
-      "entropy_bits": 6.915,
-      "rms_contrast": 0.211,
-      "brightness": 0.7515,
-      "noise_sigma": 20.809,
-      "median_ms": 95.61
+      "psnr_db": 7.967,
+      "ssim": 0.4079,
+      "psnr_matched_db": 14.708,
+      "ssim_matched": 0.4388,
+      "entropy_bits": 6.816,
+      "rms_contrast": 0.1963,
+      "brightness": 0.7589,
+      "noise_sigma": 24.373,
+      "median_ms": 114.254
     },
     {
       "method": "Multi-scale Retinex",
-      "psnr_db": 8.058,
-      "ssim": 0.4563,
-      "psnr_matched_db": 14.451,
-      "ssim_matched": 0.4773,
-      "entropy_bits": 6.843,
-      "rms_contrast": 0.2133,
-      "brightness": 0.7653,
-      "noise_sigma": 21.593,
-      "median_ms": 365.102
+      "psnr_db": 7.713,
+      "ssim": 0.4052,
+      "psnr_matched_db": 14.62,
+      "ssim_matched": 0.4367,
+      "entropy_bits": 6.737,
+      "rms_contrast": 0.2008,
+      "brightness": 0.7672,
+      "noise_sigma": 25.298,
+      "median_ms": 428.72
     },
     {
       "method": "MSRCR",
-      "psnr_db": 11.591,
-      "ssim": 0.516,
-      "psnr_matched_db": 15.447,
-      "ssim_matched": 0.5614,
-      "entropy_bits": 7.32,
-      "rms_contrast": 0.1712,
-      "brightness": 0.6328,
-      "noise_sigma": 15.142,
-      "median_ms": 399.659
+      "psnr_db": 12.161,
+      "ssim": 0.453,
+      "psnr_matched_db": 15.92,
+      "ssim_matched": 0.5077,
+      "entropy_bits": 7.212,
+      "rms_contrast": 0.1638,
+      "brightness": 0.5999,
+      "noise_sigma": 16.08,
+      "median_ms": 455.017
     },
     {
       "method": "LIME",
-      "psnr_db": 15.317,
-      "ssim": 0.4453,
-      "psnr_matched_db": 14.936,
-      "ssim_matched": 0.4459,
-      "entropy_bits": 7.528,
-      "rms_contrast": 0.2531,
-      "brightness": 0.3929,
-      "noise_sigma": 11.053,
-      "median_ms": 18.766
+      "psnr_db": 14.799,
+      "ssim": 0.3953,
+      "psnr_matched_db": 14.302,
+      "ssim_matched": 0.4101,
+      "entropy_bits": 7.215,
+      "rms_contrast": 0.2204,
+      "brightness": 0.3805,
+      "noise_sigma": 13.228,
+      "median_ms": 21.86
     },
     {
       "method": "Inverse gamma (oracle)",
-      "psnr_db": 22.127,
-      "ssim": 0.64,
-      "psnr_matched_db": 22.142,
-      "ssim_matched": 0.6405,
-      "entropy_bits": 7.482,
-      "rms_contrast": 0.2105,
-      "brightness": 0.4472,
-      "noise_sigma": 10.663,
-      "median_ms": 9.883
+      "psnr_db": 22.314,
+      "ssim": 0.5731,
+      "psnr_matched_db": 22.245,
+      "ssim_matched": 0.5718,
+      "entropy_bits": 7.263,
+      "rms_contrast": 0.1887,
+      "brightness": 0.4278,
+      "noise_sigma": 11.353,
+      "median_ms": 11.403
     }
   ],
   "gamma_sweep": [
     {
       "gamma": 1.5,
       "levels_left": 218,
-      "Gamma 1/2.2": 19.113,
-      "Histogram equalisation": 19.436,
-      "CLAHE": 18.42,
-      "Single-scale Retinex": 7.912,
-      "Multi-scale Retinex": 7.605,
-      "MSRCR": 10.532,
-      "LIME": 16.05,
-      "Inverse gamma (oracle)": 33.32
+      "Gamma 1/2.2 (fixed)": 19.016,
+      "Gamma (auto-estimated)": 22.899,
+      "Histogram equalisation": 16.499,
+      "CLAHE": 19.343,
+      "Single-scale Retinex": 8.602,
+      "Multi-scale Retinex": 8.311,
+      "MSRCR": 10.991,
+      "LIME": 15.404,
+      "Inverse gamma (oracle)": 33.541
     },
     {
       "gamma": 2.0,
       "levels_left": 192,
-      "Gamma 1/2.2": 26.18,
-      "Histogram equalisation": 18.767,
-      "CLAHE": 17.936,
-      "Single-scale Retinex": 7.399,
-      "Multi-scale Retinex": 7.13,
-      "MSRCR": 10.923,
-      "LIME": 16.633,
-      "Inverse gamma (oracle)": 28.941
+      "Gamma 1/2.2 (fixed)": 26.46,
+      "Gamma (auto-estimated)": 21.158,
+      "Histogram equalisation": 16.161,
+      "CLAHE": 18.315,
+      "Single-scale Retinex": 8.407,
+      "Multi-scale Retinex": 8.085,
+      "MSRCR": 11.552,
+      "LIME": 15.98,
+      "Inverse gamma (oracle)": 29.363
     },
     {
       "gamma": 2.5,
       "levels_left": 173,
-      "Gamma 1/2.2": 24.278,
-      "Histogram equalisation": 18.063,
-      "CLAHE": 17.003,
-      "Single-scale Retinex": 7.943,
-      "Multi-scale Retinex": 7.641,
-      "MSRCR": 11.302,
-      "LIME": 16.15,
-      "Inverse gamma (oracle)": 25.135
+      "Gamma 1/2.2 (fixed)": 24.225,
+      "Gamma (auto-estimated)": 19.2,
+      "Histogram equalisation": 15.761,
+      "CLAHE": 16.881,
+      "Single-scale Retinex": 8.579,
+      "Multi-scale Retinex": 8.21,
+      "MSRCR": 11.942,
+      "LIME": 15.577,
+      "Inverse gamma (oracle)": 25.476
     },
     {
       "gamma": 3.0,
       "levels_left": 158,
-      "Gamma 1/2.2": 19.778,
-      "Histogram equalisation": 17.348,
-      "CLAHE": 15.773,
-      "Single-scale Retinex": 8.392,
-      "Multi-scale Retinex": 8.058,
-      "MSRCR": 11.591,
-      "LIME": 15.317,
-      "Inverse gamma (oracle)": 22.127
+      "Gamma 1/2.2 (fixed)": 19.609,
+      "Gamma (auto-estimated)": 17.327,
+      "Histogram equalisation": 15.33,
+      "CLAHE": 15.578,
+      "Single-scale Retinex": 7.967,
+      "Multi-scale Retinex": 7.713,
+      "MSRCR": 12.161,
+      "LIME": 14.799,
+      "Inverse gamma (oracle)": 22.314
     },
     {
       "gamma": 4.0,
       "levels_left": 136,
-      "Gamma 1/2.2": 15.209,
-      "Histogram equalisation": 16.096,
-      "CLAHE": 13.439,
-      "Single-scale Retinex": 8.995,
-      "Multi-scale Retinex": 8.633,
-      "MSRCR": 11.896,
-      "LIME": 13.744,
-      "Inverse gamma (oracle)": 17.947
+      "Gamma 1/2.2 (fixed)": 15.255,
+      "Gamma (auto-estimated)": 14.511,
+      "Histogram equalisation": 14.509,
+      "CLAHE": 13.51,
+      "Single-scale Retinex": 8.671,
+      "Multi-scale Retinex": 8.406,
+      "MSRCR": 12.241,
+      "LIME": 13.336,
+      "Inverse gamma (oracle)": 17.977
     },
     {
       "gamma": 5.0,
       "levels_left": 120,
-      "Gamma 1/2.2": 12.914,
-      "Histogram equalisation": 15.064,
-      "CLAHE": 11.759,
-      "Single-scale Retinex": 9.248,
-      "Multi-scale Retinex": 8.893,
-      "MSRCR": 11.928,
-      "LIME": 12.569,
-      "Inverse gamma (oracle)": 15.284
+      "Gamma 1/2.2 (fixed)": 13.2,
+      "Gamma (auto-estimated)": 12.765,
+      "Histogram equalisation": 13.778,
+      "CLAHE": 12.101,
+      "Single-scale Retinex": 9.011,
+      "Multi-scale Retinex": 8.741,
+      "MSRCR": 12.115,
+      "LIME": 12.303,
+      "Inverse gamma (oracle)": 15.314
     }
   ],
   "noise_amplification": [
     {
-      "method": "Gamma 1/2.2",
-      "noise_after": 8.295,
-      "amplification": 2.09
+      "method": "Gamma 1/2.2 (fixed)",
+      "noise_after": 8.491,
+      "amplification": 2.72
+    },
+    {
+      "method": "Gamma (auto-estimated)",
+      "noise_after": 15.57,
+      "amplification": 5.28
     },
     {
       "method": "Histogram equalisation",
-      "noise_after": 10.657,
-      "amplification": 2.77
+      "noise_after": 15.076,
+      "amplification": 5.16
     },
     {
       "method": "CLAHE",
-      "noise_after": 9.726,
-      "amplification": 2.49
+      "noise_after": 8.939,
+      "amplification": 2.73
     },
     {
       "method": "Single-scale Retinex",
-      "noise_after": 20.809,
-      "amplification": 5.15
+      "noise_after": 24.373,
+      "amplification": 8.14
     },
     {
       "method": "Multi-scale Retinex",
-      "noise_after": 21.593,
-      "amplification": 5.35
+      "noise_after": 25.298,
+      "amplification": 8.45
     },
     {
       "method": "MSRCR",
-      "noise_after": 15.142,
-      "amplification": 3.93
+      "noise_after": 16.08,
+      "amplification": 5.26
     },
     {
       "method": "LIME",
-      "noise_after": 11.053,
-      "amplification": 2.87
+      "noise_after": 13.228,
+      "amplification": 4.37
     },
     {
       "method": "Inverse gamma (oracle)",
-      "noise_after": 10.663,
-      "amplification": 2.67
+      "noise_after": 11.353,
+      "amplification": 3.69
+    }
+  ],
+  "auto_gamma_recovery": [
+    {
+      "true_gamma": 1.5,
+      "estimated_mean": 1.766,
+      "estimated_min": 0.78,
+      "estimated_max": 2.697,
+      "mean_error_pct": 17.7
+    },
+    {
+      "true_gamma": 2.0,
+      "estimated_mean": 2.36,
+      "estimated_min": 1.04,
+      "estimated_max": 3.732,
+      "mean_error_pct": 18.0
+    },
+    {
+      "true_gamma": 2.5,
+      "estimated_mean": 3.01,
+      "estimated_min": 1.301,
+      "estimated_max": 5.057,
+      "mean_error_pct": 20.4
+    },
+    {
+      "true_gamma": 3.0,
+      "estimated_mean": 3.764,
+      "estimated_min": 1.563,
+      "estimated_max": 6.857,
+      "mean_error_pct": 25.5
+    },
+    {
+      "true_gamma": 4.0,
+      "estimated_mean": 5.705,
+      "estimated_min": 2.095,
+      "estimated_max": 12.574,
+      "mean_error_pct": 42.6
+    },
+    {
+      "true_gamma": 5.0,
+      "estimated_mean": 7.946,
+      "estimated_min": 2.643,
+      "estimated_max": 20.0,
+      "mean_error_pct": 58.9
+    }
+  ],
+  "brightness_assumption": [
+    {
+      "image": "astronaut",
+      "true_mean_brightness": 0.4494,
+      "brightness_gap": -0.0006,
+      "mean_gamma_error_pct": -6.4,
+      "worst_gamma_error_pct": 11.5
+    },
+    {
+      "image": "coffee",
+      "true_mean_brightness": 0.3867,
+      "brightness_gap": -0.0633,
+      "mean_gamma_error_pct": 29.1,
+      "worst_gamma_error_pct": 30.0
+    },
+    {
+      "image": "chelsea",
+      "true_mean_brightness": 0.4522,
+      "brightness_gap": 0.0022,
+      "mean_gamma_error_pct": 4.9,
+      "worst_gamma_error_pct": 13.9
+    },
+    {
+      "image": "rocket",
+      "true_mean_brightness": 0.256,
+      "brightness_gap": -0.194,
+      "mean_gamma_error_pct": 169.5,
+      "worst_gamma_error_pct": 300.0
+    },
+    {
+      "image": "retina",
+      "true_mean_brightness": 0.3518,
+      "brightness_gap": -0.0982,
+      "mean_gamma_error_pct": 55.0,
+      "worst_gamma_error_pct": 70.4
+    },
+    {
+      "image": "immunohistochemistry",
+      "true_mean_brightness": 0.6287,
+      "brightness_gap": 0.1787,
+      "mean_gamma_error_pct": -47.7,
+      "worst_gamma_error_pct": 48.0
     }
   ]
 }

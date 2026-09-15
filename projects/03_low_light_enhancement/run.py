@@ -51,6 +51,27 @@ def main() -> None:
         gamma=args.gamma, noise_sigma=args.noise, images=images
     )
 
+    print("Testing the auto-gamma brightness assumption ...")
+    assumption_rows = ll.brightness_assumption_table(images=images)
+
+    # how accurately the estimator recovers a gamma it was never told
+    recovery_rows = []
+    for g in ll.GAMMA_LEVELS:
+        estimates = []
+        for name in images:
+            clean = io.sample(name)
+            dark = synth.low_light(clean, gamma=g, noise_sigma=args.noise, seed=0)
+            estimates.append(1.0 / ll.estimate_gamma(dark))
+        recovery_rows.append(
+            {
+                "true_gamma": g,
+                "estimated_mean": round(float(np.mean(estimates)), 3),
+                "estimated_min": round(float(np.min(estimates)), 3),
+                "estimated_max": round(float(np.max(estimates)), 3),
+                "mean_error_pct": round((float(np.mean(estimates)) / g - 1.0) * 100, 1),
+            }
+        )
+
     # ------------------------------------------------------------------ #
     # figures
     # ------------------------------------------------------------------ #
@@ -147,7 +168,35 @@ def main() -> None:
         highlight_best="min",
     )
 
-    # 4. the comparative matrix
+    # 4. the auto-gamma estimator against the gamma it was never told
+    figures.lines(
+        [r["true_gamma"] for r in recovery_rows],
+        {
+            "estimated gamma": [r["estimated_mean"] for r in recovery_rows],
+            "true gamma (perfect)": [r["true_gamma"] for r in recovery_rows],
+        },
+        IMAGES / "gamma_recovery.png",
+        xlabel="true gamma used to darken the image",
+        ylabel="gamma recovered from the image alone",
+        title="The auto method estimates the exponent with no ground truth",
+        dashed={"true gamma (perfect)"},
+    )
+
+    # 5. the finding that the estimator's error is the assumption's error
+    order = sorted(assumption_rows, key=lambda r: abs(r["brightness_gap"]))
+    figures.metric_bars(
+        [f"{r['image']}\ngap {r['brightness_gap']:+.3f}" for r in order],
+        [abs(r["mean_gamma_error_pct"]) for r in order],
+        IMAGES / "brightness_assumption.png",
+        ylabel="absolute gamma error (%)",
+        title=(
+            "Auto-gamma's error is set by the scene's true exposure, not by how "
+            "dark it was made"
+        ),
+        highlight_best="min",
+    )
+
+    # 6. the comparative matrix
     figures.comparison_matrix(
         method_rows,
         [
@@ -180,6 +229,8 @@ def main() -> None:
             "methods": method_rows,
             "gamma_sweep": sweep_rows,
             "noise_amplification": noise_rows,
+            "auto_gamma_recovery": recovery_rows,
+            "brightness_assumption": assumption_rows,
         },
     )
 
@@ -207,12 +258,35 @@ def main() -> None:
         [("Method", "method"), ("Noise after", "noise_after"), ("Amplification", "amplification")],
     )
 
+    recovery_table = markdown_table(
+        recovery_rows,
+        [
+            ("True gamma", "true_gamma"),
+            ("Estimated (mean)", "estimated_mean"),
+            ("min", "estimated_min"),
+            ("max", "estimated_max"),
+            ("Error", "mean_error_pct"),
+        ],
+    )
+    assumption_table = markdown_table(
+        assumption_rows,
+        [
+            ("Image", "image"),
+            ("True mean brightness", "true_mean_brightness"),
+            ("Gap from target", "brightness_gap"),
+            ("Mean gamma error %", "mean_gamma_error_pct"),
+            ("Worst %", "worst_gamma_error_pct"),
+        ],
+    )
+
     write_tables(
         RESULTS,
         [
             (f"Methods at gamma {args.gamma} ({len(images)} images)", method_table),
             ("PSNR vs darkness, with the oracle ceiling", sweep_table),
             (f"Noise amplification at gamma {args.gamma}", noise_table),
+            ("Auto-gamma: recovering an exponent it was never told", recovery_table),
+            ("Where the mid-grey assumption holds, and where it fails", assumption_table),
         ],
     )
     print("\n" + method_table + "\n\n" + sweep_table + "\n\n" + noise_table)
@@ -233,6 +307,16 @@ def main() -> None:
     print(f"best after exposure match: {best_matched['method']} @ "
           f"{best_matched['psnr_matched_db']} dB")
     print(f"noisiest           : {noisiest['method']} amplifies noise {noisiest['amplification']}x")
+    fixed = next(r for r in real if r["method"].startswith("Gamma 1/2.2"))
+    auto = next(r for r in real if r["method"].startswith("Gamma (auto"))
+    print(f"fixed vs auto gamma: {fixed['psnr_db']} dB vs {auto['psnr_db']} dB "
+          f"(auto {auto['psnr_db'] - fixed['psnr_db']:+.2f} dB)")
+    closest = min(assumption_rows, key=lambda r: abs(r["brightness_gap"]))
+    furthest = max(assumption_rows, key=lambda r: abs(r["brightness_gap"]))
+    print(f"assumption holds   : {closest['image']} gap {closest['brightness_gap']:+.3f} "
+          f"-> gamma error {closest['mean_gamma_error_pct']:+.1f}%")
+    print(f"assumption fails   : {furthest['image']} gap {furthest['brightness_gap']:+.3f} "
+          f"-> gamma error {furthest['mean_gamma_error_pct']:+.1f}%")
     print(f"darkened input     : {dark_stats}")
     print(f"\nwrote {results_path}")
 
