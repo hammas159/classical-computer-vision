@@ -45,9 +45,114 @@ trained by someone else, it is not a neural network, and nothing here is trained
 
 ---
 
-## Screenshot
+## Screenshots
 
-![Portrait mode UI](docs/images/ui.png)
+All four are captures of the **live app**. Every number in them was computed at
+the moment the screenshot was taken.
+
+### 1 · Matte, blur, composite
+
+Pick a matting method and an aperture, and read the IoU, the hair recovered and
+the halo error live.
+
+![Portrait pipeline](results/screenshots/01_portrait.png)
+
+### 2 · Every method split by region
+
+Body, hair and background scored separately, each column on its own colour scale.
+**This is the panel that shows the finding**: find the row that wins IoU and
+loses Hair.
+
+![Region matrix](results/screenshots/02_region_matrix.png)
+
+### 3 · The halo, as a distribution
+
+Error in the 12 px ring outside the subject — naive compositing against masked
+normalised convolution. Two visibly different distributions, not two averages.
+
+![Halo distribution](results/screenshots/03_halo_distribution.png)
+
+### 4 · The aperture as a matrix
+
+Each bokeh kernel printed as raw numbers at a radius you choose. A disc is a flat
+plateau of identical weights; a Gaussian falls from 100 at the centre to 2 at the
+corner. That is the whole `peak/mean 3.25 vs 1.00` result, readable.
+
+![Kernel matrix](results/screenshots/04_kernel_matrix.png)
+
+---
+
+## How the UI connects to the results
+
+```mermaid
+flowchart TD
+    subgraph INPUT["1 · Input"]
+        A1[Generated portrait<br/>exact alpha matte, body/hair split,<br/>clean background plate]
+        A2[Your own photo<br/>uploaded through the UI]
+    end
+
+    subgraph CONTROLS["2 · Controls"]
+        B1[Background + seed]
+        B2[Matting method, 6]
+        B3[Aperture shape, 4]
+        B4[Blur radius 3-35 px]
+        B5[Compositing, 2]
+    end
+
+    subgraph PIPE["3 · Pipeline"]
+        C1[Cut out the subject<br/>-> binary matte]
+        C2[Build the bokeh kernel]
+        C3[Blur the background]
+        C4[Composite]
+    end
+
+    subgraph SCORE["4 · Scoring vs the known matte"]
+        D1[IoU / Dice]
+        D2[Body / hair / background recall]
+        D3[Boundary F1]
+        D4[Halo error in the ring]
+        D5[peak/mean, rim energy]
+        D6[Wall-clock ms]
+    end
+
+    subgraph OUT["5 · Output"]
+        E1[Input, matte, portrait]
+        E2[Live metric tiles]
+        E3[Region matrix + CSV]
+        E4[Halo distribution]
+        E5[Kernel number grid]
+        E6[Confusion matrix]
+    end
+
+    A1 --> C1
+    A2 --> C1
+    B1 --> A1
+    B2 --> C1
+    B3 & B4 --> C2
+    B5 --> C4
+    C1 --> C3
+    C2 --> C3 --> C4
+    C1 -.-> D1 & D2 & D3
+    C4 -.-> D4
+    C2 --> D5
+    C1 & C3 & C4 -.-> D6
+    C1 & C4 --> E1
+    D1 & D2 & D4 --> E2
+    D2 --> E3
+    D4 --> E4
+    D5 --> E5
+    D1 --> E6
+
+    style A1 fill:#dbeafe,stroke:#2563eb
+    style A2 fill:#dbeafe,stroke:#2563eb
+    style SCORE fill:#fef3c7
+    style OUT fill:#dcfce7
+```
+
+**The dotted lines need ground truth**, so they exist only for the generated
+portrait — where the true matte, the body/hair split and the clean background
+plate are all known. On an uploaded photo the app shows the pictures and says
+plainly that it cannot score them.
 
 ---
 
@@ -241,11 +346,66 @@ streamlit run ui/app.py       # interactive demo
 
 ## Inference: try it on your own image
 
+Three ways, from easiest to most scriptable.
+
+### 1 · In the browser
+
 ```bash
 streamlit run ui/app.py
 ```
 
-Choose **“Upload your own photo”** and drop in a portrait. Or call it directly:
+Choose **“Upload your own photo”** and drop in a portrait. Every panel recomputes
+on your image.
+
+### 2 · From the command line
+
+```bash
+python infer.py my_portrait.jpg
+```
+
+```text
+input : my_portrait.jpg  640x640
+matte     : Haar + GrabCut
+aperture  : Disc (circular aperture), radius 15 px
+compositor: Masked (normalised convolution)
+subject   : 31.8% of the frame
+bokeh     : peak/mean 1.00  (1.00 = a flat disc, like a real lens)
+            rim energy 0.43
+time      : 1696 ms
+wrote     : portrait.png
+```
+
+No face detected, or unsure which method suits your photo? Run all six:
+
+```bash
+python infer.py my_portrait.jpg --all-mattes
+```
+
+```text
+Matting method               Found    Subject %  Time (ms)
+------------------------------------------------------------
+Face rect (baseline)         yes          54.6%       44.3
+Face ellipse prior           yes          32.6%       52.1
+Haar + GrabCut               yes          31.8%      956.5
+GrabCut (centre rect)        yes          31.1%      925.9
+Skin colour (YCrCb)          yes           6.9%        2.8
+Watershed + markers          yes          33.1%       54.7
+```
+
+`Subject %` is a sanity check, not a score — a method claiming 90% of the frame
+has failed, and skin colour claiming 6.9% has found a face and lost the body.
+
+Useful options:
+
+| Flag | Effect |
+|---|---|
+| `--matte "GrabCut (centre rect)"` | any of the six; this one needs no face |
+| `--kernel "Gaussian"` | any of the four apertures |
+| `--radius 25` | blur radius, 3–35 px |
+| `--compositor "Naive (blur all, paste back)"` | see the halo for yourself |
+| `--save-stages` | also write the matte |
+
+### 3 · As a library
 
 ```python
 from shared.io import imread, imwrite
@@ -287,58 +447,185 @@ Full walkthrough and workflow diagram: **[PROJECT.md](PROJECT.md)**.
 
 ## Problems hit, and how they were solved
 
+Each gives the **symptom**, the **file and line**, the **code that was wrong** and
+the **code that replaced it**.
+
+| # | Symptom | Where | Cost |
+|---:|---|---|---|
+| 1 | Same input, different answer each run | [`src/portrait_mode.py:130`](src/portrait_mode.py#L130) | the headline number was a coin flip |
+| 2 | A cheat scored best on a real metric | [`src/portrait_mode.py:487`](src/portrait_mode.py#L487) | nearly published as a finding |
+| 3 | Test scene was mostly white helmet | [`shared/synth.py:369`](../../shared/synth.py#L369) | changed what colour methods saw |
+| 4 | Colour restoration came out dark | [`03_low_light/src/low_light.py`](../03_low_light_enhancement/src/low_light.py) | a method looked broken that wasn't |
+| 5 | `StreamlitAPIException` in the live app | [`ui/app.py`](ui/app.py) | crash, invisible to every test |
+| 6 | Output looks fine, is wrong by 6× | [`src/portrait_mode.py:348`](src/portrait_mode.py#L348) | undetectable by eye |
+
+---
+
 ### 1 · GrabCut silently returned a different answer every run
 
-The first table reported **IoU 0.87** for Haar + GrabCut. Re-running produced
-0.66, then 0.90, then 0.68. GrabCut seeds its colour mixtures from OpenCV's
-global RNG, so an unseeded call is a sample, not a measurement.
+**Symptom:** the first table reported **IoU 0.87** for Haar + GrabCut. Re-running
+the identical script on the identical image produced 0.66, then 0.90, then 0.68.
 
-**Fixed** two ways, because one alone would have been dishonest: every call now
-pins `cv2.setRNGSeed`, *and* a dedicated experiment reports the spread across 24
-seeds. Pinning alone would have produced a reproducible number that still hid how
-little it meant.
+```python
+>>> [round(iou(matte_grabcut_face(img), truth), 3) for _ in range(4)]
+[0.871, 0.664, 0.904, 0.682]      # same image, same code, four answers
+```
+
+**Cause:** `cv2.grabCut` initialises its foreground/background Gaussian mixtures
+with k-means seeded from OpenCV's **global** RNG. An unseeded call is a draw from
+a distribution, not a measurement.
+
+**Fix — `src/portrait_mode.py:130` and `:156`**
+
+```python
+#: GrabCut is seeded from OpenCV's GLOBAL RNG. Pinning it is what makes every
+#: number in this project reproducible.
+GRABCUT_SEED = 0
+
+def _grabcut(img, rect, iterations=5, rng_seed=GRABCUT_SEED):
+    if rng_seed is not None:
+        cv2.setRNGSeed(rng_seed)      # <-- the one line that fixes reproducibility
+    ...
+```
+
+**But pinning alone would have been dishonest** — it produces a stable number that
+still hides how little it means. So a second experiment reports the spread:
+
+| Scene | Seeds | Worst | Best | Spread |
+|---|---:|---:|---:|---:|
+| **0 (coffee)** | 24 | **0.152** | **0.904** | **0.752** |
+| 3 (brick) | 24 | 0.940 | 0.942 | 0.002 |
+
+The instability is a property of the **scene**, not the algorithm: on `coffee`
+the background browns sit close to the subject's skin tones, so the
+initialisation decides the whole result.
 
 ### 2 · "Hair recall" was gameable, and briefly fooled me
 
-The face-rectangle baseline scored **0.97 hair recall** — better than every real
-method — purely by covering the whole head region. Recall without precision
-rewards predicting everything.
+**Symptom:** the face-**rectangle** baseline — a control included to be beaten —
+scored **0.97 hair recall**, better than every real method.
 
-**Fixed** by adding a background false-positive rate beside it. The rectangle's
-FPR is 0.344 against the ellipse's 0.0091, and the cheat becomes obvious in the
-table rather than requiring a footnote.
+It "recovers" the hair by covering the entire head region, hair and background
+alike. Recall alone rewards predicting everything.
+
+**Fix — `src/portrait_mode.py:487`, report the cost beside the benefit**
+
+```python
+"hair_recall":    round(float(np.mean(a["hair"])), 4),
+# Recall is gameable on its own: a method that predicts EVERYTHING scores 1.0.
+# The false-positive rate is what exposes that, so the two are never separated.
+"background_fpr": round(float(np.mean(a["fpr"])), 4) if ok else None,
+```
+
+The cheat becomes self-evident in the table rather than needing a footnote:
+
+| Method | Hair recall | Background FPR |
+|---|---:|---:|
+| Face rect (baseline) | **0.97** | **0.344** ← 38× worse |
+| Face ellipse prior | 0.062 | 0.0091 |
 
 ### 3 · The face crop included the astronaut's white helmet
 
-The composited subject was built from a hard-coded crop of
-`skimage.data.astronaut`, which turned out to be mostly the pale background
-behind the head. Every scene looked like a small face floating in a white oval,
-and it changed what the colour-based methods saw.
+**Symptom:** every generated portrait looked like a small face floating in a white
+oval. The subject was a hard-coded crop of `skimage.data.astronaut`, and the
+chosen box was mostly the pale helmet behind the head — which changed what the
+colour-based methods saw.
 
-**Fixed** by deriving the crop from OpenCV's own face cascade, then expanding it
-by fixed proportions. The crop is now correct by construction. A "cover" fit
-rather than a plain resize stops the crop's own background showing at the sides
-of the head.
+```python
+# WRONG - a guessed box, mostly helmet
+face = astronaut[30:180, 150:300]
+```
+
+**Fix — `shared/synth.py:369`, derive the crop instead of guessing it**
+
+```python
+def _astronaut_face_crop() -> np.ndarray:
+    """Locate the face with OpenCV's own cascade, then expand by proportion.
+
+    The previous hard-coded box was mostly the white helmet behind the head,
+    which made the composited subject look like a face in a white oval.
+    Deriving it makes the crop correct by construction.
+    """
+    faces = cascade.detectMultiScale(gray, 1.1, 5)
+    x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
+    # expand to include chin, forehead and a little hair
+    x0, y0 = max(0, x - int(w * 0.25)), max(0, y - int(h * 0.45))
+    ...
+```
+
+A **cover** fit rather than a plain resize also stops the crop's own background
+showing at the sides of the head.
 
 ### 4 · MSRCR-style stretching, applied globally, is wrong
 
-(Shared with project 03.) Percentile-stretching all three channels together
-leaves colour-restored output dark and shifted, because the restoration term puts
-the channels on deliberately different scales. Each channel needs its own stretch.
+Shared with project 03. Percentile-stretching all three channels **together**
+leaves colour-restored output dark and shifted, because the restoration term
+deliberately puts the channels on different scales.
+
+```python
+# WRONG - one stretch for all three channels
+lo, hi = np.percentile(out, 1), np.percentile(out, 99)
+out = (out - lo) / (hi - lo)
+
+# RIGHT - each channel gets its own
+for c in range(3):
+    lo, hi = np.percentile(out[..., c], 1), np.percentile(out[..., c], 99)
+    out[..., c] = (out[..., c] - lo) / max(hi - lo, EPS)
+```
+
+A method that looked broken was fine; the *scoring* of it was broken.
 
 ### 5 · A Streamlit crash only a running app would reveal
 
-`st.image` rejected the normalised bokeh kernel with
-`StreamlitAPIException: Data is outside [0.0, 1.0] and clamp is not set` —
-`rendered / rendered.max()` lands a hair above 1.0 in float32. Caught by
-screenshotting the live app, not by any test.
+```
+StreamlitAPIException: Data is outside [0.0, 1.0] and clamp is not set
+```
+
+`rendered / rendered.max()` lands a hair above 1.0 in float32, and `st.image`
+refuses it. Every test passed — the bug lived in display code that no test
+exercised.
+
+```python
+# WRONG
+st.image(rendered / rendered.max())
+
+# RIGHT - float32 division does not guarantee a <= 1.0 maximum
+st.image(np.clip(rendered / max(float(rendered.max()), 1e-9), 0.0, 1.0))
+```
+
+Two more of the same class were found the same way, by screenshotting the live
+app: a `StreamlitDuplicateElementId` from two selectboxes sharing a label, and
+threshold labels overprinting when two thresholds nearly coincide.
 
 ### 6 · The compositing bug that looks fine until measured
 
-Naive blur-then-paste produces an image that looks perfectly acceptable. It is
-wrong by **9.48** in the halo ring, six times the masked version. Nothing about
-the picture announces this; it needed the clean background plate as ground truth
-and a defined ring to measure over.
+**Symptom:** none. Naive blur-then-paste produces an image that looks perfectly
+acceptable.
+
+It is wrong by **9.48** in the halo ring against the masked version's **1.58** —
+**6× worse**. Blurring across the subject boundary pulls subject colour outward,
+leaving a faint glow that the eye accepts and the number does not.
+
+**Fix — `src/portrait_mode.py:348`, normalised convolution**
+
+```python
+def composite_masked(img, mask, kernel):
+    """Blur the background WITHOUT letting subject pixels bleed into it.
+
+    Implemented as a normalised convolution: blur the background-only image and
+    blur the background mask with the same kernel, then divide. Each output
+    pixel becomes the average of the background pixels that actually
+    contributed, instead of an average that silently included the subject.
+    """
+    bg_only = img * alpha            # subject pixels zeroed, not blurred in
+    num = cv2.filter2D(bg_only, -1, kernel)
+    den = cv2.filter2D(alpha,   -1, kernel)
+    return num / np.maximum(den, EPS)
+```
+
+Nothing about the picture announces this. It needed the clean background plate as
+ground truth and a defined ring to measure over — which is the whole reason the
+scene generator keeps the plate.
 
 ---
 
