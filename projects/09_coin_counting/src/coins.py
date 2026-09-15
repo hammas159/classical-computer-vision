@@ -42,10 +42,33 @@ TRUE_COIN_COUNT = 24
 # --------------------------------------------------------------------------- #
 
 
-def _clean_binary(mask: np.ndarray, open_size: int = 3, close_size: int = 5) -> np.ndarray:
-    """Remove speckle and fill pinholes before any counting is attempted."""
+def _fill_holes(mask: np.ndarray) -> np.ndarray:
+    """Fill every enclosed hole by redrawing the outer contours solid.
+
+    A coin is solid. Any hole inside its outline is a failure of the threshold,
+    not a feature of the object — and left alone it puts a spurious local maximum
+    in the distance transform, which becomes a spurious seed, which becomes a
+    spurious coin.
+    """
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    filled = np.zeros_like(mask)
+    cv2.drawContours(filled, contours, -1, 255, -1)
+    return filled
+
+
+def _clean_binary(mask: np.ndarray, open_size: int = 3, close_size: int = 11) -> np.ndarray:
+    """Remove speckle, rejoin fragments, and fill pinholes.
+
+    The closing is larger than it looks like it needs to be. Flattening the
+    illumination costs contrast inside the darker coins, so their masks come back
+    broken into two or three pieces — and a fragment is counted as a coin unless
+    it is rejoined here. Closing then filling recovers 3 coins on this image.
+    """
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((open_size, open_size), np.uint8))
-    return cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((close_size, close_size), np.uint8))
+    mask = cv2.morphologyEx(
+        mask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (close_size, close_size))
+    )
+    return _fill_holes(mask)
 
 
 def segment_otsu_components(img: np.ndarray) -> np.ndarray:
@@ -62,34 +85,113 @@ def segment_otsu_components(img: np.ndarray) -> np.ndarray:
     return labels
 
 
-def segment_watershed(img: np.ndarray, fg_ratio: float = 0.55) -> np.ndarray:
-    """Distance-transform watershed — the standard answer for touching objects.
+#: Diameter of the largest expected coin, in pixels. The top-hat kernel must be
+#: bigger than this or it removes the coins along with the background.
+BACKGROUND_KERNEL = 61
 
-    The distance transform peaks at each coin's centre even when the coins touch,
-    so thresholding it yields one seed per coin. Watershed then floods outward
-    from those seeds and puts the boundary in the pinch between them.
 
-    ``fg_ratio`` sets how aggressively the seeds are eroded. Too low and two
-    touching coins share a seed (undercount); too high and a single coin splits
-    into several (overcount). It is the one knob that matters.
+def _flatten_illumination(gray: np.ndarray, kernel: int = BACKGROUND_KERNEL) -> np.ndarray:
+    """Remove a slowly-varying background with a white top-hat.
+
+    `skimage.data.coins` is lit unevenly — the background at the top of the frame
+    is **brighter than Otsu's global threshold**, so a plain Otsu classifies a
+    band of empty table as foreground and merges it with the entire top row of
+    coins. One component of 13,433 px where there should have been six coins.
+
+    A white top-hat is `image − opening(image)`. Opening with a structuring
+    element larger than any coin erases the coins and leaves the illumination, so
+    subtracting it leaves the coins on a flat background. This is the same
+    operator project 05 uses to find scratches, for the same reason: it selects
+    by *size*, and the thing being removed here is larger than everything being
+    kept.
     """
-    gray = cv2.GaussianBlur(to_gray(img), (5, 5), 0)
-    _, mask = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    mask = _clean_binary(mask)
+    se = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel, kernel))
+    return cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, se)
 
+
+def _foreground_mask(img: np.ndarray, flatten: bool = True) -> np.ndarray:
+    """Illumination-flattened Otsu, cleaned. Shared by every region method."""
+    gray = cv2.GaussianBlur(to_gray(img), (5, 5), 0)
+    if flatten:
+        gray = _flatten_illumination(gray)
+    _, mask = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    return _clean_binary(mask)
+
+
+def segment_watershed_global_seed(
+    img: np.ndarray, fg_ratio: float = 0.55, flatten: bool = True
+) -> np.ndarray:
+    """Watershed seeded by a **global** fraction of the distance transform.
+
+    This is the version in the OpenCV tutorial, kept here because it is what
+    almost every watershed demo copies and because it is wrong on this image in
+    an instructive way.
+
+    ``cv2.threshold(dist, fg_ratio * dist.max(), ...)`` compares every pixel's
+    distance-to-background against **one** number derived from the single deepest
+    point in the whole image. That is only a sensible seed rule if every object is
+    about the same size *and* already separated. Here the coins touch, so the
+    merged blob has a deep interior, and a threshold set from it erases the local
+    peak of every coin except the largest — **24 coins become 1, at every ratio
+    from 0.5 upward.**
+    """
+    mask = _foreground_mask(img, flatten=flatten)
     dist = cv2.distanceTransform(mask, cv2.DIST_L2, 5)
     _, sure_fg = cv2.threshold(dist, fg_ratio * dist.max(), 255, 0)
-    sure_fg = sure_fg.astype(np.uint8)
+    return _flood_from_seeds(img, mask, sure_fg.astype(np.uint8))
+
+
+def segment_watershed(
+    img: np.ndarray, min_distance: int = 12, min_radius_px: float = 10.0, flatten: bool = True
+):
+    """Distance-transform watershed seeded by **local** maxima — the working version.
+
+    The distance transform peaks at each coin's centre even when the coins touch,
+    so the seeds have to be found *per coin*: a pixel is a seed if it is the
+    maximum of its own neighbourhood.
+
+    Both knobs are quantities you can estimate by looking at the image, which is
+    the point of them:
+
+    ``min_distance``
+        Radius of the neighbourhood a peak must dominate, in pixels. Too small
+        and one coin's noisy distance ridge produces several peaks (overcount);
+        too large and two touching coins share one (undercount).
+    ``min_radius_px``
+        The distance transform's value *is* the distance to the nearest
+        background pixel, so at a coin's centre it is that coin's radius. A floor
+        on it therefore says "ignore peaks that could not be a coin" — in the
+        same units as the answer.
+
+    Deliberately **not** a fraction of ``dist.max()``. That is the rule
+    :func:`segment_watershed_global_seed` uses, and it is the bug this function
+    exists to avoid: any threshold derived from the single deepest point in the
+    image is a threshold set by the largest merged blob.
+    """
+    mask = _foreground_mask(img, flatten=flatten)
+    dist = cv2.distanceTransform(mask, cv2.DIST_L2, 5)
+
+    k = 2 * int(min_distance) + 1
+    dilated = cv2.dilate(dist, np.ones((k, k), np.float32))
+    peaks = ((dist >= dilated - 1e-6) & (dist >= min_radius_px)).astype(np.uint8) * 255
+    peaks = cv2.dilate(peaks, np.ones((3, 3), np.uint8))  # widen 1-px peaks into seeds
+    return _flood_from_seeds(img, mask, peaks)
+
+
+def _flood_from_seeds(img: np.ndarray, mask: np.ndarray, sure_fg: np.ndarray) -> np.ndarray:
+    """Run OpenCV's watershed from a given seed image and return clean labels."""
     sure_bg = cv2.dilate(mask, np.ones((3, 3), np.uint8), iterations=3)
     unknown = cv2.subtract(sure_bg, sure_fg)
 
-    n, markers = cv2.connectedComponents(sure_fg)
+    _, markers = cv2.connectedComponents(sure_fg)
     markers = markers + 1
     markers[unknown == 255] = 0
     markers = cv2.watershed(cv2.cvtColor(to_gray(img), cv2.COLOR_GRAY2BGR), markers)
 
     labels = np.where(markers > 1, markers - 1, 0).astype(np.int32)
     labels[markers == -1] = 0  # watershed marks boundaries with -1
+    # the flood fills the background region too; drop anything outside the mask
+    labels[mask == 0] = 0
     return labels
 
 
@@ -127,9 +229,10 @@ def segment_adaptive_components(img: np.ndarray) -> np.ndarray:
 
 METHODS: dict[str, Callable[[np.ndarray], np.ndarray]] = {
     "Otsu + components": segment_otsu_components,
-    "Watershed (distance)": segment_watershed,
-    "Hough circles": segment_hough_circles,
     "Adaptive + components": segment_adaptive_components,
+    "Watershed (global seed)": segment_watershed_global_seed,
+    "Watershed (local maxima)": segment_watershed,
+    "Hough circles": segment_hough_circles,
 }
 
 
@@ -138,11 +241,26 @@ METHODS: dict[str, Callable[[np.ndarray], np.ndarray]] = {
 # --------------------------------------------------------------------------- #
 
 
-def region_properties(labels: np.ndarray, min_area: int = 250) -> list[dict]:
+#: Smallest radius, in pixels, that a region has to be consistent with to count
+#: as a coin. Expressed as a radius rather than an area because that is the
+#: quantity you can read off the image, and it is the same number the watershed
+#: seeding uses.
+MIN_COIN_RADIUS_PX = 6.0
+MIN_COIN_AREA_PX = int(np.pi * MIN_COIN_RADIUS_PX**2)  # 113
+
+
+def region_properties(labels: np.ndarray, min_area: int = MIN_COIN_AREA_PX) -> list[dict]:
     """Area, centroid and equivalent diameter for every labelled region.
 
-    ``min_area`` discards fragments. Without it, watershed's boundary slivers and
-    morphological speckle are counted as coins and the count is meaningless.
+    ``min_area`` discards fragments. Without it, morphological speckle is counted
+    as a coin and the count is meaningless.
+
+    **Set it too high and it discards coins.** The previous default of 250 px was
+    picked to be "obviously small", and it threw away two of the 24 basins that
+    correctly-seeded watershed produces — turning a perfect 24/24 into 22/24 after
+    the segmentation had already got the answer right. The floor is now derived
+    from :data:`MIN_COIN_RADIUS_PX`, so it means something in the units of the
+    problem instead of being a round number.
     """
     props = []
     for label in range(1, int(labels.max()) + 1):
@@ -167,7 +285,7 @@ def region_properties(labels: np.ndarray, min_area: int = 250) -> list[dict]:
     return props
 
 
-def count_coins(labels: np.ndarray, min_area: int = 250) -> int:
+def count_coins(labels: np.ndarray, min_area: int = MIN_COIN_AREA_PX) -> int:
     return len(region_properties(labels, min_area))
 
 
@@ -197,8 +315,26 @@ def measure_mm(props: list[dict], mm_per_px: float) -> list[float]:
 REFERENCE_DIAMETER_MM = 24.25
 
 
+#: No coin in this image is smaller than about half the largest. A measured
+#: diameter below this fraction of the reference is not a small coin, it is a
+#: broken region — so it is counted and reported rather than averaged in.
+PLAUSIBLE_MIN_FRACTION = 0.45
+
+
 def evaluate_methods(runs: int = 3) -> list[dict]:
-    """Count coins with every method and compare against the hand-counted truth."""
+    """Count coins with every method, and separately ask whether it *measured* them.
+
+    Two columns that a segmentation demo collapses into one:
+
+    ``abs_count_error``
+        Did it find the right number of objects?
+    ``implausible``
+        How many of those objects have a diameter no coin could have? A region
+        squeezed to 136 px by a watershed boundary still counts as one coin — the
+        count is right — while implying a 5.75 mm coin next to a 24.25 mm
+        reference. Getting the count right says nothing about whether the
+        measurement is usable, and this is the column that shows it.
+    """
     from shared import io
 
     img = io.sample("coins")
@@ -209,6 +345,7 @@ def evaluate_methods(runs: int = 3) -> list[dict]:
         diameters = [p["diameter_px"] for p in props]
         mm_per_px = calibrate_mm_per_px(props, REFERENCE_DIAMETER_MM)
         mm = measure_mm(props, mm_per_px)
+        floor = PLAUSIBLE_MIN_FRACTION * REFERENCE_DIAMETER_MM
         rows.append(
             {
                 "method": name,
@@ -218,7 +355,10 @@ def evaluate_methods(runs: int = 3) -> list[dict]:
                 "abs_count_error": abs(len(props) - TRUE_COIN_COUNT),
                 "mean_diameter_px": round(float(np.mean(diameters)), 2) if diameters else None,
                 "mean_diameter_mm": round(float(np.mean(mm)), 2) if mm else None,
-                "diameter_spread_mm": round(float(np.std(mm)), 2) if mm else None,
+                "min_diameter_mm": round(float(np.min(mm)), 2) if mm else None,
+                "max_diameter_mm": round(float(np.max(mm)), 2) if mm else None,
+                "diameter_cv": round(float(np.std(mm) / np.mean(mm)), 4) if mm else None,
+                "implausible": int(sum(1 for d in mm if d < floor)),
                 "median_ms": round(float(timing.median_ms), 3),
             }
         )
@@ -226,30 +366,133 @@ def evaluate_methods(runs: int = 3) -> list[dict]:
 
 
 def sweep_watershed_seed(ratios=(0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8)) -> list[dict]:
-    """The one knob that decides watershed's count.
+    """The tutorial's one knob, swept — and the knob that replaces it.
 
-    Below some ratio touching coins share a seed and the count collapses; above
-    it single coins fragment and the count explodes. Locating that window is more
-    useful than quoting one tuned number.
+    ``fg_ratio`` thresholds the distance transform at a fraction of its **global**
+    maximum. Sweeping it shows there is no value that works: the count is either
+    collapsed or unstable, because the quantity being thresholded is set by the
+    largest blob in the image rather than by the object being seeded.
+
+    The local-maxima column is in the same table to make the comparison direct —
+    it has no ``fg_ratio`` at all, so its count is flat by construction, and that
+    flatness *is* the result.
     """
     from shared import io
 
     img = io.sample("coins")
+    local = count_coins(segment_watershed(img))
     rows = []
     for r in ratios:
-        labels = segment_watershed(img, fg_ratio=r)
-        n = count_coins(labels)
+        n = count_coins(segment_watershed_global_seed(img, fg_ratio=r))
         rows.append(
             {
                 "fg_ratio": r,
-                "count": n,
-                "error": n - TRUE_COIN_COUNT,
+                "global_seed_count": n,
+                "global_seed_error": n - TRUE_COIN_COUNT,
+                "local_maxima_count": local,
+                "local_maxima_error": local - TRUE_COIN_COUNT,
             }
         )
     return rows
 
 
-def analyse(img: np.ndarray, method: str = "Watershed (distance)"):
+def ablate_mask_and_seeding() -> list[dict]:
+    """Two independent decisions, all four combinations.
+
+    The project's central result. Flattening the illumination fixes the *mask*;
+    local-maxima seeding fixes the *seeds*. They were found as two separate bugs,
+    and crossing them shows they are not equally important:
+
+    * With a broken mask, the tutorial's global-fraction rule counts **1** coin.
+      Local-maxima seeding counts **24**.
+    * Fixing the mask rescues the tutorial rule only to 23.
+
+    So the headline is not "the lighting was bad". It is that one seeding rule
+    survives a bad mask and the other does not, and the usual demo uses the one
+    that does not.
+    """
+    from shared import io
+
+    img = io.sample("coins")
+    rows = []
+    for seed_name, fn in (
+        ("Global fraction of dist.max() (the tutorial)", segment_watershed_global_seed),
+        ("Local maxima of the distance transform", segment_watershed),
+    ):
+        plain = count_coins(fn(img, flatten=False))
+        flat = count_coins(fn(img, flatten=True))
+        rows.append(
+            {
+                "seeding": seed_name,
+                "plain_otsu": plain,
+                "tophat_otsu": flat,
+                "plain_error": plain - TRUE_COIN_COUNT,
+                "tophat_error": flat - TRUE_COIN_COUNT,
+            }
+        )
+    return rows
+
+
+def calibration_sensitivity(errors=(-10.0, -5.0, -2.0, 0.0, 2.0, 5.0, 10.0)) -> list[dict]:
+    """What a wrong reference costs every other measurement.
+
+    Calibration from one known object is the step that turns a segmentation into
+    a measurement with a unit — and it is a single multiplication, so the
+    reference's error propagates to **every** diameter, undiminished and
+    unsignalled. Nothing downstream can detect it: the numbers stay perfectly
+    self-consistent, they are just all wrong by the same factor.
+
+    This is worth a table rather than a sentence because a reader looking at
+    "17.49 mm" has no way to see that it rests entirely on one assumed number.
+    """
+    from shared import io
+
+    img = io.sample("coins")
+    props = region_properties(segment_watershed(io.sample("coins")))
+    truth_scale = calibrate_mm_per_px(props, REFERENCE_DIAMETER_MM)
+    truth = measure_mm(props, truth_scale)
+
+    rows = []
+    for pct in errors:
+        assumed = REFERENCE_DIAMETER_MM * (1.0 + pct / 100.0)
+        mm = measure_mm(props, calibrate_mm_per_px(props, assumed))
+        rows.append(
+            {
+                "reference_error_pct": pct,
+                "assumed_reference_mm": round(assumed, 2),
+                "mean_diameter_mm": round(float(np.mean(mm)), 3),
+                "measured_error_pct": round(
+                    100.0 * (float(np.mean(mm)) - float(np.mean(truth))) / float(np.mean(truth)), 3
+                ),
+                "smallest_mm": round(float(np.min(mm)), 2),
+                "largest_mm": round(float(np.max(mm)), 2),
+            }
+        )
+    return rows
+
+
+def diameter_distribution(method: str = "Watershed (local maxima)") -> list[dict]:
+    """Per-coin diameters, sorted — the output a measuring tool actually produces."""
+    from shared import io
+
+    labels = METHODS[method](io.sample("coins"))
+    props = region_properties(labels)
+    mm_per_px = calibrate_mm_per_px(props, REFERENCE_DIAMETER_MM)
+    rows = [
+        {
+            "rank": i,
+            "area_px": p["area_px"],
+            "diameter_px": round(p["diameter_px"], 2),
+            "diameter_mm": round(p["diameter_px"] * mm_per_px, 2),
+        }
+        for i, p in enumerate(
+            sorted(props, key=lambda q: q["diameter_px"], reverse=True), start=1
+        )
+    ]
+    return rows
+
+
+def analyse(img: np.ndarray, method: str = "Watershed (local maxima)"):
     """Full pipeline for the UI: labels, per-coin properties and mm measurements."""
     labels = METHODS[method](img)
     props = region_properties(labels)
