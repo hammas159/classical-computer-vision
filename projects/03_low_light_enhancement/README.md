@@ -54,7 +54,7 @@ The degradation is **generated**, so the original is known exactly:
 
 ## Screenshots
 
-All four are captures of the **live app**. Every number was computed at the
+A capture of the **live app**. Every number was computed at the
 moment the screenshot was taken.
 
 ### 0 · Four images, end to end
@@ -85,32 +85,16 @@ gallery candidate retina       FULL — 12.8 dB dark -> 19.3 dB (+6.5)
 `FULL` means the gallery already had four; `DROP` would mean the sample failed
 the bar and was excluded.
 
-### 1 · Original, darkened, enhanced, oracle
+### The live app
 
 Four panels side by side. The grain visible in panels 3 and 4 is not compression
 — it is the **noise amplification**, which is the hidden cost of every brightening
-method.
+method. The tabs below the fold hold the tone distribution, the every-method
+comparison matrix (note the `PSNR matched` column — 6.7 dB higher than raw PSNR
+for Retinex, and that gap is entirely the metric, not the method), and the
+surviving-tone-levels curve, which is computed with **no image at all**.
 
 ![Enhancement pipeline](results/screenshots/01_enhancement.png)
-
-### 2 · What darkening did to the tone range
-
-![Tone distribution](results/screenshots/02_tone_distribution.png)
-
-### 3 · Every method against every metric
-
-Live on the current image, downloadable as CSV. Note the `PSNR matched` column —
-it is 6.7 dB higher than raw PSNR for Retinex, and that gap is entirely the
-metric, not the method.
-
-![Comparison matrix](results/screenshots/03_comparison_matrix.png)
-
-### 4 · The ceiling, as arithmetic
-
-The number of surviving tone levels against gamma. This curve is computed with
-**no image at all** — it is a property of 8-bit rounding.
-
-![The ceiling](results/screenshots/04_ceiling.png)
 
 ---
 

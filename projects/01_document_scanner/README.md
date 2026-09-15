@@ -116,13 +116,17 @@ Each stage is **scored against exact ground truth**, not judged by eye:
 
 ## Screenshots
 
-All captures of the **live app**, not mockups. Every number visible in them was
+A capture of the **live app**, not a mockup. Every number visible in it was
 computed by the code at the moment the screenshot was taken.
 
-### 0 · On a real photograph
+### On a real photograph
 
 A newspaper page photographed at an angle — nobody constructed this image for the
-pipeline. It is found, flattened, and binarised into **readable text**.
+pipeline. It is found, flattened, and binarised into **readable text**. Upload a
+photo or generate a scene, switch detector and binariser, and read the corner
+error in pixels live. The tabs below the fold hold the pixel matrix, the
+six-detector comparison matrix (downloadable as CSV) and the per-binariser
+confusion matrix.
 
 ![Real photograph](results/screenshots/00_real_photo.png)
 
@@ -139,35 +143,6 @@ OpenCV's BSD-licensed sample data.
 > bright enough that Otsu thresholds the entire image as "page". `Canny + contour`
 > keys off the page border instead and gets it right, so it is now the default.
 > **The method that wins on the benchmark is not the method to ship.**
-
-### 1 · The pipeline, end to end
-
-Upload a photo or generate a scene, switch detector and binariser, and read the
-corner error in pixels live.
-
-![Pipeline view](results/screenshots/01_pipeline.png)
-
-### 2 · The image as a matrix
-
-The same page as raw numbers, before and after binarisation. This is the panel
-that makes the central finding readable rather than assertable.
-
-![Pixel matrix](results/screenshots/02_pixel_matrix.png)
-
-### 3 · Every method against every metric
-
-All six detectors scored on this image, each column on its own colour scale, and
-downloadable as CSV.
-
-![Comparison matrix](results/screenshots/03_comparison_matrix.png)
-
-### 4 · Where the pixels actually went
-
-Per-binariser confusion matrix, as counts and as per-class recall. Note how
-little the headline accuracy moves even when the ink is destroyed — paper is the
-overwhelming majority class.
-
-![Confusion matrix](results/screenshots/04_confusion_matrix.png)
 
 ---
 

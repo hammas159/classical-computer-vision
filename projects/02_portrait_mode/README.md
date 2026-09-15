@@ -85,7 +85,7 @@ only image here with an exact alpha matte to score against.
 > are far from the crowd's. Both are true; neither generalises. What does
 > generalise: **the instability is a property of the scene, not the algorithm.**
 
-**Jump to:** [What it does](#what-it-does) · [Screenshot](#screenshot) ·
+**Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
 [Input & output](#input--output) · [Results](#results) ·
 [Run it yourself](#run-it-yourself) · [Inference](#inference-try-it-on-your-own-image) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
@@ -111,38 +111,17 @@ trained by someone else, it is not a neural network, and nothing here is trained
 
 ## Screenshots
 
-All captures of the **live app**. Every number in them was computed at the moment
+A capture of the **live app**. Every number in it was computed at the moment
 the screenshot was taken.
 
-### 1 · Matte, blur, composite
+### Matte, blur, composite
 
 Pick a matting method and an aperture, and read the IoU, the hair recovered and
-the halo error live.
+the halo error live. The tabs below the fold hold the per-region matrix (body,
+hair and background scored separately — find the row that wins IoU and loses
+Hair), the halo error distribution, and each bokeh kernel printed as raw numbers.
 
 ![Portrait pipeline](results/screenshots/01_portrait.png)
-
-### 2 · Every method split by region
-
-Body, hair and background scored separately, each column on its own colour scale.
-**This is the panel that shows the finding**: find the row that wins IoU and
-loses Hair.
-
-![Region matrix](results/screenshots/02_region_matrix.png)
-
-### 3 · The halo, as a distribution
-
-Error in the 12 px ring outside the subject — naive compositing against masked
-normalised convolution. Two visibly different distributions, not two averages.
-
-![Halo distribution](results/screenshots/03_halo_distribution.png)
-
-### 4 · The aperture as a matrix
-
-Each bokeh kernel printed as raw numbers at a radius you choose. A disc is a flat
-plateau of identical weights; a Gaussian falls from 100 at the centre to 2 at the
-corner. That is the whole `peak/mean 3.25 vs 1.00` result, readable.
-
-![Kernel matrix](results/screenshots/04_kernel_matrix.png)
 
 ---
 
