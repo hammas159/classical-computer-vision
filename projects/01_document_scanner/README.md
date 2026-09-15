@@ -48,12 +48,108 @@ Each stage is **scored against exact ground truth**, not judged by eye:
 
 ---
 
-## Screenshot
+## Screenshots
 
-The interactive app. Upload a photo or generate a scene, switch detector and
-binariser, and read the error in pixels live:
+All four are captures of the **live app**, not mockups. Every number visible in
+them was computed by the code at the moment the screenshot was taken.
 
-![Document scanner UI](docs/images/ui.png)
+### 1 · The pipeline, end to end
+
+Upload a photo or generate a scene, switch detector and binariser, and read the
+corner error in pixels live.
+
+![Pipeline view](results/screenshots/01_pipeline.png)
+
+### 2 · The image as a matrix
+
+The same page as raw numbers, before and after binarisation. This is the panel
+that makes the central finding readable rather than assertable.
+
+![Pixel matrix](results/screenshots/02_pixel_matrix.png)
+
+### 3 · Every method against every metric
+
+All six detectors scored on this image, each column on its own colour scale, and
+downloadable as CSV.
+
+![Comparison matrix](results/screenshots/03_comparison_matrix.png)
+
+### 4 · Where the pixels actually went
+
+Per-binariser confusion matrix, as counts and as per-class recall. Note how
+little the headline accuracy moves even when the ink is destroyed — paper is the
+overwhelming majority class.
+
+![Confusion matrix](results/screenshots/04_confusion_matrix.png)
+
+---
+
+## How the UI connects to the results
+
+```mermaid
+flowchart TD
+    subgraph INPUT["1 · Input"]
+        A1[Generated scene<br/>known corners + known shading]
+        A2[Your own photo<br/>uploaded through the UI]
+    end
+
+    subgraph CONTROLS["2 · Controls"]
+        B1[Scene seed]
+        B2[Lighting 0.1 - 1.0]
+        B3[Detector, 6 options]
+        B4[Binariser, 4 options]
+        B5[Aspect method toggle]
+    end
+
+    subgraph PIPELINE["3 · Pipeline, timed per stage"]
+        C1[Detect page<br/>quadrilateral]
+        C2[Recover aspect ratio<br/>closed form]
+        C3[Rectify<br/>homography warp]
+        C4[Binarise]
+    end
+
+    subgraph SCORE["4 · Scoring vs ground truth"]
+        D1[Corner error px]
+        D2[Area IoU]
+        D3[Text IoU]
+        D4[Wall-clock ms]
+    end
+
+    subgraph OUT["5 · Output"]
+        E1[4 stage images]
+        E2[Live metric tiles]
+        E3[Pixel distribution]
+        E4[Pixel value matrix]
+        E5[Comparison matrix + CSV]
+        E6[Confusion matrix]
+    end
+
+    A1 --> C1
+    A2 --> C1
+    B1 & B2 --> A1
+    B3 --> C1
+    B5 --> C2
+    B4 --> C4
+    C1 --> C2 --> C3 --> C4
+    C1 -.-> D1 & D2
+    C4 -.-> D3
+    C1 & C2 & C3 & C4 -.-> D4
+    C1 & C3 & C4 --> E1
+    D1 & D2 & D3 & D4 --> E2
+    C3 --> E3 & E4
+    C1 --> E5
+    C4 --> E6
+
+    style A1 fill:#dbeafe,stroke:#2563eb
+    style A2 fill:#dbeafe,stroke:#2563eb
+    style SCORE fill:#fef3c7
+    style OUT fill:#dcfce7
+```
+
+**The dotted lines are what makes this a study rather than a demo.** They only
+exist for the generated scene, where the true corner positions and the clean page
+are known — so the app is not showing you a picture that looks about right, it is
+showing you how many pixels wrong it is.
 
 ---
 
@@ -259,13 +355,63 @@ streamlit run ui/app.py
 
 ## Inference: try it on your own image
 
+Three ways, from easiest to most scriptable.
+
+### 1 · In the browser
+
 ```bash
 streamlit run ui/app.py
 ```
 
-Then choose **“Upload your own photo”** and drop in any photo of a page.
+Choose **“Upload your own photo”** and drop in any photo of a page. Every panel —
+the stage images, the metric tiles, the pixel matrix, the comparison matrix —
+recomputes on your image.
 
-You can also call the pipeline directly:
+### 2 · From the command line
+
+```bash
+python infer.py my_photo.jpg
+```
+
+```text
+input : my_photo.jpg  900x700
+detector : Otsu + contour
+binariser: Sauvola
+page     : found, corners at [[320.0, 82.0], [655.0, 125.0], [599.0, 619.0], [224.0, 559.0]]
+aspect   : 0.7120 w/h
+output   : 355x498 px
+time     : 12.5 ms (median of 3)
+wrote    : scanned.png
+```
+
+Not sure which detector suits your photo? Run all six:
+
+```bash
+python infer.py my_photo.jpg --all-detectors
+```
+
+```text
+Detector                   Found   Recovered w/h   Time (ms)
+------------------------------------------------------------
+Canny + contour            yes     0.713                2.56
+Otsu + contour             yes     0.712                1.52
+Morph gradient             yes     0.713                2.20
+Saturation (HSV)           yes     0.712                2.36
+Hough lines                yes     0.708                7.61
+minAreaRect (baseline)     yes     degenerate           1.43
+```
+
+Useful options:
+
+| Flag | Effect |
+|---|---|
+| `--detector "Saturation (HSV)"` | pick any of the six |
+| `--binariser Sauvola` | pick any of the four |
+| `--save-stages` | also write the detection overlay and the rectified page |
+| `--edge-aspect` | use the edge-length heuristic instead of the closed form |
+| `--out scanned.png` | where to write the result |
+
+### 3 · As a library
 
 ```python
 from shared.io import imread, imwrite
@@ -307,64 +453,279 @@ Full walkthrough with the workflow diagram: **[PROJECT.md](PROJECT.md)**.
 
 ## Problems hit, and how they were solved
 
-Every item here cost real debugging time and changed the result.
+Every item here cost real debugging time and changed the result. Each gives the
+**symptom**, the **file and line**, the **code that was wrong** and the **code
+that replaced it** — so the fix is checkable, not just described.
+
+> Line numbers refer to the current files in this repository.
+
+| # | Symptom | Where | Cost |
+|---:|---|---|---|
+| 1 | `cv2/data/` empty, cascades missing | [`pyproject.toml:12`](../../pyproject.toml#L12) | would have broken project 02 silently |
+| 2 | Aspect recovery off by **32%** | [`shared/synth.py:523`](../../shared/synth.py#L523) | every geometric result meaningless |
+| 3 | Wrong explanation for a real failure | [`src/document_scanner.py:394`](src/document_scanner.py#L394) | a false finding, nearly published |
+| 4 | One detector scored **104 px** | [`src/document_scanner.py:154`](src/document_scanner.py#L154) | unfair comparison |
+| 5 | "100% success" on a method that fails | [`src/document_scanner.py:442`](src/document_scanner.py#L442) | misleading headline number |
+| 6 | Corners generated outside the frame | [`shared/synth.py:609`](../../shared/synth.py#L609) | silent, no exception |
+| 7 | `UnicodeEncodeError` on printing | [`shared/report.py:18`](../../shared/report.py#L18) | crash at the last step |
+
+---
 
 ### 1 · OpenCV 5 has no Haar cascades — and the planning docs assumed it did
 
-The first install pulled `opencv-python-headless==5.0.0.93`, where `cv2/data/`
-contains only `__init__.py`. The bundled cascade XMLs are gone. Project 02 loads
-one at runtime, so this would have broken silently later.
+The first install pulled `opencv-python-headless==5.0.0.93`. The check that
+caught it:
 
-**Fixed** by pinning `opencv-python-headless<5` in `pyproject.toml`, with a
-comment saying why so nobody "helpfully" unpins it. OpenCV 4.14 ships 17 cascades.
+```python
+>>> import cv2, os
+>>> os.path.exists(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+False
+>>> os.listdir(cv2.data.haarcascades)
+['__init__.py']          # every cascade XML is gone in OpenCV 5
+```
+
+No exception — `cv2.CascadeClassifier(path)` on a missing file returns an object
+whose `.empty()` is `True` and which detects nothing. Project 02 loads one at
+runtime, so this would have surfaced as "the face detector finds no faces".
+
+**Fix — `pyproject.toml:12`**
+
+```diff
+- "opencv-python-headless>=4.8",
++ # <5 is load-bearing: OpenCV 5 dropped the bundled Haar cascade XMLs from
++ # cv2/data/, and CascadeClassifier fails SILENTLY when they are absent.
++ "opencv-python-headless>=4.8,<5",
+```
+
+OpenCV 4.14 ships **17** cascades. Verified after pinning:
+
+```python
+>>> len([f for f in os.listdir(cv2.data.haarcascades) if f.endswith(".xml")])
+17
+```
 
 ### 2 · The scene generator was not a physically possible camera view
 
-The closed-form aspect recovery returned **32% error** — absurd for an exact
-method. The bug was not in the algorithm. The scene warped the page using
-`getPerspectiveTransform` between four *hand-picked* corners, and such a
-homography is not necessarily the image of a rectangle under **any** pinhole
-camera. The method had nothing real to recover.
+**Symptom:** the closed-form aspect recovery reported **32.4% mean error**. For a
+method that is exact arithmetic, that is not a tuning problem — it means the
+input violates an assumption.
 
-**Fixed** by building the scene as `H = K · [r₁ r₂ t]` from a real intrinsic
-matrix and a real pose. Error fell from **32% → 0.07%**. This is the single most
-important fix in the project: without it every geometric result would have been
-quietly meaningless.
+**The broken generator** built the page's homography by picking four corners and
+fitting:
+
+```python
+# WRONG - shared/synth.py, original document_scene()
+corners = np.float32([
+    [rng.uniform(40, 180),  rng.uniform(40, 180)],      # hand-picked,
+    [W - rng.uniform(40, 180), rng.uniform(40, 180)],   # independently
+    [W - rng.uniform(40, 180), H - rng.uniform(40, 180)],
+    [rng.uniform(40, 180), H - rng.uniform(40, 180)],
+])
+M = cv2.getPerspectiveTransform(page_corners, corners)
+```
+
+Four arbitrary corners define a valid homography, but **not every homography is
+the image of a rectangle under a pinhole camera.** The aspect-recovery formula
+assumes exactly that, so it was being asked to recover a camera pose that never
+existed.
+
+**Fix — `shared/synth.py:523`, new `camera_homography()`**
+
+```python
+# RIGHT - build the view from a real camera and a real pose
+f = focal_px                                     # intrinsics
+K = np.array([[f, 0.0, W / 2.0],
+              [0.0, f, H / 2.0],
+              [0.0, 0.0, 1.0]])
+R, _ = cv2.Rodrigues(np.array([rx, ry, rz]))     # a real rotation
+t = np.array([[tx], [ty], [tz]])                 # a real translation
+# a plane at Z=0 projects with the first two columns of R plus t
+H = K @ np.hstack([R[:, :1], R[:, 1:2], t])
+```
+
+**Result: 32.4% → 0.07% mean error**, and 0 degenerate fallbacks over 30 scenes.
+
+This is the most important fix in the project. Without it, every geometric number
+here — and in projects 12, 25, 35, 38, 42 and 46, which share this generator —
+would have been quietly meaningless while looking completely plausible.
 
 ### 3 · "Otsu fails under uneven light" turned out to be the wrong explanation
 
-The first sweep looked like a clean confirmation of the textbook claim. Adding an
-**oracle** — the best global threshold by exhaustive search — showed the claim was
-wrong: the oracle scored 0.964 where Otsu scored 0.430. Without that control, a
-plausible and widely repeated explanation would have been published as a finding.
+The first sweep looked like a clean confirmation of the textbook claim: Otsu's
+IoU collapsed as the shadow deepened. The explanation written down was *"ink and
+paper are no longer separable by any single threshold"*.
+
+**The control that falsified it — `src/document_scanner.py:394`:**
+
+```python
+def binarise_best_global(gray, truth_text):
+    """The best global threshold, by exhaustive search over all 255 cuts.
+
+    Not a usable method -- it needs the ground truth it is scored against.
+    It exists to answer one question: was a global threshold AVAILABLE?
+    """
+    best_iou, best_t = -1.0, 0
+    for t in range(1, 255):
+        score = iou((gray > t).astype(np.uint8) * 255, truth_text)
+        if score > best_iou:
+            best_iou, best_t = score, t
+    return ((gray > best_t).astype(np.uint8) * 255), best_t
+```
+
+At page illumination ratio 0.39 it returns **IoU 0.964 at t = 64**, where Otsu
+scores **0.430 at t = 100**. So a global threshold existed and Otsu walked past
+it. The real mechanism, visible in the histogram figure above: the shadow spreads
+paper across a wide band that dominates the between-class variance, so Otsu
+splits *the paper* rather than separating paper from ink.
+
+A second check confirms it is not a tuning artefact — the theoretical limit is
+computable:
+
+```python
+INK_REFLECTANCE = 45 / 245        # ink over paper reflectance
+# a perfect global cut exists while page_illumination_ratio > INK_REFLECTANCE
+```
+
+which gives **0.184**. The failure appears at ratio ~0.43 — more than twice the
+level where it becomes unavoidable. Without this control a plausible, widely
+repeated, and **wrong** explanation would have been published as a finding.
 
 ### 4 · The saturation detector was being judged unfairly
 
-Its first version used `s < 60`, a magic number, and it scored **104 px** error
-while every other method used a data-derived threshold. Replacing the constant
-with Otsu on the saturation channel moved it to **1.02 px — the best of the six**.
-A comparison is only fair if every method is tuned equally carefully, or equally
-carelessly.
+Its first version scored **104 px** — worse than the deliberately-bad baseline.
+The cause was a hard-coded constant while every other method derived its
+threshold from the data.
+
+**Before:**
+
+```python
+# WRONG - a magic number that happens to suit one desk colour
+s = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)[..., 1]
+mask = (s < 60).astype(np.uint8) * 255
+```
+
+**Fix — `src/document_scanner.py:154`**
+
+```python
+# RIGHT - let the image choose its own threshold, like every other method here
+s = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)[..., 1]
+_, mask = cv2.threshold(s, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+```
+
+**Result: 104 px → 1.02 px, the best of the six.**
+
+The lesson is about method, not about saturation: a comparison is only honest if
+every method is tuned equally carefully — or equally carelessly. One tuned method
+against five untuned ones measures the tuning.
+
+Why saturation wins at all is worth stating, because it is a real physical
+argument rather than a coincidence: HSV saturation is `(max − min) / max`, so
+multiplying a pixel by a shading factor leaves it **unchanged**. It is the one
+channel the lighting gradient cannot touch.
 
 ### 5 · "Success rate" rewarded confident failure
 
-Hough lines returned a quadrilateral in 100% of scenes, so by "success rate" it
-looked perfect. It was *correct* in 63%. Added a separate **usable rate** (all
-four corners within 10 px), which is the number that reflects whether you would
-ship it.
+Hough lines returned a quadrilateral in **100%** of scenes. Scored as "did it
+find a page", it was perfect. It was actually *correct* in **63%** — in the rest
+it locked onto a desk edge and returned a confident, wrong answer.
+
+**Fix — `src/document_scanner.py:442`, two separate metrics**
+
+```python
+#: A detection is "usable" if EVERY corner lands within this many pixels.
+#: Separate from "found a quad" on purpose: a detector that fails loudly is
+#: safer than one that fails confidently, and one rate cannot say both.
+USABLE_PX = 10.0
+
+@property
+def usable_rate(self) -> float:
+    return float(np.mean([e <= USABLE_PX for e in self.corner_errors]))
+```
+
+The same failure shows up a third way, which is why the results table carries
+mean, median **and** p90:
+
+| Metric | Hough lines | Reads as |
+|---|---:|---|
+| Found a quad | 100% | perfect |
+| Usable (≤10 px) | 63% | unshippable |
+| Median error | 1.62 px | better than Canny |
+| Mean error | 46.6 px | broken |
+| p90 error | 159.8 px | catastrophic tail |
+
+**A mean and a median that disagree by 29× is not noise — it is two populations.**
+Any single-number summary of this detector is a lie in one direction or the other.
 
 ### 6 · A `(width, height)` / `(rows, cols)` transposition
 
-`document_scene` declared `size=(900, 700)` and unpacked it as `H, W`, so page
-corners were generated outside the frame. cv2 uses `(x, y)`, numpy uses
-`[row, col]`, and neither complains. **Caught by a test** asserting the corners
-lie inside the image, not by looking at pictures.
+**Before:**
+
+```python
+# WRONG - size is (width, height), but unpacked as (height, width)
+def document_scene(size=(900, 700), ...):
+    H, W = size            # H=900, W=700  -- silently swapped
+```
+
+With a 900x700 frame treated as 700x900, corners were generated outside the
+image. No exception: numpy indexes `[row, col]`, cv2 takes `(x, y)`, and neither
+complains when you confuse them.
+
+**Fix — `shared/synth.py:609`**
+
+```python
+# RIGHT - name the axes at the point of unpacking, never positionally
+W, H = size                # (width, height), matching cv2's convention
+page_h, page_w = 560, 400  # and again here, explicitly
+```
+
+**Caught by a test, not by looking at pictures** — the rendered scene still looked
+like a document:
+
+```python
+def test_document_scene_corners_lie_inside_the_frame():
+    photo, page, corners = synth.document_scene(seed=0)
+    h, w = photo.shape[:2]
+    assert (corners[:, 0] >= 0).all() and (corners[:, 0] < w).all()
+    assert (corners[:, 1] >= 0).all() and (corners[:, 1] < h).all()
+```
+
+This is the single most common bug in computer vision and it never announces
+itself. The repo-wide defence is in `shared/io.py`, which wraps loading once so
+BGR/RGB and axis order are decided in one place.
 
 ### 7 · The Windows console cannot print `≤`
 
-`print()` of the results table raised `UnicodeEncodeError: 'charmap' codec` on
-cp1252. Fixed once for all projects in `shared/report.py::init_console()`, which
-reconfigures stdout to UTF-8. Files were always written with an explicit
+The experiment finished, wrote every file correctly, and then crashed on the last
+line while printing the summary:
+
+```
+UnicodeEncodeError: 'charmap' codec can't encode character '≤'
+in position 34: character maps to <undefined>
+```
+
+`≤` is `≤`, from the column header "Usable (≤10 px)". Windows consoles
+default to cp1252, which has no such character.
+
+**Fix — `shared/report.py:18`, once for all 41 projects**
+
+```python
+def init_console() -> None:
+    """Make stdout/stderr UTF-8 safe on a Windows console.
+
+    Files are always written with an explicit encoding, so only the console is
+    at risk -- which means the crash lands AFTER all the work is done, which is
+    the most annoying possible place for it.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            try:
+                reconfigure(encoding="utf-8")
+            except (ValueError, OSError):
+                pass          # a redirected or closed stream: not worth failing over
+```
+
+Files were always written with an explicit
 `encoding="utf-8"` and were never affected.
 
 ### 8 · Headless screenshots captured a skeleton loader

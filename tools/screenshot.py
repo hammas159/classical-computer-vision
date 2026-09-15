@@ -78,8 +78,35 @@ def wait_for_devtools(port: int, timeout: float = 25.0) -> str:
     raise TimeoutError(f"Chrome DevTools never became available on port {port} ({last})")
 
 
+#: JavaScript that clicks the first interactive element whose visible text
+#: matches. Streamlit renders tabs as ``button[role="tab"]`` and expanders as
+#: ``summary``, so one selector list covers every state worth capturing.
+#: An exact match is tried first: "Results" would otherwise match
+#: "Results matrix" and open the wrong panel.
+CLICK_JS = """
+(() => {
+  const want = %s;
+  const sel = 'button, [role="tab"], [role="option"], summary, [data-testid="stExpander"] summary';
+  const els = Array.from(document.querySelectorAll(sel));
+  const text = e => (e.innerText || e.textContent || '').trim();
+  let el = els.find(e => text(e) === want) || els.find(e => text(e).includes(want));
+  if (!el) return 'NOT_FOUND';
+  el.scrollIntoView({block: 'center'});
+  el.click();
+  return 'CLICKED';
+})()
+"""
+
+
 async def capture(
-    ws_url: str, url: str, out_path: Path, width: int, height: int, settle: float
+    ws_url: str,
+    url: str,
+    out_path: Path,
+    width: int,
+    height: int,
+    settle: float,
+    clicks: list[str] | None = None,
+    click_wait: float = 4.0,
 ) -> None:
     import websockets
 
@@ -114,10 +141,25 @@ async def capture(
 
         await asyncio.sleep(settle)
 
+        await send("Runtime.enable")
+
+        # Drive the app into the state we want to photograph. Each click is
+        # followed by a wait, because Streamlit re-runs the whole script over a
+        # websocket and the new panel is not in the DOM until that round trip
+        # finishes.
+        for label in clicks or []:
+            reply = await send(
+                "Runtime.evaluate",
+                {"expression": CLICK_JS % json.dumps(label), "returnByValue": True},
+            )
+            outcome = reply.get("result", {}).get("result", {}).get("value")
+            if outcome != "CLICKED":
+                print(f"  warning: could not find an element matching {label!r}", file=sys.stderr)
+            await asyncio.sleep(click_wait)
+
         # Scroll back to the document origin. Streamlit lays its sidebar out to
         # the left of the main pane, and a page that has been scrolled at all
         # crops the sidebar out of the capture.
-        await send("Runtime.enable")
         await send(
             "Runtime.evaluate",
             {"expression": "window.scrollTo(0, 0); document.documentElement.scrollLeft = 0;"},
@@ -167,8 +209,15 @@ def screenshot(
     width: int = 1600,
     height: int = 1200,
     settle: float = 8.0,
+    clicks: list[str] | None = None,
+    click_wait: float = 4.0,
 ) -> Path:
-    """Capture ``url`` to ``out_path``. Returns the path written."""
+    """Capture ``url`` to ``out_path``. Returns the path written.
+
+    ``clicks`` is a list of visible labels to click, in order, before capturing —
+    a tab name, an expander header, a button. It is what makes it possible to
+    photograph more than the app's opening screen.
+    """
     out_path = Path(out_path)
     chrome = find_chrome()
     port = free_port()
@@ -193,7 +242,9 @@ def screenshot(
     )
     try:
         ws_url = wait_for_devtools(port)
-        asyncio.run(capture(ws_url, url, out_path, width, height, settle))
+        asyncio.run(
+            capture(ws_url, url, out_path, width, height, settle, clicks, click_wait)
+        )
     finally:
         proc.terminate()
         try:
@@ -212,9 +263,20 @@ def main() -> int:
     ap.add_argument("--width", type=int, default=1600)
     ap.add_argument("--height", type=int, default=1200)
     ap.add_argument("--settle", type=float, default=8.0, help="seconds to wait after load")
+    ap.add_argument(
+        "--click",
+        action="append",
+        default=[],
+        metavar="LABEL",
+        help="click the element with this visible text before capturing; repeatable",
+    )
+    ap.add_argument("--click-wait", type=float, default=4.0, help="seconds to wait after each click")
     args = ap.parse_args()
 
-    path = screenshot(args.url, args.out, args.width, args.height, args.settle)
+    path = screenshot(
+        args.url, args.out, args.width, args.height, args.settle,
+        clicks=args.click, click_wait=args.click_wait,
+    )
     size = path.stat().st_size
     print(f"wrote {path} ({size / 1024:.0f} KB)")
     if size < 30_000:
