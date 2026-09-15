@@ -14,7 +14,7 @@ import pytest
 
 import portrait_mode as pm
 from shared import synth
-from shared.metrics import iou
+from shared.metrics import iou, psnr
 
 # --------------------------------------------------------------------------- #
 # the scene and the cascade
@@ -25,12 +25,12 @@ def test_scene_masks_are_consistent():
     s = synth.portrait_scene(seed=0)
     assert s.image.shape[:2] == s.mask.shape
     # body and hair partition the subject, and never overlap
-    assert not np.any((s.body > 0) & (s.hair > 0))
-    assert np.array_equal(s.mask > 0, (s.body > 0) | (s.hair > 0))
+    assert not np.any((s.body > 0) & (s.fine > 0))
+    assert np.array_equal(s.mask > 0, (s.body > 0) | (s.fine > 0))
     assert s.background.shape == s.image.shape
 
 
-def test_hair_is_a_small_fraction_of_the_subject():
+def test_fine_detail_is_a_minority_of_the_subject():
     """The premise of the whole hair analysis, asserted rather than assumed.
 
     If hair were 30% of the subject, whole-image IoU would already reflect it and
@@ -38,8 +38,8 @@ def test_hair_is_a_small_fraction_of_the_subject():
     a method can lose all of it and still look excellent.
     """
     s = synth.portrait_scene(seed=0)
-    fraction = (s.hair > 0).sum() / (s.mask > 0).sum()
-    assert 0.005 < fraction < 0.08
+    fraction = (s.fine > 0).sum() / (s.mask > 0).sum()
+    assert 0.10 < fraction < 0.35
 
 
 def test_the_bundled_haar_cascade_loads():
@@ -90,37 +90,44 @@ def test_grabcut_beats_the_rectangle_baseline_on_boundary_quality():
     assert gc_f1 > rect_f1 * 2
 
 
-def test_iou_and_boundary_f1_disagree_about_the_winner():
-    """The project's central finding, as a regression test.
+def test_the_reference_matte_favours_grabcut():
+    """The circularity in this project, asserted so it cannot be forgotten.
 
-    The ellipse prior wins on IoU while recovering almost no hair; GrabCut wins
-    on boundary quality. If a future change made the two metrics agree, the
-    finding would no longer hold and this should fail loudly.
+    The reference matte was produced by GrabCut plus cleanup, so GrabCut-based
+    methods are being scored against an annotation built the same way they work.
+    They win every column, and that is **not evidence that they are best** -- it
+    is evidence of the annotation's provenance. Pinning it here keeps the caveat
+    attached to the numbers.
     """
-    rows = pm.evaluate_mattes(n_scenes=3)
-    scored = [r for r in rows if r["iou"] is not None]
-    best_iou = max(scored, key=lambda r: r["iou"])
-    best_boundary = max(scored, key=lambda r: r["boundary_f1"])
+    rows = [r for r in pm.evaluate_mattes(runs=1) if r["iou"] is not None]
+    best = max(rows, key=lambda r: r["iou"])
+    assert "GrabCut" in best["method"]
+    for column in ("iou", "boundary_f1", "fine_recall"):
+        assert max(rows, key=lambda r: r[column])["method"] == best["method"]
 
-    assert best_iou["method"] != best_boundary["method"]
-    assert best_iou["hair_recall"] < 0.25          # the IoU winner loses the hair
-    assert best_boundary["hair_recall"] > best_iou["hair_recall"]
-    # and the boundary winner is genuinely better at the boundary, by a lot
-    assert best_boundary["boundary_f1"] > best_iou["boundary_f1"] * 2
 
 
 def test_background_fpr_exposes_a_mask_that_covers_everything():
-    """Recall alone is gameable; the FPR column is what makes the table honest."""
-    rows = pm.evaluate_mattes(n_scenes=2)
+    """Recall alone is gameable; the FPR column is what makes the table honest.
+
+    On the old synthetic head-and-shoulders scene the face rectangle "recovered"
+    0.97 of the hair purely by covering the whole head region. On a real
+    full-body action photograph it cannot game the metric that way -- the
+    subject is far larger than any face box, so it recovers only 0.39.
+
+    What survives is the reason the column exists: the two shape priors spend
+    different amounts of background to buy their recall, and only the FPR column
+    shows it.
+    """
+    rows = pm.evaluate_mattes(runs=1)
     by_name = {r["method"]: r for r in rows}
     rect = by_name["Face rect (baseline)"]
     ellipse = by_name["Face ellipse prior"]
 
-    # the rectangle "recovers" nearly all the hair purely by covering the region
-    assert rect["hair_recall"] > 0.8
-    # and it pays for that with a background false-positive rate an order of
-    # magnitude worse than a method that actually follows the silhouette
-    assert rect["background_fpr"] > ellipse["background_fpr"] * 5
+    # the rectangle covers more, so it recovers more fine detail than the ellipse
+    assert rect["fine_recall"] > ellipse["fine_recall"]
+    # and pays for it in background falsely called subject
+    assert rect["background_fpr"] > ellipse["background_fpr"]
 
 
 def test_grabcut_is_reproducible_when_the_seed_is_pinned():
@@ -131,18 +138,26 @@ def test_grabcut_is_reproducible_when_the_seed_is_pinned():
         assert np.array_equal(pm.matte_grabcut_face(s.image, rng_seed=0), first)
 
 
-def test_grabcut_is_unstable_across_seeds_on_an_unchanged_image():
-    """The measurement bug this project found, asserted so it cannot come back.
+def test_grabcut_stability_is_a_property_of_the_scene_not_the_algorithm():
+    """A finding that REVERSED when the scene became a real photograph.
 
-    GrabCut seeds its foreground/background colour mixtures with k-means from
-    OpenCV's global RNG. The image below never changes, so every bit of this
-    spread is algorithmic noise. Quoting one unseeded GrabCut number as "the"
-    result is reporting a coin flip.
+    On the old synthetic scenes GrabCut spanned IoU 0.15-0.90 across 24 seeds --
+    the headline "grabCut is non-deterministic" result. On this real photograph
+    the same sweep spans under 0.01, because the subject's colours are far from
+    the crowd behind them and the k-means initialisation lands in the same basin
+    every time.
+
+    Both observations are true and neither generalises. What generalises is the
+    conditional: **the instability is a property of the scene.** Where subject
+    and background share colours the initialisation decides the result; where
+    they do not, it does not matter. Asserting stability here is what stops the
+    old, scene-specific claim from being quietly carried forward.
     """
-    s = synth.portrait_scene(background="coffee", seed=0)
-    scores = [iou(pm.matte_grabcut_face(s.image, rng_seed=k), s.mask) for k in range(12)]
-    assert max(scores) - min(scores) > 0.05
-    assert np.std(scores) > 0.01
+    rows = pm.evaluate_grabcut_stability(n_seeds=12)
+    assert rows, "stability sweep returned nothing"
+    spreads = [r["iou_max"] - r["iou_min"] for r in rows]
+    assert max(spreads) < 0.05, f"expected a stable scene, saw spread {max(spreads):.3f}"
+
 
 
 @pytest.mark.parametrize("name", list(pm.BOKEH_KERNELS))
@@ -197,17 +212,20 @@ def test_halo_ring_is_outside_the_subject_only():
     assert not np.any((ring > 0) & (s.mask > 0))
 
 
-def test_reference_composite_matches_a_perfect_matte_pipeline():
-    # with the true matte and no blur (radius 0 -> identity kernel), the
-    # reference composite must reproduce the original image exactly
-    s = synth.portrait_scene(seed=0)
+def test_reference_composite_is_close_to_a_perfect_matte_pipeline():
+    """Near-equal, not equal, and the difference is honest.
+
+    A real photograph has no clean background plate -- the pixels behind the
+    subject were never photographed. ``portrait_scene`` reconstructs one by
+    inpainting, so the compositing reference is a good approximation rather than
+    ground truth, and this asserts closeness instead of identity.
+    """
+    s = synth.portrait_scene()
     identity = np.ones((1, 1), np.float32)
-    assert np.array_equal(pm.composite_reference(s, identity), s.image)
+    ref = pm.composite_reference(s, identity)
+    assert ref.shape == s.image.shape
+    assert psnr(ref, s.image) > 30.0
 
-
-# --------------------------------------------------------------------------- #
-# end to end
-# --------------------------------------------------------------------------- #
 
 
 def test_portrait_end_to_end_blurs_the_background_and_not_the_subject():
@@ -222,7 +240,7 @@ def test_portrait_end_to_end_blurs_the_background_and_not_the_subject():
     bg_after = out.copy()
     bg_after[s.mask > 0] = 0
     assert rms_contrast(bg_after) < rms_contrast(bg_before)  # background softened
-    assert iou(mask, s.mask) > 0.6
+    assert iou(mask, s.mask) > 0.3
 
 
 def test_portrait_returns_none_when_no_subject_is_found():

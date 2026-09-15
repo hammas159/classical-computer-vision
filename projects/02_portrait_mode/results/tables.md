@@ -1,22 +1,22 @@
 ### Subject matting (12 scenes, GrabCut pinned to seed 0)
 
-| Method | Subject found | IoU | Dice | Body recall | Hair recall | Background FPR | Boundary F1 | Time (ms) |
+| Method | Subject found | IoU | Dice | Body recall | Fine detail recall | Background FPR | Boundary F1 | Time (ms) |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Face rect (baseline) | 100% | 0.5654 | 0.7224 | 0.9422 | 0.97 | 0.3441 | 0.0236 | 37.036 |
-| Face ellipse prior | 100% | 0.928 | 0.9627 | 0.9664 | 0.0624 | 0.0091 | 0.1659 | 36.244 |
-| Haar + GrabCut | 100% | 0.8721 | 0.929 | 0.9343 | 0.4823 | 0.0368 | 0.5849 | 1071.72 |
-| GrabCut (centre rect) | 100% | 0.7985 | 0.8716 | 0.8683 | 0.5285 | 0.0454 | 0.6362 | 1128.68 |
-| Skin colour (YCrCb) | 100% | 0.1735 | 0.2914 | 0.2227 | 0.947 | 0.3288 | 0.25 | 2.847 |
-| Watershed + markers | 100% | 0.7155 | 0.833 | 0.7876 | 0.2362 | 0.0452 | 0.3728 | 47.631 |
+| Face rect (baseline) | 100% | 0.3881 | 0.5591 | 0.5825 | 0.3908 | 0.0892 | 0.0292 | 18.488 |
+| Face ellipse prior | 100% | 0.3457 | 0.5137 | 0.4814 | 0.2174 | 0.0501 | 0.0235 | 18.422 |
+| Haar + GrabCut | 100% | 0.4765 | 0.6454 | 0.5214 | 0.325 | 0 | 0.3814 | 286.22 |
+| GrabCut (centre rect) | 100% | 0.7117 | 0.8316 | 0.6978 | 0.7604 | 0.0001 | 0.6868 | 494.029 |
+| Skin colour (YCrCb) | 100% | 0.1909 | 0.3206 | 0.1667 | 0.4106 | 0.038 | 0.2016 | 1.235 |
+| Watershed + markers | 100% | 0.3488 | 0.5172 | 0.5144 | 0.2734 | 0.0728 | 0.1432 | 23.683 |
 
 ### GrabCut seed stability (24 seeds on each identical image)
 
 | Scene | Seeds | IoU mean | IoU std | Worst | Best | Spread |
 |---|---:|---:|---:|---:|---:|---:|
-| 0 (coffee) | 24 | 0.6634 | 0.1162 | 0.1515 | 0.9039 | 0.7524 |
-| 1 (rocket) | 24 | 0.8905 | 0.0177 | 0.8491 | 0.9064 | 0.0574 |
-| 2 (grass) | 24 | 0.9148 | 0.0054 | 0.8926 | 0.92 | 0.0273 |
-| 3 (brick) | 24 | 0.941 | 0.0008 | 0.9402 | 0.9421 | 0.0019 |
+| 0 (coffee) | 24 | 0.4761 | 0.0005 | 0.4752 | 0.477 | 0.0019 |
+| 1 (rocket) | 24 | 0.4761 | 0.0005 | 0.4752 | 0.477 | 0.0019 |
+| 2 (grass) | 24 | 0.4761 | 0.0005 | 0.4752 | 0.477 | 0.0019 |
+| 3 (brick) | 24 | 0.4761 | 0.0005 | 0.4752 | 0.477 | 0.0019 |
 
 ### Bokeh kernels (radius 15 px)
 
@@ -31,5 +31,5 @@
 
 | Strategy | Halo error (0-255) | Whole-background error | Time (ms) |
 |---|---:|---:|---:|
-| Naive (blur all, paste back) | 9.48 | 1.636 | 16.009 |
-| Masked (normalised convolution) | 1.576 | 0.271 | 46.455 |
+| Naive (blur all, paste back) | 12.545 | 1.661 | 7.732 |
+| Masked (normalised convolution) | 2.036 | 0.273 | 23.139 |

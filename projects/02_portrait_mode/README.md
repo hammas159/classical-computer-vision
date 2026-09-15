@@ -10,16 +10,32 @@ Phone portrait mode without a depth sensor and without a segmentation network:
 **six classical matting methods, four aperture shapes, two compositing
 strategies** — all measured against an exact ground-truth alpha matte.
 
-> **The finding, in one sentence.** Ranking the six methods by IoU crowns a
-> method that recovers **6.2%** of the subject's hair; ranking the same six by
-> boundary F1 crowns one that recovers **52.9%**. The metric, not the algorithm,
-> decides the winner — and hair is only 2.5% of the pixels, so whole-image IoU
-> cannot see it.
+Everything runs on **one real photograph of one real person** — real hair, real
+kit, a real crowd behind them — not on a constructed scene.
 
-> **The measurement bug worth knowing about.** OpenCV's `grabCut` is **not
-> deterministic**. On one unchanged image, 24 different RNG seeds produced IoU
-> anywhere from **0.15 to 0.90**. Any single unseeded GrabCut number is a draw
-> from a distribution, not a measurement.
+> **The finding, in one sentence.** Naive compositing — blur the whole image,
+> paste the subject back — produces a picture that looks perfectly acceptable and
+> is wrong by **12.5** against the masked version's **2.04** in the ring outside
+> the subject: **6.2× worse**, and invisible to the eye.
+
+> **The bokeh finding.** A real lens maps a point of light to the **shape of its
+> aperture** — a flat disc. A Gaussian blur gives peak/mean **2.94** against a
+> disc's **1.00**, so it renders highlights as soft smudges rather than the
+> discs a camera produces. Measured on a synthetic point light, where the answer
+> is exact.
+
+> 🚨 **A caveat this project states rather than hides.** The reference matte was
+> annotated once with GrabCut plus cleanup, then frozen. GrabCut-based methods
+> are therefore being scored against an annotation built the way they work, and
+> they win every column. **That is not evidence they are best** — it is evidence
+> of the annotation's provenance, and it is why the matting table below is read
+> as agreement with a careful annotation rather than as a ranking.
+
+> **A finding that reversed, and is reported anyway.** On the earlier synthetic
+> scenes `grabCut` spanned IoU **0.15–0.90** across 24 seeds. On this real
+> photograph the same sweep spans **under 0.01**, because the subject's colours
+> are far from the crowd's. Both are true; neither generalises. What does
+> generalise: **the instability is a property of the scene, not the algorithm.**
 
 **Jump to:** [What it does](#what-it-does) · [Screenshot](#screenshot) ·
 [Input & output](#input--output) · [Results](#results) ·
@@ -49,28 +65,6 @@ trained by someone else, it is not a neural network, and nothing here is trained
 
 All captures of the **live app**. Every number in them was computed at the moment
 the screenshot was taken.
-
-### 0 · On a real photograph
-
-A real person, real hair, real depth, a real crowd behind them — nobody built this
-image for the algorithm. The subject is cut out and the background blurred.
-
-![Real photograph](results/screenshots/00_real_photo.png)
-
-**No IoU or hair recall is reported here.** Nobody labelled which of this photo's
-pixels are subject, so any accuracy would be invented. The measured comparison
-below uses a generated scene, which has an exact matte.
-
-The photograph is [`assets/real/messi5.jpg`](../../assets/real/messi5.jpg), from
-OpenCV's BSD-licensed sample data — the same image OpenCV uses in its own GrabCut
-tutorial.
-
-> **One real finding from this image.** The default matting method used to be
-> `Haar + GrabCut`. On this photo the face box seeds GrabCut so tightly that the
-> matte keeps the torso and **loses both arms and both legs**. `GrabCut (centre
-> rect)` makes no assumption that a face will be found at all, recovers the full
-> body, and is now the default. A method that depends on a detector inherits that
-> detector's failures.
 
 ### 1 · Matte, blur, composite
 
@@ -215,30 +209,34 @@ Produced by `run.py` over 12 scenes; mirrored in
 
 ### Subject matting (12 scenes, GrabCut pinned to seed 0)
 
-| Method | Subject found | IoU | Dice | Body recall | Hair recall | Background FPR | Boundary F1 | Time (ms) |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Face rect (baseline) | 100% | 0.5654 | 0.7224 | 0.9422 | 0.97 | 0.3441 | 0.0236 | 37.9 |
-| **Face ellipse prior** | 100% | **0.928** | **0.9627** | 0.9664 | 0.0624 | **0.0091** | 0.1659 | **39.1** |
-| Haar + GrabCut | 100% | 0.8721 | 0.929 | 0.9343 | 0.4823 | 0.0368 | 0.5849 | 1095 |
-| **GrabCut (centre rect)** | 100% | 0.7985 | 0.8716 | 0.8683 | **0.5285** | 0.0454 | **0.6362** | 1147 |
-| Skin colour (YCrCb) | 100% | 0.1735 | 0.2914 | 0.2227 | 0.947 | 0.3288 | 0.25 | **2.7** |
-| Watershed + markers | 100% | 0.7155 | 0.833 | 0.7876 | 0.2362 | 0.0452 | 0.3728 | 49.8 |
+| Method | IoU | Dice | Body recall | Fine detail | Background FPR | Boundary F1 | Time (ms) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Face rect (baseline) | 0.3881 | 0.5592 | 0.5827 | 0.3908 | 0.0888 | 0.0294 | **17** |
+| Face ellipse prior | 0.3457 | 0.5138 | 0.4814 | 0.2174 | 0.0503 | 0.0243 | 17 |
+| Haar + GrabCut | 0.4765 | 0.6455 | 0.5214 | 0.325 | **0.0004** | 0.3808 | 279 |
+| **GrabCut (centre rect)** | **0.7117** | **0.8316** | **0.6982** | **0.7604** | 0.0005 | **0.6868** | 494 |
+| Skin colour (YCrCb) | 0.1909 | 0.3206 | 0.1673 | 0.4106 | 0.0383 | 0.2018 | **1** |
+| Watershed + markers | 0.3488 | 0.5172 | 0.5137 | 0.2734 | 0.0729 | 0.1428 | 24 |
 
 ![Matting methods](docs/images/mattes.png)
 
-**Read the table across, not down.** Three different methods "win" depending on
-which column you look at:
+**Read this table with its caveat attached.** GrabCut wins every column, and the
+reference matte was made with GrabCut — so the right reading is *"these methods
+agree with a careful annotation to this degree"*, not *"GrabCut is best"*.
 
-* **IoU says the ellipse prior** (0.928) — a hand-drawn shape that never looks at
-  the image. It recovers **6.2%** of the hair and has a boundary F1 of 0.166.
-* **Boundary F1 says GrabCut** (0.636) — the method that actually follows the
-  silhouette, at **52.9%** hair recovery, but a *lower* IoU of 0.799.
-* **Hair recall alone says the face rectangle** (0.97) — which is a cheat. It
-  "recovers" the hair by covering the whole region, and pays for it with a
-  background false-positive rate of **0.344**, nearly forty times the ellipse's.
+What the table still shows honestly, because it does not depend on the
+annotation's provenance:
 
-That last row is why the FPR column exists. Recall on its own is gameable by
-predicting everything.
+* **The two shape priors trade differently.** The face rectangle recovers more
+  fine detail than the ellipse (0.391 vs 0.217) purely by covering more area, and
+  pays for it with a background false-positive rate nearly twice as high (0.089
+  vs 0.050). Recall alone is gameable by predicting everything; the FPR column is
+  what exposes that.
+* **Skin colour inverts the trade.** It catches 0.411 of the fine detail — more
+  than either GrabCut variant's body recall would suggest — while scoring the
+  worst IoU of all six (0.191), because it finds skin and loses the kit entirely.
+* **The cost spread is three orders of magnitude**: 1 ms for skin colour against
+  494 ms for GrabCut, on the same 342x548 image.
 
 ![Matte errors](docs/images/matte_errors.png)
 

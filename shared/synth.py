@@ -20,6 +20,7 @@ Every function here
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -404,112 +405,116 @@ def _astronaut_face_crop() -> np.ndarray:
 class PortraitScene:
     """A composited portrait with an exact alpha matte.
 
-    ``hair`` is tracked separately from ``body`` because thin structures are
-    where every segmentation method actually fails, and a single whole-image IoU
-    hides that completely: hair is a small fraction of the pixels, so losing all
-    of it barely moves the overall score.
+    ``fine`` is tracked separately from ``body`` because **thin structures are
+    where every segmentation method actually fails**, and a single whole-image
+    IoU hides that completely: thin structures are a small fraction of the
+    pixels, so losing all of them barely moves the overall score.
     """
 
     image: np.ndarray
-    mask: np.ndarray       # full subject: body + hair
-    body: np.ndarray       # the solid silhouette alone
-    hair: np.ndarray       # the thin strands alone
-    face_box: tuple[int, int, int, int]  # (x, y, w, h) of the pasted real face
+    mask: np.ndarray       # full subject: body + fine
+    body: np.ndarray       # the thick core (torso) alone
+    fine: np.ndarray       # thin structure: outstretched limbs + the boundary band
+    face_box: tuple[int, int, int, int]  # (x, y, w, h) of the subject's face
     background: np.ndarray  # the clean plate, with no subject composited onto it
 
 
 def portrait_scene(
     size: tuple[int, int] = (640, 640),
     background: str = "coffee",
-    n_strands: int = 90,
-    strand_thickness: int = 1,
     seed: int | None = 0,
+    **_legacy,
 ) -> PortraitScene:
-    """Composite a subject over a cluttered background with a **known** matte.
+    """A **real photograph of a real person**, with a stored reference matte.
 
-    The subject is a synthetic head-and-shoulders silhouette with a *real* face
-    pasted into the head, so a Haar cascade has something genuine to detect while
-    the alpha matte stays exact. Fine hair strands are drawn around the head,
-    because "portrait mode fails on hair" is the standard caveat and this makes
-    it a number instead of a caveat.
+    Nothing is composited. The image is
+    ``assets/real/messi5.jpg`` exactly as photographed — real person, real hair,
+    real kit, real depth, a real crowd behind them — and the ground truth is a
+    reference matte stored beside it.
+
+    🚨 **This replaced a synthetic subject, and the old one was indefensible.**
+    It was an oval face crop with a *navy triangle* for a body, drawn hair
+    strands, pasted onto a coffee cup. It did not look like a portrait, and an
+    oval edge against a triangle is not what makes matting hard — so the table
+    was scoring methods on a shape that does not resemble the problem.
+
+    ``background`` and ``seed`` are accepted and ignored. They are kept so the
+    older call sites still run; there is now exactly one scene, because portrait
+    mode needs one photograph of one person and nothing else.
+
+    **The reference matte was produced once by GrabCut plus morphological
+    cleanup, then frozen.** That is an ordinary annotation, but it is not
+    neutral: it will flatter GrabCut-based methods. The bias is stated here
+    rather than buried, and it is why the numbers in this project are read as
+    "which methods agree with a careful annotation", not as an absolute ranking.
     """
-    from .io import ensure_rgb, sample, to_float
+    from .io import imread
 
-    rng = _rng(seed)
-    W, H = size
+    assets = Path(__file__).resolve().parent.parent / "assets" / "real"
+    image = imread(assets / "messi5.jpg")
+    matte = imread(assets / "messi5_matte.png")
+    if matte.ndim == 3:
+        matte = cv2.cvtColor(matte, cv2.COLOR_RGB2GRAY)
+    mask = (matte > 127).astype(np.uint8) * 255
 
-    bg = cv2.resize(sample(background), (W, H), interpolation=cv2.INTER_AREA)
+    # Split the subject into its thick core and its thin structure. Eroding by a
+    # radius wider than an arm strips the limbs away, so what remains is the
+    # torso and what was removed is exactly the part every method loses.
+    body = cv2.erode(mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (13, 13)))
+    body = cv2.morphologyEx(body, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+    fine = cv2.bitwise_and(mask, cv2.bitwise_not(body))
 
-    body = np.zeros((H, W), np.uint8)
-    head_c = (W // 2, int(H * 0.36))
-    head_ax = (int(W * 0.135), int(H * 0.175))
-    cv2.ellipse(body, head_c, head_ax, 0, 0, 360, 255, -1)
+    face_box = _find_face_box(image, mask)
 
-    # shoulders: a wide rounded trapezoid running off the bottom of the frame
-    sh_top, sh_w = int(H * 0.56), int(W * 0.42)
-    shoulders = np.array(
-        [
-            [W // 2 - int(W * 0.12), sh_top - int(H * 0.04)],
-            [W // 2 + int(W * 0.12), sh_top - int(H * 0.04)],
-            [W // 2 + sh_w, H - 1],
-            [W // 2 - sh_w, H - 1],
-        ],
-        np.int32,
+    # There is no clean background plate for a real photograph -- the pixels
+    # behind the subject were never seen. The subject region is inpainted so the
+    # compositing reference has *something* plausible there, and the fact that it
+    # is a reconstruction rather than ground truth is stated wherever it is used.
+    plate = cv2.inpaint(
+        cv2.cvtColor(image, cv2.COLOR_RGB2BGR),
+        cv2.dilate(mask, np.ones((5, 5), np.uint8)),
+        7,
+        cv2.INPAINT_TELEA,
     )
-    cv2.fillPoly(body, [shoulders], 255)
-    body = cv2.GaussianBlur(body, (0, 0), 2.0)
-    body = (body > 127).astype(np.uint8) * 255
-
-    # hair: thin strands radiating from the top of the head
-    hair = np.zeros((H, W), np.uint8)
-    for _ in range(n_strands):
-        angle = rng.uniform(np.pi * 0.95, np.pi * 2.05)  # upper hemisphere
-        length = rng.uniform(0.25, 0.75) * head_ax[1]
-        x = head_c[0] + head_ax[0] * np.cos(angle) * rng.uniform(0.75, 1.0)
-        y = head_c[1] + head_ax[1] * np.sin(angle) * rng.uniform(0.75, 1.0)
-        pts = [(int(x), int(y))]
-        for _ in range(4):
-            angle += rng.uniform(-0.35, 0.35)
-            x += np.cos(angle) * length / 4
-            y += np.sin(angle) * length / 4
-            pts.append((int(np.clip(x, 0, W - 1)), int(np.clip(y, 0, H - 1))))
-        cv2.polylines(hair, [np.array(pts, np.int32)], False, 255, strand_thickness)
-    hair = cv2.bitwise_and(hair, cv2.bitwise_not(body))  # strands outside the head only
-
-    mask = cv2.bitwise_or(body, hair)
-
-    # paint the subject: a real face in the head, flat clothing below
-    subject = np.zeros((H, W, 3), np.uint8)
-    subject[:] = (54, 62, 96)  # clothing
-    # "Cover" fit, not "fit inside": scale by the larger factor and centre-crop,
-    # so the face fills the whole head ellipse. A plain resize leaves the face
-    # photo's own pale background visible at the sides of the head.
-    src_face = _astronaut_face_crop()
-    tw, th = head_ax[0] * 2, head_ax[1] * 2
-    scale = max(tw / src_face.shape[1], th / src_face.shape[0])
-    grown = cv2.resize(src_face, (0, 0), fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
-    oy = max(0, (grown.shape[0] - th) // 2)
-    ox = max(0, (grown.shape[1] - tw) // 2)
-    face = grown[oy : oy + th, ox : ox + tw]
-    if face.shape[:2] != (th, tw):  # guard against a one-pixel rounding shortfall
-        face = cv2.resize(face, (tw, th), interpolation=cv2.INTER_AREA)
-    hx0, hy0 = head_c[0] - head_ax[0], head_c[1] - head_ax[1]
-    subject[hy0 : hy0 + face.shape[0], hx0 : hx0 + face.shape[1]] = face
-    subject[hair > 0] = (38, 28, 22)  # dark hair
-
-    grain = rng.normal(0, 2.5 / 255, bg.shape)  # the same grain on both plates
-    out = bg.copy()
-    out[mask > 0] = subject[mask > 0]
+    plate = cv2.cvtColor(plate, cv2.COLOR_BGR2RGB)
 
     return PortraitScene(
-        image=ensure_rgb(to_uint8(to_float(out) + grain)),
+        image=image,
         mask=mask,
         body=body,
-        hair=hair,
-        face_box=(hx0, hy0, head_ax[0] * 2, head_ax[1] * 2),
-        background=ensure_rgb(to_uint8(to_float(bg) + grain)),
+        fine=fine,
+        face_box=face_box,
+        background=plate,
     )
 
+def _find_face_box(img: np.ndarray, mask: np.ndarray) -> tuple[int, int, int, int]:
+    """Locate the subject's face, falling back to the top of the silhouette.
+
+    The fallback matters: on a full-body action shot the face is small and a
+    cascade often misses it. Returning the head region of the known matte keeps
+    the field meaningful instead of returning something arbitrary.
+    """
+    from .io import to_gray
+
+    try:
+        cascade = cv2.CascadeClassifier(
+            cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+        )
+        if not cascade.empty():
+            faces = cascade.detectMultiScale(to_gray(img), 1.1, 5)
+            if len(faces):
+                x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
+                return int(x), int(y), int(w), int(h)
+    except cv2.error:
+        pass
+
+    ys, xs = np.nonzero(mask)
+    if not len(ys):
+        return (0, 0, 1, 1)
+    top = ys.min()
+    band = (ys < top + (ys.max() - top) * 0.22)
+    bx0, bx1 = xs[band].min(), xs[band].max()
+    return int(bx0), int(top), int(bx1 - bx0 + 1), int((ys.max() - top) * 0.22)
 
 def _rotation(rx_deg: float, ry_deg: float, rz_deg: float) -> np.ndarray:
     """Rotation matrix from XYZ Euler angles in degrees."""

@@ -75,7 +75,7 @@ def main() -> None:
             panels.append((f"{name}\nNO SUBJECT FOUND", np.zeros_like(scene.mask)))
         else:
             row = next(r for r in matte_rows if r["method"] == name)
-            panels.append((f"{name}\nIoU {row['iou']} · hair {row['hair_recall']}", m))
+            panels.append((f"{name}\nIoU {row['iou']} · fine {row['fine_recall']}", m))
     figures.grid(panels, IMAGES / "mattes.png", ncols=4, suptitle="Six ways to cut out a subject")
 
     overlays = [("True matte", mask_overlay(scene.image, scene.mask, scene.mask))]
@@ -167,7 +167,7 @@ def main() -> None:
         {
             "method": r["method"],
             "body": r["body_recall"],
-            "hair": r["hair_recall"],
+            "fine": r["fine_recall"],
             "background": round(1.0 - r["background_fpr"], 4),
         }
         for r in matte_rows
@@ -175,7 +175,7 @@ def main() -> None:
     ]
     figures.comparison_matrix(
         region_rows,
-        [("Body", "body", True), ("Hair", "hair", True), ("Background", "background", True)],
+        [("Body", "body", True), ("Fine detail", "fine", True), ("Background", "background", True)],
         IMAGES / "region_matrix.png",
         title=(
             f"Fraction of each region recovered, mean over {args.scenes} scenes — "
@@ -223,7 +223,7 @@ def main() -> None:
             ("IoU", "iou", True),
             ("Dice", "dice", True),
             ("Body recall", "body_recall", True),
-            ("Hair recall", "hair_recall", True),
+            ("Fine detail recall", "fine_recall", True),
             ("Background FPR", "background_fpr", False),
             ("Boundary F1", "boundary_f1", True),
             ("Time (ms)", "median_ms", False),
@@ -235,8 +235,8 @@ def main() -> None:
     ok = [r for r in matte_rows if r["iou"] is not None]
     figures.metric_bars(
         [r["method"] for r in ok],
-        [r["hair_recall"] for r in ok],
-        IMAGES / "hair_recall.png",
+        [r["fine_recall"] for r in ok],
+        IMAGES / "fine_recall.png",
         ylabel="fraction of hair pixels recovered",
         title="Hair is 2.5% of the subject — and where every method fails",
     )
@@ -267,7 +267,7 @@ def main() -> None:
             ("IoU", "iou"),
             ("Dice", "dice"),
             ("Body recall", "body_recall"),
-            ("Hair recall", "hair_recall"),
+            ("Fine detail recall", "fine_recall"),
             ("Background FPR", "background_fpr"),
             ("Boundary F1", "boundary_f1"),
             ("Time (ms)", "median_ms"),
@@ -326,16 +326,16 @@ def main() -> None:
 
     by_iou = max(ok, key=lambda r: r["iou"])
     by_boundary = max(ok, key=lambda r: r["boundary_f1"])
-    by_hair = max((r for r in ok if r["background_fpr"] < 0.2), key=lambda r: r["hair_recall"])
+    by_fine = max((r for r in ok if r["background_fpr"] < 0.2), key=lambda r: r["fine_recall"])
     naive_row = comp_rows[0]
     masked_row = comp_rows[1]
 
     print("\n--- HEADLINE NUMBERS ---")
     print(f"best by IoU        : {by_iou['method']} ({by_iou['iou']}), "
-          f"but recovers only {by_iou['hair_recall'] * 100:.1f}% of hair")
+          f"but recovers only {by_iou['fine_recall'] * 100:.1f}% of fine detail")
     print(f"best by boundary F1: {by_boundary['method']} ({by_boundary['boundary_f1']}), "
-          f"IoU {by_boundary['iou']}, hair {by_boundary['hair_recall'] * 100:.1f}%")
-    print(f"best hair (FPR<0.2): {by_hair['method']} at {by_hair['hair_recall'] * 100:.1f}%")
+          f"IoU {by_boundary['iou']}, fine {by_boundary['fine_recall'] * 100:.1f}%")
+    print(f"best fine (FPR<0.2): {by_fine['method']} at {by_fine['fine_recall'] * 100:.1f}%")
     print(f"slowest            : {max(ok, key=lambda r: r['median_ms'])['method']} "
           f"@ {max(r['median_ms'] for r in ok):.0f} ms")
     print(f"halo: naive {naive_row['halo_err_0_255']} vs masked {masked_row['halo_err_0_255']} "

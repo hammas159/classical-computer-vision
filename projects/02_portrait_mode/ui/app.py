@@ -44,20 +44,20 @@ left, right = st.columns([1, 1])
 with left:
     source = st.radio(
         "Image source",
-        ["Real photograph", "Generated portrait (known matte)", "Upload your own photo"],
+        ["Reference photo (annotated matte)", "Upload your own photo"],
         horizontal=True,
         help=(
-            "A real photograph shows the method working on an image nobody built "
-            "for it -- but it has no ground-truth matte, so no IoU can be reported. "
-            "The generated portrait has an exact matte."
+            "The reference photo is a real photograph with a matte annotated once "
+            "and frozen, so results can be scored against it. An uploaded photo "
+            "has no annotation, so it is shown rather than scored."
         ),
     )
     uploaded, bg_name, seed = None, pm.BACKGROUNDS[0], 0
-    if source.startswith("Real"):
+    if source.startswith("Reference"):
         st.caption(
-            "A real photograph: a real person, real hair, real depth, and a real "
-            "crowd behind them. No ground-truth matte exists, so this panel shows "
-            "the result rather than scoring it."
+            "A real photograph — real person, real hair, real depth, a real crowd "
+            "behind them. The matte was annotated once with GrabCut plus cleanup "
+            "and frozen, which is why GrabCut-based methods score well here."
         )
     elif source.startswith("Upload"):
         uploaded = st.file_uploader("Portrait photo", type=["png", "jpg", "jpeg", "bmp", "webp"])
@@ -81,9 +81,7 @@ with right:
 st.divider()
 
 scene = None
-if source.startswith("Real"):
-    image = io_shared.real_photo("player")
-elif source.startswith("Upload"):
+if source.startswith("Upload"):
     if uploaded is None:
         st.info("Upload a portrait in the panel above, or switch to a generated scene.")
         st.stop()
@@ -97,7 +95,7 @@ elif source.startswith("Upload"):
         sc = 1200 / max(image.shape[:2])
         image = cv2.resize(image, None, fx=sc, fy=sc, interpolation=cv2.INTER_AREA)
 else:
-    scene = synth.portrait_scene(background=bg_name, seed=seed)
+    scene = synth.portrait_scene()
     image = scene.image
 
 
@@ -133,11 +131,15 @@ m[1].metric(
 
 if scene is not None:
     m[2].metric("Matte IoU", f"{iou(mask, scene.mask):.3f}")
-    hair_recall = float((mask[scene.hair > 0] > 0).mean()) if (scene.hair > 0).any() else 0.0
+    fine_recall = float((mask[scene.fine > 0] > 0).mean()) if (scene.fine > 0).any() else 0.0
     m[3].metric(
-        "Hair recovered",
-        f"{hair_recall * 100:.1f}%",
-        help="Hair is about 2.5% of the subject, so whole-image IoU barely notices losing it.",
+        "Fine detail recovered",
+        f"{fine_recall * 100:.1f}%",
+        help=(
+            "Thin structure -- outstretched limbs and the boundary band. It is a "
+            "small fraction of the subject, so whole-image IoU barely notices "
+            "losing all of it."
+        ),
     )
 
     ideal = pm.composite_reference(scene, kernel)
@@ -159,7 +161,7 @@ if scene is not None:
         )
 else:
     m[2].metric("Matte IoU", "unknown")
-    m[3].metric("Hair recovered", "unknown")
+    m[3].metric("Fine detail recovered", "unknown")
     st.caption(
         "IoU and hair recall need a known matte, and a real photograph has none — "
         "nobody labelled which of its pixels are subject. No number is invented here."
@@ -206,14 +208,14 @@ with r_tab:
             [
                 ("IoU", "iou", True),
                 ("Body", "body", True),
-                ("Hair", "hair", True),
+                ("Fine", "fine", True),
                 ("Background", "background", True),
                 ("Time (ms)", "ms", False),
             ],
         )
         st.dataframe(styler, width="stretch")
         st.caption(
-            "Green is better per column. Look for the row that wins IoU and loses Hair — "
+            "Green is better per column. Look for the row that wins IoU and loses Fine — "
             "that disagreement is this project's central finding."
         )
         st.download_button(

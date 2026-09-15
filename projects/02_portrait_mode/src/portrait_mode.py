@@ -415,7 +415,7 @@ def region_recall(pred: np.ndarray, scene: synth.PortraitScene) -> dict[str, flo
     """
     return {
         "body": float((pred[scene.body > 0] > 0).mean()),
-        "hair": float((pred[scene.hair > 0] > 0).mean()) if (scene.hair > 0).any() else 0.0,
+        "fine": float((pred[scene.fine > 0] > 0).mean()) if (scene.fine > 0).any() else 0.0,
         "background": float((pred[scene.mask == 0] == 0).mean()),
     }
 
@@ -440,18 +440,18 @@ def halo_ring(mask: np.ndarray, width: int) -> np.ndarray:
 BACKGROUNDS = ("coffee", "rocket", "grass", "brick", "chelsea", "gravel")
 
 
-def evaluate_mattes(n_scenes: int = 12, runs: int = 3) -> list[dict]:
+def evaluate_mattes(n_scenes: int = 1, runs: int = 3) -> list[dict]:
     """Score every matting method, overall and separately on body and hair."""
     acc = {
         name: {
-            "iou": [], "dice": [], "hair": [], "body": [], "bf1": [], "fpr": [],
+            "iou": [], "dice": [], "fine": [], "body": [], "bf1": [], "fpr": [],
             "ms": [], "found": 0,
         }
         for name in MATTES
     }
 
     for i in range(n_scenes):
-        scene = synth.portrait_scene(background=BACKGROUNDS[i % len(BACKGROUNDS)], seed=i)
+        scene = synth.portrait_scene()
         truth_edges = cv2.Canny(scene.mask, 50, 150)
 
         for name, fn in MATTES.items():
@@ -462,13 +462,13 @@ def evaluate_mattes(n_scenes: int = 12, runs: int = 3) -> list[dict]:
             acc[name]["found"] += 1
             acc[name]["iou"].append(iou(pred, scene.mask))
             acc[name]["dice"].append(dice(pred, scene.mask))
-            # restrict scoring to each region: how much of the hair / body was kept
-            acc[name]["hair"].append(
-                float((pred[scene.hair > 0] > 0).mean()) if (scene.hair > 0).any() else 0.0
+            # restrict scoring to each region: how much thin structure survived
+            acc[name]["fine"].append(
+                float((pred[scene.fine > 0] > 0).mean()) if (scene.fine > 0).any() else 0.0
             )
             acc[name]["body"].append(float((pred[scene.body > 0] > 0).mean()))
             # Recall alone is gameable: a mask covering the whole frame "recovers"
-            # 100% of the hair. The false-positive rate on true background is
+            # 100% of the fine detail. The false-positive rate on true background is
             # reported beside it so that cheat is visible in the table.
             acc[name]["fpr"].append(float((pred[scene.mask == 0] > 0).mean()))
             acc[name]["bf1"].append(edge_prf(cv2.Canny(pred, 50, 150), truth_edges, 2)["f1"])
@@ -483,7 +483,7 @@ def evaluate_mattes(n_scenes: int = 12, runs: int = 3) -> list[dict]:
                 "iou": round(float(np.mean(a["iou"])), 4) if ok else None,
                 "dice": round(float(np.mean(a["dice"])), 4) if ok else None,
                 "body_recall": round(float(np.mean(a["body"])), 4) if ok else None,
-                "hair_recall": round(float(np.mean(a["hair"])), 4) if ok else None,
+                "fine_recall": round(float(np.mean(a["fine"])), 4) if ok else None,
                 "background_fpr": round(float(np.mean(a["fpr"])), 4) if ok else None,
                 "boundary_f1": round(float(np.mean(a["bf1"])), 4) if ok else None,
                 "median_ms": round(float(np.median(a["ms"])), 3) if a["ms"] else None,
@@ -492,7 +492,7 @@ def evaluate_mattes(n_scenes: int = 12, runs: int = 3) -> list[dict]:
     return rows
 
 
-def evaluate_grabcut_stability(n_scenes: int = 4, n_seeds: int = 30) -> list[dict]:
+def evaluate_grabcut_stability(n_scenes: int = 1, n_seeds: int = 30) -> list[dict]:
     """Quantify how much a single GrabCut number is worth.
 
     The same image is segmented ``n_seeds`` times with different RNG seeds. The
@@ -515,7 +515,7 @@ def evaluate_grabcut_stability(n_scenes: int = 4, n_seeds: int = 30) -> list[dic
     rows = []
     for i in range(n_scenes):
         bg = BACKGROUNDS[i % len(BACKGROUNDS)]
-        scene = synth.portrait_scene(background=bg, seed=i)
+        scene = synth.portrait_scene()
         scores = []
         for s in range(n_seeds):
             m = matte_grabcut_face(scene.image, rng_seed=s)
@@ -547,7 +547,7 @@ def evaluate_bokeh(radius: int = 15) -> list[dict]:
     return rows
 
 
-def evaluate_compositing(n_scenes: int = 12, radius: int = 15, ring: int = 12) -> list[dict]:
+def evaluate_compositing(n_scenes: int = 1, radius: int = 15, ring: int = 12) -> list[dict]:
     """Measure halo bleed for each compositing strategy against the ideal result.
 
     Scored with the **true** matte, so the halo measured here is a property of the
@@ -557,7 +557,7 @@ def evaluate_compositing(n_scenes: int = 12, radius: int = 15, ring: int = 12) -
     acc = {name: {"ring_err": [], "bg_err": [], "ms": []} for name in COMPOSITORS}
 
     for i in range(n_scenes):
-        scene = synth.portrait_scene(background=BACKGROUNDS[i % len(BACKGROUNDS)], seed=i)
+        scene = synth.portrait_scene()
         ideal = composite_reference(scene, kernel)
         band = halo_ring(scene.mask, ring) > 0
         outside = scene.mask == 0

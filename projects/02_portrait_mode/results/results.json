@@ -1,6 +1,6 @@
 {
   "project": "02_portrait_mode",
-  "generated_utc": "2026-09-15T03:52:06+00:00",
+  "generated_utc": "2026-09-15T04:05:36+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -15,105 +15,105 @@
     {
       "method": "Face rect (baseline)",
       "detected_pct": "100%",
-      "iou": 0.5654,
-      "dice": 0.7224,
-      "body_recall": 0.9422,
-      "hair_recall": 0.97,
-      "background_fpr": 0.3441,
-      "boundary_f1": 0.0236,
-      "median_ms": 37.036
+      "iou": 0.3881,
+      "dice": 0.5591,
+      "body_recall": 0.5825,
+      "fine_recall": 0.3908,
+      "background_fpr": 0.0892,
+      "boundary_f1": 0.0292,
+      "median_ms": 18.488
     },
     {
       "method": "Face ellipse prior",
       "detected_pct": "100%",
-      "iou": 0.928,
-      "dice": 0.9627,
-      "body_recall": 0.9664,
-      "hair_recall": 0.0624,
-      "background_fpr": 0.0091,
-      "boundary_f1": 0.1659,
-      "median_ms": 36.244
+      "iou": 0.3457,
+      "dice": 0.5137,
+      "body_recall": 0.4814,
+      "fine_recall": 0.2174,
+      "background_fpr": 0.0501,
+      "boundary_f1": 0.0235,
+      "median_ms": 18.422
     },
     {
       "method": "Haar + GrabCut",
       "detected_pct": "100%",
-      "iou": 0.8721,
-      "dice": 0.929,
-      "body_recall": 0.9343,
-      "hair_recall": 0.4823,
-      "background_fpr": 0.0368,
-      "boundary_f1": 0.5849,
-      "median_ms": 1071.723
+      "iou": 0.4765,
+      "dice": 0.6454,
+      "body_recall": 0.5214,
+      "fine_recall": 0.325,
+      "background_fpr": 0.0,
+      "boundary_f1": 0.3814,
+      "median_ms": 286.22
     },
     {
       "method": "GrabCut (centre rect)",
       "detected_pct": "100%",
-      "iou": 0.7985,
-      "dice": 0.8716,
-      "body_recall": 0.8683,
-      "hair_recall": 0.5285,
-      "background_fpr": 0.0454,
-      "boundary_f1": 0.6362,
-      "median_ms": 1128.682
+      "iou": 0.7117,
+      "dice": 0.8316,
+      "body_recall": 0.6978,
+      "fine_recall": 0.7604,
+      "background_fpr": 0.0001,
+      "boundary_f1": 0.6868,
+      "median_ms": 494.029
     },
     {
       "method": "Skin colour (YCrCb)",
       "detected_pct": "100%",
-      "iou": 0.1735,
-      "dice": 0.2914,
-      "body_recall": 0.2227,
-      "hair_recall": 0.947,
-      "background_fpr": 0.3288,
-      "boundary_f1": 0.25,
-      "median_ms": 2.847
+      "iou": 0.1909,
+      "dice": 0.3206,
+      "body_recall": 0.1667,
+      "fine_recall": 0.4106,
+      "background_fpr": 0.038,
+      "boundary_f1": 0.2016,
+      "median_ms": 1.235
     },
     {
       "method": "Watershed + markers",
       "detected_pct": "100%",
-      "iou": 0.7155,
-      "dice": 0.833,
-      "body_recall": 0.7876,
-      "hair_recall": 0.2362,
-      "background_fpr": 0.0452,
-      "boundary_f1": 0.3728,
-      "median_ms": 47.631
+      "iou": 0.3488,
+      "dice": 0.5172,
+      "body_recall": 0.5144,
+      "fine_recall": 0.2734,
+      "background_fpr": 0.0728,
+      "boundary_f1": 0.1432,
+      "median_ms": 23.683
     }
   ],
   "grabcut_stability": [
     {
       "scene": "0 (coffee)",
       "n_seeds": 24,
-      "iou_mean": 0.6634,
-      "iou_std": 0.1162,
-      "iou_min": 0.1515,
-      "iou_max": 0.9039,
-      "iou_spread": 0.7524
+      "iou_mean": 0.4761,
+      "iou_std": 0.0005,
+      "iou_min": 0.4752,
+      "iou_max": 0.477,
+      "iou_spread": 0.0019
     },
     {
       "scene": "1 (rocket)",
       "n_seeds": 24,
-      "iou_mean": 0.8905,
-      "iou_std": 0.0177,
-      "iou_min": 0.8491,
-      "iou_max": 0.9064,
-      "iou_spread": 0.0574
+      "iou_mean": 0.4761,
+      "iou_std": 0.0005,
+      "iou_min": 0.4752,
+      "iou_max": 0.477,
+      "iou_spread": 0.0019
     },
     {
       "scene": "2 (grass)",
       "n_seeds": 24,
-      "iou_mean": 0.9148,
-      "iou_std": 0.0054,
-      "iou_min": 0.8926,
-      "iou_max": 0.92,
-      "iou_spread": 0.0273
+      "iou_mean": 0.4761,
+      "iou_std": 0.0005,
+      "iou_min": 0.4752,
+      "iou_max": 0.477,
+      "iou_spread": 0.0019
     },
     {
       "scene": "3 (brick)",
       "n_seeds": 24,
-      "iou_mean": 0.941,
-      "iou_std": 0.0008,
-      "iou_min": 0.9402,
-      "iou_max": 0.9421,
+      "iou_mean": 0.4761,
+      "iou_std": 0.0005,
+      "iou_min": 0.4752,
+      "iou_max": 0.477,
       "iou_spread": 0.0019
     }
   ],
@@ -146,15 +146,15 @@
   "compositing": [
     {
       "method": "Naive (blur all, paste back)",
-      "halo_err_0_255": 9.48,
-      "background_err_0_255": 1.636,
-      "median_ms": 16.009
+      "halo_err_0_255": 12.545,
+      "background_err_0_255": 1.661,
+      "median_ms": 7.732
     },
     {
       "method": "Masked (normalised convolution)",
-      "halo_err_0_255": 1.576,
-      "background_err_0_255": 0.271,
-      "median_ms": 46.455
+      "halo_err_0_255": 2.036,
+      "background_err_0_255": 0.273,
+      "median_ms": 23.139
     }
   ]
 }
