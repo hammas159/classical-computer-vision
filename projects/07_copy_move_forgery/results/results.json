@@ -1,0 +1,316 @@
+{
+  "project": "07_copy_move_forgery",
+  "generated_utc": "2026-09-15T06:17:09+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "size_px": 96,
+  "images": [
+    "astronaut",
+    "coffee",
+    "chelsea",
+    "rocket",
+    "grass",
+    "brick"
+  ],
+  "exact_copy": [
+    {
+      "method": "Block matching",
+      "iou": 0.9925,
+      "dice": 0.9962,
+      "precision": 0.9974,
+      "recall": 0.9951,
+      "pixel_accuracy": 0.9995,
+      "median_ms": 201.105
+    },
+    {
+      "method": "SIFT + similarity verify",
+      "iou": 0.6767,
+      "dice": 0.7691,
+      "precision": 0.7531,
+      "recall": 0.8854,
+      "pixel_accuracy": 0.9232,
+      "median_ms": 47.392
+    },
+    {
+      "method": "ORB + similarity verify",
+      "iou": 0.5155,
+      "dice": 0.6179,
+      "precision": 0.6305,
+      "recall": 0.8293,
+      "pixel_accuracy": 0.8257,
+      "median_ms": 72.891
+    },
+    {
+      "method": "SIFT + translation verify",
+      "iou": 0.7944,
+      "dice": 0.8785,
+      "precision": 0.9083,
+      "recall": 0.8675,
+      "pixel_accuracy": 0.98,
+      "median_ms": 39.605
+    },
+    {
+      "method": "SIFT blobs (no verify)",
+      "iou": 0.4441,
+      "dice": 0.5974,
+      "precision": 0.644,
+      "recall": 0.6648,
+      "pixel_accuracy": 0.9214,
+      "median_ms": 32.938
+    },
+    {
+      "method": "Predict nothing (control)",
+      "iou": 0.0,
+      "dice": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "pixel_accuracy": 0.9181,
+      "median_ms": 0.008
+    }
+  ],
+  "rotation_sweep": [
+    {
+      "angle_deg": 0.0,
+      "Block matching": 0.9925,
+      "SIFT + similarity verify": 0.6767,
+      "ORB + similarity verify": 0.5155,
+      "SIFT + translation verify": 0.7944,
+      "SIFT blobs (no verify)": 0.4441,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "angle_deg": 2.0,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.6633,
+      "ORB + similarity verify": 0.5162,
+      "SIFT + translation verify": 0.2973,
+      "SIFT blobs (no verify)": 0.3857,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "angle_deg": 5.0,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.6477,
+      "ORB + similarity verify": 0.4559,
+      "SIFT + translation verify": 0.1315,
+      "SIFT blobs (no verify)": 0.3797,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "angle_deg": 15.0,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.5916,
+      "ORB + similarity verify": 0.4062,
+      "SIFT + translation verify": 0.101,
+      "SIFT blobs (no verify)": 0.3318,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "angle_deg": 30.0,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.6023,
+      "ORB + similarity verify": 0.4217,
+      "SIFT + translation verify": 0.0246,
+      "SIFT blobs (no verify)": 0.3364,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "angle_deg": 45.0,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.536,
+      "ORB + similarity verify": 0.3917,
+      "SIFT + translation verify": 0.019,
+      "SIFT blobs (no verify)": 0.3527,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "angle_deg": 90.0,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.4986,
+      "ORB + similarity verify": 0.4583,
+      "SIFT + translation verify": 0.0,
+      "SIFT blobs (no verify)": 0.4329,
+      "Predict nothing (control)": 0.0
+    }
+  ],
+  "scale_sweep": [
+    {
+      "scale": 0.8,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.6815,
+      "ORB + similarity verify": 0.4582,
+      "SIFT + translation verify": 0.0946,
+      "SIFT blobs (no verify)": 0.3847,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "scale": 0.9,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.6902,
+      "ORB + similarity verify": 0.4368,
+      "SIFT + translation verify": 0.2187,
+      "SIFT blobs (no verify)": 0.3693,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "scale": 0.95,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.67,
+      "ORB + similarity verify": 0.4632,
+      "SIFT + translation verify": 0.3261,
+      "SIFT blobs (no verify)": 0.3747,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "scale": 1.0,
+      "Block matching": 0.9925,
+      "SIFT + similarity verify": 0.6767,
+      "ORB + similarity verify": 0.5155,
+      "SIFT + translation verify": 0.7944,
+      "SIFT blobs (no verify)": 0.4441,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "scale": 1.05,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.5319,
+      "ORB + similarity verify": 0.4162,
+      "SIFT + translation verify": 0.3312,
+      "SIFT blobs (no verify)": 0.3549,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "scale": 1.2,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.5184,
+      "ORB + similarity verify": 0.371,
+      "SIFT + translation verify": 0.1828,
+      "SIFT blobs (no verify)": 0.3231,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "scale": 1.5,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.2392,
+      "ORB + similarity verify": 0.1467,
+      "SIFT + translation verify": 0.0,
+      "SIFT blobs (no verify)": 0.215,
+      "Predict nothing (control)": 0.0
+    }
+  ],
+  "size_sweep": [
+    {
+      "size_px": 24,
+      "area_fraction": 0.0022,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.0,
+      "ORB + similarity verify": 0.0004,
+      "SIFT + translation verify": 0.0,
+      "SIFT blobs (no verify)": 0.0498,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "size_px": 32,
+      "area_fraction": 0.0039,
+      "Block matching": 0.0,
+      "SIFT + similarity verify": 0.0,
+      "ORB + similarity verify": 0.0003,
+      "SIFT + translation verify": 0.0,
+      "SIFT blobs (no verify)": 0.0266,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "size_px": 48,
+      "area_fraction": 0.0088,
+      "Block matching": 0.9985,
+      "SIFT + similarity verify": 0.2904,
+      "ORB + similarity verify": 0.073,
+      "SIFT + translation verify": 0.4333,
+      "SIFT blobs (no verify)": 0.2937,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "size_px": 64,
+      "area_fraction": 0.0156,
+      "Block matching": 0.9909,
+      "SIFT + similarity verify": 0.3708,
+      "ORB + similarity verify": 0.1758,
+      "SIFT + translation verify": 0.5321,
+      "SIFT blobs (no verify)": 0.2751,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "size_px": 96,
+      "area_fraction": 0.0352,
+      "Block matching": 0.9925,
+      "SIFT + similarity verify": 0.6767,
+      "ORB + similarity verify": 0.5155,
+      "SIFT + translation verify": 0.7944,
+      "SIFT blobs (no verify)": 0.4441,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "size_px": 128,
+      "area_fraction": 0.0625,
+      "Block matching": 0.9943,
+      "SIFT + similarity verify": 0.7559,
+      "ORB + similarity verify": 0.6194,
+      "SIFT + translation verify": 0.8433,
+      "SIFT blobs (no verify)": 0.5111,
+      "Predict nothing (control)": 0.0
+    },
+    {
+      "size_px": 160,
+      "area_fraction": 0.0977,
+      "Block matching": 0.975,
+      "SIFT + similarity verify": 0.7697,
+      "ORB + similarity verify": 0.7206,
+      "SIFT + translation verify": 0.8541,
+      "SIFT blobs (no verify)": 0.5549,
+      "Predict nothing (control)": 0.0
+    }
+  ],
+  "false_alarms": [
+    {
+      "method": "Block matching",
+      "mean_flagged": 0.0,
+      "max_flagged": 0.0,
+      "images_with_any_flag": "0/6"
+    },
+    {
+      "method": "SIFT + similarity verify",
+      "mean_flagged": 0.06322,
+      "max_flagged": 0.34164,
+      "images_with_any_flag": "2/6"
+    },
+    {
+      "method": "ORB + similarity verify",
+      "mean_flagged": 0.14949,
+      "max_flagged": 0.44629,
+      "images_with_any_flag": "3/6"
+    },
+    {
+      "method": "SIFT + translation verify",
+      "mean_flagged": 0.00817,
+      "max_flagged": 0.04903,
+      "images_with_any_flag": "1/6"
+    },
+    {
+      "method": "SIFT blobs (no verify)",
+      "mean_flagged": 0.06566,
+      "max_flagged": 0.26363,
+      "images_with_any_flag": "6/6"
+    },
+    {
+      "method": "Predict nothing (control)",
+      "mean_flagged": 0.0,
+      "max_flagged": 0.0,
+      "images_with_any_flag": "0/6"
+    }
+  ],
+  "sift_contrast_threshold": 0.01
+}

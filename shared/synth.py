@@ -249,10 +249,33 @@ def downsample_for_sr(img: np.ndarray, scale: int = 4, blur_sigma: float | None 
 
 @dataclass
 class Forgery:
-    """A copy-move forgery and the mask of exactly which pixels were pasted."""
+    """A copy-move forgery, with masks for the pasted region and for both copies.
+
+    Two masks, because there are two defensible answers to "which pixels are the
+    forgery":
+
+    ``mask``
+        The **pasted** pixels only. This is what was actually changed, and the
+        only thing an editor would call the forgery.
+    ``mask_both``
+        The pasted pixels **and the region they were copied from**. This is what
+        any copy-move detector can actually report.
+
+    The difference is not a technicality. After the paste, the two regions are
+    *identical*: same content, same noise, same compression history. Nothing in
+    the image distinguishes the original from the copy, so a detector that finds
+    a duplicated pair is finished — deciding which half is the forgery needs
+    outside information (lighting, perspective, a second photo) that pixel
+    statistics do not contain.
+
+    Scoring against ``mask`` therefore caps precision at about 0.5 no matter how
+    good the detector is, and measures the ambiguity rather than the method.
+    Projects here score against ``mask_both`` and say so.
+    """
 
     image: np.ndarray
     mask: np.ndarray
+    mask_both: np.ndarray
     src_xy: tuple[int, int]
     dst_xy: tuple[int, int]
     size: int
@@ -266,23 +289,80 @@ def copy_move_forgery(
     angle_deg: float = 0.0,
     scale: float = 1.0,
     seed: int | None = 0,
+    textured_source: bool = True,
+    feather: int = 0,
 ) -> Forgery:
     """Copy a square patch and paste it elsewhere, optionally rotated/scaled.
 
-    The returned mask marks the pasted pixels exactly, which makes detection
-    scoreable with IoU instead of eyeballed.
+    The returned masks mark the pasted pixels exactly (and, in ``mask_both``,
+    the region they came from), which makes detection a scoreable segmentation
+    problem instead of an eyeball test.
+
+    ``textured_source``
+        Sample the source patch from a *textured* part of the image rather than
+        uniformly at random. A patch of empty sky duplicated into another patch
+        of empty sky is not a detectable forgery by any of these methods — and
+        it is not one a forger would make either, since there is nothing there to
+        hide. Leaving this off makes the scores depend mostly on where the RNG
+        happened to look.
+
+    ``feather``
+        Blend the paste over this many pixels at its border. A hard-edged paste
+        leaves a discontinuity that has nothing to do with duplication, and any
+        edge detector would find it — so a detector can look good here for the
+        wrong reason. Feathering removes that shortcut at the cost of making the
+        mask's boundary approximate.
     """
     rng = _rng(seed)
     h, w = img.shape[:2]
     out = img.copy()
 
-    sx = int(rng.integers(0, max(1, w - size)))
-    sy = int(rng.integers(0, max(1, h - size)))
-    patch = img[sy : sy + size, sx : sx + size].copy()
+    if textured_source:
+        # local standard deviation, subsampled on the stride the search uses
+        g = to_float(cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) if img.ndim == 3 else img)
+        # anchor=(0, 0) so the window runs DOWN-RIGHT from each pixel. The default
+        # anchor centres it, which would have scored the window centred on (x, y)
+        # and then cropped the patch starting AT (x, y) — half a patch away from
+        # the texture that was measured.
+        mean = cv2.boxFilter(g, -1, (size, size), anchor=(0, 0), borderType=cv2.BORDER_ISOLATED)
+        sq = cv2.boxFilter(g * g, -1, (size, size), anchor=(0, 0), borderType=cv2.BORDER_ISOLATED)
+        valid = np.sqrt(np.maximum(sq - mean * mean, 0.0))[: h - size + 1, : w - size + 1]
+        # choose among the top decile, at random, so it is still varied per seed
+        cut = float(np.percentile(valid, 90.0))
+        ys, xs = np.nonzero(valid >= cut)
+        pick = int(rng.integers(0, len(ys)))
+        sy, sx = int(ys[pick]), int(xs[pick])
+    else:
+        sx = int(rng.integers(0, max(1, w - size)))
+        sy = int(rng.integers(0, max(1, h - size)))
+
+    # Sample a source window big enough that the rotated/scaled crop is filled
+    # with REAL image content. Rotating a size x size patch in place and letting
+    # BORDER_REFLECT invent the corners means ~20% of a 15-degree "forgery" is not
+    # a duplicate of anything, which silently caps recall for every method and
+    # makes the rotation sweep unreadable.
+    # max(size, ...) because for scale > 1 the source region is SMALLER than the
+    # paste, but the warp buffer still has to be big enough to crop size x size
+    # out of. Without the clamp, scale=1.5 asked for a 93 px window and then
+    # cropped 96 px from it, producing a 2x2 array and a broadcast error.
+    need = max(size, int(np.ceil(size * np.sqrt(2) / max(scale, 1e-3)))) + 2
+    need = min(need, min(h, w))
+    cx, cy = sx + size / 2.0, sy + size / 2.0
+    cx = float(np.clip(cx, need / 2.0, w - need / 2.0))
+    cy = float(np.clip(cy, need / 2.0, h - need / 2.0))
+    sx, sy = int(round(cx - size / 2.0)), int(round(cy - size / 2.0))
+
+    x0, y0 = int(round(cx - need / 2.0)), int(round(cy - need / 2.0))
+    x0, y0 = max(0, min(w - need, x0)), max(0, min(h - need, y0))
+    window = img[y0 : y0 + need, x0 : x0 + need]
 
     if angle_deg or scale != 1.0:
-        m = cv2.getRotationMatrix2D((size / 2, size / 2), angle_deg, scale)
-        patch = cv2.warpAffine(patch, m, (size, size), borderMode=cv2.BORDER_REFLECT)
+        m = cv2.getRotationMatrix2D((need / 2.0, need / 2.0), angle_deg, scale)
+        rotated = cv2.warpAffine(window, m, (need, need), flags=cv2.INTER_LINEAR)
+        off = (need - size) // 2
+        patch = rotated[off : off + size, off : off + size].copy()
+    else:
+        patch = img[sy : sy + size, sx : sx + size].copy()
 
     for _ in range(64):  # find a destination that does not overlap the source
         dx = int(rng.integers(0, max(1, w - size)))
@@ -290,10 +370,38 @@ def copy_move_forgery(
         if abs(dx - sx) > size or abs(dy - sy) > size:
             break
 
-    out[dy : dy + size, dx : dx + size] = patch
+    if feather > 0:
+        alpha = np.zeros((size, size), np.float32)
+        alpha[feather:-feather, feather:-feather] = 1.0
+        alpha = cv2.GaussianBlur(alpha, (0, 0), feather / 2.0)
+        a = alpha[..., None] if img.ndim == 3 else alpha
+        region = out[dy : dy + size, dx : dx + size].astype(np.float32)
+        out[dy : dy + size, dx : dx + size] = (
+            a * patch.astype(np.float32) + (1.0 - a) * region
+        ).astype(np.uint8)
+    else:
+        out[dy : dy + size, dx : dx + size] = patch
+
     mask = np.zeros((h, w), np.uint8)
     mask[dy : dy + size, dx : dx + size] = 255
-    return Forgery(out, mask, (sx, sy), (dx, dy), size, angle_deg, scale)
+
+    # The source footprint is the destination square carried back through the
+    # transform — a ROTATED square, not an axis-aligned one. Marking an
+    # axis-aligned box instead would score a correct detector as over-detecting
+    # by (1 - 2/pi) of the box at 45 degrees.
+    mask_both = mask.copy()
+    if angle_deg or scale != 1.0:
+        theta = np.deg2rad(angle_deg)
+        r = size / (2.0 * scale)
+        corners = np.array([[-r, -r], [r, -r], [r, r], [-r, r]], np.float64)
+        rot = np.array(
+            [[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]], np.float64
+        )
+        pts = (corners @ rot.T) + np.array([sx + size / 2.0, sy + size / 2.0])
+        cv2.fillPoly(mask_both, [np.round(pts).astype(np.int32)], 255)
+    else:
+        mask_both[sy : sy + size, sx : sx + size] = 255
+    return Forgery(out, mask, mask_both, (sx, sy), (dx, dy), size, angle_deg, scale)
 
 
 def add_scratches(
