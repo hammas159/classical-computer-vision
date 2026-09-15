@@ -1,6 +1,6 @@
 {
   "project": "04_dehazing",
-  "generated_utc": "2026-09-15T10:57:12+00:00",
+  "generated_utc": "2026-09-15T13:37:03+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -10,161 +10,161 @@
   "beta": 1.4,
   "airlight": 0.88,
   "images": [
-    "rocket",
-    "coffee",
-    "astronaut",
-    "chelsea",
-    "immunohistochemistry",
-    "retina"
+    "old_street",
+    "mountain_stream",
+    "lighthouse_cliff",
+    "stone_house",
+    "tropical_island",
+    "moored_boat"
   ],
   "hazy_input": {
-    "psnr": 11.7312,
-    "contrast": 0.1574
+    "psnr": 13.0439,
+    "contrast": 0.1687
   },
   "methods": [
     {
       "method": "Dark channel prior",
-      "psnr_db": 18.936,
-      "ssim": 0.8356,
-      "rms_contrast": 0.1471,
-      "transmission_mae": 0.1113,
-      "median_ms": 29.788
+      "psnr_db": 21.438,
+      "ssim": 0.9264,
+      "rms_contrast": 0.1813,
+      "transmission_mae": 0.0725,
+      "median_ms": 45.778
     },
     {
       "method": "DCP + guided refine",
-      "psnr_db": 19.496,
-      "ssim": 0.8724,
-      "rms_contrast": 0.1559,
-      "transmission_mae": 0.1059,
-      "median_ms": 38.407
+      "psnr_db": 22.489,
+      "ssim": 0.96,
+      "rms_contrast": 0.1857,
+      "transmission_mae": 0.0638,
+      "median_ms": 59.01
     },
     {
       "method": "CLAHE (contrast only)",
-      "psnr_db": 12.926,
-      "ssim": 0.724,
-      "rms_contrast": 0.1811,
+      "psnr_db": 15.003,
+      "ssim": 0.8392,
+      "rms_contrast": 0.2067,
       "transmission_mae": null,
-      "median_ms": 0.903
+      "median_ms": 1.551
     },
     {
       "method": "Multi-scale Retinex",
-      "psnr_db": 8.94,
-      "ssim": 0.6383,
-      "rms_contrast": 0.154,
+      "psnr_db": 11.763,
+      "ssim": 0.7586,
+      "rms_contrast": 0.1759,
       "transmission_mae": null,
-      "median_ms": 421.238
+      "median_ms": 651.108
     },
     {
       "method": "Gamma curve (control)",
-      "psnr_db": 15.703,
-      "ssim": 0.7988,
-      "rms_contrast": 0.169,
+      "psnr_db": 17.986,
+      "ssim": 0.8694,
+      "rms_contrast": 0.1937,
       "transmission_mae": null,
-      "median_ms": 10.574
+      "median_ms": 16.089
     },
     {
       "method": "True transmission (oracle)",
-      "psnr_db": 50.799,
-      "ssim": 0.995,
-      "rms_contrast": 0.1928,
+      "psnr_db": 50.764,
+      "ssim": 0.9969,
+      "rms_contrast": 0.1972,
       "transmission_mae": null,
-      "median_ms": 9.389
+      "median_ms": 15.375
     }
   ],
   "beta_sweep": [
     {
       "beta": 0.4,
       "min_transmission": 0.6703,
-      "Dark channel prior": 19.964,
-      "DCP + guided refine": 20.731,
-      "CLAHE (contrast only)": 16.91,
-      "Multi-scale Retinex": 10.799,
-      "Gamma curve (control)": 21.934,
-      "True transmission (oracle)": 55.74
+      "Dark channel prior": 18.769,
+      "DCP + guided refine": 19.844,
+      "CLAHE (contrast only)": 17.524,
+      "Multi-scale Retinex": 13.773,
+      "Gamma curve (control)": 21.09,
+      "True transmission (oracle)": 55.721
     },
     {
       "beta": 0.8,
       "min_transmission": 0.4493,
-      "Dark channel prior": 20.518,
-      "DCP + guided refine": 21.319,
-      "CLAHE (contrast only)": 15.096,
-      "Multi-scale Retinex": 10.006,
-      "Gamma curve (control)": 20.35,
-      "True transmission (oracle)": 53.25
+      "Dark channel prior": 20.507,
+      "DCP + guided refine": 21.725,
+      "CLAHE (contrast only)": 16.789,
+      "Multi-scale Retinex": 13.205,
+      "Gamma curve (control)": 22.145,
+      "True transmission (oracle)": 53.233
     },
     {
       "beta": 1.2,
       "min_transmission": 0.3012,
-      "Dark channel prior": 19.639,
-      "DCP + guided refine": 20.286,
-      "CLAHE (contrast only)": 13.566,
-      "Multi-scale Retinex": 9.263,
-      "Gamma curve (control)": 17.009,
-      "True transmission (oracle)": 51.851
+      "Dark channel prior": 21.345,
+      "DCP + guided refine": 22.48,
+      "CLAHE (contrast only)": 15.624,
+      "Multi-scale Retinex": 12.256,
+      "Gamma curve (control)": 19.356,
+      "True transmission (oracle)": 51.84
     },
     {
       "beta": 1.6,
       "min_transmission": 0.2019,
-      "Dark channel prior": 18.101,
-      "DCP + guided refine": 18.589,
-      "CLAHE (contrast only)": 12.295,
-      "Multi-scale Retinex": 8.678,
-      "Gamma curve (control)": 14.637,
-      "True transmission (oracle)": 49.736
+      "Dark channel prior": 21.157,
+      "DCP + guided refine": 22.091,
+      "CLAHE (contrast only)": 14.405,
+      "Multi-scale Retinex": 11.308,
+      "Gamma curve (control)": 16.824,
+      "True transmission (oracle)": 49.733
     },
     {
       "beta": 2.2,
       "min_transmission": 0.1108,
-      "Dark channel prior": 15.915,
-      "DCP + guided refine": 16.225,
-      "CLAHE (contrast only)": 10.799,
-      "Multi-scale Retinex": 8.019,
-      "Gamma curve (control)": 12.429,
-      "True transmission (oracle)": 46.146
+      "Dark channel prior": 18.814,
+      "DCP + guided refine": 19.254,
+      "CLAHE (contrast only)": 12.812,
+      "Multi-scale Retinex": 10.207,
+      "Gamma curve (control)": 14.34,
+      "True transmission (oracle)": 46.129
     },
     {
       "beta": 3.0,
       "min_transmission": 0.0498,
-      "Dark channel prior": 13.569,
-      "DCP + guided refine": 13.725,
-      "CLAHE (contrast only)": 9.463,
-      "Multi-scale Retinex": 7.422,
-      "Gamma curve (control)": 10.771,
-      "True transmission (oracle)": 40.749
+      "Dark channel prior": 15.589,
+      "DCP + guided refine": 15.696,
+      "CLAHE (contrast only)": 11.253,
+      "Multi-scale Retinex": 9.214,
+      "Gamma curve (control)": 12.426,
+      "True transmission (oracle)": 40.697
     }
   ],
   "airlight_estimators": [
     {
       "estimator": "Brightest candidate (default)",
-      "airlight_error": 0.0631,
-      "transmission_mae": 0.1059,
-      "saturated_estimates": 1,
-      "psnr_db": 19.496,
-      "ssim": 0.8724
+      "airlight_error": 0.0445,
+      "transmission_mae": 0.0638,
+      "saturated_estimates": 0,
+      "psnr_db": 22.489,
+      "ssim": 0.96
     },
     {
       "estimator": "Median of candidates",
-      "airlight_error": 0.0508,
-      "transmission_mae": 0.0967,
+      "airlight_error": 0.034,
+      "transmission_mae": 0.062,
       "saturated_estimates": 0,
-      "psnr_db": 18.495,
-      "ssim": 0.8619
+      "psnr_db": 22.429,
+      "ssim": 0.9606
     },
     {
       "estimator": "90th percentile per channel",
-      "airlight_error": 0.0452,
-      "transmission_mae": 0.1002,
+      "airlight_error": 0.0383,
+      "transmission_mae": 0.0626,
       "saturated_estimates": 0,
-      "psnr_db": 18.73,
-      "ssim": 0.865
+      "psnr_db": 22.424,
+      "ssim": 0.9604
     },
     {
       "estimator": "Brightest, excluding saturated",
-      "airlight_error": 0.0607,
-      "transmission_mae": 0.1054,
+      "airlight_error": 0.0445,
+      "transmission_mae": 0.0638,
       "saturated_estimates": 0,
-      "psnr_db": 19.464,
-      "ssim": 0.8721
+      "psnr_db": 22.489,
+      "ssim": 0.96
     }
   ]
 }

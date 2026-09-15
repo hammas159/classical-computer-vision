@@ -98,7 +98,7 @@ if source.startswith("Upload"):
         s = 1200 / max(hazy.shape[:2])
         hazy = cv2.resize(hazy, None, fx=s, fy=s, interpolation=cv2.INTER_AREA)
 else:
-    truth = shared_io.sample(image_name)
+    truth = dz.load_scene(image_name)
     hazy, true_t = synth.add_haze(truth, beta=beta, airlight=dz.AIRLIGHT)
 
 

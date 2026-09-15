@@ -106,8 +106,8 @@ no method can then explain — and every result would be a measurement of that b
 
 ### Why CLAHE is in the table
 
-Because it wins a column. CLAHE reaches **0.181 RMS contrast**, higher than the
-physical method's 0.156, while scoring **12.93 dB** against 19.50. If it were not
+Because it wins a column. CLAHE reaches **0.207 RMS contrast**, higher than the
+physical method's 0.186, while scoring **15.00 dB** against 22.49. If it were not
 in the table, a reader could reasonably assume contrast tracks quality here. It
 does not, and the only way to show that is to include something that games it.
 
@@ -125,19 +125,42 @@ Copying constants from a paper written for different images, at a different
 resolution, is not reproduction — it is cargo-culting. The values are in the
 source with the measurement that chose them.
 
+**Then the benchmark images changed, which turned that sweep into a held-out
+test.** Four constants fitted on four scikit-image samples is exactly the shape
+of a result that disappears on new data. Re-measured on the six outdoor
+photographs the project now uses:
+
+```
+omega  patch  radius   eps    tmin    PSNR   SSIM    tMAE
+ 0.95     15      40  1e-03   0.10   20.26  0.937  0.0722   <- He et al.
+ 0.80      7      40  1e-02   0.05   22.49  0.960  0.0638   <- these defaults
+```
+
+The margin **grew from +0.86 dB to +2.23 dB** on images the sweep never saw.
+
 ### Why the *worse* airlight estimator is the default
 
 This was the hard call. Four estimators:
 
 | | Airlight error | Transmission MAE | PSNR |
 |---|---:|---:|---:|
-| Brightest (default) | 0.0631 | 0.1059 | **19.496** |
-| Median | **0.0508** | **0.0967** | 18.495 |
+| Brightest (default) | 0.0445 | 0.0638 | **22.489** |
+| Median | **0.0340** | **0.0620** | 22.429 |
+| 90th percentile | **0.0383** | **0.0626** | 22.424 |
 
 The default is worse at estimating both intermediate quantities and better at
 producing the image. The recovery `J = (I−A)/t + A` is over-estimating `A` and
 over-estimating `t`; the errors partially cancel, and fixing one alone breaks the
 cancellation.
+
+**The size of this changed when the images did, and that is worth stating.** On
+the original scikit-image scene set the gap was **1.00 dB**, largely carried by
+one image whose airlight estimate saturated at A = 1.000 on a launch-pad
+floodlight. On six ordinary outdoor photographs nothing saturates and the gap is
+**0.06 dB** — a 94% shrink. What survived is the *direction*: all three
+more-accurate estimators score lower, not one. A single-image finding would have
+been indistinguishable from noise here; three independent estimators agreeing is
+not.
 
 The project optimises **output quality**, because that is what a dehazing method
 is for — and the losing configuration stays in the table, because the comparison
@@ -151,12 +174,12 @@ Six images at β = 1.4:
 
 | Stage | Time |
 |---|---:|
-| CLAHE | 0.88 ms |
-| Gamma control | 10.6 ms |
-| Oracle inversion | 10.2 ms |
-| Dark channel prior | 30.9 ms |
-| DCP + guided refine | 39.8 ms |
-| Multi-scale Retinex | **426 ms** |
+| CLAHE | 1.6 ms |
+| Oracle inversion | 15.1 ms |
+| Gamma control | 16.4 ms |
+| Dark channel prior | 45.8 ms |
+| DCP + guided refine | 59.0 ms |
+| Multi-scale Retinex | **651 ms** |
 | **Full `run.py`** | **~90 s** |
 
 Retinex is **11× slower than the best method and 10.6 dB worse.** Reporting the

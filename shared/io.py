@@ -174,6 +174,21 @@ REAL_PHOTOS = {
     "man_camera": ("man_camera.jpg", "a man holding a camera, monochrome"),
     "hiker": ("hiker.jpg", "a hiker on a mountain ridge"),
     "man_skyline": ("man_skyline.jpg", "a man seated against a city skyline"),
+    # outdoor scenes with real depth structure, for the projects whose physics
+    # depends on distance — haze thickens with depth, so a flat wall and a
+    # street receding to a vanishing point are different problems entirely
+    "stone_house": ("stone_house.jpg", "a stone farmhouse wall, flat on — almost no depth range"),
+    "motocross": ("motocross.jpg", "a row of motocross bikes on a dirt bank"),
+    "moored_boat": ("moored_boat.jpg", "a wooden boat moored in turquoise shallows"),
+    "old_street": ("old_street.jpg", "a timbered street receding to a vanishing point"),
+    "sailboats": ("sailboats.jpg", "sailboats under coloured spinnakers"),
+    "mountain_stream": ("mountain_stream.jpg", "a stream running out of snow-capped mountains"),
+    "whitewater_raft": ("whitewater_raft.jpg", "a raft of people in whitewater"),
+    "tropical_island": ("tropical_island.jpg", "a low island under towering cloud — sky-dominant"),
+    "lighthouse_lawn": ("lighthouse_lawn.jpg", "a squat lighthouse behind a white fence"),
+    "warplane": ("warplane.jpg", "a propeller fighter against a pale sky"),
+    "lighthouse_cliff": ("lighthouse_cliff.jpg", "a lighthouse on a rocky headland"),
+    "painted_chalet": ("painted_chalet.jpg", "a painted alpine chalet against a wooded hill"),
 }
 
 

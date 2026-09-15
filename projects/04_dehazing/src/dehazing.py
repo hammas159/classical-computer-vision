@@ -245,9 +245,43 @@ def dehaze_oracle(img: np.ndarray, airlight: float, t: np.ndarray) -> np.ndarray
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("rocket", "coffee", "astronaut", "chelsea", "immunohistochemistry", "retina")
+#: Six outdoor photographs with genuinely different depth structure, because
+#: depth is the only thing haze depends on. A flat farmhouse wall has almost no
+#: depth range; a street receding to a vanishing point has a large one; an
+#: aeroplane against a pale sky is nearly all sky, which is the dark channel
+#: prior's documented failure case. Scoring six scenes that all had the same
+#: depth profile would measure one scene six times.
+#:
+#: These are real photographs, and scoring them is still honest: the haze is
+#: **synthesised** with a known transmission map, so the clean original is exact
+#: ground truth. That is different from project 01, where a real photo has no
+#: answer key at all and therefore gets no number.
+IMAGES = (
+    "old_street",
+    "mountain_stream",
+    "lighthouse_cliff",
+    "stone_house",
+    "tropical_island",
+    "moored_boat",
+)
 BETA_LEVELS = (0.4, 0.8, 1.2, 1.6, 2.2, 3.0)
 AIRLIGHT = 0.88
+
+
+def load_scene(name: str) -> np.ndarray:
+    """Load a benchmark scene by name, from either image source.
+
+    The scenes moved from scikit-image's bundled samples to real outdoor
+    photographs when it became clear that a retina scan and a cat have no depth
+    structure for a haze model to be right or wrong about. This dispatches on
+    the name so both still work, and so a project that wants one of each does
+    not need two call sites.
+    """
+    from shared import io
+
+    if name in io.REAL_PHOTOS:
+        return io.real_photo(name)
+    return io.sample(name)
 
 
 def transmission_error(pred_t: np.ndarray, true_t: np.ndarray) -> float:
@@ -265,7 +299,7 @@ def evaluate_methods(beta: float = 1.4, images=IMAGES, runs: int = 3):
     hazy_stats = {"psnr": [], "contrast": []}
 
     for name in images:
-        clean = io.sample(name)
+        clean = load_scene(name)
         hazy, true_t = synth.add_haze(clean, beta=beta, airlight=AIRLIGHT)
         hazy_stats["psnr"].append(psnr(hazy, clean))
         hazy_stats["contrast"].append(rms_contrast(hazy))
@@ -319,7 +353,7 @@ def sweep_beta(images=IMAGES, levels=BETA_LEVELS):
         row: dict[str, float] = {"beta": beta}
         per = {n: [] for n in list(METHODS) + [ORACLE_NAME]}
         for name in images:
-            clean = io.sample(name)
+            clean = load_scene(name)
             hazy, true_t = synth.add_haze(clean, beta=beta, airlight=AIRLIGHT)
             for method, fn in METHODS.items():
                 per[method].append(psnr(fn(hazy), clean))
@@ -376,12 +410,11 @@ def compare_airlight_estimators(images=None, beta: float = 1.4):
     makes the result worse when corrected. That is uncomfortable and it is
     reported rather than quietly fixed.
     """
-    from shared import io as shared_io
     from shared import synth
 
     names = images or IMAGES
     pairs = [
-        (shared_io.sample(n),) + synth.add_haze(shared_io.sample(n), beta=beta, airlight=AIRLIGHT)
+        (load_scene(n),) + synth.add_haze(load_scene(n), beta=beta, airlight=AIRLIGHT)
         for n in names
     ]
 

@@ -48,55 +48,100 @@ def main() -> None:
     # ------------------------------------------------------------------ #
     # figures
     # ------------------------------------------------------------------ #
-    clean = io.sample("rocket")
+    # The single scene the detail figures are drawn on. A street receding to a
+    # vanishing point, because a transmission map is only legible where there is
+    # actually a depth gradient to see.
+    clean = dz.load_scene("old_street")
     hazy, true_t = synth.add_haze(clean, beta=args.beta, airlight=dz.AIRLIGHT)
 
     # ------------------------------------------------------------------ #
-    # four scenes, end to end
+    # the comparison at the top of the README:
+    # four scenes down the rows, every method across the columns
     # ------------------------------------------------------------------ #
-    # Four scenes with different depth structure, which is what a transmission
-    # estimate actually depends on: a night launch pad with point lights, a
-    # close still life, a portrait against a flat backdrop, an animal close-up
-    # with almost no depth range at all. The dark channel prior assumes some
-    # patch somewhere is dark, and how true that is varies by scene.
+    # Haze depends on one thing only — distance — so the scenes are chosen for
+    # their DEPTH STRUCTURE, not for looking pretty. Twelve candidates are tried
+    # across five families: a street receding to a vanishing point, a flat
+    # farmhouse wall with almost no depth range, water running to a horizon, a
+    # mountain scene, and a sky-dominant frame, which is the dark channel prior's
+    # documented failure case. The best survivor of each family is kept, so the
+    # table cannot fill up with four variations on the same depth profile.
     #
-    # Each column is scored before it goes in — a "dehazed" image that does not
-    # beat the hazy input is a broken sample, not an example.
+    # Every candidate is scored before it goes in: if the best named method does
+    # not beat the hazy input by GALLERY_MIN_GAIN_DB, the sample is broken and is
+    # dropped rather than shown.
     GALLERY_MIN_GAIN_DB = 2.0
-    gallery_pool = ("rocket", "coffee", "astronaut", "chelsea", "retina")
+    gallery_pool = [
+        ("old street\nreceding to a vanishing point", "old_street", "street"),
+        ("painted chalet\nbuilding against a wooded hill", "painted_chalet", "street"),
+        ("stone house\nflat on — almost no depth", "stone_house", "flat"),
+        ("motocross\nnear subject, shallow depth", "motocross", "flat"),
+        ("mountain stream\nsnow line on the horizon", "mountain_stream", "mountain"),
+        ("whitewater raft\npeople, spray, close rock", "whitewater_raft", "mountain"),
+        ("lighthouse cliff\nrock, sea and sky", "lighthouse_cliff", "coast"),
+        ("lighthouse lawn\nportrait frame, low horizon", "lighthouse_lawn", "coast"),
+        ("moored boat\nturquoise shallows", "moored_boat", "water"),
+        ("sailboats\ncoloured sails on flat water", "sailboats", "water"),
+        ("tropical island\nsky-dominant", "tropical_island", "sky"),
+        ("warplane\npale sky, no dark channel", "warplane", "sky"),
+    ]
     best_named = max(
         (r for r in method_rows if r["method"] != dz.ORACLE_NAME),
         key=lambda r: r["psnr_db"],
     )["method"]
 
-    g_labels, g_hazy, g_out, g_oracle = [], [], [], []
-    for name in gallery_pool:
-        src = io.sample(name)
+    method_names = list(dz.METHODS)
+    survivors: dict[str, tuple] = {}
+    for label, name, family in gallery_pool:
+        src = io.real_photo(name)
         h, t_true = synth.add_haze(src, beta=args.beta, airlight=dz.AIRLIGHT)
-        out = dz.METHODS[best_named](h)
-        gain = psnr(out, src) - psnr(h, src)
-        passes = gain >= GALLERY_MIN_GAIN_DB
-        verdict = "KEEP" if passes and len(g_labels) < 4 else ("FULL" if passes else "DROP")
-        print(
-            f"gallery candidate {name:<12} {verdict} — "
-            f"{psnr(h, src):.1f} dB hazy -> {psnr(out, src):.1f} dB ({gain:+.1f})"
-        )
-        if verdict != "KEEP":
+        hazy_db = psnr(h, src)
+        outs = [dz.METHODS[m](h) for m in method_names]
+        oracle_out = dz.dehaze_oracle(h, dz.AIRLIGHT, t_true)
+        gain = psnr(outs[method_names.index(best_named)], src) - hazy_db
+        if gain < GALLERY_MIN_GAIN_DB:
+            print(f"gallery candidate {name:<17} DROP — {best_named} gained only {gain:+.1f} dB  [{family}]")
             continue
-        g_labels.append(f"{name}\n{psnr(out, src):.1f} dB ({gain:+.1f})")
-        g_hazy.append(h)
-        g_out.append(out)
-        g_oracle.append(dz.dehaze_oracle(h, dz.AIRLIGHT, t_true))
+        print(f"gallery candidate {name:<17} keep — {hazy_db:.1f} dB hazy, {gain:+.1f} dB best  [{family}]")
+        row = (
+            label,
+            [h] + outs + [oracle_out],
+            [f"{hazy_db:.1f} dB"]
+            + [f"{psnr(o, src):.1f} dB" for o in outs]
+            + [f"{psnr(oracle_out, src):.1f} dB"],
+            gain,
+        )
+        if family not in survivors or gain > survivors[family][3]:
+            survivors[family] = row
 
+    chosen = sorted(survivors.values(), key=lambda r: -r[3])[:4]
     figures.gallery(
-        g_labels,
-        [("hazy input", g_hazy), (best_named, g_out), ("oracle — true transmission", g_oracle)],
+        ["hazy input"] + method_names + ["oracle"],
+        [(label, imgs) for label, imgs, _notes, _g in chosen],
         IMAGES / "samples.png",
+        cell_notes=[notes for _l, _i, notes, _g in chosen],
         suptitle=(
-            f"Four scenes at beta {args.beta}, recovered by the best named method, "
-            "against the oracle that was handed the true transmission map"
+            f"Four scenes at beta {args.beta}, every method across the columns. "
+            "The oracle was handed the true transmission map and is the ceiling."
         ),
     )
+    print(f"front-on comparison: {len(chosen)} scenes x {len(method_names)} methods + oracle")
+
+    # the same figure as a markdown table, so the README's numbers are generated
+    # rather than transcribed by hand
+    gallery_rows = [
+        dict(
+            [("Sr", i), ("Scene", label.replace("\n", " · "))]
+            + list(zip(["Hazy"] + method_names + ["Oracle"], notes))
+        )
+        for i, (label, _imgs, notes, _g) in enumerate(chosen, start=1)
+    ]
+    gallery_table = markdown_table(
+        gallery_rows,
+        [("Sr", "Sr"), ("Scene", "Scene"), ("Hazy input", "Hazy")]
+        + [(m, m) for m in method_names]
+        + [("Oracle", "Oracle")],
+    )
+    print("\n" + gallery_table)
 
     panels = [("Original (truth)", clean), (f"Hazy, beta={args.beta}", hazy)]
     for name, fn in dz.METHODS.items():
