@@ -12,8 +12,11 @@ takes one problem, runs 3–6 classical methods against it, and reports a
 comparative table, a side-by-side figure, pixel-level metrics, wall-clock timing
 and **one stated finding with a number in it**.
 
-No neural networks. No training. No GPU. No dataset downloads — ground truth is
-generated, so it is exact rather than annotated.
+No neural networks. No training. No GPU. Wherever a degradation can be applied
+on purpose — darken an image, add haze, paste a region — the ground truth is
+**generated rather than annotated**, so it is exact. Photographs are downloaded
+only to supply varied *subjects*; the answer key is still computed, never
+hand-labelled.
 
 Each shipped project **also runs on a real photograph** (see
 [`assets/real/`](assets/real/)) to show it working on an image nobody constructed
@@ -56,6 +59,15 @@ Applied to every project, without exception:
    comes out of that project's `run.py` and is mirrored in `results/results.json`.
 5. **Ground truth is generated, not annotated.** Darken an image and you know the
    true brightness; paste a region and you know exactly which pixels were forged.
+   Real photographs are used as *inputs* to that process — project 04 hazes twelve
+   Kodak scenes and scores against the originals — but a number is never quoted
+   against an image whose answer nobody recorded.
+6. **Four different subjects per comparison, chosen by the code.** Each project
+   tries 10–12 candidates, drops any that fail a stated quality gate, and keeps
+   the best survivor of each *family* so a figure cannot fill up with four
+   variations on one thing. The rejects are printed in the README. **No photograph
+   is reused across projects**, because a reader who sees the same cup four times
+   learns nothing about the fourth method.
 
 ---
 
@@ -69,6 +81,10 @@ claims:**
 | ✅ | **Shipped.** Measured, figures generated, UI built and screenshotted, tests passing, findings written from real output |
 | 🟡 | **Code written, executes, not yet measured.** Runs without error on a smoke test, but no figures, no UI, no verified numbers |
 | ⚪ | **Code written, not yet executed.** Imports cleanly; nothing beyond that is claimed |
+| ❌ | **Not started.** No code. Every one of these needs data that has to be downloaded — a video clip, a stereo pair, an exposure bracket, a dataset |
+
+**All 58 are listed below in order, including the ones not yet built.** Leaving
+the unbuilt ones out would make the plan look smaller than it is.
 
 | # | Project | Methods compared | Headline finding | Status |
 |---:|---|---|---|:--:|
@@ -77,9 +93,13 @@ claims:**
 | [03](projects/03_low_light_enhancement/) | [**Low-light enhancement**](projects/03_low_light_enhancement/) | 8 methods: fixed/auto gamma, HE, CLAHE, SSR/MSR/MSRCR, LIME | The ceiling is **not** the algorithms: at gamma 3 only **158 of 256** tone levels survive, so even an exact inverse reaches **22.31 dB**. And an adaptive method beats a fixed constant by **+5.46 dB** where its assumption holds, loses by **−7.70 dB** where it does not — averaging to a number that describes neither | ✅ |
 | [04](projects/04_dehazing/) | [**Dehazing**](projects/04_dehazing/) | dark channel prior, guided refine, CLAHE, Retinex, gamma | A **more accurate** airlight and transmission map produce a **worse** image — 19.50 dB falls to 18.50 dB when the airlight error is cut from 0.063 to 0.051; the two errors cancel. And CLAHE wins the contrast column (0.181 vs 0.156) while losing by **6.6 dB** | ✅ |
 | [05](projects/05_old_photo_restoration/) | [**Old photo restoration**](projects/05_old_photo_restoration/) | Telea, Navier–Stokes, masked mean, harmonic diffusion, top-hat/black-hat, median residual, per-channel stretch | Choosing the best inpainting method is worth **1.1 dB**; knowing *where the damage is* is worth **14.0 dB**. Ranking detectors by IoU gets it **backwards** — the best-IoU detector restores to 9.88 dB, a worse-IoU one to 12.87 dB. And gray-world drives the no-reference cast to 0.04° while landing **further from the truth** (14.28°) than the faded input (7.72°) | ✅ |
+| 06 | **Lane detection** | colour mask + Canny + Hough + ROI | *needs a road clip* | ❌ |
 | [07](projects/07_copy_move_forgery/) | [**Copy-move forgery**](projects/07_copy_move_forgery/) | block matching, SIFT/ORB self-match, RANSAC similarity, dense verification | The best method on an exact copy is the worst at every other setting: block matching scores **0.9925 IoU** unrotated and **0.0000** at 2°. The decisive choice is the verifier's *hypothesis*, not the descriptor — identical SIFT matches score 0.794 vs 0.677 at 0° and 0.000 vs 0.499 at 90°. And rotation-robustness is paid for in false accusations: **6.3% of an untampered photo flagged**, vs 0.0% for block matching | ✅ |
+| 08 | **Video stabilisation** | feature trajectories + trajectory smoothing | *needs a handheld clip* | ❌ |
 | [09](projects/09_coin_counting/) | [**Coin counting & measurement**](projects/09_coin_counting/) | Otsu, top-hat illumination flattening, distance transform, local-maxima watershed, Hough circles | The OpenCV tutorial's seed rule (a fraction of the **global** distance maximum) counts **1 coin of 24** when a lighting artefact merges the mask; local-maxima seeding counts **24 of 24** on the same broken mask. And three methods count 24 while only **one** measures them plausibly — watershed's smallest basin implies a **5.75 mm** coin next to a 24.25 mm reference | ✅ |
 | [10](projects/10_seam_carving/) | [**Seam carving**](projects/10_seam_carving/) | dynamic programming, 4 energy functions, integral-image ROI, plain-rescale control | **11.6 points** more of the high-energy region retained than `cv2.resize`, for **2,844×** the compute. The four energy functions span **0.5 points** — the one-line choice write-ups argue about is **23× smaller** than the choice they skip. And it wins its own objective (retained energy) on 4 images of 4 while winning region retention on only 3 | ✅ |
+| 11 | **HDR exposure fusion** | Debevec, Mertens, Reinhard tone mapping | *needs an exposure bracket* | ❌ |
+| 12 | **Stereo → depth → 3D point cloud** | BM vs SGBM + 3D render | *needs a stereo pair* | ❌ |
 | [13](projects/13_denoising_shootout/) | [**Denoising shootout**](projects/13_denoising_shootout/) | box, Gaussian, median, bilateral, non-local means, adaptive Wiener, do-nothing control | Three noise models, **three different winners** — and the worst filter rotates too. Median wins impulse noise by **6.80 dB** and is the worst on Gaussian. Tuning transfers for **one filter of six** (bilateral +4.13 dB on held-out images; box **−0.81**). And below **sigma 10** every filter scores worse than leaving the image alone | ✅ |
 | [14](projects/14_edge_detectors/) | [Edge detectors](projects/14_edge_detectors/) | Roberts, Prewitt, Sobel, Scharr, LoG, Canny | every operator at its **own** best threshold | 🟡 |
 | [15](projects/15_thresholding_family/) | [Thresholding family](projects/15_thresholding_family/) | Otsu, triangle, multi-Otsu, adaptive, Niblack, Sauvola | illumination, class imbalance and noise varied **separately** | 🟡 |
@@ -96,25 +116,52 @@ claims:**
 | [26](projects/26_quality_metrics/) | [**Do quality metrics agree?**](projects/26_quality_metrics/) | MSE, PSNR, SSIM, MS-SSIM, GMSD, VIF | equalise PSNR, then ask the other metrics | ⚪ |
 | [27](projects/27_jpeg_from_scratch/) | [JPEG from scratch](projects/27_jpeg_from_scratch/) | DCT, quantisation tables, zig-zag, RLE | the rate–distortion curve **is** the result | ⚪ |
 | [28](projects/28_canny_sensitivity/) | [Canny parameter sensitivity](projects/28_canny_sensitivity/) | σ × low × ratio grid | variance decomposition: which knob matters | ⚪ |
+| 29 | **Tracking** | Kalman, mean-shift, CAMShift, KCF, CSRT, MOSSE | *needs a short clip* | ❌ |
+| 30 | **Background subtraction** | frame diff, running average, MOG, MOG2, KNN | *needs a short clip* | ❌ |
 | [31](projects/31_gw_pipeline/) | [G&W 8-stage pipeline](projects/31_gw_pipeline/) | Laplacian + Sobel + smoothing + power-law | ablation: which stages earn their place | ⚪ |
 | [32](projects/32_hough_transforms/) | [Hough transforms](projects/32_hough_transforms/) | lines, probabilistic lines, circles | cost scales with parameter count | ⚪ |
 | [33](projects/33_texture/) | [Texture](projects/33_texture/) | GLCM, LBP, Gabor, Laws | which **invariance** each one actually has | ⚪ |
 | [34](projects/34_rgb_to_grayscale/) | [RGB → grayscale](projects/34_rgb_to_grayscale/) | BT.601, BT.709, linear-light, value, contrast-preserving | when the one-line choice actually matters | ⚪ |
+| 35 | **Camera calibration & distortion** | reprojection error vs number of views | *needs checkerboard shots* | ❌ |
 | [36](projects/36_shape_descriptors/) | [Shape descriptors](projects/36_shape_descriptors/) | Hu moments, Fourier descriptors, chain codes | invariance claims verified **directly** | ⚪ |
 | [37](projects/37_template_matching/) | [Template matching](projects/37_template_matching/) | SSD, NCC, ZNCC, multi-scale | what each scoring function is blind to | ⚪ |
+| 38 | **Panorama stitching** | homography, cylindrical warp, multi-band blending | *needs 2–3 overlapping photos* | ❌ |
 | [39](projects/39_white_balance/) | [White balance](projects/39_white_balance/) | grey-world, white-patch, shades-of-grey, grey-edge | **angular error** in degrees, the standard metric | ⚪ |
 | [40](projects/40_multiframe_super_resolution/) | [Multi-frame super-resolution](projects/40_multiframe_super_resolution/) | shift-and-add, iterative back-projection | breaks project 21's plateau — the honest contrast | ⚪ |
 | [41](projects/41_point_transforms/) | [Point transforms](projects/41_point_transforms/) | log, power-law, piecewise-linear, bit-plane | LUT vs arithmetic must be **bit-identical** | ⚪ |
 | [42](projects/42_image_registration/) | [Image registration](projects/42_image_registration/) | phase correlation, ECC, mutual information | only MI survives a modality change | ⚪ |
+| 43 | **Grayscale → colour** | Levin scribble-optimisation, Welsh transfer, pseudo-colour | *needs a reference image* | ❌ |
 | [44](projects/44_poisson_blending/) | [Poisson blending](projects/44_poisson_blending/) | copy-paste, feather, Poisson, mixed gradients | the metric choice **inverts** the conclusion | ⚪ |
 | [45](projects/45_wavelet_denoising/) | [Wavelet denoising](projects/45_wavelet_denoising/) | soft/hard, VisuShrink, BayesShrink | the sparsity premise, tested directly | ⚪ |
+| 46 | **Epipolar geometry** | fundamental/essential matrix, 8-point vs RANSAC | *needs a stereo pair* | ❌ |
 | [47](projects/47_colour_space_robustness/) | [Colour space robustness](projects/47_colour_space_robustness/) | RGB, HSV, Lab, YCrCb, normalised RGB | "HSV is lighting robust" is half true | ⚪ |
+| 48 | **Chroma key / green screen** | colour keying, spill suppression, matting | *needs green-screen footage* | ❌ |
+| 49 | **License plate localisation** | edge + morphology + contour filtering | *needs plate images* | ❌ |
+| 50 | **Face recognition** | Eigenfaces (PCA), Fisherfaces (LDA), LBPH | *needs a face dataset* | ❌ |
 | [51](projects/51_demosaicing/) | [Demosaicing / camera ISP](projects/51_demosaicing/) | nearest, bilinear, Malvar, VNG, edge-aware | error concentrates on **edges**, hidden by whole-image PSNR | ⚪ |
+| 52 | **Focus stacking / depth from focus** | focus measures, depth map from a focal stack | *needs a focal stack* | ❌ |
 | [53](projects/53_barcode_qr/) | [Barcode / QR detection](projects/53_barcode_qr/) | gradient+morphology, variance, QR finder | localisation and **decoding** degrade at different rates | ⚪ |
+| 54 | **Industrial defect detection** | template + morphology + blob analysis | *needs defect imagery* | ❌ |
+| 55 | **Motion-triggered security alert** | background subtraction + blob tracking | *needs a surveillance clip* | ❌ |
+| 56 | **Hand gesture recognition** | skin colour + contours + convexity defects | *needs webcam footage* | ❌ |
 | [57](projects/57_pedestrian_detection/) | [Pedestrian detection](projects/57_pedestrian_detection/) | HOG + linear SVM | the pyramid step matters more than the SVM threshold | ⚪ |
 | [58](projects/58_red_eye_removal/) | [Red-eye removal](projects/58_red_eye_removal/) | colour, +shape, +face, +eye constraints | geometry is what removes the false positives | ⚪ |
 
-**41 projects spanning 14 algorithm families, none of which need a download.**
+**58 projects spanning 14 algorithm families. 41 built, 17 not started.**
+
+The split is not arbitrary and it is not where the interest ran out: **the 41
+built projects are exactly the 41 that need no download**, and the 17 unbuilt
+ones are exactly the 17 that need a video clip, a stereo pair, an exposure
+bracket or a labelled dataset. The build ran to the edge of what could be
+generated with exact ground truth and stopped there. Those 17 are next, with the
+data downloaded per project:
+
+| Kind | Projects | What has to be fetched |
+|---|---|---|
+| Video | 06, 08, 29, 30, 48, 55 | a road clip, a handheld clip, a tracking clip, a green screen, surveillance |
+| Multi-image | 11, 12, 38, 46, 52 | exposure brackets, stereo pairs, overlapping photos, a focal stack |
+| Dataset | 35, 43, 49, 50, 54 | checkerboard shots, a colour reference, plates, faces, defect imagery |
+| Live input | 56 | webcam footage |
 
 🚨 **Do not cite a number from a 🟡 or ⚪ project.** Those modules have not been
 run end to end, so any figure they would produce is unverified. Only ✅ rows have
