@@ -2,12 +2,12 @@
 
 | Method | Subject found | IoU | Dice | Body recall | Hair recall | Background FPR | Boundary F1 | Time (ms) |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Face rect (baseline) | 100% | 0.5654 | 0.7224 | 0.9422 | 0.97 | 0.3441 | 0.0236 | 37.883 |
-| Face ellipse prior | 100% | 0.928 | 0.9627 | 0.9664 | 0.0624 | 0.0091 | 0.1659 | 39.103 |
-| Haar + GrabCut | 100% | 0.8721 | 0.929 | 0.9343 | 0.4823 | 0.0368 | 0.5849 | 1094.84 |
-| GrabCut (centre rect) | 100% | 0.7985 | 0.8716 | 0.8683 | 0.5285 | 0.0454 | 0.6362 | 1147.22 |
-| Skin colour (YCrCb) | 100% | 0.1735 | 0.2914 | 0.2227 | 0.947 | 0.3288 | 0.25 | 2.742 |
-| Watershed + markers | 100% | 0.7155 | 0.833 | 0.7876 | 0.2362 | 0.0452 | 0.3728 | 49.755 |
+| Face rect (baseline) | 100% | 0.5654 | 0.7224 | 0.9422 | 0.97 | 0.3441 | 0.0236 | 37.036 |
+| Face ellipse prior | 100% | 0.928 | 0.9627 | 0.9664 | 0.0624 | 0.0091 | 0.1659 | 36.244 |
+| Haar + GrabCut | 100% | 0.8721 | 0.929 | 0.9343 | 0.4823 | 0.0368 | 0.5849 | 1071.72 |
+| GrabCut (centre rect) | 100% | 0.7985 | 0.8716 | 0.8683 | 0.5285 | 0.0454 | 0.6362 | 1128.68 |
+| Skin colour (YCrCb) | 100% | 0.1735 | 0.2914 | 0.2227 | 0.947 | 0.3288 | 0.25 | 2.847 |
+| Watershed + markers | 100% | 0.7155 | 0.833 | 0.7876 | 0.2362 | 0.0452 | 0.3728 | 47.631 |
 
 ### GrabCut seed stability (24 seeds on each identical image)
 
@@ -31,5 +31,5 @@
 
 | Strategy | Halo error (0-255) | Whole-background error | Time (ms) |
 |---|---:|---:|---:|
-| Naive (blur all, paste back) | 9.48 | 1.636 | 16.728 |
-| Masked (normalised convolution) | 1.576 | 0.271 | 48.051 |
+| Naive (blur all, paste back) | 9.48 | 1.636 | 16.009 |
+| Masked (normalised convolution) | 1.576 | 0.271 | 46.455 |

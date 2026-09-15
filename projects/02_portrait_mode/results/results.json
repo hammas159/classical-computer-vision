@@ -1,6 +1,6 @@
 {
   "project": "02_portrait_mode",
-  "generated_utc": "2026-09-14T23:46:50+00:00",
+  "generated_utc": "2026-09-15T03:52:06+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -21,7 +21,7 @@
       "hair_recall": 0.97,
       "background_fpr": 0.3441,
       "boundary_f1": 0.0236,
-      "median_ms": 37.883
+      "median_ms": 37.036
     },
     {
       "method": "Face ellipse prior",
@@ -32,7 +32,7 @@
       "hair_recall": 0.0624,
       "background_fpr": 0.0091,
       "boundary_f1": 0.1659,
-      "median_ms": 39.103
+      "median_ms": 36.244
     },
     {
       "method": "Haar + GrabCut",
@@ -43,7 +43,7 @@
       "hair_recall": 0.4823,
       "background_fpr": 0.0368,
       "boundary_f1": 0.5849,
-      "median_ms": 1094.836
+      "median_ms": 1071.723
     },
     {
       "method": "GrabCut (centre rect)",
@@ -54,7 +54,7 @@
       "hair_recall": 0.5285,
       "background_fpr": 0.0454,
       "boundary_f1": 0.6362,
-      "median_ms": 1147.225
+      "median_ms": 1128.682
     },
     {
       "method": "Skin colour (YCrCb)",
@@ -65,7 +65,7 @@
       "hair_recall": 0.947,
       "background_fpr": 0.3288,
       "boundary_f1": 0.25,
-      "median_ms": 2.742
+      "median_ms": 2.847
     },
     {
       "method": "Watershed + markers",
@@ -76,7 +76,7 @@
       "hair_recall": 0.2362,
       "background_fpr": 0.0452,
       "boundary_f1": 0.3728,
-      "median_ms": 49.755
+      "median_ms": 47.631
     }
   ],
   "grabcut_stability": [
@@ -148,13 +148,13 @@
       "method": "Naive (blur all, paste back)",
       "halo_err_0_255": 9.48,
       "background_err_0_255": 1.636,
-      "median_ms": 16.728
+      "median_ms": 16.009
     },
     {
       "method": "Masked (normalised convolution)",
       "halo_err_0_255": 1.576,
       "background_err_0_255": 0.271,
-      "median_ms": 48.051
+      "median_ms": 46.455
     }
   ]
 }

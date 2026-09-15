@@ -579,6 +579,103 @@ def shading_at(points: np.ndarray, size: tuple[int, int], illum_min: float) -> n
     return illum_min + (1.0 - illum_min) * ramp
 
 
+#: A small fixed vocabulary. Fixed rather than random strings so a page is
+#: reproducible from its seed, and word-shaped rather than lorem ipsum so the
+#: stroke-width distribution resembles real text.
+#: Body-text geometry for :func:`render_text_page`. Thickness is the parameter
+#: that decides how hard binarisation is -- see that function's docstring.
+BODY_SCALE = 0.46
+BODY_THICKNESS = 2
+
+_WORDS = (
+    "the", "image", "threshold", "contour", "page", "detect", "classical",
+    "vision", "gradient", "pixel", "region", "binarise", "homography", "scan",
+    "otsu", "sauvola", "adaptive", "shadow", "illumination", "method", "metric",
+    "recover", "perspective", "corner", "document", "measure", "compare", "edge",
+)
+
+
+def render_text_page(
+    size: tuple[int, int] = (400, 560), rng: np.random.Generator | None = None
+) -> np.ndarray:
+    """A page of **real rendered glyphs**, not stand-in strokes.
+
+    ``size`` is ``(width, height)``.
+
+    The earlier version of this drew each line of "text" as a single 4-pixel
+    ``cv2.line``. That was geometrically adequate — it gave a text mask to score
+    IoU against — but it made every output look like ruled paper, and it made
+    the binarisation comparison far too easy: a 4 px solid bar survives almost
+    any threshold.
+
+    Real glyphs are **thin, disconnected and anti-aliased**, which is what makes
+    binarisation genuinely hard and what the comparison in project 01 is
+    supposed to be measuring. Strokes here are 2 px against the old 4 px bars.
+
+    🚨 **Stroke thickness, not font size, decides the difficulty.** Measured at
+    flat light, Otsu / Sauvola / oracle text IoU:
+
+    ==============  =====  =======  =======
+    body thickness  Otsu   Sauvola  oracle
+    ==============  =====  =======  =======
+    1 px            0.510  0.517    0.767
+    2 px            0.901  0.842    0.932
+    ==============  =====  =======  =======
+
+    A 1 px anti-aliased stroke is roughly half ambiguous grey, so *no* method can
+    score well and the comparison stops discriminating between them. 2 px is what
+    body text actually measures in a page photographed at this resolution, and it
+    leaves the methods separable -- which is the point of the scene.
+
+    Rendered with Hershey vector fonts, which ship inside OpenCV, so this still
+    needs no download and no font file.
+    """
+    rng = _rng(0) if rng is None else rng
+    page_w, page_h = size
+    page = np.full((page_h, page_w), 245, np.uint8)
+
+    margin = 30
+    ink = 45
+
+    # title, in a heavier face so the page has a realistic range of stroke widths
+    cv2.putText(
+        page, "CLASSICAL VISION", (margin, 52),
+        cv2.FONT_HERSHEY_DUPLEX, 0.62, ink, 1, cv2.LINE_AA,
+    )
+    cv2.line(page, (margin, 64), (page_w - margin, 64), 120, 1)
+
+    # body: words laid out with real wrapping, so line lengths vary naturally
+    y = 96
+    line_height = 24
+    while y < page_h - 120:
+        x = margin
+        while True:
+            word = str(_WORDS[int(rng.integers(0, len(_WORDS)))])
+            (tw, _), _ = cv2.getTextSize(word, cv2.FONT_HERSHEY_SIMPLEX, BODY_SCALE, BODY_THICKNESS)
+            if x + tw > page_w - margin:
+                break
+            cv2.putText(
+                page, word, (x, y),
+                cv2.FONT_HERSHEY_SIMPLEX, BODY_SCALE, ink, BODY_THICKNESS, cv2.LINE_AA,
+            )
+            x += tw + 7
+        y += line_height
+
+    # a boxed block, which gives contour-based methods a rectangle INSIDE the
+    # page to be confused by -- the page border must still win
+    box_top = page_h - 96
+    cv2.rectangle(page, (margin, box_top), (page_w - margin, page_h - 34), 110, 1)
+    cv2.putText(
+        page, "total   1284.50", (margin + 12, box_top + 30),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.44, ink, 1, cv2.LINE_AA,
+    )
+    cv2.putText(
+        page, "checked by  o.c.v.", (margin + 12, box_top + 52),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.38, ink, 1, cv2.LINE_AA,
+    )
+    return page
+
+
 def document_scene(
     size: tuple[int, int] = (900, 700),
     seed: int | None = 0,
@@ -607,11 +704,7 @@ def document_scene(
     W, H = size
 
     page_h, page_w = 560, 400
-    page = np.full((page_h, page_w), 245, np.uint8)
-    for i in range(14):  # lines of "text"
-        y = 48 + i * 34
-        cv2.line(page, (36, y), (page_w - 36 - int(rng.integers(0, 90)), y), 45, 4)
-    cv2.rectangle(page, (36, 470), (page_w - 36, 530), 90, 2)
+    page = render_text_page((page_w, page_h), rng)
     page = cv2.cvtColor(page, cv2.COLOR_GRAY2RGB)
 
     desk = np.zeros((H, W, 3), np.uint8)

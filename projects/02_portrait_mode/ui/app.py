@@ -23,6 +23,7 @@ import streamlit as st  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 
 import portrait_mode as pm  # noqa: E402
+from shared import io as io_shared  # noqa: E402
 from shared import synth, ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 from shared.io import to_uint8  # noqa: E402
@@ -43,12 +44,22 @@ left, right = st.columns([1, 1])
 with left:
     source = st.radio(
         "Image source",
-        ["Generated portrait (known matte)", "Upload your own photo"],
+        ["Real photograph", "Generated portrait (known matte)", "Upload your own photo"],
         horizontal=True,
-        help="A generated scene has an exact alpha matte, so the error is measurable.",
+        help=(
+            "A real photograph shows the method working on an image nobody built "
+            "for it -- but it has no ground-truth matte, so no IoU can be reported. "
+            "The generated portrait has an exact matte."
+        ),
     )
     uploaded, bg_name, seed = None, pm.BACKGROUNDS[0], 0
-    if source.startswith("Upload"):
+    if source.startswith("Real"):
+        st.caption(
+            "A real photograph: a real person, real hair, real depth, and a real "
+            "crowd behind them. No ground-truth matte exists, so this panel shows "
+            "the result rather than scoring it."
+        )
+    elif source.startswith("Upload"):
         uploaded = st.file_uploader("Portrait photo", type=["png", "jpg", "jpeg", "bmp", "webp"])
     else:
         c1, c2 = st.columns(2)
@@ -57,7 +68,11 @@ with left:
 
 with right:
     c1, c2 = st.columns(2)
-    matte_name = c1.selectbox("Matting method", list(pm.MATTES), index=2)
+    # Default to GrabCut (centre rect) rather than Haar + GrabCut: on a real
+    # photograph the face box seeds GrabCut too tightly and the matte loses the
+    # arms and legs entirely. The centre rect makes no assumption about a face
+    # being found at all, which is the safer default for an arbitrary image.
+    matte_name = c1.selectbox("Matting method", list(pm.MATTES), index=3)
     bokeh_name = c2.selectbox("Bokeh kernel", list(pm.BOKEH_KERNELS), index=2)
     c3, c4 = st.columns(2)
     radius = c3.slider("Blur radius (px)", 3, 35, 15)
@@ -66,7 +81,9 @@ with right:
 st.divider()
 
 scene = None
-if source.startswith("Upload"):
+if source.startswith("Real"):
+    image = io_shared.real_photo("player")
+elif source.startswith("Upload"):
     if uploaded is None:
         st.info("Upload a portrait in the panel above, or switch to a generated scene.")
         st.stop()
@@ -143,7 +160,10 @@ if scene is not None:
 else:
     m[2].metric("Matte IoU", "unknown")
     m[3].metric("Hair recovered", "unknown")
-    st.caption("Accuracy needs a known matte, which an uploaded photo does not have.")
+    st.caption(
+        "IoU and hair recall need a known matte, and a real photograph has none — "
+        "nobody labelled which of its pixels are subject. No number is invented here."
+    )
 
 if matte_name.startswith(("Haar + GrabCut", "GrabCut")):
     st.info(

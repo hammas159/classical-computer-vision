@@ -23,6 +23,7 @@ import streamlit as st  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 
 import document_scanner as ds  # noqa: E402
+from shared import io as io_shared  # noqa: E402
 from shared import synth, ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 from shared.io import to_gray  # noqa: E402
@@ -56,14 +57,25 @@ ctrl_left, ctrl_right = st.columns([1, 1])
 with ctrl_left:
     source = st.radio(
         "Image source",
-        ["Generated scene (known ground truth)", "Upload your own photo"],
+        ["Real photograph", "Generated scene (known ground truth)", "Upload your own photo"],
         horizontal=True,
-        help="The generated scene has exact corner positions, so the error is measurable.",
+        help=(
+            "A real photograph shows the pipeline working on an image nobody "
+            "constructed for it -- but it has no ground truth, so no error can be "
+            "reported. The generated scene has exact corner positions."
+        ),
     )
 
-    uploaded = None
+    uploaded, real_name = None, "newspaper"
     seed, illum = 0, DEFAULT_ILLUM
-    if source.startswith("Upload"):
+    if source.startswith("Real"):
+        doc_photos = [n for n in io_shared.real_photo_names() if n != "player"]
+        real_name = st.selectbox(
+            "Photograph", doc_photos,
+            index=doc_photos.index("newspaper"),
+            format_func=lambda n: f"{n} - {io_shared.REAL_PHOTOS[n][1]}",
+        )
+    elif source.startswith("Upload"):
         uploaded = st.file_uploader("Photo of a page", type=["png", "jpg", "jpeg", "bmp", "webp"])
     else:
         sc1, sc2 = st.columns(2)
@@ -77,7 +89,12 @@ with ctrl_left:
 
 with ctrl_right:
     pc1, pc2 = st.columns(2)
-    detector = pc1.selectbox("Page detector", list(ds.DETECTORS), index=1)
+    # Default to Canny + contour rather than Otsu + contour. On the generated
+    # scenes Otsu is more accurate (1.11 px vs 2.70 px), but on a real photo of
+    # a bright newspaper it thresholds the WHOLE FRAME as page and returns a
+    # wedge across the image. Canny keys off the page border instead, which is
+    # the more robust default for an arbitrary photograph.
+    detector = pc1.selectbox("Page detector", list(ds.DETECTORS), index=0)
     binariser = pc2.selectbox("Binariser", list(ds.BINARISERS), index=3)
     use_persp = st.checkbox(
         "Recover aspect ratio from perspective",
@@ -91,7 +108,9 @@ st.divider()
 truth_corners = None
 truth_page = None
 
-if source.startswith("Upload"):
+if source.startswith("Real"):
+    image = io_shared.real_photo(real_name)
+elif source.startswith("Upload"):
     if uploaded is None:
         st.info("Upload a photo in the sidebar, or switch to a generated scene.")
         st.stop()
@@ -189,7 +208,9 @@ if truth_corners is not None:
 else:
     m4.metric("Corner error", "unknown", help="Ground truth exists only for generated scenes")
     st.caption(
-        "Corner error needs ground truth, which an uploaded photo does not have. "
+        "Corner error needs ground truth, and a real photograph does not have one — "
+        "nobody recorded where its corners truly are. Inventing a number here would "
+        "be the exact dishonesty this repo exists to avoid, so none is shown. "
         "Switch to a generated scene to see the pipeline scored."
     )
 

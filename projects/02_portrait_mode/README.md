@@ -47,8 +47,30 @@ trained by someone else, it is not a neural network, and nothing here is trained
 
 ## Screenshots
 
-All four are captures of the **live app**. Every number in them was computed at
-the moment the screenshot was taken.
+All captures of the **live app**. Every number in them was computed at the moment
+the screenshot was taken.
+
+### 0 · On a real photograph
+
+A real person, real hair, real depth, a real crowd behind them — nobody built this
+image for the algorithm. The subject is cut out and the background blurred.
+
+![Real photograph](results/screenshots/00_real_photo.png)
+
+**No IoU or hair recall is reported here.** Nobody labelled which of this photo's
+pixels are subject, so any accuracy would be invented. The measured comparison
+below uses a generated scene, which has an exact matte.
+
+The photograph is [`assets/real/messi5.jpg`](../../assets/real/messi5.jpg), from
+OpenCV's BSD-licensed sample data — the same image OpenCV uses in its own GrabCut
+tutorial.
+
+> **One real finding from this image.** The default matting method used to be
+> `Haar + GrabCut`. On this photo the face box seeds GrabCut so tightly that the
+> matte keeps the torso and **loses both arms and both legs**. `GrabCut (centre
+> rect)` makes no assumption that a face will be found at all, recovers the full
+> body, and is now the default. A method that depends on a detector inherits that
+> detector's failures.
 
 ### 1 · Matte, blur, composite
 

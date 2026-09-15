@@ -15,6 +15,11 @@ and **one stated finding with a number in it**.
 No neural networks. No training. No GPU. No dataset downloads — ground truth is
 generated, so it is exact rather than annotated.
 
+Each shipped project **also runs on a real photograph** (see
+[`assets/real/`](assets/real/)) to show it working on an image nobody constructed
+for it. Those are shown, never scored: a real photo has no answer key, so quoting
+an accuracy against one would be inventing a number.
+
 **Jump to:** [Why](#why-this-exists) · [The rules](#the-rules) ·
 [Projects](#projects) · [Findings so far](#findings-so-far) ·
 [Quick start](#quick-start) · [The shared layer](#the-shared-layer) ·
@@ -67,7 +72,7 @@ claims:**
 
 | # | Project | Methods compared | Headline finding | Status |
 |---:|---|---|---|:--:|
-| [01](projects/01_document_scanner/) | **Document scanner** | 6 page detectors · 4 binarisers · 2 aspect estimators | Otsu's failure on shadowed pages is **not** because a global threshold is impossible — the best global cut scores **0.964** where Otsu scores **0.430** | ✅ |
+| [01](projects/01_document_scanner/) | **Document scanner** | 6 page detectors · 4 binarisers · 2 aspect estimators | Otsu's failure on shadowed pages is **not** because a global threshold is impossible — the best global cut scores **0.890** where Otsu scores **0.678**. Also: the detector that wins on the benchmark (`Otsu + contour`, 1.07 px) **fails on a real photograph** | ✅ |
 | [02](projects/02_portrait_mode/) | **Portrait mode** | 6 matting methods · 4 aperture shapes · 2 compositors | Ranking by IoU crowns a method that recovers **6.2%** of hair; ranking by boundary F1 crowns one that recovers **52.9%**. Also: `grabCut` is **non-deterministic** — 24 seeds on one image span IoU **0.15–0.90** | ✅ |
 | [03](projects/03_low_light_enhancement/) | **Low-light enhancement** | 8 methods: fixed/auto gamma, HE, CLAHE, SSR/MSR/MSRCR, LIME | The ceiling is **not** the algorithms: at gamma 3 only **158 of 256** tone levels survive, so even an exact inverse reaches **22.31 dB**. And an adaptive method beats a fixed constant by **+5.46 dB** where its assumption holds, loses by **−7.70 dB** where it does not — averaging to a number that describes neither | ✅ |
 | [04](projects/04_dehazing/) | Dehazing | dark channel prior, guided refine, CLAHE, Retinex | scored on **transmission recovery**, not just output contrast | 🟡 |

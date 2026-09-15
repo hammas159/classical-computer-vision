@@ -13,9 +13,14 @@ pipeline runs in about **14 ms** on a CPU.
 
 > **The finding, in one sentence.** Otsu thresholding does not fail under uneven
 > lighting because ink and paper become inseparable — at an illumination ratio of
-> 0.39 the *best* global threshold still scores **0.964** IoU while Otsu scores
-> **0.430**. A global threshold was available; Otsu's criterion simply picked the
+> 0.386 the *best* global threshold still scores **0.890** IoU while Otsu scores
+> **0.678**. A global threshold was available; Otsu's criterion simply picked the
 > wrong one.
+
+> **Runs on real photographs too.** The measured comparison uses generated scenes
+> because they have exact ground truth, but the pipeline is shown working on a
+> real newspaper photographed at an angle — found, flattened and binarised into
+> readable text. No accuracy is quoted there, because a real photo has no answer key.
 
 **Jump to:** [What it does](#what-it-does) · [Screenshot](#screenshot) ·
 [Input & output](#input--output) · [Results](#results) ·
@@ -50,8 +55,29 @@ Each stage is **scored against exact ground truth**, not judged by eye:
 
 ## Screenshots
 
-All four are captures of the **live app**, not mockups. Every number visible in
-them was computed by the code at the moment the screenshot was taken.
+All captures of the **live app**, not mockups. Every number visible in them was
+computed by the code at the moment the screenshot was taken.
+
+### 0 · On a real photograph
+
+A newspaper page photographed at an angle — nobody constructed this image for the
+pipeline. It is found, flattened, and binarised into **readable text**.
+
+![Real photograph](results/screenshots/00_real_photo.png)
+
+**No accuracy is reported here, and that is deliberate.** Nobody recorded where
+this page's corners truly are, so a corner error would be invented. The measured
+comparison below uses generated scenes for exactly that reason.
+
+The photograph is [`assets/real/sudoku.png`](../../assets/real/sudoku.png), from
+OpenCV's BSD-licensed sample data.
+
+> **One real finding from this image.** The default detector used to be
+> `Otsu + contour`, which is the most accurate on generated scenes (1.07 px). On
+> this photo it returns a **wedge across the whole frame** — the newsprint is
+> bright enough that Otsu thresholds the entire image as "page". `Canny + contour`
+> keys off the page border instead and gets it right, so it is now the default.
+> **The method that wins on the benchmark is not the method to ship.**
 
 ### 1 · The pipeline, end to end
 
@@ -196,12 +222,12 @@ written to [`results/results.json`](results/results.json) and
 
 | Method | Found a quad | Usable (≤10 px) | Mean corner err (px) | Median (px) | p90 (px) | Area IoU | Time (ms) |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Canny + contour | 100% | 100% | 2.703 | 2.701 | 2.844 | 0.982 | 2.019 |
-| **Otsu + contour** | 100% | **100%** | **1.112** | 1.055 | 1.361 | **0.9931** | **1.476** |
-| Morph gradient | 100% | 100% | 1.302 | 1.268 | 1.499 | 0.9915 | 1.832 |
-| **Saturation (HSV)** | 100% | **100%** | **1.02** | 0.993 | 1.422 | 0.9932 | 2.422 |
-| Hough lines | 100% | 63% | 46.644 | 1.622 | 159.837 | 0.8142 | 7.08 |
-| minAreaRect (baseline) | 100% | 17% | 19.486 | 21.79 | 27.029 | 0.8996 | 1.387 |
+| Canny + contour | 100% | 100% | 2.676 | 2.689 | 2.817 | 0.9821 | 2.026 |
+| **Otsu + contour** | 100% | **100%** | **1.068** | 1.041 | 1.305 | **0.9934** | **1.504** |
+| Morph gradient | 100% | 100% | 1.326 | 1.328 | 1.465 | 0.9911 | 1.73 |
+| **Saturation (HSV)** | 100% | **100%** | **0.898** | 0.87 | 1.19 | 0.994 | 2.34 |
+| Hough lines | 100% | 73% | 30.288 | 1.379 | 106.063 | 0.8785 | 9.961 |
+| minAreaRect (baseline) | 100% | 10% | 20.15 | 22.158 | 28.136 | 0.8932 | 1.373 |
 
 ![Detector comparison](docs/images/detectors.png)
 
@@ -209,31 +235,31 @@ written to [`results/results.json`](results/results.json) and
 
 1. **The tutorial method is not the best one.** Canny + contour — what almost
    every "build a document scanner" article uses — lands at 2.70 px. Plain Otsu
-   on brightness gets **1.11 px** and is **27% faster**. Saturation does best at
-   **1.02 px**, which makes physical sense: HSV saturation is `(max−min)/max`, so
+   on brightness gets **1.07 px** and is **26% faster**. Saturation does best at
+   **0.90 px**, which makes physical sense: HSV saturation is `(max−min)/max`, so
    multiplying a pixel by a shading factor leaves it unchanged. It is the one
    channel the lighting gradient cannot touch.
 2. **Hough lines shows why a mean is a bad summary.** Its *median* error is
-   1.62 px — better than Canny. Its *mean* is 46.6 px and its p90 is 159.8 px,
-   because in 37% of scenes it locks onto a desk edge instead of the page. It
-   found a quadrilateral **100%** of the time and was right only **63%** of the
+   1.38 px — better than Canny. Its *mean* is 30.3 px and its p90 is 106.1 px,
+   because in 27% of scenes it locks onto a desk edge instead of the page. It
+   found a quadrilateral **100%** of the time and was right only **73%** of the
    time. A detector that fails loudly is safer than one that fails confidently.
 3. **The rectangle baseline quantifies the perspective.** `minAreaRect` fits a
    rotated rectangle to a shape that is genuinely a general quadrilateral. It is
-   usable in only **17%** of scenes and is off by **19.5 px** — that gap is a
+   usable in only **10%** of scenes and is off by **20.2 px** — that gap is a
    measure of how much perspective distortion is actually present.
 
 ### Binarisation, and where Otsu breaks
 
-At a moderate illumination ratio, **Otsu wins** — 0.9977 text IoU against
-Sauvola's 0.9067, at **80× the speed** (0.15 ms vs 12.03 ms):
+At a moderate illumination ratio, **Otsu wins** — 0.9045 text IoU against
+Sauvola's 0.8483, at **93× the speed** (0.133 ms vs 12.36 ms):
 
 | Method | Text IoU (mean) | Text IoU (median) | Time (ms) |
 |---|---:|---:|---:|
-| **Otsu (global)** | **0.9977** | 0.9989 | **0.15** |
-| Adaptive mean | 0.8111 | 0.8126 | 0.283 |
-| Adaptive Gaussian | 0.9408 | 0.9428 | 0.911 |
-| Sauvola | 0.9067 | 0.9059 | 12.032 |
+| **Otsu (global)** | **0.9045** | 0.9048 | **0.133** |
+| Adaptive mean | 0.8009 | 0.7999 | 0.272 |
+| Adaptive Gaussian | 0.872 | 0.872 | 0.89 |
+| Sauvola | 0.8483 | 0.8479 | 12.356 |
 
 So "always use an adaptive threshold for documents" is wrong advice under normal
 light. The question is *when* it becomes right. Sweeping the illumination ratio
@@ -243,19 +269,25 @@ across the page answers it:
 
 | Page illum. ratio | Otsu (global) | Adaptive mean | Adaptive Gaussian | Sauvola | Best global (oracle) |
 |---|---:|---:|---:|---:|---:|
-| 1 | 0.999 | 0.793 | 0.9323 | 0.8701 | 0.9995 |
-| 0.853 | 0.9972 | 0.8056 | 0.9366 | 0.8989 | 0.9989 |
-| 0.7395 | 0.9949 | 0.8181 | 0.9406 | 0.9153 | 0.9978 |
-| 0.6444 | 0.9893 | 0.8317 | 0.9443 | 0.9253 | 0.995 |
-| 0.5539 | 0.9793 | 0.8485 | 0.9482 | 0.9325 | 0.989 |
-| 0.4785 | 0.9022 | 0.865 | 0.9518 | 0.9368 | 0.9817 |
-| **0.4305** | **0.7772** | 0.8759 | 0.9543 | 0.9391 | 0.9742 |
-| 0.4057 | 0.4588 | 0.8817 | 0.956 | 0.9401 | 0.9679 |
-| **0.3931** | **0.4296** | 0.8847 | 0.9569 | 0.9404 | **0.9638** |
+| 1 | 0.9018 | 0.7925 | 0.8646 | 0.839 | 0.9317 |
+| 0.8496 | 0.9044 | 0.7995 | 0.8712 | 0.8469 | 0.931 |
+| 0.7342 | 0.9046 | 0.8057 | 0.8769 | 0.8522 | 0.9284 |
+| 0.638 | 0.9022 | 0.8119 | 0.8827 | 0.8561 | 0.9241 |
+| 0.5468 | 0.8959 | 0.8189 | 0.8893 | 0.8594 | 0.917 |
+| 0.4712 | 0.8595 | 0.8262 | 0.8949 | 0.8621 | 0.9092 |
+| **0.4232** | **0.773** | 0.8314 | 0.8984 | 0.8636 | 0.9004 |
+| 0.3984 | 0.7127 | 0.8344 | 0.9001 | 0.8644 | 0.8938 |
+| **0.3858** | **0.6775** | 0.836 | **0.9009** | 0.8648 | **0.8896** |
 
-Otsu holds ≥0.98 down to a ratio of 0.55, then falls off a cliff — **0.4296 at
-ratio 0.39**, a drop of 0.57 IoU over a narrow band. The crossover where it drops
-more than 0.05 below Sauvola is **page ratio 0.4305**.
+Otsu holds ≥0.89 down to a ratio of 0.55, then falls away — **0.678 at ratio
+0.386**, a drop of 0.22 IoU over a narrow band. The crossover where it drops more
+than 0.05 below Sauvola is **page ratio 0.4232**.
+
+Note what the **Adaptive Gaussian** column does over the same range: it *rises*,
+from 0.865 at flat light to 0.901 in deep shadow, and ends up beating every other
+method including the global oracle. A local method is not merely more robust to a
+shadow — on this scene the shadow makes it **better**, because the reduced local
+contrast suppresses the speckle it produces on clean paper.
 
 ### The part that contradicts the textbook explanation
 
@@ -572,8 +604,8 @@ def binarise_best_global(gray, truth_text):
     return ((gray > best_t).astype(np.uint8) * 255), best_t
 ```
 
-At page illumination ratio 0.39 it returns **IoU 0.964 at t = 64**, where Otsu
-scores **0.430 at t = 100**. So a global threshold existed and Otsu walked past
+At page illumination ratio 0.44 it returns **IoU 0.910 at t = 80**, where Otsu
+scores **0.826 at t = 93**. So a global threshold existed and Otsu walked past
 it. The real mechanism, visible in the histogram figure above: the shadow spreads
 paper across a wide band that dominates the between-class variance, so Otsu
 splits *the paper* rather than separating paper from ink.

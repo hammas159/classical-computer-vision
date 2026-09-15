@@ -148,6 +148,43 @@ def sample(name: str = "astronaut", gray: bool = False) -> np.ndarray:
     return ensure_rgb(img)
 
 
+#: Real photographs bundled with the repo, from OpenCV's BSD-licensed sample
+#: data. They exist to show a pipeline working on an image nobody constructed
+#: for it. They have **no ground truth**, so nothing that needs one may be
+#: reported against them -- see assets/real/README.md.
+REAL_PHOTOS = {
+    "player": ("messi5.jpg", "a footballer on a pitch, real depth and a real crowd"),
+    "newspaper": ("sudoku.png", "a newspaper page photographed at an angle"),
+    "printed_text": ("imageTextN.png", "a page of clean printed text"),
+    "defocused_text": ("text_defocus.jpg", "printed text, defocused"),
+}
+
+
+def real_photo(name: str) -> np.ndarray:
+    """Load one of the bundled **real** photographs as RGB uint8.
+
+    Deliberately a separate function from :func:`sample`. The two are used for
+    different things and scored differently: a generated scene has exact ground
+    truth and gets a PSNR or an IoU, a real photograph has neither and gets
+    shown rather than scored. Keeping them apart at the API makes it hard to
+    accidentally quote an accuracy for an image that has no answer.
+    """
+    if name not in REAL_PHOTOS:
+        raise KeyError(f"unknown real photo {name!r}; choose from {sorted(REAL_PHOTOS)}")
+    filename, _ = REAL_PHOTOS[name]
+    path = Path(__file__).resolve().parent.parent / "assets" / "real" / filename
+    if not path.exists():
+        raise FileNotFoundError(
+            f"{path} is missing. The real photographs live in assets/real/; "
+            "see assets/real/README.md for their provenance."
+        )
+    return imread(path)
+
+
+def real_photo_names() -> list[str]:
+    return sorted(REAL_PHOTOS)
+
+
 def sample_names() -> list[str]:
     """Sorted list of every bundled sample name."""
     return sorted(_SAMPLES)
