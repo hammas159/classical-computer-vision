@@ -10,8 +10,56 @@ Phone portrait mode without a depth sensor and without a segmentation network:
 **six classical matting methods, four aperture shapes, two compositing
 strategies** — all measured against an exact ground-truth alpha matte.
 
-Everything runs on **one real photograph of one real person** — real hair, real
-kit, a real crowd behind them — not on a constructed scene.
+---
+
+## Results
+
+Four different **kinds** of subject down the rows, every matting method across
+the columns.
+
+### What each method thinks the subject is
+
+![Six mattes on four subjects](docs/images/compare_mattes.png)
+
+### The portrait each one produces
+
+![The portrait each matte produces](docs/images/compare_portraits.png)
+
+| Sr | Subject | Face rect | Face ellipse | Haar + GrabCut | **GrabCut (centre rect)** | Skin colour | Watershed |
+|---:|---|---|---|---|---:|---:|---|
+| 1 | girl · person, flowers | NO SUBJECT | NO SUBJECT | NO SUBJECT | **25.9%** | 25.9% | NO SUBJECT |
+| 2 | dog · animal, head on | NO SUBJECT | NO SUBJECT | NO SUBJECT | **39.5%** | 39.5% | NO SUBJECT |
+| 3 | butterfly · flat, busy bg | NO SUBJECT | NO SUBJECT | NO SUBJECT | **31.7%** | 31.7% | NO SUBJECT |
+| 4 | coffee cup · object | NO SUBJECT | NO SUBJECT | NO SUBJECT | **18.4%** | 18.4% | NO SUBJECT |
+
+> **Four of the six methods find nothing at all.** `Face rect`, `Face ellipse
+> prior`, `Haar + GrabCut` and `Watershed + markers` return **NO SUBJECT** on
+> every one of these four photographs — including **row 1, which is a person.**
+> The girl is wearing sunglasses at an angle, and the Haar cascade needs a frontal
+> face with visible eyes. On a single well-posed portrait these look like six
+> alternatives; across four ordinary photographs, two of them run at all.
+
+> **And of the two that do run, one is wrong.** `Skin colour (YCrCb)` is looking
+> for skin and finds leaf, fur and crema instead — look at the butterfly row,
+> where it blurs the *subject* and leaves the background sharp. **`GrabCut
+> (centre rect)` is the only method in this project that is actually general.**
+
+The four subjects were **chosen by the code**: twelve candidates — three people,
+three animals, an insect, two objects, an action shot, two figures in landscape —
+each matted and checked for a single blob of plausible area, then the best
+survivor taken from each family so the table cannot fill with four people.
+
+**No IoU is printed here, deliberately.** Only the footballer has a reference
+matte; inventing ground truth for a dog by running one method and calling its
+output the truth would be marking the methods' own homework. The area found is
+reported instead — it needs no annotation — and the portraits are there to be
+looked at.
+
+---
+
+The measured tables further down run on **one real photograph of one real
+person** — real hair, real kit, a real crowd behind them — because that is the
+only image here with an exact alpha matte to score against.
 
 > **The finding, in one sentence.** Naive compositing — blur the whole image,
 > paste the subject back — produces a picture that looks perfectly acceptable and
@@ -65,41 +113,6 @@ trained by someone else, it is not a neural network, and nothing here is trained
 
 All captures of the **live app**. Every number in them was computed at the moment
 the screenshot was taken.
-
-### 0 · Every matting method, on four subjects
-
-![Six mattes on four subjects](docs/images/compare_mattes.png)
-
-![The portrait each matte produces](docs/images/compare_portraits.png)
-
-Four different subject *shapes* on four different backgrounds down the rows — a
-person mid-stride against a crowd, a round still life, a small animal against
-bright foliage, a flat insect on leaves — with all six matting methods across the
-columns.
-
-> **Four of the six methods only work on humans.** `Face rect`, `Face ellipse
-> prior`, `Haar + GrabCut` and `Watershed + markers` return **NO SUBJECT** on
-> every one of the three non-human subjects. On a single photograph of a person
-> they look like six alternatives; across four subjects, two of them are the only
-> ones that run at all.
-
-That is the finding this layout exists to expose, and it is invisible in a
-one-image figure. Of the two that do run everywhere, `Skin colour (YCrCb)` is
-looking for skin and finds leaf and fruit instead — look at the butterfly row,
-where it blurs the subject and keeps the background sharp. **`GrabCut (centre
-rect)` is the only method in the project that is actually general.**
-
-> **And it beats the face-guided method on the real photograph too.** Against the
-> reference matte, `GrabCut (centre rect)` scores **0.712 IoU** where
-> `Haar + GrabCut` scores **0.476** — the face box anchors the head and GrabCut
-> then shrinks to the torso, losing the legs. The naive centre rectangle wins on
-> a real image *and* is the only one that generalises.
-
-**No IoU is printed in these two figures**, and that is deliberate: only the
-footballer has a reference matte. Inventing ground truth for the other three by
-running one method and calling its output the truth would be marking the methods'
-own homework. The area found is reported instead — it needs no annotation — and
-the portraits are there to be looked at.
 
 ### 1 · Matte, blur, composite
 

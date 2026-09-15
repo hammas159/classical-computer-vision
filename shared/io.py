@@ -164,6 +164,16 @@ REAL_PHOTOS = {
     "handwritten_digits": ("handwritten_digits.png", "a grid of handwritten digits"),
     "printed_text_rotated": ("printed_text_rotated.png", "printed prose, already rotated"),
     "motion_text": ("motion_text.jpg", "printed text smeared by camera motion"),
+    # people, animals and objects — one subject each, for the projects whose
+    # figures need genuine variety of shape rather than four of the same thing
+    "girl": ("girl.jpg", "a girl in sunglasses holding flowers"),
+    "dog": ("dog.jpg", "a black dog, head on, against planking"),
+    "coffee_cup": ("coffee_cup.jpg", "a cappuccino on a wooden table"),
+    "woman_field": ("woman_field.jpg", "a woman in a field, backlit"),
+    "leopard": ("leopard.jpg", "a leopard walking a dirt track"),
+    "man_camera": ("man_camera.jpg", "a man holding a camera, monochrome"),
+    "hiker": ("hiker.jpg", "a hiker on a mountain ridge"),
+    "man_skyline": ("man_skyline.jpg", "a man seated against a city skyline"),
 }
 
 

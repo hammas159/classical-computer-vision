@@ -80,12 +80,64 @@ def main() -> None:
     # one for the other three by running a method and calling it truth would be
     # marking the methods' own homework. The area found is reported instead,
     # which needs no annotation, and the outputs are there to be looked at.
-    subject_specs = [
-        ("footballer\nperson · crowd behind", scene.image),
-        ("fruit bowl\nstill life · cluttered", io.real_photo("fruits")),
-        ("squirrel\nanimal · foliage", io.real_photo("squirrel")),
-        ("butterfly\nflat subject · leaves", io.real_photo("butterfly")),
+    # Twelve candidates, four kept — one per family, so the table shows a person,
+    # an animal, an object and a full-body action shot rather than four of the
+    # same kind of subject. Every matte is checked first: it has to be a single
+    # blob of plausible area, because a fragmented matte produces a blurred ring
+    # around the subject and has no business in the table that shows what this
+    # project does.
+    subject_candidates = [
+        ("girl\nperson · flowers, soft bg", io.real_photo("girl"), "person"),
+        ("woman in a field\nperson · backlit", io.real_photo("woman_field"), "person"),
+        ("man with a camera\nperson · monochrome", io.real_photo("man_camera"), "person"),
+        ("dog\nanimal · head on", io.real_photo("dog"), "animal"),
+        ("leopard\nanimal · full body", io.real_photo("leopard"), "animal"),
+        ("squirrel\nanimal · foliage", io.real_photo("squirrel"), "animal"),
+        ("butterfly\ninsect · flat, busy bg", io.real_photo("butterfly"), "insect"),
+        ("coffee cup\nobject · table top", io.real_photo("coffee_cup"), "object"),
+        ("fruit bowl\nobject · cluttered", io.real_photo("fruits"), "object"),
+        ("footballer\naction · crowd behind", scene.image, "action"),
+        ("hiker\nfigure in landscape", io.real_photo("hiker"), "landscape"),
+        ("man and skyline\nfigure in landscape", io.real_photo("man_skyline"), "landscape"),
     ]
+
+    def matte_is_usable(mask):
+        """One dominant blob of a plausible size. Rejects the failures by shape."""
+        if mask is None:
+            return False, "no subject found"
+        binary = (mask > 0).astype(np.uint8)
+        area = float(binary.mean())
+        if not 0.04 <= area <= 0.60:
+            return False, f"area {area:.1%} outside the plausible range"
+        n, _, stats, _ = cv2.connectedComponentsWithStats(binary, 8)
+        if n <= 1:
+            return False, "empty matte"
+        largest = float(stats[1:, cv2.CC_STAT_AREA].max()) / max(float(binary.sum()), 1.0)
+        if largest < 0.95:
+            return False, f"fragmented — largest blob {largest:.1%} of the matte"
+        return True, f"area {area:.1%}, one blob"
+
+    GALLERY_MATTE = "GrabCut (centre rect)"
+    scored_subjects = []
+    for label, src, family in subject_candidates:
+        ok, why = matte_is_usable(pm.MATTES[GALLERY_MATTE](src))
+        scored_subjects.append((label, src, family, ok, why))
+
+    subject_specs, used_families = [], set()
+    for _ in range(4):
+        taken = {x[0] for x in subject_specs}
+        pool = [r for r in scored_subjects if r[3] and r[2] not in used_families and r[0] not in taken]
+        if not pool:
+            pool = [r for r in scored_subjects if r[3] and r[0] not in taken]
+        if not pool:
+            break
+        subject_specs.append((pool[0][0], pool[0][1]))
+        used_families.add(pool[0][2])
+
+    chosen_subjects = {x[0] for x in subject_specs}
+    for label, src, family, ok, why in scored_subjects:
+        verdict = "KEEP" if label in chosen_subjects else ("FULL" if ok else "DROP")
+        print(f"subject candidate {label.splitlines()[0]:<20} {verdict} — {why}  [{family}]")
     matte_names = list(pm.MATTES)
     rows_matte, rows_portrait, matte_notes, portrait_notes = [], [], [], []
     for label, src in subject_specs:
