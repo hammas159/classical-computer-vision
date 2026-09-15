@@ -303,37 +303,110 @@ def add_scratches(
     blotches: int = 6,
     seed: int | None = 0,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Draw random white strokes and blotches, as on a damaged print.
+    """Draw emulsion scratches and dust onto a print.
 
     Returns ``(damaged, mask)``. The mask is the exact inpainting target, so a
     restoration can be scored against the untouched original rather than judged
     by eye.
+
+    **The damage is not one constant value.** An earlier version painted every
+    damaged pixel pure 255, which made damage *detection* a solved problem: the
+    rule ``pixel >= 250`` recovered the mask almost exactly, and any detector
+    that reasoned about shape instead of brightness looked worse than that rule.
+    That is a property of the generator, not of the detectors. Here a scratch is
+    a bright value drawn per stroke and jittered per pixel, some blotches are
+    dark dust rather than bright emulsion loss, and a few strokes are *darker*
+    than the image — so brightness alone no longer separates damage from a
+    genuine highlight.
     """
     rng = _rng(seed)
     h, w = img.shape[:2]
     mask = np.zeros((h, w), np.uint8)
+    value = np.zeros((h, w), np.float32)
 
     for _ in range(n_strokes):
+        stroke = np.zeros((h, w), np.uint8)
         x, y = int(rng.integers(0, w)), int(rng.integers(0, h))
         pts = [(x, y)]
         for _ in range(int(rng.integers(3, 7))):  # a wandering polyline, not a straight line
             x = int(np.clip(x + rng.integers(-w // 6, w // 6), 0, w - 1))
             y = int(np.clip(y + rng.integers(-h // 8, h // 8), 0, h - 1))
             pts.append((x, y))
-        cv2.polylines(mask, [np.array(pts, np.int32)], False, 255, thickness)
+        cv2.polylines(stroke, [np.array(pts, np.int32)], False, 255, thickness)
+        # one stroke in five is a dark crease, not a bright emulsion scratch
+        level = float(rng.integers(20, 70) if rng.random() < 0.2 else rng.integers(195, 256))
+        value[stroke > 0] = level
+        mask |= stroke
 
     for _ in range(blotches):
+        blob = np.zeros((h, w), np.uint8)
         cv2.circle(
-            mask,
+            blob,
             (int(rng.integers(0, w)), int(rng.integers(0, h))),
             int(rng.integers(4, 12)),
             255,
             -1,
         )
+        level = float(rng.integers(10, 60) if rng.random() < 0.4 else rng.integers(200, 256))
+        value[blob > 0] = level
+        mask |= blob
+
+    sel = mask > 0
+    jitter = rng.normal(0.0, 8.0, size=(h, w)).astype(np.float32)
+    level = np.clip(value + jitter, 0.0, 255.0)
 
     damaged = img.copy()
-    damaged[mask > 0] = 255
+    if damaged.ndim == 3:
+        damaged[sel] = level[sel, None].astype(np.uint8)
+    else:
+        damaged[sel] = level[sel].astype(np.uint8)
     return damaged, mask
+
+
+# Cyan dye is the least stable, then magenta, then yellow — so the blue channel
+# loses the most and the print drifts warm. These are the surviving fractions.
+FADE_GAIN = np.array([0.90, 0.82, 0.62], np.float32)
+# Paper yellows as it oxidises, and the yellowed base sets the new black point.
+FADE_PAPER = np.array([1.00, 0.94, 0.76], np.float32)
+
+
+def fade_photo(
+    img: np.ndarray,
+    contrast: float = 0.62,
+    lift: float = 0.22,
+    saturation: float = 0.72,
+    seed: int | None = 0,
+) -> np.ndarray:
+    """Age a photograph the way time ages one: desaturated, flat, lifted and warm.
+
+    Four separable things happen to a colour print, and this applies them in the
+    order they physically occur:
+
+    1. **Dye loss desaturates** the image toward its own luminance.
+    2. **Each dye layer fades at its own rate** (``FADE_GAIN``) — a per-channel
+       gain, which is what turns the picture warm.
+    3. **Contrast compresses** as the density range collapses.
+    4. **The paper yellows**, lifting the black point by a tinted ``lift``.
+
+    Steps 2-4 are all *diagonal* — independent per channel — so a per-channel
+    stretch can invert them. Step 1 is not: desaturation is a rank-reducing mix
+    across channels and no per-channel curve can undo it. That split is the whole
+    point of the model, and project 05 measures exactly how much of the loss sits
+    on each side of it.
+
+    Unlike :func:`add_scratches` there is no mask here: this is a tone problem,
+    not an inpainting problem, and the methods that fix one do nothing for the
+    other.
+    """
+    f = to_float(img)
+    if f.ndim == 3:
+        gray = (f @ np.array([0.299, 0.587, 0.114], np.float32))[..., None]
+        f = gray + saturation * (f - gray)          # 1. dye loss
+        f = f * FADE_GAIN                           # 2. unequal layer fading
+    f = f * contrast                                # 3. density range collapses
+    f = f + lift * (FADE_PAPER if f.ndim == 3 else 1.0)  # 4. yellowed paper base
+    grain = _rng(seed).normal(0.0, 0.010, size=f.shape).astype(np.float32)
+    return to_uint8(f + grain)
 
 
 # --------------------------------------------------------------------------- #

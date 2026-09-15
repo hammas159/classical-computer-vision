@@ -90,6 +90,38 @@ def histogram_figure(
     return fig
 
 
+def lines_figure(
+    x: Sequence[float],
+    series: dict[str, Sequence[float]],
+    xlabel: str = "",
+    ylabel: str = "",
+    title: str = "",
+    logx: bool = False,
+):
+    """One line per method over a swept parameter, computed live in the app.
+
+    The static counterpart is :func:`shared.figures.lines`, which writes a PNG for
+    the README. This returns the figure instead, so a slider can move and the
+    curve can be recomputed for *the user's* image rather than the repo's.
+    """
+    if not series:
+        raise ValueError("lines_figure() needs at least one series")
+
+    fig, ax = plt.subplots(figsize=(9, 4.5), dpi=130)
+    for label, ys in series.items():
+        ax.plot(x, ys, marker="o", markersize=4, linewidth=1.8, label=label)
+    if logx:
+        ax.set_xscale("log")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    if title:
+        ax.set_title(title, fontsize=11)
+    ax.grid(alpha=0.25, linewidth=0.6)
+    ax.legend(fontsize=9, framealpha=0.9)
+    fig.tight_layout()
+    return fig
+
+
 # --------------------------------------------------------------------------- #
 # matrices
 # --------------------------------------------------------------------------- #

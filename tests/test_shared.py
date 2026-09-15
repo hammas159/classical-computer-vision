@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 
 from shared import bench, figures, io, metrics, synth, ui
+from shared.io import to_gray
 
 # --------------------------------------------------------------------------- #
 # io
@@ -174,8 +175,31 @@ def test_scratches_mask_marks_only_damaged_pixels():
     img = io.sample("astronaut")
     damaged, mask = synth.add_scratches(img, seed=4)
     assert mask.sum() > 0
-    assert np.all(damaged[mask > 0] == 255)
     assert np.array_equal(damaged[mask == 0], img[mask == 0])
+
+
+def test_scratch_damage_is_not_one_constant_value():
+    """Guards the fix for a generator that made damage detection trivial.
+
+    When every damaged pixel was exactly 255, `pixel >= 250` recovered the mask
+    and the whole detection experiment measured the generator instead of the
+    detectors. Damage must span a range, and must include dark damage.
+    """
+    img = io.sample("astronaut")
+    damaged, mask = synth.add_scratches(img, seed=4)
+    vals = to_gray(damaged)[mask > 0]
+    assert len(np.unique(vals)) > 50
+    assert (vals < 120).mean() > 0.02, "no dark damage — brightness alone would find everything"
+
+
+def test_fading_flattens_and_warms():
+    img = io.sample("astronaut")
+    faded = synth.fade_photo(img)
+    assert faded.shape == img.shape and faded.dtype == np.uint8
+    assert to_gray(faded).std() < to_gray(img).std()
+    assert to_gray(faded).min() > to_gray(img).min()
+    # the cyan layer dies first, so red must survive better than blue
+    assert faded[..., 0].mean() > faded[..., 2].mean()
 
 
 def test_shapes_scene_has_edges_and_matching_size():

@@ -1,0 +1,303 @@
+{
+  "project": "05_old_photo_restoration",
+  "generated_utc": "2026-09-15T05:40:54+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "thickness_px": 3,
+  "images": [
+    "astronaut",
+    "coffee",
+    "chelsea",
+    "rocket",
+    "camera",
+    "moon"
+  ],
+  "colour_images": [
+    "astronaut",
+    "coffee",
+    "chelsea",
+    "rocket"
+  ],
+  "damaged_input": {
+    "psnr": 17.3607,
+    "damage_fraction": 0.0707
+  },
+  "faded_input": {
+    "psnr": 18.1887,
+    "cast_err": 7.7181,
+    "chroma": 18.9326,
+    "contrast": 0.0983,
+    "original_chroma": 26.214,
+    "original_contrast": 0.1922
+  },
+  "methods": [
+    {
+      "method": "Telea (fast marching)",
+      "psnr_db": 38.11,
+      "ssim": 0.9826,
+      "damage_psnr_db": 26.555,
+      "median_ms": 14.701
+    },
+    {
+      "method": "Navier-Stokes",
+      "psnr_db": 38.405,
+      "ssim": 0.9838,
+      "damage_psnr_db": 26.85,
+      "median_ms": 14.735
+    },
+    {
+      "method": "Iterative masked mean",
+      "psnr_db": 37.328,
+      "ssim": 0.9808,
+      "damage_psnr_db": 25.773,
+      "median_ms": 79.759
+    },
+    {
+      "method": "Harmonic diffusion",
+      "psnr_db": 38.21,
+      "ssim": 0.983,
+      "damage_psnr_db": 26.655,
+      "median_ms": 392.74
+    }
+  ],
+  "thickness_sweep": [
+    {
+      "thickness_px": 1,
+      "damage_fraction": 0.0182,
+      "Telea (fast marching)": 28.097,
+      "Navier-Stokes": 29.178,
+      "Iterative masked mean": 27.202,
+      "Harmonic diffusion": 28.389
+    },
+    {
+      "thickness_px": 3,
+      "damage_fraction": 0.0707,
+      "Telea (fast marching)": 26.555,
+      "Navier-Stokes": 26.85,
+      "Iterative masked mean": 25.773,
+      "Harmonic diffusion": 26.655
+    },
+    {
+      "thickness_px": 5,
+      "damage_fraction": 0.0944,
+      "Telea (fast marching)": 25.332,
+      "Navier-Stokes": 25.461,
+      "Iterative masked mean": 24.813,
+      "Harmonic diffusion": 25.306
+    },
+    {
+      "thickness_px": 9,
+      "damage_fraction": 0.1375,
+      "Telea (fast marching)": 23.825,
+      "Navier-Stokes": 23.756,
+      "Iterative masked mean": 23.647,
+      "Harmonic diffusion": 20.515
+    },
+    {
+      "thickness_px": 15,
+      "damage_fraction": 0.1973,
+      "Telea (fast marching)": 22.525,
+      "Navier-Stokes": 22.476,
+      "Iterative masked mean": 22.545,
+      "Harmonic diffusion": 15.132
+    },
+    {
+      "thickness_px": 25,
+      "damage_fraction": 0.2869,
+      "Telea (fast marching)": 20.862,
+      "Navier-Stokes": 20.763,
+      "Iterative masked mean": 20.884,
+      "Harmonic diffusion": 10.524
+    },
+    {
+      "thickness_px": 40,
+      "damage_fraction": 0.3964,
+      "Telea (fast marching)": 19.038,
+      "Navier-Stokes": 19.131,
+      "Iterative masked mean": 19.201,
+      "Harmonic diffusion": 8.231
+    }
+  ],
+  "detectors": [
+    {
+      "detector": "Intensity threshold",
+      "mask_iou": 0.4199,
+      "mask_dice": 0.5834,
+      "precision": 0.602,
+      "recall": 0.5711,
+      "flagged_fraction": 0.066,
+      "damage_psnr_db": 9.882,
+      "whole_psnr_db": 20.768
+    },
+    {
+      "detector": "Top-hat + black-hat",
+      "mask_iou": 0.3797,
+      "mask_dice": 0.5376,
+      "precision": 0.4182,
+      "recall": 0.7722,
+      "flagged_fraction": 0.1378,
+      "damage_psnr_db": 12.706,
+      "whole_psnr_db": 21.925
+    },
+    {
+      "detector": "Median residual",
+      "mask_iou": 0.4185,
+      "mask_dice": 0.5794,
+      "precision": 0.4664,
+      "recall": 0.776,
+      "flagged_fraction": 0.122,
+      "damage_psnr_db": 12.865,
+      "whole_psnr_db": 21.772
+    }
+  ],
+  "detector_window_sweep": [
+    {
+      "window_px": 5,
+      "damage_px": 3,
+      "mask_iou": 0.0807,
+      "recall": 0.1995,
+      "precision": 0.2252
+    },
+    {
+      "window_px": 7,
+      "damage_px": 3,
+      "mask_iou": 0.0915,
+      "recall": 0.1727,
+      "precision": 0.2294
+    },
+    {
+      "window_px": 9,
+      "damage_px": 3,
+      "mask_iou": 0.1695,
+      "recall": 0.2876,
+      "precision": 0.3101
+    },
+    {
+      "window_px": 11,
+      "damage_px": 3,
+      "mask_iou": 0.3498,
+      "recall": 0.5922,
+      "precision": 0.4491
+    },
+    {
+      "window_px": 15,
+      "damage_px": 3,
+      "mask_iou": 0.3932,
+      "recall": 0.6996,
+      "precision": 0.4627
+    },
+    {
+      "window_px": 21,
+      "damage_px": 3,
+      "mask_iou": 0.4185,
+      "recall": 0.776,
+      "precision": 0.4664
+    },
+    {
+      "window_px": 31,
+      "damage_px": 3,
+      "mask_iou": 0.426,
+      "recall": 0.8327,
+      "precision": 0.4572
+    }
+  ],
+  "fade_methods": [
+    {
+      "method": "None (control)",
+      "psnr_db": 18.189,
+      "ssim": 0.731,
+      "cast_error_deg": 7.718,
+      "chroma": 18.933,
+      "rms_contrast": 0.0983,
+      "median_ms": 0.031
+    },
+    {
+      "method": "Gray-world balance",
+      "psnr_db": 16.476,
+      "ssim": 0.7167,
+      "cast_error_deg": 14.282,
+      "chroma": 5.625,
+      "rms_contrast": 0.0945,
+      "median_ms": 5.658
+    },
+    {
+      "method": "CLAHE on L only",
+      "psnr_db": 18.844,
+      "ssim": 0.7258,
+      "cast_error_deg": 7.75,
+      "chroma": 18.944,
+      "rms_contrast": 0.1471,
+      "median_ms": 1.717
+    },
+    {
+      "method": "Per-channel stretch",
+      "psnr_db": 20.916,
+      "ssim": 0.6994,
+      "cast_error_deg": 6.573,
+      "chroma": 23.025,
+      "rms_contrast": 0.2271,
+      "median_ms": 10.017
+    },
+    {
+      "method": "Stretch + CLAHE",
+      "psnr_db": 18.072,
+      "ssim": 0.5622,
+      "cast_error_deg": 5.88,
+      "chroma": 22.977,
+      "rms_contrast": 0.2329,
+      "median_ms": 11.831
+    },
+    {
+      "method": "Stretch + saturate",
+      "psnr_db": 21.245,
+      "ssim": 0.6601,
+      "cast_error_deg": 7.028,
+      "chroma": 26.213,
+      "rms_contrast": 0.2278,
+      "median_ms": 18.846
+    }
+  ],
+  "pipeline": [
+    {
+      "stage": "Damaged + faded (input)",
+      "psnr_db": 14.26,
+      "damage_psnr_db": 5.328,
+      "ssim": 0.6179,
+      "cast_error_deg": 8.207
+    },
+    {
+      "stage": "Inpaint only",
+      "psnr_db": 18.139,
+      "damage_psnr_db": 17.733,
+      "ssim": 0.7184,
+      "cast_error_deg": 7.72
+    },
+    {
+      "stage": "Fade correct only",
+      "psnr_db": 13.315,
+      "damage_psnr_db": 4.921,
+      "ssim": 0.6099,
+      "cast_error_deg": 6.843
+    },
+    {
+      "stage": "Inpaint then fade correct",
+      "psnr_db": 20.817,
+      "damage_psnr_db": 18.336,
+      "ssim": 0.6543,
+      "cast_error_deg": 7.096
+    },
+    {
+      "stage": "Fade correct then inpaint",
+      "psnr_db": 16.16,
+      "damage_psnr_db": 15.725,
+      "ssim": 0.7111,
+      "cast_error_deg": 7.818
+    }
+  ],
+  "saturation_factor": 1.15,
+  "median_residual_ksize": 21
+}
