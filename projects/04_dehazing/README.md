@@ -108,7 +108,7 @@ invented for an image that has no answer.
 > was never present. The error crosses zero at β ≈ 1.4, which is where the gain
 > peaks. **A dehazer needs a "do nothing" branch.**
 
-**Jump to:** [Results](#results) · [What it does](#what-it-does) · [Screenshot](#screenshot) ·
+**Jump to:** [Results](#results) · [What it does](#what-it-does) · [Screenshots](#screenshots) ·
 [UI → results](#how-the-ui-connects-to-the-results) · [Full tables](#full-results-tables) ·
 [Run it](#run-it-yourself) · [Inference](#inference-try-it-on-your-own-image) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
@@ -142,18 +142,43 @@ by actually inverting the scattering.
 
 ---
 
-## Screenshot
+## Screenshots
 
-A capture of the **live app**. Every number was computed at the moment the
+All captures of the **live app**. Every number was computed at the moment the
 screenshot was taken.
 
-Drag the haze density and watch the recovery fall apart; the tabs below the fold
-hold the transmission map (the true map, the dark channel it is estimated from,
-the blocky patch-wise estimate and the guided-filter refinement), the
-every-method comparison matrix where the **contrast column disagrees with
-PSNR**, a 12×12 patch of raw pixel values, and the tone distribution.
+### 1 · Original, hazy, dehazed, oracle
+
+Drag the haze density and watch the recovery fall apart. The four panels are the
+truth, the veiled input, the method's output and the oracle's.
 
 ![Dehazing pipeline](results/screenshots/01_dehazing.png)
+
+### 2 · The transmission map — where the physics lives
+
+The true map, the dark channel it is estimated from, the blocky patch-wise
+estimate, and the guided-filter refinement. **The guided filter's job is not to
+be more accurate on average** — it is to put the depth edges on object
+boundaries instead of on patch boundaries.
+
+![Transmission](results/screenshots/02_transmission.png)
+
+### 3 · Every method against every metric
+
+Watch the **contrast column disagree with PSNR**.
+
+![Comparison matrix](results/screenshots/03_comparison_matrix.png)
+
+### 4 · The veil, as numbers
+
+A 12×12 patch. Haze pulls every value toward the airlight; dehazing pushes them
+back apart.
+
+![The veil as numbers](results/screenshots/04_veil_numbers.png)
+
+### 5 · Tone distribution
+
+![Tone distribution](results/screenshots/05_tone.png)
 
 ---
 
