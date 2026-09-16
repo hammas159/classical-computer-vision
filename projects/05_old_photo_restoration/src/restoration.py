@@ -200,10 +200,59 @@ def detect_damage_median_residual(img: np.ndarray, ksize: int = MEDIAN_RESIDUAL_
     assumes the damage is a local minority, and stops working when it is not.
     """
     g = to_gray(img)
-    residual = cv2.absdiff(g, cv2.medianBlur(g, ksize))
-    _, mask = cv2.threshold(residual, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    mask = _residual_mask(g, ksize)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
     return cv2.dilate(mask, np.ones((3, 3), np.uint8))
+
+
+#: A residual polarity claiming more than this much of the frame has not found
+#: damage, it has found the image. See :func:`_residual_mask`.
+MAX_DAMAGE_FRACTION = 0.25
+
+
+def _residual_mask(gray: np.ndarray, ksize: int) -> np.ndarray:
+    """Otsu the *bright* and *dark* residuals separately, then union them.
+
+    One Otsu cut on ``|img − median|`` looked symmetric and was not. Damage comes
+    in both polarities — bright scratches and dark creases — and on a dark
+    photograph a white scratch has a residual around 200 while a dark crease has
+    one around 20. A single global threshold lands between them, so the whole
+    dark half of the damage falls below the cut and is never detected.
+
+    Measured on the four gallery photographs, before and after::
+
+        image              bright recall   dark recall (one cut)   dark (split)
+        boy_laughing           1.000              0.038               0.892
+        man_glasses_dark       0.887              0.261               0.795
+        woman_dress            1.000              0.475               0.933
+
+    The visible symptom was black scratches surviving into the "restored" panel
+    of every row of the comparison figure. Splitting the polarities costs one
+    extra Otsu call per window.
+    """
+    med = cv2.medianBlur(gray, ksize)
+    signed = gray.astype(np.int16) - med.astype(np.int16)
+
+    mask = np.zeros(gray.shape, np.uint8)
+    for residual in (np.clip(signed, 0, 255), np.clip(-signed, 0, 255)):
+        residual = residual.astype(np.uint8)
+        if residual.max() == 0:
+            continue
+        _, part = cv2.threshold(residual, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        # Otsu always returns a split, even from a distribution that has no two
+        # classes in it. On a photograph with bright scratches and no dark
+        # creases, the dark-residual histogram is just texture, and Otsu
+        # obediently cuts it in half -- which flagged 89% of a healthy image and
+        # dropped precision from 0.47 to 0.11.
+        #
+        # The guard is the project's own central assumption, applied to the
+        # detector instead of to the median filter: damage is a LOCAL MINORITY.
+        # A polarity that claims more than this much of the frame has not found
+        # damage, it has found the image.
+        if part.mean() / 255.0 > MAX_DAMAGE_FRACTION:
+            continue
+        mask = cv2.bitwise_or(mask, part)
+    return mask
 
 
 #: Window sizes for the multi-scale detector. One median window can only see
@@ -243,15 +292,65 @@ def detect_damage_multiscale(
     g = to_gray(img)
     mask = np.zeros(g.shape, np.uint8)
     for k in windows:
-        residual = cv2.absdiff(g, cv2.medianBlur(g, k))
-        _, part = cv2.threshold(residual, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        mask = cv2.bitwise_or(mask, part)
+        mask = cv2.bitwise_or(mask, _residual_mask(g, k))
 
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((close, close), np.uint8))
-    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    filled = np.zeros_like(mask)
-    cv2.drawContours(filled, contours, -1, 255, -1)
-    return cv2.dilate(filled, np.ones((3, 3), np.uint8))
+    closed = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((close, close), np.uint8))
+    return cv2.dilate(_fill_rings(mask, closed), np.ones((3, 3), np.uint8))
+
+
+#: A contour whose interior is at least this much *already* detected is a rim
+#: around a blotch, and filling it recovers the blotch. Below this it is a
+#: sprawl of unrelated specks that the morphological close happened to bridge,
+#: and filling it claims healthy pixels.
+#:
+#: Swept against both image sets. 0.20 and 0.40 reject the same sprawls, but
+#: starting the output from the closed mask rather than the raw union is worth
+#: +0.9 dB on the people photographs, so the looser value is kept alongside it.
+#: See :func:`_fill_rings`.
+RING_OCCUPANCY = 0.20
+
+
+def _fill_rings(mask: np.ndarray, closed: np.ndarray) -> np.ndarray:
+    """Fill the contours that are rims around blotches, and only those.
+
+    The close-then-fill step exists for one specific shape: a wide blotch is
+    detected only at its rim, where the residual is large, and filling the rim
+    recovers the disc. Filling *every* external contour does that — and also
+    fills anything the close happened to bridge.
+
+    That was survivable while the detector only saw bright damage and the mask
+    was sparse. Detecting both polarities doubled the speck count, a 9 px close
+    joined specks that had nothing to do with each other, and on `woman_dress`
+    the mask went 11.6% -> 26.1% after closing -> **30.7% after filling**,
+    against a true damage fraction of 5.7%. Precision fell to 0.113: nine in ten
+    "damaged" pixels were healthy.
+
+    The test that separates the two cases is occupancy. A genuine rim has its
+    interior mostly detected already; a bridged sprawl encloses mostly empty
+    space. Contours below :data:`RING_OCCUPANCY` keep their own pixels but are
+    not filled in.
+    """
+    # Start from the *unclosed* union. The close proposes candidate contours and
+    # nothing more: letting its output through directly put 26% of a healthy
+    # frame into the mask before a single contour had been filled, and on a
+    # portrait that means eyes and mouth inpainted away. Whole-image PSNR over
+    # the four gallery photographs: 19.27 dB from the union, 18.62 dB from the
+    # closed mask. PSNR-on-damage prefers the closed mask by 0.95 dB and is
+    # wrong here, because it scores only pixels that were damaged and is
+    # therefore blind to everything the detector destroyed on the way past.
+    contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    out = mask.copy()
+    detected = mask > 0
+    for contour in contours:
+        region = np.zeros_like(closed)
+        cv2.drawContours(region, [contour], -1, 255, -1)
+        inside = region > 0
+        area = int(inside.sum())
+        if area == 0:
+            continue
+        if detected[inside].mean() / 255.0 >= RING_OCCUPANCY:
+            out[inside] = 255
+    return out
 
 
 DETECTORS: dict[str, Callable[[np.ndarray], np.ndarray]] = {
@@ -313,7 +412,18 @@ def correct_channel_stretch(img: np.ndarray, low: float = 1.0, high: float = 99.
     A tight percentile uses more of the print's true range, and is therefore
     better when the input is clean. A wide one ignores outliers, and is therefore
     better when the detector missed some damage and those pixels are now setting
-    the black and white points. No single value wins both columns; 1/99 is the
+    the black and white points.
+
+    **Re-fitting this on the photographs in the comparison figure made it
+    worse.** Sweeping seven percentile pairs against five saturation factors on
+    the four gallery images picked 0.5/99.5 with no saturation boost at all, for
+    20.84 dB against 1/99's 19.16 — an apparent +1.68 dB. On the eight
+    candidates *not* in the figure the same settings score **17.48 dB against
+    19.56**, a loss of 2.08. Four images is not enough to fit two parameters on,
+    and the only reason that is known here is that the eight rejects were scored
+    as a held-out set rather than thrown away.
+
+    No single value wins both columns; 1/99 is the
     compromise, chosen because the recommended pipeline inpaints *first* and so
     usually presents this function with the cleaner of the two cases.
     """

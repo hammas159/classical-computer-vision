@@ -11,19 +11,94 @@ pixels that are *present but wrong* — a print that has gone flat, warm and
 desaturated. Neither method touches the other's problem, and this project scores
 them separately so that cannot be hidden.
 
-**No neural network, no training, no GPU, no dataset download.**
+**No neural network, no training, no GPU.**
+
+---
+
+## Results
+
+Four photographs of **people**, because nobody scans a landscape to save it.
+Four inpainting methods across the columns, whole-image PSNR in every cell.
+
+![Four photographs, four inpainting methods](docs/images/samples.png)
+
+| Sr | Photograph | Faded + damaged | Telea | Navier–Stokes | **Iterative masked mean** | Harmonic diffusion |
+|---:|---|---:|---:|---:|---:|---:|
+| 1 | girl in a red hat · strong red cast | 16.3 dB | 20.7 dB | 20.7 dB | **20.8 dB** | 20.3 dB |
+| 2 | young woman · dark background | 14.6 dB | 19.3 dB | **19.5 dB** | 19.4 dB | 19.1 dB |
+| 3 | man outdoors · bright sky behind | 12.2 dB | 17.5 dB | 17.9 dB | 18.1 dB | **18.6 dB** |
+| 4 | two men indoors · flat corridor light | 15.5 dB | 20.2 dB | 20.4 dB | 20.0 dB | **21.1 dB** |
+
+**The four columns are within 1.1 dB of each other on every row, and the winner
+changes three times.** Telea never wins. `Harmonic diffusion` — the simplest
+thing in the table, a blur repeated 120 times with the known pixels pinned —
+wins two of four. On this evidence the choice of inpainting method is close to
+a coin toss, and the project's headline number says why: the decibels are in
+the step before it.
+
+**The scores are whole-image, not damage-only, and that choice is load-bearing.**
+Damage-only PSNR is the right way to rank inpainting — it is what the tables
+further down use — but it is blind to the failure a reader actually sees. An
+over-eager detector that repairs the scratch *and* inpaints someone's eyes away
+scores well on the pixels that were damaged, because it repaired those. Scoring
+the whole frame charges it for both. Swapping the metric changed which detector
+configuration won, and the damage-only answer was the wrong one.
+
+**Row 3 shows the cast that is left over**, and it is not a bug to be fixed: the
+sky comes back green rather than blue. The fade has a diagonal part (per-channel
+gain) that a per-channel stretch inverts, and a desaturation that mixes *across*
+channels and no per-channel curve can undo. What survives is the second part.
+
+The four were **chosen by the code** from twelve candidates, each tagged with
+what kind of person it shows, and two were dropped for a reason worth stating:
+
+```
+gallery candidate boy_laughing       keep — 14.7 dB damaged, +3.2 dB best, precision 0.47  [boy]
+gallery candidate child_face_paint   DROP — best gained only +2.8 dB  [child]
+gallery candidate girl_red_hat       keep — 16.3 dB damaged, +4.5 dB best, precision 0.61  [girl]
+gallery candidate woman_dress        DROP — best gained only +2.7 dB  [woman]
+gallery candidate young_woman        keep — 14.6 dB damaged, +4.9 dB best, precision 0.64  [woman]
+gallery candidate man_glasses        keep — 12.7 dB damaged, +4.4 dB best, precision 0.54  [man]
+gallery candidate man_glasses_dark   keep — 10.2 dB damaged, +8.1 dB best, precision 0.50  [man]
+gallery candidate man_outdoors       keep — 12.2 dB damaged, +6.4 dB best, precision 0.54  [man]
+gallery candidate couple_beach       keep — 15.2 dB damaged, +4.2 dB best, precision 0.55  [couple]
+gallery candidate two_men            keep — 13.8 dB damaged, +4.2 dB best, precision 0.50  [group]
+gallery candidate street_people      DROP — best gained only +1.3 dB  [group]
+gallery candidate two_men_indoor     keep — 15.5 dB damaged, +5.6 dB best, precision 0.37  [group]
+```
+
+`woman_dress` and `street_people` are the two busiest frames — heavy foliage and
+a crowded street. At the 41 px window, leaf and pavement texture produces a
+median residual as large as a scratch does, so the detector flags **half the
+frame at precision 0.09** and the restoration is visibly soft. They are dropped
+rather than shown with an excuse underneath. Every surviving candidate scores
+0.35 or better, so this separates two broken cases rather than splitting a
+continuum.
+
+The four rows fill four **slots** — a child, a woman, a man, more than one
+person — rather than being the four highest scorers. Taking the top four by
+score returned a girl, a young woman, a couple and two men: four good results
+that tell a reader nothing about whether this would work on a photo of their
+son.
+
+---
 
 > **The finding, in one sentence.** Choosing the best of four inpainting methods
-> is worth **1.1 dB**. Knowing *where the damage is* is worth **14.0 dB**. The
-> literature ranks inpainters; the decibels are almost entirely in the step those
-> comparisons skip.
+> is worth **1.1 dB** (25.77 to 26.85 dB on the damaged pixels). Knowing *where
+> the damage is* is worth **10.6 dB** — the same pipeline scores 26.85 dB with
+> the true mask and 16.28 dB with the best detected one. The literature ranks
+> inpainters; the decibels are almost entirely in the step those comparisons
+> skip.
 
 > **The second finding.** Ranking damage detectors by mask IoU gets the answer
-> **wrong**. The intensity threshold has the best IoU (0.4199) and restores to
-> 9.88 dB; the median-residual detector has a slightly *worse* IoU (0.4185) and
-> restores to **12.87 dB**. Precision and recall do not cost the same here — a
-> missed scratch stays in the picture, while a falsely flagged healthy pixel is
-> replaced by an average of its healthy neighbours, which is approximately itself.
+> **exactly backwards**, and the effect is not marginal. Sorted by IoU the order
+> is 0.4199, 0.3797, 0.3503, 0.2966 — and sorted by the restoration each one
+> produces it is **9.88, 12.71, 12.76, 16.28 dB**. The best mask is the worst
+> restoration and the worst mask is the best restoration, on all four. Precision
+> and recall do not cost the same here: a missed scratch stays in the picture,
+> while a falsely flagged healthy pixel is replaced by an average of its healthy
+> neighbours, which is approximately itself. **A symmetric mask metric prices
+> them equally and is therefore the wrong instrument.**
 
 > **The metric trap.** Gray-world white balance drives the *no-reference* colour
 > cast to **0.04°** — a perfect score — while moving the colour balance
@@ -120,12 +195,18 @@ the method that promises least loses least.
 |---|---:|---:|---:|---:|---:|
 | Intensity threshold | **0.4199** | **0.602** | 0.571 | 0.066 | 9.882 |
 | Top-hat + black-hat | 0.3797 | 0.418 | 0.772 | 0.138 | 12.706 |
-| **Median residual** | 0.4185 | 0.466 | **0.776** | 0.122 | **12.865** |
+| Median residual (one scale) | 0.3503 | 0.381 | 0.790 | 0.154 | 12.764 |
+| **Median residual (multi-scale)** | 0.2966 | 0.307 | **0.876** | 0.222 | **16.279** |
 | *(true mask — the ceiling)* | *1.000* | *1.000* | *1.000* | *0.071* | ***26.850*** |
 
-**The detection tax is 14.0 dB.** The method spread is 1.1 dB. The two numbers
-differ by more than an order of magnitude, and every one of the four inpainting
-methods sits on the wrong side of that comparison.
+**Read the first and last data columns against each other.** IoU descends
+0.4199 → 0.3797 → 0.3503 → 0.2966 while the restoration it produces *ascends*
+9.88 → 12.71 → 12.76 → 16.28 dB. The ranking is not merely noisy, it is
+inverted on all four.
+
+**The detection tax is 10.6 dB.** The method spread is 1.1 dB. The two differ by
+a factor of ten, and every one of the four inpainting methods sits on the wrong
+side of that comparison.
 
 The IoU column and the PSNR column rank differently because **precision and
 recall do not cost the same**:
@@ -141,19 +222,24 @@ weights the two errors equally, is the wrong objective for this job.
 
 | Median window (px) | Mask IoU | Recall | Precision |
 |---|---:|---:|---:|
-| 5 | 0.081 | **0.200** | 0.225 |
-| 7 | 0.092 | 0.173 | 0.229 |
-| 9 | 0.170 | 0.288 | 0.310 |
-| 11 | 0.350 | 0.592 | 0.449 |
-| 15 | 0.393 | 0.700 | 0.463 |
-| **21** *(default)* | **0.419** | **0.776** | 0.466 |
-| 31 | 0.426 | 0.833 | 0.457 |
+| 5 | 0.095 | 0.291 | 0.183 |
+| 7 | 0.093 | **0.199** | 0.220 |
+| 9 | 0.161 | 0.295 | 0.278 |
+| 11 | 0.337 | 0.600 | 0.425 |
+| 15 | **0.372** | 0.709 | **0.429** |
+| **21** *(default)* | 0.350 | 0.790 | 0.381 |
+| 31 | 0.324 | **0.842** | 0.341 |
 
 A median filter rejects a **minority** of outliers. Once a 3 px scratch fills
 half of a 5 px window the median *becomes* the scratch, the residual the detector
 looks for goes to zero, and it reports a clean image. Recall does not degrade
-gracefully — it falls off a cliff between 11 px and 7 px. The default of 21 was
-chosen from this table, not from a paper.
+gracefully — it falls off a cliff between 11 px and 7 px, from 0.600 to 0.199.
+
+**The default of 21 does not maximise IoU, and that is deliberate.** 15 px has
+the best IoU (0.372 against 21's 0.350) and the better precision. 21 is kept
+because it has the better *recall*, and the table above this one is the reason:
+recall is what the restoration is actually paid for. Choosing the window by IoU
+would repeat the same mistake as choosing the detector by IoU.
 
 ### Fade correction — the other half
 

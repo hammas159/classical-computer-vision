@@ -20,6 +20,7 @@ import numpy as np  # noqa: E402
 
 from shared import figures, io, synth  # noqa: E402
 from shared.io import to_gray  # noqa: E402
+from shared.metrics import psnr  # noqa: E402
 from shared.report import init_console, markdown_table, write_results, write_tables  # noqa: E402
 
 import restoration as rs  # noqa: E402
@@ -164,20 +165,48 @@ def main() -> None:
     # about a specific person, not about a generic subject. Each is restored and scored on the
     # damaged pixels only; anything that fails to beat the damaged input by
     # GALLERY_MIN_GAIN_DB is a broken sample and is dropped, not shown.
-    GALLERY_MIN_GAIN_DB = 4.0
+    #: Whole-image gains are smaller than damage-only gains, because 93% of the
+    #: frame was never damaged and drags the average toward zero. 3 dB here is
+    #: the same severity of filter 4 dB was against the damage-only score.
+    GALLERY_MIN_GAIN_DB = 3.0
+    #: A sample is also dropped if the *detector* does badly on it, even when the
+    #: PSNR gain looks fine. Heavy foliage and busy street texture produce large
+    #: median residuals at the 41 px window, so the mask swells to a third of the
+    #: frame at precision 0.11 — nine in ten "damaged" pixels healthy. The gain
+    #: still passes, because the real damage does get repaired; but everything
+    #: around it has been replaced by an average of its neighbours, and the
+    #: picture is visibly soft. Every other candidate scores 0.37 or better, so
+    #: this separates the two cleanly rather than splitting a continuum.
+    GALLERY_MIN_DETECTOR_PRECISION = 0.30
+    #: Four slots, one row each, so the figure spans the subject axis instead of
+    #: concentrating on it. Taking the four highest-scoring families produced a
+    #: girl, a young woman, a couple and two men — four good results and three
+    #: adult women's-and-men's portraits, which tells a reader nothing about
+    #: whether this would work on a photograph of their child. Ranking still
+    #: decides *which* photograph fills a slot; the slots decide the spread.
+    GALLERY_SLOTS = {
+        "boy": "a child",
+        "girl": "a child",
+        "child": "a child",
+        "woman": "a woman",
+        "man": "a man",
+        "couple": "more than one person",
+        "group": "more than one person",
+    }
+    GALLERY_SLOT_ORDER = ["a child", "a woman", "a man", "more than one person"]
     gallery_pool = [
-        ("boy laughing\nchild · close up", "boy_laughing", "boy"),
-        ("child, face paint\nchild · painted skin", "child_face_paint", "child"),
-        ("girl in a red hat\nchild · strong colour cast", "girl_red_hat", "girl"),
-        ("woman in a dress\nadult · full length, outdoors", "woman_dress", "woman"),
-        ("young woman\nadult · dark background", "young_woman", "woman"),
-        ("man in glasses\nadult · indoor light", "man_glasses", "man"),
-        ("man in glasses, dark\nadult · under-exposed", "man_glasses_dark", "man"),
-        ("man outdoors\nadult · bright sky behind", "man_outdoors", "man"),
-        ("couple on a shoreline\ntwo people · full length", "couple_beach", "couple"),
-        ("two men\ngroup · shallow depth of field", "two_men", "group"),
-        ("people by a bus\ngroup · street scene", "street_people", "group"),
-        ("two men indoors\ngroup · flat corridor light", "two_men_indoor", "group"),
+        ("boy laughing\nclose up, dark doorway", "boy_laughing", "boy"),
+        ("child, face paint\npainted skin, flat light", "child_face_paint", "child"),
+        ("girl in a red hat\nstrong red cast", "girl_red_hat", "girl"),
+        ("woman in a dress\nfull length, heavy foliage", "woman_dress", "woman"),
+        ("young woman\ndark background", "young_woman", "woman"),
+        ("man in glasses\nindoor light", "man_glasses", "man"),
+        ("man in glasses, dark\nunder-exposed", "man_glasses_dark", "man"),
+        ("man outdoors\nbright sky behind", "man_outdoors", "man"),
+        ("couple on a shoreline\ntwo people, full length", "couple_beach", "couple"),
+        ("two men\nshallow depth of field", "two_men", "group"),
+        ("people by a bus\nbusy street texture", "street_people", "group"),
+        ("two men indoors\nflat corridor light", "two_men_indoor", "group"),
     ]
     method_names = list(rs.METHODS)
     survivors: dict[str, tuple] = {}
@@ -185,33 +214,58 @@ def main() -> None:
         src = io.real_photo(name)
         aged, truth = rs.add_damage_and_fade(src, thickness=args.thickness, seed=i)
         found = rs.DETECTORS[rs.DEFAULT_DETECTOR](aged)
-        base = rs.psnr_on_damage(aged, src, truth)
+        # Whole-image PSNR here, not PSNR-on-damage. The tables further down use
+        # the damage-only score, and are right to: a whole-image score is
+        # dominated by the 93% of pixels nobody touched, which is no way to rank
+        # inpainting. But this figure is judged by eye, and the failure a reader
+        # sees is the detector over-flagging and a face being inpainted away.
+        # The damage-only score is blind to that — it scores only the pixels
+        # that were damaged, so collateral damage is free.
+        base = psnr(aged, src)
         outs = [rs.FADE_METHODS[rs.DEFAULT_FADE](fn(aged, found)) for fn in rs.METHODS.values()]
-        scores = [rs.psnr_on_damage(o, src, truth) for o in outs]
+        scores = [psnr(o, src) for o in outs]
         gain = max(scores) - base
+        hit = (truth > 0) & (found > 0)
+        precision = float(hit.sum()) / max(int((found > 0).sum()), 1)
         if gain < GALLERY_MIN_GAIN_DB:
             print(f"gallery candidate {name:<18} DROP — best gained only {gain:+.1f} dB  [{family}]")
             continue
-        print(f"gallery candidate {name:<18} keep — {base:.1f} dB damaged, {gain:+.1f} dB best  [{family}]")
+        if precision < GALLERY_MIN_DETECTOR_PRECISION:
+            print(
+                f"gallery candidate {name:<18} DROP — detector precision {precision:.2f}, "
+                f"{100 * (found > 0).mean():.0f}% of the frame flagged  [{family}]"
+            )
+            continue
+        print(
+            f"gallery candidate {name:<18} keep — {base:.1f} dB damaged, {gain:+.1f} dB best, "
+            f"precision {precision:.2f}  [{family}]"
+        )
+        # Ranked on the best OUTPUT score, not on the gain. Ranking by gain
+        # picks whichever photograph started worst, which is a measure of how
+        # broken the input was rather than of how good the result is — and it
+        # quietly filled the figure with under-exposed frames while dropping the
+        # boy and the child. "Keep the four best results" means the four best
+        # results.
         row = (
             label,
             [src, aged] + outs,
             ["original", f"{base:.1f} dB"] + [f"{s:.1f} dB" for s in scores],
-            gain,
+            max(scores),
         )
-        if family not in survivors or gain > survivors[family][3]:
-            survivors[family] = row
+        slot = GALLERY_SLOTS[family]
+        if slot not in survivors or row[3] > survivors[slot][3]:
+            survivors[slot] = row
 
-    chosen = sorted(survivors.values(), key=lambda r: -r[3])[:4]
+    chosen = [survivors[s] for s in GALLERY_SLOT_ORDER if s in survivors][:4]
     figures.gallery(
         ["original", "faded + damaged"] + method_names,
         [(label, imgs) for label, imgs, _n, _g in chosen],
         IMAGES / "samples.png",
         cell_notes=[notes for _l, _i, notes, _g in chosen],
         suptitle=(
-            "Four photographs of people, four inpainting methods. "
-            "PSNR is measured on the damaged pixels only — a whole-image score is "
-            "dominated by the 90% of pixels nobody touched."
+            "Four photographs of people, four inpainting methods. PSNR is "
+            "whole-image, so a detector that repairs the scratch and destroys "
+            "the face is charged for both."
         ),
     )
     print(f"front-on comparison: {len(chosen)} photographs x {len(method_names)} methods")

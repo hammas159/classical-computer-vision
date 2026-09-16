@@ -2,10 +2,10 @@
 
 | Method | PSNR whole (dB) | PSNR on damage (dB) | SSIM | Time (ms) |
 |---|---:|---:|---:|---:|
-| Telea (fast marching) | 38.11 | 26.555 | 0.9826 | 16.359 |
-| Navier-Stokes | 38.405 | 26.85 | 0.9838 | 16.441 |
-| Iterative masked mean | 37.328 | 25.773 | 0.9808 | 84.564 |
-| Harmonic diffusion | 38.21 | 26.655 | 0.983 | 401.898 |
+| Telea (fast marching) | 38.11 | 26.555 | 0.9826 | 18.103 |
+| Navier-Stokes | 38.405 | 26.85 | 0.9838 | 16.886 |
+| Iterative masked mean | 37.328 | 25.773 | 0.9808 | 90.926 |
+| Harmonic diffusion | 38.21 | 26.655 | 0.983 | 436.835 |
 
 ### PSNR on damaged pixels vs scratch width
 
@@ -25,31 +25,31 @@
 |---|---:|---:|---:|---:|---:|---:|
 | Intensity threshold | 0.4199 | 0.602 | 0.5711 | 0.066 | 9.882 | 20.768 |
 | Top-hat + black-hat | 0.3797 | 0.4182 | 0.7722 | 0.1378 | 12.706 | 21.925 |
-| Median residual (one scale) | 0.4185 | 0.4664 | 0.776 | 0.122 | 12.865 | 21.772 |
-| Median residual (multi-scale) | 0.3486 | 0.3595 | 0.8866 | 0.1867 | 19.368 | 22.756 |
+| Median residual (one scale) | 0.3503 | 0.3806 | 0.7899 | 0.1535 | 12.764 | 21.248 |
+| Median residual (multi-scale) | 0.2966 | 0.3071 | 0.8761 | 0.2215 | 16.279 | 21.519 |
 
 ### Median-residual detector vs its window size (3 px damage)
 
 | Median window (px) | Damage (px) | Mask IoU | Recall | Precision |
 |---|---:|---:|---:|---:|
-| 5 | 3 | 0.0807 | 0.1995 | 0.2252 |
-| 7 | 3 | 0.0915 | 0.1727 | 0.2294 |
-| 9 | 3 | 0.1695 | 0.2876 | 0.3101 |
-| 11 | 3 | 0.3498 | 0.5922 | 0.4491 |
-| 15 | 3 | 0.3932 | 0.6996 | 0.4627 |
-| 21 | 3 | 0.4185 | 0.776 | 0.4664 |
-| 31 | 3 | 0.426 | 0.8327 | 0.4572 |
+| 5 | 3 | 0.0945 | 0.2907 | 0.1833 |
+| 7 | 3 | 0.0934 | 0.1987 | 0.2196 |
+| 9 | 3 | 0.161 | 0.2951 | 0.2781 |
+| 11 | 3 | 0.3374 | 0.6004 | 0.4248 |
+| 15 | 3 | 0.3715 | 0.709 | 0.4289 |
+| 21 | 3 | 0.3503 | 0.7899 | 0.3806 |
+| 31 | 3 | 0.3237 | 0.842 | 0.3409 |
 
 ### Fade correction (4 colour images)
 
 | Method | PSNR (dB) | SSIM | Cast error (deg) | Chroma | RMS contrast | Time (ms) |
 |---|---:|---:|---:|---:|---:|---:|
-| None (control) | 18.189 | 0.731 | 7.718 | 18.933 | 0.0983 | 0.025 |
-| Gray-world balance | 16.476 | 0.7167 | 14.282 | 5.625 | 0.0945 | 5.396 |
-| CLAHE on L only | 18.844 | 0.7258 | 7.75 | 18.944 | 0.1471 | 1.749 |
-| Per-channel stretch | 20.916 | 0.6994 | 6.573 | 23.025 | 0.2271 | 10.354 |
-| Stretch + CLAHE | 18.072 | 0.5622 | 5.88 | 22.977 | 0.2329 | 11.844 |
-| Stretch + saturate | 21.245 | 0.6601 | 7.028 | 26.213 | 0.2278 | 18.214 |
+| None (control) | 18.189 | 0.731 | 7.718 | 18.933 | 0.0983 | 0.032 |
+| Gray-world balance | 16.476 | 0.7167 | 14.282 | 5.625 | 0.0945 | 5.849 |
+| CLAHE on L only | 18.844 | 0.7258 | 7.75 | 18.944 | 0.1471 | 1.846 |
+| Per-channel stretch | 20.916 | 0.6994 | 6.573 | 23.025 | 0.2271 | 10.787 |
+| Stretch + CLAHE | 18.072 | 0.5622 | 5.88 | 22.977 | 0.2329 | 13.254 |
+| Stretch + saturate | 21.245 | 0.6601 | 7.028 | 26.213 | 0.2278 | 19.429 |
 
 ### Both degradations together, and the order they are undone in
 
