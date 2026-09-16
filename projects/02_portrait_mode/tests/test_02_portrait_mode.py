@@ -139,24 +139,35 @@ def test_grabcut_is_reproducible_when_the_seed_is_pinned():
 
 
 def test_grabcut_stability_is_a_property_of_the_scene_not_the_algorithm():
-    """A finding that REVERSED when the scene became a real photograph.
+    """The conditional finding, pinned across genuinely different photographs.
 
-    On the old synthetic scenes GrabCut spanned IoU 0.15-0.90 across 24 seeds --
-    the headline "grabCut is non-deterministic" result. On this real photograph
-    the same sweep spans under 0.01, because the subject's colours are far from
-    the crowd behind them and the k-means initialisation lands in the same basin
-    every time.
+    Where subject and background share colours the k-means initialisation
+    decides the result; where they are far apart in colour it does not matter.
+    So the sweep must show a *range* of stability, not one number.
 
-    Both observations are true and neither generalises. What generalises is the
-    conditional: **the instability is a property of the scene.** Where subject
-    and background share colours the initialisation decides the result; where
-    they do not, it does not matter. Asserting stability here is what stops the
-    old, scene-specific claim from being quietly carried forward.
+    This test previously asserted `max(spread) < 0.05` over a sweep that segmented
+    one image and labelled it four times -- `evaluate_grabcut_stability` read
+    `BACKGROUNDS[i]` for the row label but called `synth.portrait_scene()` with no
+    argument, and that function ignores `background`. Every row was the same
+    segmentation, so of course they agreed. Running on five real photographs, the
+    footballer against a crowd in his own kit colours spans IoU 0.5953-0.9655.
     """
     rows = pm.evaluate_grabcut_stability(n_seeds=12)
-    assert rows, "stability sweep returned nothing"
-    spreads = [r["iou_max"] - r["iou_min"] for r in rows]
-    assert max(spreads) < 0.05, f"expected a stable scene, saw spread {max(spreads):.3f}"
+    assert len(rows) >= 4, "the sweep should cover several different photographs"
+
+    # every row is a different photograph, not one image relabelled
+    assert len({r["scene"] for r in rows}) == len(rows)
+
+    agreements = [r["agreement"] for r in rows]
+    # at least one scene is essentially deterministic across seeds ...
+    assert max(agreements) > 0.97, f"expected a stable scene, best was {max(agreements):.4f}"
+    # ... and at least one is measurably not, or there is no finding to report
+    assert min(agreements) < 0.95, f"expected an unstable scene, worst was {min(agreements):.4f}"
+
+    # where a truth matte exists, the seed-to-seed spread against it is real
+    scored = [r for r in rows if "iou_spread" in r]
+    assert scored, "the footballer has a reference matte and should be scored"
+    assert max(r["iou_spread"] for r in scored) > 0.1
 
 
 

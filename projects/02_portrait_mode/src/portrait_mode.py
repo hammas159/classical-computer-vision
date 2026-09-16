@@ -492,48 +492,103 @@ def evaluate_mattes(n_scenes: int = 1, runs: int = 3) -> list[dict]:
     return rows
 
 
-def evaluate_grabcut_stability(n_scenes: int = 1, n_seeds: int = 30) -> list[dict]:
+def stability_scenes() -> list[tuple[str, np.ndarray, np.ndarray | None]]:
+    """The images the seed sweep runs on: ``(label, image, truth or None)``.
+
+    Five genuinely different photographs, not one image relabelled five times.
+    Only the footballer has a reference matte, so the other four are scored by
+    self-agreement alone — see :func:`evaluate_grabcut_stability`.
+    """
+    from shared import io as _io
+
+    scene = synth.portrait_scene()
+    return [
+        ("footballer · person, crowd behind", scene.image, scene.mask),
+        ("girl · person, soft background", _io.real_photo("girl"), None),
+        ("dog · animal, head on", _io.real_photo("dog"), None),
+        ("butterfly · insect, busy background", _io.real_photo("butterfly"), None),
+        ("coffee cup · object, table top", _io.real_photo("coffee_cup"), None),
+    ]
+
+
+def seed_self_agreement(masks: list[np.ndarray]) -> float:
+    """Mean IoU between every pair of masks the same image produced.
+
+    This is the measurement that makes the stability question answerable on an
+    ordinary photograph. Scoring seed-to-seed spread against a *ground truth*
+    restricts the experiment to the one image in this project that has one; but
+    "did the algorithm return the same answer twice" needs no truth at all —
+    only the masks agreeing with each other. 1.0 means every seed produced an
+    identical cut-out; 0.5 means two seeds typically disagree about a third of
+    the pixels they claim.
+    """
+    if len(masks) < 2:
+        return 1.0
+    scores = [
+        iou(masks[i], masks[j])
+        for i in range(len(masks))
+        for j in range(i + 1, len(masks))
+    ]
+    return float(np.mean(scores))
+
+
+def evaluate_grabcut_stability(n_seeds: int = 24, scenes=None) -> list[dict]:
     """Quantify how much a single GrabCut number is worth.
 
-    The same image is segmented ``n_seeds`` times with different RNG seeds. The
-    input never changes, so any spread here is **pure algorithmic noise** — a
-    direct measure of how much of a reported GrabCut score is luck.
+    Each image is segmented ``n_seeds`` times with a different RNG seed. The
+    input never changes, so any spread is **pure algorithmic noise** — a direct
+    measure of how much of a reported GrabCut score is luck. GrabCut initialises
+    its foreground and background colour mixtures with k-means seeded from
+    OpenCV's **global** RNG, which is where the noise enters.
 
     Two separate facts came out of this, and they are easy to confuse:
 
-    * With a seed pinned, GrabCut is perfectly reproducible — the same seed gives
-      the same mask every time, on any thread count.
-    * *Across* seeds it is not stable at all. On one scene the IoU ranged from
-      0.15 to 0.90.
+    * With a seed pinned, GrabCut is perfectly reproducible — the same seed
+      gives the same mask every time, on any thread count.
+    * *Across* seeds it need not be stable at all.
 
     So a GrabCut result is reproducible and still not a measurement, unless the
-    seed is reported alongside it or the distribution is summarised.
+    seed is reported alongside it or the distribution is summarised. This exists
+    because the first version of this project reported IoU 0.87 for GrabCut from
+    a single unseeded run.
 
-    This exists because the first version of this project reported IoU 0.87 for
-    GrabCut from a single unseeded run.
+    🚨 **This used to sweep one image and label it four times.** It read
+    ``BACKGROUNDS[i]`` for the row label but called ``synth.portrait_scene()``
+    with no argument, and ``portrait_scene`` ignores ``background`` anyway — it
+    returns one fixed photograph. So four rows claiming to be coffee, rocket,
+    grass and brick were the same segmentation repeated, and they printed
+    identical numbers to four decimal places. It now runs on five genuinely
+    different photographs.
+
+    ``agreement`` is always reported; ``iou_*`` only where a truth matte exists.
     """
     rows = []
-    for i in range(n_scenes):
-        bg = BACKGROUNDS[i % len(BACKGROUNDS)]
-        scene = synth.portrait_scene()
-        scores = []
+    for label, image, truth in scenes if scenes is not None else stability_scenes():
+        masks = []
         for s in range(n_seeds):
-            m = matte_grabcut_face(scene.image, rng_seed=s)
+            m = matte_grabcut_centre(image, rng_seed=s)
             if m is not None:
-                scores.append(iou(m, scene.mask))
-        if not scores:
+                masks.append(m)
+        if not masks:
             continue
-        rows.append(
-            {
-                "scene": f"{i} ({bg})",
-                "n_seeds": len(scores),
-                "iou_mean": round(float(np.mean(scores)), 4),
-                "iou_std": round(float(np.std(scores)), 4),
-                "iou_min": round(float(np.min(scores)), 4),
-                "iou_max": round(float(np.max(scores)), 4),
-                "iou_spread": round(float(np.max(scores) - np.min(scores)), 4),
-            }
-        )
+
+        row = {
+            "scene": label,
+            "n_seeds": len(masks),
+            "agreement": round(seed_self_agreement(masks), 4),
+        }
+        if truth is not None:
+            scores = [iou(m, truth) for m in masks]
+            row.update(
+                {
+                    "iou_mean": round(float(np.mean(scores)), 4),
+                    "iou_std": round(float(np.std(scores)), 4),
+                    "iou_min": round(float(np.min(scores)), 4),
+                    "iou_max": round(float(np.max(scores)), 4),
+                    "iou_spread": round(float(np.max(scores) - np.min(scores)), 4),
+                }
+            )
+        rows.append(row)
     return rows
 
 

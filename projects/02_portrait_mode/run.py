@@ -53,8 +53,14 @@ def main() -> None:
     matte_rows = pm.evaluate_mattes(n_scenes=args.scenes)
 
     stability_seeds = max(8, args.scenes * 2)
-    print(f"Measuring GrabCut seed stability ({stability_seeds} seeds x 4 scenes) ...")
-    stability_rows = pm.evaluate_grabcut_stability(n_scenes=4, n_seeds=stability_seeds)
+    stability_scenes = pm.stability_scenes()
+    print(
+        f"Measuring GrabCut seed stability ({stability_seeds} seeds x "
+        f"{len(stability_scenes)} real photographs) ..."
+    )
+    stability_rows = pm.evaluate_grabcut_stability(
+        n_seeds=stability_seeds, scenes=stability_scenes
+    )
 
     print(f"Characterising {len(pm.BOKEH_KERNELS)} bokeh kernels ...")
     bokeh_rows = pm.evaluate_bokeh(radius=args.radius)
@@ -387,6 +393,7 @@ def main() -> None:
         [
             ("Scene", "scene"),
             ("Seeds", "n_seeds"),
+            ("Seed agreement", "agreement"),
             ("IoU mean", "iou_mean"),
             ("IoU std", "iou_std"),
             ("Worst", "iou_min"),
@@ -422,7 +429,8 @@ def main() -> None:
                 matte_table,
             ),
             (
-                f"GrabCut seed stability ({stability_seeds} seeds on each identical image)",
+                f"GrabCut seed stability ({stability_seeds} seeds on each of "
+                f"{len(stability_scenes)} photographs)",
                 stability_table,
             ),
             (f"Bokeh kernels (radius {args.radius} px)", bokeh_table),
@@ -453,10 +461,15 @@ def main() -> None:
     d = next(r for r in bokeh_rows if r["kernel"].startswith("Disc"))
     print(f"bokeh: Gaussian peak/mean {g['peak_to_mean']} vs disc {d['peak_to_mean']}; "
           f"rim energy {g['edge_sharpness']} vs {d['edge_sharpness']}")
-    worst = max(stability_rows, key=lambda r: r["iou_spread"])
-    print(f"GrabCut seed noise: worst scene {worst['scene']} spans IoU "
-          f"{worst['iou_min']}-{worst['iou_max']} (spread {worst['iou_spread']}, "
-          f"std {worst['iou_std']}) on an image that never changed")
+    worst = min(stability_rows, key=lambda r: r["agreement"])
+    best = max(stability_rows, key=lambda r: r["agreement"])
+    print(f"GrabCut seed noise: least stable {worst['scene']} at seed agreement "
+          f"{worst['agreement']}; most stable {best['scene']} at {best['agreement']} "
+          f"— on images that never changed")
+    scored = [r for r in stability_rows if "iou_spread" in r]
+    for r in scored:
+        print(f"  vs truth: {r['scene']} spans IoU {r['iou_min']}-{r['iou_max']} "
+              f"(spread {r['iou_spread']}, std {r['iou_std']})")
     print(f"\nwrote {results_path}")
 
 

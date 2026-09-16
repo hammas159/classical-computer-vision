@@ -1,6 +1,6 @@
 {
   "project": "02_portrait_mode",
-  "generated_utc": "2026-09-15T13:10:56+00:00",
+  "generated_utc": "2026-09-16T11:26:22+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -21,7 +21,7 @@
       "fine_recall": 0.3908,
       "background_fpr": 0.0892,
       "boundary_f1": 0.0292,
-      "median_ms": 19.198
+      "median_ms": 19.838
     },
     {
       "method": "Face ellipse prior",
@@ -32,7 +32,7 @@
       "fine_recall": 0.2174,
       "background_fpr": 0.0501,
       "boundary_f1": 0.0235,
-      "median_ms": 19.181
+      "median_ms": 19.595
     },
     {
       "method": "Haar + GrabCut",
@@ -43,7 +43,7 @@
       "fine_recall": 0.325,
       "background_fpr": 0.0,
       "boundary_f1": 0.3814,
-      "median_ms": 307.993
+      "median_ms": 311.782
     },
     {
       "method": "GrabCut (centre rect)",
@@ -54,7 +54,7 @@
       "fine_recall": 0.7604,
       "background_fpr": 0.0001,
       "boundary_f1": 0.6868,
-      "median_ms": 521.002
+      "median_ms": 543.097
     },
     {
       "method": "Skin colour (YCrCb)",
@@ -65,7 +65,7 @@
       "fine_recall": 0.4106,
       "background_fpr": 0.038,
       "boundary_f1": 0.2016,
-      "median_ms": 1.314
+      "median_ms": 1.257
     },
     {
       "method": "Watershed + markers",
@@ -76,45 +76,39 @@
       "fine_recall": 0.2734,
       "background_fpr": 0.0728,
       "boundary_f1": 0.1432,
-      "median_ms": 25.038
+      "median_ms": 25.602
     }
   ],
   "grabcut_stability": [
     {
-      "scene": "0 (coffee)",
+      "scene": "footballer \u00b7 person, crowd behind",
       "n_seeds": 24,
-      "iou_mean": 0.4761,
-      "iou_std": 0.0005,
-      "iou_min": 0.4752,
-      "iou_max": 0.477,
-      "iou_spread": 0.0019
+      "agreement": 0.8655,
+      "iou_mean": 0.89,
+      "iou_std": 0.1267,
+      "iou_min": 0.5953,
+      "iou_max": 0.9655,
+      "iou_spread": 0.3701
     },
     {
-      "scene": "1 (rocket)",
+      "scene": "girl \u00b7 person, soft background",
       "n_seeds": 24,
-      "iou_mean": 0.4761,
-      "iou_std": 0.0005,
-      "iou_min": 0.4752,
-      "iou_max": 0.477,
-      "iou_spread": 0.0019
+      "agreement": 0.9333
     },
     {
-      "scene": "2 (grass)",
+      "scene": "dog \u00b7 animal, head on",
       "n_seeds": 24,
-      "iou_mean": 0.4761,
-      "iou_std": 0.0005,
-      "iou_min": 0.4752,
-      "iou_max": 0.477,
-      "iou_spread": 0.0019
+      "agreement": 0.9988
     },
     {
-      "scene": "3 (brick)",
+      "scene": "butterfly \u00b7 insect, busy background",
       "n_seeds": 24,
-      "iou_mean": 0.4761,
-      "iou_std": 0.0005,
-      "iou_min": 0.4752,
-      "iou_max": 0.477,
-      "iou_spread": 0.0019
+      "agreement": 0.9963
+    },
+    {
+      "scene": "coffee cup \u00b7 object, table top",
+      "n_seeds": 24,
+      "agreement": 0.9776
     }
   ],
   "bokeh_kernels": [
@@ -148,13 +142,13 @@
       "method": "Naive (blur all, paste back)",
       "halo_err_0_255": 12.545,
       "background_err_0_255": 1.661,
-      "median_ms": 8.266
+      "median_ms": 8.572
     },
     {
       "method": "Masked (normalised convolution)",
       "halo_err_0_255": 2.036,
       "background_err_0_255": 0.273,
-      "median_ms": 24.073
+      "median_ms": 25.63
     }
   ]
 }

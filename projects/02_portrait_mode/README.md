@@ -79,11 +79,14 @@ only image here with an exact alpha matte to score against.
 > of the annotation's provenance, and it is why the matting table below is read
 > as agreement with a careful annotation rather than as a ranking.
 
-> **A finding that reversed, and is reported anyway.** On the earlier synthetic
-> scenes `grabCut` spanned IoU **0.15–0.90** across 24 seeds. On this real
-> photograph the same sweep spans **under 0.01**, because the subject's colours
-> are far from the crowd's. Both are true; neither generalises. What does
-> generalise: **the instability is a property of the scene, not the algorithm.**
+> **GrabCut's answer depends on its random seed, and how much depends on the
+> photograph.** Segmenting the footballer 24 times with 24 seeds — same image,
+> same call, nothing changed but the RNG — returns anything from **IoU 0.5953 to
+> 0.9655**. He is photographed against a crowd wearing his own kit colours, so
+> the initialisation decides how much crowd joins the subject. A dog on pale
+> planking, by contrast, comes back essentially identical every time (seed
+> agreement **0.9988**). **The instability is a property of the scene, not the
+> algorithm** — see [the sweep](#grabcut-is-not-deterministic).
 
 **Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
 [Input & output](#input--output) · [Results](#results) ·
@@ -122,6 +125,20 @@ hair and background scored separately — find the row that wins IoU and loses
 Hair), the halo error distribution, and each bokeh kernel printed as raw numbers.
 
 ![Portrait pipeline](results/screenshots/01_portrait.png)
+
+### The confusion matrix, and why pixel accuracy is the wrong metric
+
+The `Confusion matrix` tab scores one method's matte against the truth, as
+counts and as recall per class. `Haar + GrabCut` gets **169,087 of 187,416
+pixels right — 90.22%** — while recovering only **47.7% of the subject**. It
+loses over half the person and still reports ninety percent, because the
+background is the majority class by a wide margin.
+
+That is the whole argument for quoting IoU rather than accuracy, and it is much
+harder to dismiss as a caveat when the two numbers are sitting next to each
+other on the same screen.
+
+![Confusion matrix tab](results/screenshots/05_confusion_matrix.png)
 
 ---
 
@@ -294,14 +311,22 @@ Per-method confusion matrices (background/subject, counts and recall) are in
 
 ### GrabCut is not deterministic
 
-The same image, segmented 24 times with 24 different RNG seeds:
+Five different photographs, each segmented 24 times with 24 different RNG seeds.
+`GrabCut (centre rect)` — the one method here that is actually general — with
+everything except the seed held fixed:
 
-| Scene | Seeds | IoU mean | IoU std | Worst | Best | Spread |
-|---|---:|---:|---:|---:|---:|---:|
-| **0 (coffee)** | 24 | 0.6634 | 0.1162 | **0.1515** | **0.9039** | **0.7524** |
-| 1 (rocket) | 24 | 0.8905 | 0.0177 | 0.8491 | 0.9064 | 0.0574 |
-| 2 (grass) | 24 | 0.9148 | 0.0054 | 0.8926 | 0.92 | 0.0273 |
-| 3 (brick) | 24 | 0.941 | 0.0008 | 0.9402 | 0.9421 | 0.0019 |
+| Sr | Scene | Seeds | Seed agreement | IoU mean | IoU std | Worst | Best | Spread |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| 1 | **footballer · person, crowd behind** | 24 | **0.8655** | 0.89 | 0.1267 | **0.5953** | **0.9655** | **0.3701** |
+| 2 | girl · person, soft background | 24 | 0.9333 | n/a | n/a | n/a | n/a | n/a |
+| 3 | coffee cup · object, table top | 24 | 0.9776 | n/a | n/a | n/a | n/a | n/a |
+| 4 | butterfly · insect, busy background | 24 | 0.9963 | n/a | n/a | n/a | n/a | n/a |
+| 5 | dog · animal, head on | 24 | **0.9988** | n/a | n/a | n/a | n/a | n/a |
+
+**Seed agreement** is the mean IoU between every *pair* of the 24 masks. It needs
+no ground truth — it only asks whether the algorithm returned the same answer
+twice — which is what lets the sweep run on four ordinary photographs that have
+no annotation. 1.0 means all 24 seeds produced an identical cut-out.
 
 The input never changed. Every bit of that spread is algorithmic noise, because
 GrabCut initialises its foreground and background colour mixtures with k-means
@@ -310,14 +335,28 @@ seeded from OpenCV's **global** RNG.
 Two facts that are easy to conflate:
 
 * **With a seed pinned, GrabCut is perfectly reproducible** — same seed, same
-  mask, on any thread count. That is what makes the table above trustworthy.
-* **Across seeds it is not stable at all** on hard scenes. On `coffee`, whose
-  background browns are close to the subject's skin tones, the initialisation
-  decides the entire result: 0.15 or 0.90, effectively a coin flip. On `brick`,
-  where subject and background are far apart in colour, the spread is 0.0019.
+  mask, on any thread count. That is what makes every other table here
+  trustworthy.
+* **Across seeds it is not stable at all** on a hard scene. The footballer is
+  photographed against a crowd wearing the same reds and blues as his kit, and
+  the initialisation decides how much of that crowd joins the subject: the same
+  image, the same call, returns anything from **IoU 0.5953 to 0.9655**.
 
-**The instability is a property of the scene, not of the algorithm alone.** A
-paper reporting one GrabCut number without a seed or a spread is reporting luck.
+**The instability is a property of the scene, not of the algorithm alone.** The
+dog — a dark animal on pale planking, subject and background far apart in colour
+— returns essentially the same mask every time (0.9988). A single GrabCut number
+reported without a seed or a spread is reporting luck, and how *much* luck
+depends entirely on the picture.
+
+> **This table used to be wrong, and it is worth saying how.** It reported four
+> rows labelled `coffee`, `rocket`, `grass` and `brick` with four different
+> spreads. The sweep read `BACKGROUNDS[i]` for the label but called
+> `synth.portrait_scene()` with no argument — and that function ignores
+> `background` entirely, because the synthetic composite was retired in favour of
+> one real photograph. So all four rows were the same segmentation repeated, and
+> they printed identical numbers to four decimal places. The four distinct
+> spreads were left over from the retired synthetic scenes. It now runs on five
+> genuinely different photographs, and the finding survived the fix.
 
 ### Bokeh kernel shape
 
@@ -536,16 +575,19 @@ def _grabcut(img, rect, iterations=5, rng_seed=GRABCUT_SEED):
 ```
 
 **But pinning alone would have been dishonest** — it produces a stable number that
-still hides how little it means. So a second experiment reports the spread:
+still hides how little it means. So a second experiment reports the spread, over
+five different photographs:
 
-| Scene | Seeds | Worst | Best | Spread |
-|---|---:|---:|---:|---:|
-| **0 (coffee)** | 24 | **0.152** | **0.904** | **0.752** |
-| 3 (brick) | 24 | 0.940 | 0.942 | 0.002 |
+| Scene | Seeds | Seed agreement | Worst | Best | Spread |
+|---|---:|---:|---:|---:|---:|
+| **footballer · crowd behind** | 24 | **0.8655** | **0.5953** | **0.9655** | **0.3701** |
+| dog · animal, head on | 24 | **0.9988** | n/a | n/a | n/a |
 
-The instability is a property of the **scene**, not the algorithm: on `coffee`
-the background browns sit close to the subject's skin tones, so the
-initialisation decides the whole result.
+The instability is a property of the **scene**, not the algorithm: the crowd
+behind the footballer wears his own kit colours, so the initialisation decides
+how much of it joins the subject. The dog — dark animal, pale planking — is
+effectively deterministic. Full table: [GrabCut is not
+deterministic](#grabcut-is-not-deterministic).
 
 ### 2 · "Hair recall" was gameable, and briefly fooled me
 
