@@ -13,14 +13,122 @@ you have them, can you measure them in millimetres?**
 Counting needs no metric choice — a count is right or wrong. Measuring needs one
 known reference in the frame, and that is where the errors live.
 
-**No neural network, no training, no GPU, no dataset download.**
+**No neural network, no training, no GPU.**
+
+---
+
+## Results
+
+### Counting — four conditions, five methods
+
+![Four coin scenes, five segmentation methods](docs/images/compare_counting.png)
+
+| Sr | Scene | Otsu + components | Adaptive + components | Watershed (global seed) | Watershed (local maxima) | **Hough circles** |
+|---:|---|---:|---:|---:|---:|---:|
+| 1 | green felt · spread out | 18 of 20 | 20 of 20 | 20 of 20 | 20 of 20 | **20 of 20** |
+| 2 | green felt · coins touching | **1 of 20** | **1 of 20** | 7 of 20 | 16 of 20 | **20 of 20** |
+| 3 | green felt · side-lit | 20 of 20 | 20 of 20 | 20 of 20 | 20 of 20 | **20 of 20** |
+| 4 | white paper · coins darker than the table | **1 of 20** | **25 of 20** | **1 of 20** | **1 of 20** | **20 of 20** |
+
+**Row 1 is why a single-scene comparison is worthless here.** Spread the coins
+out and four of five methods are perfect. Every conclusion below comes from the
+rows where they are not.
+
+**Row 2 is what watershed is for.** Touching coins are one connected component,
+so both component methods collapse to **1 object**. No threshold fixes that.
+
+**Row 4 inverts the polarity** — coins darker than the table — and it separates
+the methods by *what they assume*. Three of them assume the coins are the bright
+class and return 1. Adaptive thresholding returns **25 of 20**, over-counting by
+fragmenting each coin. Hough circles is unaffected, because it never assumes a
+polarity at all: it looks for round edges. **A shape prior survives a change
+that destroys every intensity prior.**
+
+### Naming them, which counting cannot do
+
+![Every coin named from its diameter](docs/images/compare_denominations.png)
+
+| Calibration | Coins matched | Named right | Accuracy | True value | Read value | Value error |
+|---|---:|---:|---:|---:|---:|---:|
+| **Exact scale** (a ruler in the frame) | 236 | 148 | **62.7%** | ₹1789 | ₹1224 | **−31.6%** |
+| Largest coin assumed 27 mm | 236 | 124 | 52.5% | ₹1789 | ₹1026 | −42.7% |
+
+Even handed the *exact* millimetres-per-pixel, naming the coins is only 62.7%
+right. The confusion matrix says why, and it is not the classifier's fault:
+
+| True ↓ / read → | ₹1 | ₹2 | ₹5 | ₹10 | ₹20 |
+|---|---:|---:|---:|---:|---:|
+| **₹1** | 32 | 2 | 14 | 0 | 0 |
+| **₹2** | 0 | 45 | 0 | 3 | 0 |
+| **₹5** | 6 | 5 | 36 | 0 | 0 |
+| **₹10** | 0 | 10 | 0 | 35 | 0 |
+| **₹20** | 0 | 6 | 0 | **42** | **0** |
+
+> **₹10 and ₹20 are both 27.00 mm.** Every ₹20 coin in the set — 42 of them — is
+> read as a ₹10, and **not one is ever read correctly**. That is not a failure of
+> the code. In the hand the two are told apart by the ₹20's twelve-sided edge,
+> which a photograph of a flat disc does not record. **A diameter cannot separate
+> them, and no amount of better measurement will.** It costs ₹420 of the ₹565
+> shortfall on its own.
+
+> **₹1 and ₹5 are 1.07 mm apart** — about 2.5 px at this framing. 20 of the
+> remaining 40 errors are that pair, in both directions. This one *is* a
+> measurement problem, and it would shrink with a closer camera.
+
+So the honest answer to "how much money is on the table" is: the count is
+reliable, the total is not. **Reporting a value without reporting which pairs
+are indistinguishable would be the dishonest version of this project.**
+
+### How the scenes were chosen
+
+Twelve generated scenes across four *conditions* — spread, touching, side-lit,
+light surface — with the best of each condition kept. Families are the condition
+rather than the tablecloth, because four backgrounds are four variations of one
+problem while these are four different problems.
+
+```
+scene candidate green felt · spread out                  keep — counts [18, 20, 20, 20, 20] of 20  [spread]
+scene candidate slate · spread out                       keep — counts [19, 19, 20, 20, 20] of 20  [spread]
+scene candidate navy cloth · spread out                  keep — counts [18, 20, 20, 20, 20] of 20  [spread]
+scene candidate wood table · spread out                  keep — counts [18, 18, 20, 20, 20] of 20  [spread]
+scene candidate green felt · coins touching              keep — counts [1, 1, 7, 16, 20] of 20  [touching]
+scene candidate slate · coins touching                   keep — counts [1, 2, 1, 10, 20] of 20  [touching]
+scene candidate wood table · coins touching              keep — counts [1, 8, 13, 19, 20] of 20  [touching]
+scene candidate denim · coins touching                   keep — counts [1, 3, 1, 15, 20] of 20  [touching]
+scene candidate green felt · side-lit                    keep — counts [20, 20, 20, 20, 20] of 20  [side-lit]
+scene candidate wood table · side-lit, touching          keep — counts [1, 9, 7, 16, 20] of 20  [side-lit]
+scene candidate white paper · coins darker than the table keep — counts [1, 25, 1, 1, 20] of 20  [light surface]
+scene candidate marble · light surface, touching         keep — counts [2, 16, 2, 7, 16] of 20  [light surface]
+```
+
+**The gate asks whether a scene is solvable, not whether it is easy** — some
+method has to be able to count it. An earlier version gated on the *median*
+method and dropped every touching scene, leaving four rows of well-separated
+coins and no result at all. A scene only one method can read is the opposite of
+a broken sample; it is the entire finding.
+
+> **Why these scenes are generated and `skimage.data.coins` is not enough.**
+> That image is a scan of old Greek coins whose denominations nobody recorded,
+> so a value reported against it could never be shown to be wrong. The mint
+> publishes the diameter of every circulating Indian coin, so a generated scene
+> knows the count, the millimetres **and** the denomination by construction. The
+> real image is still used for everything that does not need a denomination.
+
+---
 
 > **The finding, in one sentence.** The watershed seeding rule in the OpenCV
 > tutorial — threshold the distance transform at a fraction of its **global**
 > maximum — counts **1 coin out of 24** when a lighting artefact merges part of
 > the mask. Seeding from **local** maxima counts **24 out of 24** on the same
-> broken mask. One rule is destroyed by a problem elsewhere in the image and the
-> other is not, and the demo everyone copies uses the fragile one.
+> broken mask. Repair the mask and *both* reach 24, which is the sharper
+> statement: the tutorial's rule is not inaccurate, it is **entirely dependent
+> on a clean mask**, and that dependency is invisible until the mask is not
+> clean. The demo everyone copies uses the fragile one.
+
+> **The finding that counting cannot reach.** Naming each coin from its
+> diameter is **62.7%** right even when handed the exact scale — and **every one
+> of the 42 twenty-rupee coins is misread**, because ₹10 and ₹20 are both
+> 27.00 mm. A diameter cannot separate them at any resolution.
 
 > **The second finding.** Three methods count exactly 24. Only **one** of them
 > measures all 24 plausibly. Watershed's boundary can squeeze a basin to 136 px
@@ -126,9 +234,17 @@ Local-maxima seeding has no global quantity in it at all. A coin's seed depends
 on that coin's neighbourhood, so nothing happening elsewhere in the image can
 suppress it.
 
-Note also that fixing the mask rescues the tutorial rule only to **23**. The
-headline is not "the lighting was bad" — it is that one rule is robust and the
-other is not.
+Fix the mask and the tutorial rule reaches **24 of 24** as well. That is the
+sharper version of the finding, not a weaker one: the two rules are equally
+*accurate* and not remotely equally *robust*. One needs a clean mask and the
+other does not, and nothing in a demo that only ever runs on a clean mask will
+ever show you the difference.
+
+> This number was **23** until the top-hat kernel was sized from the image
+> instead of hard-coded at 61 px. The old 23 was an artefact of a starved
+> kernel eating part of a coin, not a property of the seeding rule. It is
+> corrected here rather than left standing because it was the more flattering
+> number.
 
 ### The tutorial's knob, swept
 
@@ -320,10 +436,10 @@ return cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, se)   # flatten the illumination
 peaks = ((dist >= dilated - 1e-6) & (dist >= min_radius_px)).astype(np.uint8) * 255
 ```
 
-**Result: 1 → 24 of 24.** And the ablation showed the two fixes are *not* equally
-important — local-maxima seeding reaches 24 even on the unfixed mask, while
-fixing the mask rescues the tutorial rule only to 23. That comparison became the
-project's headline, and it only exists because the two fixes were tested
+**Result: 1 → 24 of 24.** And the ablation showed the two fixes are *not*
+interchangeable — local-maxima seeding reaches 24 even on the unfixed mask,
+while the tutorial rule needs the mask repaired first. That comparison became
+the project's headline, and it only exists because the two fixes were tested
 separately instead of together.
 
 ### 2 · A round-number area filter threw away two correct answers

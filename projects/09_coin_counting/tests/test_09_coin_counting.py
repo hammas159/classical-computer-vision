@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 
 import coins as cn
-from shared import io
+from shared import io, synth
 
 
 # --------------------------------------------------------------------------- #
@@ -127,19 +127,59 @@ def test_the_area_floor_must_not_discard_real_regions():
 def test_local_maxima_seeding_survives_a_broken_mask_and_the_global_rule_does_not():
     """The project's headline, pinned.
 
-    This is a two-factor ablation with a very lopsided result: a lighting
-    artefact that merges the mask reduces the tutorial's rule to one object and
+    A two-factor ablation with a lopsided result: a lighting artefact that
+    merges the mask reduces the tutorial's seeding rule to **one** object, and
     leaves local-maxima seeding at the correct count.
+
+    This test previously also asserted that flattening the mask *fails* to fully
+    rescue the tutorial rule — it reached 23 of 24. That turned out to be an
+    artefact of a hard-coded top-hat kernel of 61 px, which is not comfortably
+    larger than the coins in this image. With the kernel sized from the image
+    (:func:`coins.background_kernel_for`) the tutorial rule reaches 24 as well.
+
+    The finding is sharper for it. The tutorial's rule is not *wrong*; it is
+    **entirely dependent on the mask being clean**, and that dependency is
+    invisible until the mask is not. Local-maxima seeding does not have it.
     """
     rows = cn.ablate_mask_and_seeding()
     tutorial = next(r for r in rows if r["seeding"].startswith("Global"))
     local = next(r for r in rows if r["seeding"].startswith("Local"))
 
+    # with a broken mask the two rules disagree completely
     assert tutorial["plain_otsu"] <= 2
     assert local["plain_otsu"] == cn.TRUE_COIN_COUNT
+    # with a good mask they agree, which is the point: the difference between
+    # them is robustness, not accuracy
+    assert tutorial["tophat_otsu"] == cn.TRUE_COIN_COUNT
     assert local["tophat_otsu"] == cn.TRUE_COIN_COUNT
-    # and fixing the mask does not fully rescue the tutorial rule
-    assert tutorial["tophat_otsu"] < cn.TRUE_COIN_COUNT
+
+
+def test_the_tophat_kernel_must_exceed_the_largest_object():
+    """The silent failure that made every method undercount by five.
+
+    `_flatten_illumination` subtracts an opening, and only erases the
+    illumination if the structuring element is larger than the coins. Below
+    that it subtracts the coin's own interior and leaves a ring, which the
+    cleanup then discards — so the count is simply wrong and nothing raises.
+
+    Pinned because the requirement lived in a docstring and a constant sized for
+    one particular image, and the first scene with larger coins lost five of
+    twenty on a frame where they were not even touching.
+    """
+    scene, truth = synth.coin_scene(seed=0, mm_per_px=0.42)
+    gray = io.to_gray(scene)
+    largest_px = max(c["diameter_px"] for c in truth)
+
+    # the kernel the image asks for clears the biggest coin
+    assert cn.background_kernel_for(gray) > largest_px
+    # and with it, the coins all survive
+    assert cn.count_coins(cn.segment_watershed(scene)) == len(truth)
+
+    # the old fixed 61 is smaller than these coins, so the top-hat eats them:
+    # the flattened image keeps far less of the coin than a correct kernel does
+    kept_correct = float(cn._flatten_illumination(gray).mean())
+    kept_starved = float(cn._flatten_illumination(gray, kernel=61).mean())
+    assert kept_starved < 0.75 * kept_correct
 
 
 def test_the_tutorials_knob_has_no_safe_setting():
@@ -219,3 +259,62 @@ def test_empty_input_does_not_crash_the_calibration():
 def test_analyse_rejects_an_unknown_method():
     with pytest.raises(KeyError):
         cn.analyse(io.sample("coins"), method="not a method")
+
+
+# --------------------------------------------------------------------------- #
+# naming the coins
+# --------------------------------------------------------------------------- #
+
+
+def test_ten_and_twenty_rupees_are_the_same_diameter():
+    """Not a bug in the classifier. A fact about the coinage.
+
+    The two are told apart in the hand by the 20's twelve-sided edge, which an
+    overhead photograph of a flat disc does not record. Pinned so that nobody
+    later "fixes" the confusion matrix by nudging a number in the table.
+    """
+    assert synth.RUPEE_COINS_MM[10] == synth.RUPEE_COINS_MM[20]
+    assert 20 not in cn.IDENTIFIABLE
+
+
+def test_the_hard_pair_is_one_millimetre_apart():
+    """1 and 5 rupees differ by 1.07 mm, which sets the measurement budget."""
+    gap = abs(synth.RUPEE_COINS_MM[5] - synth.RUPEE_COINS_MM[1])
+    assert gap == pytest.approx(1.07, abs=0.01)
+    # at the scale the scenes are generated, that is a couple of pixels
+    assert gap / 0.42 < 3.0
+
+
+def test_identification_names_most_coins_and_never_says_twenty():
+    scenes = []
+    for i, bg in enumerate(("felt", "slate", "navy")):
+        scene, truth = synth.coin_scene(seed=i, background=bg, mm_per_px=0.42)
+        scenes.append((scene, truth, 0.42))
+    rows, confusion = cn.evaluate_identification(scenes)
+    exact = next(r for r in rows if r["calibration"] == "exact scale")
+
+    assert exact["coins_matched"] > 50
+    assert exact["accuracy"] > 0.55
+    # every 20-rupee coin is read as something else, because it must be
+    assert all(read != 20 for _true, read in confusion)
+    # and the errors are self-consistent with the accuracy beside them
+    errors = sum(n for (t, r), n in confusion.items() if t != r)
+    assert errors == exact["coins_matched"] - exact["identified"]
+
+
+def test_a_wrong_reference_moves_the_whole_reading():
+    """Self-calibration cannot detect its own failure.
+
+    Assuming the largest coin present is 27 mm is what a user can actually do
+    without a ruler in shot. When it is true the reading is good; when it is
+    not, every diameter scales by the same wrong factor and nothing downstream
+    can tell.
+    """
+    scene, truth = synth.coin_scene(seed=0, mm_per_px=0.42)
+    labels = cn.METHODS[cn.IDENT_METHOD](scene)
+    props = cn.region_properties(labels)
+
+    honest = cn.calibrate_from_largest(props, 27.0)
+    wrong = cn.calibrate_from_largest(props, 21.93)
+    assert wrong < honest
+    assert wrong / honest == pytest.approx(21.93 / 27.0, rel=1e-6)

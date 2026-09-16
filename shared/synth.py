@@ -1032,3 +1032,231 @@ def document_scene(
     photo = to_uint8(to_float(photo) + rng.normal(0, 3 / 255, photo.shape))
 
     return photo, page, dst
+
+
+# --------------------------------------------------------------------------- #
+# coins of known denomination
+# --------------------------------------------------------------------------- #
+#
+# Counting coins is answerable from `skimage.data.coins`, a scan of old Greek
+# coins. IDENTIFYING them is not: nobody recorded what those coins are worth, so
+# a denomination reported against that image would be unfalsifiable.
+#
+# These scenes exist for exactly that reason. The mint publishes the diameter of
+# every circulating coin, so placing one of known value gives a scene where the
+# count, the diameter in millimetres AND the denomination are known by
+# construction — and a wrong answer can be shown to be wrong.
+
+#: Indian circulating coins, 2011 series onward, with published diameters in mm.
+#:
+#: Two facts here do the work, and neither is an artefact of the generator:
+#:
+#: * **1 and 5 differ by 1.07 mm.** At ordinary framing that is a pixel or two,
+#:   so telling them apart is a measurement problem before it is a
+#:   classification problem.
+#: * **10 and 20 are both 27.00 mm.** In the hand they are told apart by the
+#:   20's twelve-sided edge, not by size, so *no* diameter-based method can
+#:   separate them. A confusion matrix showing that is reporting the coinage,
+#:   not a bug.
+RUPEE_COINS_MM = {
+    1: 21.93,
+    2: 25.00,
+    5: 23.00,
+    10: 27.00,
+    20: 27.00,
+}
+
+
+def coin_scene(
+    size: tuple[int, int] = (720, 540),
+    counts: dict[int, int] | None = None,
+    mm_per_px: float = 0.42,
+    background: str = "felt",
+    illum_min: float = 1.0,
+    touching: bool = False,
+    seed: int | None = 0,
+):
+    """Render coins of known denomination and return the scene with its truth.
+
+    Returns ``(image, coins)``; each coin is a dict with ``denomination``,
+    ``centre_xy``, ``diameter_px`` and ``diameter_mm``.
+
+    ``mm_per_px`` sets the scale, so a caller can ask how identification decays
+    as the camera moves back. That is the only honest way to report a
+    diameter-based classifier, whose accuracy is a function of how many pixels a
+    millimetre is worth rather than a fixed property of the method.
+
+    ``touching`` places coins deliberately in contact, which is what breaks
+    connected components and is the reason watershed is in this project.
+    """
+    rng = _rng(seed)
+    W, H = size
+    # Four of each of the five circulating coins, 20 in all. The 20-rupee
+    # coins are in the default on purpose: they share the 10's 27.00 mm
+    # diameter exactly, so a scene without them lets a size-based reader look
+    # better than the coinage allows.
+    counts = counts or {1: 4, 2: 4, 5: 4, 10: 4, 20: 4}
+
+    img = _coin_background(size, background, rng)
+
+    wanted: list[int] = []
+    for denom, n in counts.items():
+        wanted.extend([denom] * n)
+    rng.shuffle(wanted)
+
+    placed: list[dict] = []
+    # How close two coins may come, as a fraction of the smaller radius.
+    # Negative means they overlap, which is what genuine contact looks like
+    # once both coins have a rim and a shadow.
+    gap = -0.06 if touching else 0.12
+    for denom in wanted:
+        d_mm = RUPEE_COINS_MM[denom]
+        r_px = 0.5 * d_mm / mm_per_px
+        for attempt in range(400):
+            if touching and placed:
+                # Deliberately push each new coin up against one already down.
+                # Sampling uniformly and merely *permitting* overlap does not
+                # produce it: there is far more free felt than contact, so a
+                # uniform sampler lands in the gaps every time and the scene
+                # comes out as twenty well-separated discs. Connected components
+                # then segments it perfectly and the whole reason watershed is
+                # in this project disappears.
+                anchor = placed[int(rng.integers(len(placed)))]
+                ox, oy = anchor["centre_xy"]
+                reach = r_px + anchor["diameter_px"] / 2
+                reach += gap * min(r_px, anchor["diameter_px"] / 2)
+                theta = float(rng.uniform(0, 2 * np.pi))
+                cx = ox + reach * float(np.cos(theta))
+                cy = oy + reach * float(np.sin(theta))
+                if not (r_px + 4 <= cx <= W - r_px - 4 and r_px + 4 <= cy <= H - r_px - 4):
+                    continue
+            else:
+                cx = float(rng.uniform(r_px + 4, W - r_px - 4))
+                cy = float(rng.uniform(r_px + 4, H - r_px - 4))
+            ok = True
+            for other in placed:
+                ox, oy = other["centre_xy"]
+                need = r_px + other["diameter_px"] / 2
+                need += gap * min(r_px, other["diameter_px"] / 2)
+                if (cx - ox) ** 2 + (cy - oy) ** 2 < need**2 - 1e-6:
+                    ok = False
+                    break
+            if ok:
+                _draw_coin(img, (cx, cy), r_px, denom, rng)
+                placed.append(
+                    {
+                        "denomination": denom,
+                        "centre_xy": (cx, cy),
+                        "diameter_px": 2 * r_px,
+                        "diameter_mm": d_mm,
+                    }
+                )
+                break
+
+    if illum_min < 1.0:
+        img = to_uint8(to_float(img) * scene_shading(size, illum_min)[..., None])
+    img = to_uint8(to_float(img) + rng.normal(0, 2.5 / 255, img.shape))
+    return img, placed
+
+
+def _coin_background(size: tuple[int, int], kind: str, rng) -> np.ndarray:
+    """A background for a coin scene. Never flat — a flat one is not a test."""
+    W, H = size
+    if kind == "felt":
+        base = np.array([28, 58, 40], np.float32)
+        texture = rng.normal(0, 7, (H, W, 1))
+    elif kind == "wood":
+        base = np.array([132, 96, 58], np.float32)
+        grain = np.sin(np.linspace(0, 38, W))[None, :, None] * 7
+        texture = grain + rng.normal(0, 4, (H, W, 1))
+    elif kind == "paper":
+        base = np.array([228, 224, 214], np.float32)
+        texture = rng.normal(0, 3, (H, W, 1))
+    elif kind == "marble":
+        base = np.array([196, 194, 190], np.float32)
+        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+        veins = np.sin(xx * 0.02 + yy * 0.031) * 9 + np.sin(xx * 0.004 - yy * 0.009) * 12
+        texture = veins[..., None] + rng.normal(0, 3, (H, W, 1))
+    elif kind == "slate":
+        base = np.array([62, 64, 68], np.float32)
+        texture = rng.normal(0, 6, (H, W, 1))
+    elif kind == "navy":
+        base = np.array([26, 34, 72], np.float32)
+        texture = rng.normal(0, 5, (H, W, 1))
+    elif kind == "denim":
+        base = np.array([54, 72, 104], np.float32)
+        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+        weave = (np.sin(xx * 1.7) + np.sin(yy * 1.7)) * 4
+        texture = weave[..., None] + rng.normal(0, 4, (H, W, 1))
+    else:
+        raise ValueError(f"unknown background {kind!r}")
+    return np.clip(base[None, None, :] + texture, 0, 255).astype(np.uint8)
+
+
+#: Face tone per denomination, so the scene is not twenty identical discs.
+#:
+#: The floor here is load-bearing. An earlier version put the 10-rupee coin at
+#: 150 with a stronger shading gradient, which took its far edge to 102 against
+#: an Otsu threshold of 105 -- so every 10-rupee coin came out fragmented and
+#: the watershed dropped all five of them, scoring 15 of 20 on a scene where the
+#: coins were not even touching. The tones still differ; none of them reaches
+#: the background.
+_COIN_TONE = {1: 190, 2: 200, 5: 182, 10: 174, 20: 210}
+#: Brass-coloured denominations get a warm tint; the rest stay steel.
+_COIN_WARM = (5, 10)
+
+
+def _draw_coin(img: np.ndarray, centre, radius_px: float, denom: int, rng) -> None:
+    """Draw one coin in place: metal disc, rim, faint relief, soft shadow.
+
+    Drawn rather than pasted from a photograph because the whole point is that
+    the *diameter* is exact. A photograph brings its own perspective and its own
+    unknown scale, and the millimetre ground truth would be a guess.
+    """
+    cx, cy = centre
+    r = int(round(radius_px))
+    if r < 3:
+        return
+    span = 2 * r + 9
+    H, W = img.shape[:2]
+    if span > W or span > H:
+        return
+    x0 = max(0, min(int(round(cx)) - r - 4, W - span))
+    y0 = max(0, min(int(round(cy)) - r - 4, H - span))
+    patch = img[y0 : y0 + span, x0 : x0 + span]
+    lc = (span // 2, span // 2)
+
+    # a drop shadow, offset down-right, so the coins sit on the surface
+    shadow = np.zeros((span, span), np.float32)
+    cv2.circle(shadow, (lc[0] + 3, lc[1] + 3), r, 1.0, -1)
+    shadow = cv2.GaussianBlur(shadow, (0, 0), max(1.5, r * 0.10))
+    patch[:] = to_uint8(to_float(patch) * (1.0 - 0.45 * shadow[..., None]))
+
+    # the metal, lit from the upper left so the disc reads three-dimensional
+    tone = _COIN_TONE[denom]
+    warm = (
+        np.array([1.00, 0.96, 0.84], np.float32)
+        if denom in _COIN_WARM
+        else np.ones(3, np.float32)
+    )
+    yy, xx = np.mgrid[0:span, 0:span].astype(np.float32)
+    lit = 1.0 - 0.09 * ((xx - lc[0]) + (yy - lc[1])) / max(r, 1)
+    face = np.clip(tone * lit, 40, 255)[..., None] * warm[None, None, :]
+
+    disc = np.zeros((span, span), np.float32)
+    cv2.circle(disc, lc, r, 1.0, -1)
+    # the rim: a brighter ring just inside the edge, which is what a real coin
+    # has and what gives an edge detector something to find
+    rim = np.zeros((span, span), np.float32)
+    cv2.circle(rim, lc, r, 1.0, max(1, int(r * 0.10)))
+    face = face + rim[..., None] * 26
+
+    # a suggestion of relief, so the interior is not a flat disc that any
+    # threshold separates perfectly
+    relief = cv2.GaussianBlur(rng.normal(0, 6, (span, span)).astype(np.float32), (0, 0), 1.2)
+    face = face + relief[..., None] * disc[..., None]
+
+    soft = cv2.GaussianBlur(disc, (0, 0), 0.7)[..., None]
+    patch[:] = to_uint8(
+        to_float(patch) * (1 - soft) + to_float(np.clip(face, 0, 255).astype(np.uint8)) * soft
+    )

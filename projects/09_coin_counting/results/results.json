@@ -1,6 +1,6 @@
 {
   "project": "09_coin_counting",
-  "generated_utc": "2026-09-15T06:41:05+00:00",
+  "generated_utc": "2026-09-16T23:35:58+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -22,7 +22,7 @@
       "max_diameter_mm": 24.25,
       "diameter_cv": 0.4305,
       "implausible": 13,
-      "median_ms": 1.316
+      "median_ms": 1.239
     },
     {
       "method": "Adaptive + components",
@@ -36,21 +36,21 @@
       "max_diameter_mm": 24.25,
       "diameter_cv": 0.2501,
       "implausible": 2,
-      "median_ms": 1.767
+      "median_ms": 1.82
     },
     {
       "method": "Watershed (global seed)",
-      "count": 23,
+      "count": 24,
       "true_count": 24,
-      "count_error": -1,
-      "abs_count_error": 1,
-      "mean_diameter_px": 41.16,
-      "mean_diameter_mm": 17.97,
-      "min_diameter_mm": 7.74,
+      "count_error": 0,
+      "abs_count_error": 0,
+      "mean_diameter_px": 42.63,
+      "mean_diameter_mm": 16.69,
+      "min_diameter_mm": 7.2,
       "max_diameter_mm": 24.25,
-      "diameter_cv": 0.1991,
+      "diameter_cv": 0.2018,
       "implausible": 1,
-      "median_ms": 10.334
+      "median_ms": 96.67
     },
     {
       "method": "Watershed (local maxima)",
@@ -58,13 +58,13 @@
       "true_count": 24,
       "count_error": 0,
       "abs_count_error": 0,
-      "mean_diameter_px": 40.04,
-      "mean_diameter_mm": 17.49,
-      "min_diameter_mm": 5.75,
+      "mean_diameter_px": 42.54,
+      "mean_diameter_mm": 16.65,
+      "min_diameter_mm": 6.38,
       "max_diameter_mm": 24.25,
-      "diameter_cv": 0.2425,
-      "implausible": 2,
-      "median_ms": 10.757
+      "diameter_cv": 0.208,
+      "implausible": 1,
+      "median_ms": 99.155
     },
     {
       "method": "Hough circles",
@@ -78,16 +78,16 @@
       "max_diameter_mm": 24.25,
       "diameter_cv": 0.1758,
       "implausible": 0,
-      "median_ms": 2.729
+      "median_ms": 5.14
     }
   ],
   "ablation": [
     {
       "seeding": "Global fraction of dist.max() (the tutorial)",
       "plain_otsu": 1,
-      "tophat_otsu": 23,
+      "tophat_otsu": 24,
       "plain_error": -23,
-      "tophat_error": -1
+      "tophat_error": 0
     },
     {
       "seeding": "Local maxima of the distance transform",
@@ -100,8 +100,8 @@
   "seed_sweep": [
     {
       "fg_ratio": 0.3,
-      "global_seed_count": 25,
-      "global_seed_error": 1,
+      "global_seed_count": 24,
+      "global_seed_error": 0,
       "local_maxima_count": 24,
       "local_maxima_error": 0
     },
@@ -114,36 +114,36 @@
     },
     {
       "fg_ratio": 0.5,
-      "global_seed_count": 23,
-      "global_seed_error": -1,
+      "global_seed_count": 24,
+      "global_seed_error": 0,
       "local_maxima_count": 24,
       "local_maxima_error": 0
     },
     {
       "fg_ratio": 0.55,
-      "global_seed_count": 23,
-      "global_seed_error": -1,
+      "global_seed_count": 24,
+      "global_seed_error": 0,
       "local_maxima_count": 24,
       "local_maxima_error": 0
     },
     {
       "fg_ratio": 0.6,
-      "global_seed_count": 22,
-      "global_seed_error": -2,
+      "global_seed_count": 19,
+      "global_seed_error": -5,
       "local_maxima_count": 24,
       "local_maxima_error": 0
     },
     {
       "fg_ratio": 0.7,
-      "global_seed_count": 16,
-      "global_seed_error": -8,
+      "global_seed_count": 8,
+      "global_seed_error": -16,
       "local_maxima_count": 24,
       "local_maxima_error": 0
     },
     {
       "fg_ratio": 0.8,
-      "global_seed_count": 7,
-      "global_seed_error": -17,
+      "global_seed_count": 4,
+      "global_seed_error": -20,
       "local_maxima_count": 24,
       "local_maxima_error": 0
     }
@@ -152,204 +152,204 @@
     {
       "reference_error_pct": -10.0,
       "assumed_reference_mm": 21.82,
-      "mean_diameter_mm": 15.742,
+      "mean_diameter_mm": 14.984,
       "measured_error_pct": -10.0,
-      "smallest_mm": 5.17,
+      "smallest_mm": 5.75,
       "largest_mm": 21.82
     },
     {
       "reference_error_pct": -5.0,
       "assumed_reference_mm": 23.04,
-      "mean_diameter_mm": 16.617,
+      "mean_diameter_mm": 15.817,
       "measured_error_pct": -5.0,
-      "smallest_mm": 5.46,
+      "smallest_mm": 6.07,
       "largest_mm": 23.04
     },
     {
       "reference_error_pct": -2.0,
       "assumed_reference_mm": 23.77,
-      "mean_diameter_mm": 17.142,
+      "mean_diameter_mm": 16.316,
       "measured_error_pct": -2.0,
-      "smallest_mm": 5.63,
+      "smallest_mm": 6.26,
       "largest_mm": 23.77
     },
     {
       "reference_error_pct": 0.0,
       "assumed_reference_mm": 24.25,
-      "mean_diameter_mm": 17.492,
+      "mean_diameter_mm": 16.649,
       "measured_error_pct": 0.0,
-      "smallest_mm": 5.75,
+      "smallest_mm": 6.38,
       "largest_mm": 24.25
     },
     {
       "reference_error_pct": 2.0,
       "assumed_reference_mm": 24.73,
-      "mean_diameter_mm": 17.841,
+      "mean_diameter_mm": 16.982,
       "measured_error_pct": 2.0,
-      "smallest_mm": 5.86,
+      "smallest_mm": 6.51,
       "largest_mm": 24.73
     },
     {
       "reference_error_pct": 5.0,
       "assumed_reference_mm": 25.46,
-      "mean_diameter_mm": 18.366,
+      "mean_diameter_mm": 17.482,
       "measured_error_pct": 5.0,
-      "smallest_mm": 6.04,
+      "smallest_mm": 6.7,
       "largest_mm": 25.46
     },
     {
       "reference_error_pct": 10.0,
       "assumed_reference_mm": 26.68,
-      "mean_diameter_mm": 19.241,
+      "mean_diameter_mm": 18.314,
       "measured_error_pct": 10.0,
-      "smallest_mm": 6.32,
+      "smallest_mm": 7.02,
       "largest_mm": 26.68
     }
   ],
   "diameters": [
     {
       "rank": 1,
-      "area_px": 2420,
-      "diameter_px": 55.51,
+      "area_px": 3015,
+      "diameter_px": 61.96,
       "diameter_mm": 24.25
     },
     {
       "rank": 2,
-      "area_px": 2327,
-      "diameter_px": 54.43,
-      "diameter_mm": 23.78
+      "area_px": 2464,
+      "diameter_px": 56.01,
+      "diameter_mm": 21.92
     },
     {
       "rank": 3,
-      "area_px": 2220,
-      "diameter_px": 53.17,
-      "diameter_mm": 23.23
+      "area_px": 2343,
+      "diameter_px": 54.62,
+      "diameter_mm": 21.38
     },
     {
       "rank": 4,
-      "area_px": 1911,
-      "diameter_px": 49.33,
-      "diameter_mm": 21.55
+      "area_px": 2200,
+      "diameter_px": 52.93,
+      "diameter_mm": 20.71
     },
     {
       "rank": 5,
-      "area_px": 1806,
-      "diameter_px": 47.95,
-      "diameter_mm": 20.95
+      "area_px": 1910,
+      "diameter_px": 49.31,
+      "diameter_mm": 19.3
     },
     {
       "rank": 6,
-      "area_px": 1688,
-      "diameter_px": 46.36,
-      "diameter_mm": 20.25
+      "area_px": 1798,
+      "diameter_px": 47.85,
+      "diameter_mm": 18.73
     },
     {
       "rank": 7,
-      "area_px": 1639,
-      "diameter_px": 45.68,
-      "diameter_mm": 19.96
+      "area_px": 1687,
+      "diameter_px": 46.35,
+      "diameter_mm": 18.14
     },
     {
       "rank": 8,
-      "area_px": 1504,
-      "diameter_px": 43.76,
-      "diameter_mm": 19.12
+      "area_px": 1639,
+      "diameter_px": 45.68,
+      "diameter_mm": 17.88
     },
     {
       "rank": 9,
-      "area_px": 1426,
-      "diameter_px": 42.61,
-      "diameter_mm": 18.62
+      "area_px": 1520,
+      "diameter_px": 43.99,
+      "diameter_mm": 17.22
     },
     {
       "rank": 10,
-      "area_px": 1408,
-      "diameter_px": 42.34,
-      "diameter_mm": 18.5
+      "area_px": 1499,
+      "diameter_px": 43.69,
+      "diameter_mm": 17.1
     },
     {
       "rank": 11,
-      "area_px": 1379,
-      "diameter_px": 41.9,
-      "diameter_mm": 18.31
+      "area_px": 1425,
+      "diameter_px": 42.6,
+      "diameter_mm": 16.67
     },
     {
       "rank": 12,
-      "area_px": 1344,
-      "diameter_px": 41.37,
-      "diameter_mm": 18.07
+      "area_px": 1409,
+      "diameter_px": 42.36,
+      "diameter_mm": 16.58
     },
     {
       "rank": 13,
-      "area_px": 1211,
-      "diameter_px": 39.27,
-      "diameter_mm": 17.15
+      "area_px": 1379,
+      "diameter_px": 41.9,
+      "diameter_mm": 16.4
     },
     {
       "rank": 14,
-      "area_px": 1170,
-      "diameter_px": 38.6,
-      "diameter_mm": 16.86
-    },
-    {
-      "rank": 15,
-      "area_px": 1136,
-      "diameter_px": 38.03,
-      "diameter_mm": 16.61
-    },
-    {
-      "rank": 16,
-      "area_px": 1110,
-      "diameter_px": 37.59,
-      "diameter_mm": 16.42
-    },
-    {
-      "rank": 17,
-      "area_px": 1076,
-      "diameter_px": 37.01,
+      "area_px": 1340,
+      "diameter_px": 41.31,
       "diameter_mm": 16.17
     },
     {
+      "rank": 15,
+      "area_px": 1213,
+      "diameter_px": 39.3,
+      "diameter_mm": 15.38
+    },
+    {
+      "rank": 16,
+      "area_px": 1136,
+      "diameter_px": 38.03,
+      "diameter_mm": 14.89
+    },
+    {
+      "rank": 17,
+      "area_px": 1118,
+      "diameter_px": 37.73,
+      "diameter_mm": 14.77
+    },
+    {
       "rank": 18,
-      "area_px": 1045,
-      "diameter_px": 36.48,
-      "diameter_mm": 15.94
+      "area_px": 1110,
+      "diameter_px": 37.59,
+      "diameter_mm": 14.71
     },
     {
       "rank": 19,
-      "area_px": 1030,
-      "diameter_px": 36.21,
-      "diameter_mm": 15.82
+      "area_px": 1076,
+      "diameter_px": 37.01,
+      "diameter_mm": 14.49
     },
     {
       "rank": 20,
-      "area_px": 1013,
-      "diameter_px": 35.91,
-      "diameter_mm": 15.69
+      "area_px": 1045,
+      "diameter_px": 36.48,
+      "diameter_mm": 14.28
     },
     {
       "rank": 21,
-      "area_px": 1009,
-      "diameter_px": 35.84,
-      "diameter_mm": 15.66
+      "area_px": 1024,
+      "diameter_px": 36.11,
+      "diameter_mm": 14.13
     },
     {
       "rank": 22,
-      "area_px": 739,
-      "diameter_px": 30.67,
-      "diameter_mm": 13.4
+      "area_px": 1013,
+      "diameter_px": 35.91,
+      "diameter_mm": 14.06
     },
     {
       "rank": 23,
-      "area_px": 247,
-      "diameter_px": 17.73,
-      "diameter_mm": 7.75
+      "area_px": 1012,
+      "diameter_px": 35.9,
+      "diameter_mm": 14.05
     },
     {
       "rank": 24,
-      "area_px": 136,
-      "diameter_px": 13.16,
-      "diameter_mm": 5.75
+      "area_px": 209,
+      "diameter_px": 16.31,
+      "diameter_mm": 6.38
     }
   ]
 }

@@ -19,10 +19,16 @@ sys.path[:0] = [str(PROJECT_DIR.parents[1]), str(PROJECT_DIR / "src")]
 import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 
-from shared import figures, io  # noqa: E402
+from shared import figures, io, synth  # noqa: E402
 from shared.report import init_console, markdown_table, write_results, write_tables  # noqa: E402
 
 import coins as cn  # noqa: E402
+
+#: Scale of the generated scenes, in millimetres per pixel. At 0.42 the
+#: 1.07 mm that separates a 1-rupee coin from a 5-rupee one is about 2.5 px,
+#: which is the regime where identification is a measurement problem rather
+#: than a lookup.
+SCENE_MM_PER_PX = 0.42
 
 RESULTS = PROJECT_DIR / "results"
 IMAGES = PROJECT_DIR / "docs" / "images"
@@ -50,6 +56,142 @@ def main() -> None:
     RESULTS.mkdir(parents=True, exist_ok=True)
     IMAGES.mkdir(parents=True, exist_ok=True)
     img = io.sample("coins")
+
+    # ------------------------------------------------------------------ #
+    # the comparison at the top of the README, and the half that counting
+    # cannot answer: which coin is it
+    # ------------------------------------------------------------------ #
+    # These scenes are GENERATED, and that is the only reason this project can
+    # answer "which coin" rather than only "how many". `skimage.data.coins` is a
+    # scan of old Greek coins whose values nobody recorded, so a denomination
+    # reported against it could never be shown to be wrong. Here the mint's
+    # published diameters set every coin, so the count, the millimetres and the
+    # denomination are all known by construction.
+    # The gate asks whether a scene is SOLVABLE, not whether it is easy. Some
+    # method has to be able to count it; a scene no method can read is a broken
+    # sample and goes. A scene that only one method can read is the opposite of
+    # broken -- it is the entire result, and gating on the median threw exactly
+    # those away, leaving three rows of well-separated coins.
+    #
+    # Selection is then by family, where a family is the CONDITION rather than
+    # the tablecloth: four scenes on four backgrounds are four variations of one
+    # problem, while spread, touching, side-lit and a light surface are four
+    # different problems.
+    GALLERY_MIN_COUNT_ACCURACY = 0.75
+    scene_pool = [
+        ("green felt\nspread out", dict(background="felt"), "spread"),
+        ("slate\nspread out", dict(background="slate"), "spread"),
+        ("navy cloth\nspread out", dict(background="navy"), "spread"),
+        ("wood table\nspread out", dict(background="wood"), "spread"),
+        ("green felt\ncoins touching", dict(background="felt", touching=True), "touching"),
+        ("slate\ncoins touching", dict(background="slate", touching=True), "touching"),
+        ("wood table\ncoins touching", dict(background="wood", touching=True), "touching"),
+        ("denim\ncoins touching", dict(background="denim", touching=True), "touching"),
+        ("green felt\nside-lit", dict(background="felt", illum_min=0.55), "side-lit"),
+        ("wood table\nside-lit, touching", dict(background="wood", touching=True, illum_min=0.55), "side-lit"),
+        ("white paper\ncoins darker than the table", dict(background="paper"), "light surface"),
+        ("marble\nlight surface, touching", dict(background="marble", touching=True), "light surface"),
+    ]
+    method_names = list(cn.METHODS)
+    survivors: dict[str, dict] = {}
+    scored_scenes = []
+    for i, (label, kwargs, family) in enumerate(scene_pool):
+        scene, truth = synth.coin_scene(seed=i, mm_per_px=SCENE_MM_PER_PX, **kwargs)
+        scored_scenes.append((scene, truth, SCENE_MM_PER_PX))
+        labels = [cn.METHODS[m](scene) for m in method_names]
+        counts = [cn.count_coins(lab) for lab in labels]
+        # accuracy of the COUNT, so finding 21 is penalised like finding 19
+        accs = [1.0 - abs(c - len(truth)) / len(truth) for c in counts]
+        best, typical = max(accs), float(np.median(accs))
+        flat = label.replace("\n", " · ")
+        if best < GALLERY_MIN_COUNT_ACCURACY:
+            print(f"scene candidate {flat:<40} DROP — no method counts it; best is "
+                  f"{max(counts)} of {len(truth)}  [{family}]")
+            continue
+        print(f"scene candidate {flat:<40} keep — counts {counts} of {len(truth)}  [{family}]")
+        row = {
+            "label": label,
+            "scene": scene,
+            "truth": truth,
+            "images": [scene] + [cn.overlay_regions(scene, lab) for lab in labels],
+            "notes": ["scene"] + [f"{c} of {len(truth)}" for c in counts],
+            "score": best,
+        }
+        if family not in survivors or row["score"] > survivors[family]["score"]:
+            survivors[family] = row
+
+    chosen = sorted(survivors.values(), key=lambda r: -r["score"])[:4]
+    figures.gallery(
+        ["scene"] + method_names,
+        [(r["label"], r["images"]) for r in chosen],
+        IMAGES / "compare_counting.png",
+        cell_notes=[r["notes"] for r in chosen],
+        suptitle="Four coin scenes, five segmentation methods. Each cell is the count it returned.",
+    )
+    count_table = markdown_table(
+        [
+            dict([("Sr", i), ("Scene", r["label"].replace("\n", " · "))]
+                 + list(zip(method_names, r["notes"][1:])))
+            for i, r in enumerate(chosen, start=1)
+        ],
+        [("Sr", "Sr"), ("Scene", "Scene")] + [(m, m) for m in method_names],
+    )
+    print(f"\nfront-on comparison: {len(chosen)} scenes x {len(method_names)} methods")
+    print("\n--- counting ---\n" + count_table)
+
+    # the same four scenes, every coin named from its diameter alone
+    figures.gallery(
+        ["scene", "counted", f"named by diameter ({cn.IDENT_METHOD})"],
+        [
+            (
+                r["label"],
+                [
+                    r["scene"],
+                    cn.overlay_regions(r["scene"], cn.METHODS[cn.IDENT_METHOD](r["scene"])),
+                    cn.overlay_denominations(
+                        r["scene"],
+                        cn.read_scene(cn.METHODS[cn.IDENT_METHOD](r["scene"]), SCENE_MM_PER_PX),
+                    ),
+                ],
+            )
+            for r in chosen
+        ],
+        IMAGES / "compare_denominations.png",
+        suptitle=(
+            "Every coin named from its diameter alone, with the total it implies. "
+            "Rs 10 and Rs 20 are both 27.00 mm, so no size-based method can tell them apart."
+        ),
+    )
+
+    ident_rows, confusion = cn.evaluate_identification(scored_scenes)
+    ident_table = markdown_table(
+        ident_rows,
+        [
+            ("Calibration", "calibration"),
+            ("Coins matched", "coins_matched"),
+            ("Named right", "identified"),
+            ("Accuracy", "accuracy"),
+            ("Missed", "missed"),
+            ("Spurious", "spurious"),
+            ("True value (Rs)", "true_value"),
+            ("Read value (Rs)", "read_value"),
+            ("Value error %", "value_error_pct"),
+        ],
+    )
+    print("\n--- identification ---\n" + ident_table)
+
+    denoms = sorted({d for pair in confusion for d in pair})
+    conf_rows = []
+    for true_d in denoms:
+        entry = {"True": f"Rs {true_d}"}
+        for read_d in denoms:
+            entry[f"read {read_d}"] = confusion.get((true_d, read_d), 0)
+        conf_rows.append(entry)
+    confusion_table = markdown_table(
+        conf_rows, [("True", "True")] + [(f"read Rs {d}", f"read {d}") for d in denoms]
+    )
+    print("\n--- confusion: true down, read across ---\n" + confusion_table)
+
 
     print(f"Counting with {len(cn.METHODS)} methods ...")
     method_rows = cn.evaluate_methods(runs=args.runs)

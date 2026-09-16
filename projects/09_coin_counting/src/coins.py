@@ -26,7 +26,8 @@ import cv2
 import numpy as np
 
 from shared.bench import timeit
-from shared.io import to_gray
+from shared.io import to_float, to_gray
+from shared import synth
 
 EPS = 1e-6
 
@@ -90,7 +91,32 @@ def segment_otsu_components(img: np.ndarray) -> np.ndarray:
 BACKGROUND_KERNEL = 61
 
 
-def _flatten_illumination(gray: np.ndarray, kernel: int = BACKGROUND_KERNEL) -> np.ndarray:
+def background_kernel_for(gray: np.ndarray, floor: int = BACKGROUND_KERNEL) -> int:
+    """Pick a top-hat kernel guaranteed to be larger than the biggest object.
+
+    :func:`_flatten_illumination` only works when the structuring element is
+    **bigger than any coin**; below that, the opening fails to erase the coin and
+    the top-hat subtracts the coin's own interior, leaving a ring. The
+    requirement was in the docstring and nowhere else, and the constant 61 was
+    sized for `skimage.data.coins`.
+
+    The moment this project was pointed at scenes with 64 px coins, flattening
+    silently deleted five of twenty — on a scene where the coins were not even
+    touching — and every downstream method reported 15. Nothing raised; the
+    count was simply wrong.
+
+    So the size is now measured rather than assumed. A provisional un-flattened
+    Otsu gives a distance transform whose maximum is the radius of the largest
+    blob; 2.5x that, made odd, clears the largest coin with room to spare and
+    still removes a gradient spanning the frame.
+    """
+    _, provisional = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    radius = float(cv2.distanceTransform(provisional, cv2.DIST_L2, 5).max())
+    kernel = int(2 * np.ceil(2.5 * radius) + 1)
+    return max(floor, kernel)
+
+
+def _flatten_illumination(gray: np.ndarray, kernel: int | None = None) -> np.ndarray:
     """Remove a slowly-varying background with a white top-hat.
 
     `skimage.data.coins` is lit unevenly — the background at the top of the frame
@@ -105,6 +131,8 @@ def _flatten_illumination(gray: np.ndarray, kernel: int = BACKGROUND_KERNEL) -> 
     by *size*, and the thing being removed here is larger than everything being
     kept.
     """
+    if kernel is None:
+        kernel = background_kernel_for(gray)
     se = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel, kernel))
     return cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, se)
 
@@ -500,3 +528,222 @@ def analyse(img: np.ndarray, method: str = "Watershed (local maxima)"):
     for p in props:
         p["diameter_mm"] = p["diameter_px"] * mm_per_px
     return labels, props, mm_per_px
+
+
+# --------------------------------------------------------------------------- #
+# denomination identification
+# --------------------------------------------------------------------------- #
+#
+# Counting is the easy half. "How much money is on the table" needs each coin
+# named, and a diameter is the only thing a single overhead photograph offers.
+#
+# Two things make that a real question rather than a lookup:
+#
+#   * the scale has to come from somewhere, and
+#   * two Indian coins have the SAME published diameter.
+#
+# Both are measured below rather than asserted.
+
+#: Published diameters, in millimetres, of the Indian coins this project reads.
+#: Imported from the scene generator so the classifier and the truth cannot
+#: drift apart — if a diameter is wrong it is wrong in both places and the
+#: accuracy stays honest.
+COIN_TABLE_MM = dict(synth.RUPEE_COINS_MM)
+
+#: Denominations a diameter can actually separate. 10 and 20 are both 27.00 mm,
+#: so a size-based reader is asked to name one of them and can only ever be
+#: right by luck. `20` is excluded from the *classifier's* vocabulary, not from
+#: the scenes: the confusion it causes is reported instead of hidden.
+IDENTIFIABLE = (1, 2, 5, 10)
+
+
+def identify_by_diameter(diameter_mm: float, table: dict[int, float] | None = None) -> int:
+    """Name the coin whose published diameter is nearest. No tie-breaking.
+
+    Deliberately the simplest possible rule, because the interesting question is
+    not which classifier to use — with one feature and four classes there is
+    nothing to choose — but how much of the error is *measurement* and how much
+    is the coinage being genuinely ambiguous.
+    """
+    table = table or {d: COIN_TABLE_MM[d] for d in IDENTIFIABLE}
+    return min(table, key=lambda d: abs(table[d] - diameter_mm))
+
+
+def calibrate_from_largest(props: list[dict], largest_mm: float) -> float:
+    """mm per pixel, assuming the biggest region in the frame is ``largest_mm``.
+
+    This is what a user can actually do without a ruler in the shot: name the
+    largest coin they know is present. It fails in a specific and checkable way
+    — if the largest coin is *absent*, every diameter is wrong by the ratio of
+    the assumed size to the true one, and nothing downstream can tell.
+    """
+    biggest = max((p["diameter_px"] for p in props), default=0.0)
+    return largest_mm / max(biggest, EPS)
+
+
+def read_scene(
+    labels: np.ndarray,
+    mm_per_px: float,
+    min_area: int = MIN_COIN_AREA_PX,
+) -> list[dict]:
+    """Turn a label image into a list of named, measured coins."""
+    out = []
+    for prop in region_properties(labels, min_area=min_area):
+        d_mm = prop["diameter_px"] * mm_per_px
+        out.append(
+            {
+                "centre_xy": prop["centroid"],
+                "diameter_px": prop["diameter_px"],
+                "diameter_mm": d_mm,
+                "denomination": identify_by_diameter(d_mm),
+            }
+        )
+    return out
+
+
+def match_to_truth(read: list[dict], truth: list[dict], tol_px: float = 24.0):
+    """Pair each detected coin with the true coin nearest its centre.
+
+    Greedy nearest-centre rather than Hungarian: the coins are further apart
+    than the error in locating them, so the assignment is not ambiguous, and a
+    greedy pass makes the failure mode obvious — an unmatched truth coin is a
+    miss, an unmatched detection is a false positive.
+    """
+    remaining = list(range(len(truth)))
+    pairs, spurious = [], 0
+    for det in read:
+        best, best_d = None, tol_px
+        for j in remaining:
+            tx, ty = truth[j]["centre_xy"]
+            d = float(np.hypot(det["centre_xy"][0] - tx, det["centre_xy"][1] - ty))
+            if d < best_d:
+                best, best_d = j, d
+        if best is None:
+            spurious += 1
+            continue
+        remaining.remove(best)
+        pairs.append((det, truth[best]))
+    return pairs, spurious, len(remaining)
+
+
+def evaluate_identification(scenes, method: str | None = None):
+    """Score naming the coins, under an exact scale and a self-derived one.
+
+    ``scenes`` is a list of ``(image, truth_coins)``. Returns one row per
+    calibration strategy plus a confusion matrix, because the headline accuracy
+    hides which pairs it confuses and that is the whole result.
+    """
+    method = method or IDENT_METHOD
+    rows, confusion = [], {}
+    for calib in ("exact scale", "largest coin assumed 27 mm"):
+        total = correct = value_true = value_read = 0
+        missed = spurious_total = 0
+        for img, truth, mm_per_px in scenes:
+            labels = METHODS[method](img)
+            props = region_properties(labels)
+            if not props:
+                missed += len(truth)
+                continue
+            scale = (
+                mm_per_px
+                if calib == "exact scale"
+                else calibrate_from_largest(props, max(COIN_TABLE_MM.values()))
+            )
+            read = read_scene(labels, scale)
+            pairs, spurious, unmatched = match_to_truth(read, truth)
+            spurious_total += spurious
+            missed += unmatched
+            for det, tru in pairs:
+                total += 1
+                value_read += det["denomination"]
+                value_true += tru["denomination"]
+                correct += int(det["denomination"] == tru["denomination"])
+                # Only the exact-scale pass contributes to the confusion
+                # matrix. Accumulating both passes into one dict counted every
+                # coin twice and made the off-diagonal totals larger than the
+                # number of errors in the accuracy column beside it, which is
+                # the kind of inconsistency a reader is entitled to trust is
+                # absent. The other calibration's damage is reported as its own
+                # accuracy row instead.
+                if calib == "exact scale":
+                    key = (tru["denomination"], det["denomination"])
+                    confusion[key] = confusion.get(key, 0) + 1
+        rows.append(
+            {
+                "calibration": calib,
+                "coins_matched": total,
+                "identified": correct,
+                "accuracy": round(correct / max(total, 1), 4),
+                "missed": missed,
+                "spurious": spurious_total,
+                "true_value": value_true,
+                "read_value": value_read,
+                "value_error_pct": round(
+                    100.0 * (value_read - value_true) / max(value_true, 1), 2
+                ),
+            }
+        )
+    return rows, confusion
+
+
+# --------------------------------------------------------------------------- #
+# drawing, so a reader can see what was segmented and what it was called
+# --------------------------------------------------------------------------- #
+
+#: The segmentation the identification results are computed on. Named once so
+#: the figure, the tables and `infer.py` cannot drift apart.
+IDENT_METHOD = "Hough circles"
+
+#: One colour per denomination, in RGB. Chosen to stay legible over brass and
+#: steel on a dark table, which rules out yellow and pale grey.
+DENOM_COLOURS = {
+    1: (0, 190, 255),
+    2: (0, 235, 120),
+    5: (255, 105, 180),
+    10: (255, 80, 60),
+    20: (200, 120, 255),
+}
+
+
+def overlay_regions(img: np.ndarray, labels: np.ndarray, min_area: int = MIN_COIN_AREA_PX):
+    """Outline every counted region and number it.
+
+    Drawn on a darkened copy so the outlines read against bright metal. The
+    numbering matters more than it looks: a count in a caption is a claim, and an
+    outline with a number beside it is the same claim in a form a reader can
+    check by eye.
+    """
+    out = (to_float(img) * 0.55 * 255).astype(np.uint8).copy()
+    for i, prop in enumerate(region_properties(labels, min_area=min_area), start=1):
+        cx, cy = prop["centroid"]
+        r = int(round(prop["diameter_px"] / 2))
+        cv2.circle(out, (int(round(cx)), int(round(cy))), r, (60, 255, 90), 2)
+        cv2.putText(
+            out, str(i), (int(cx) - 8, int(cy) + 6),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA,
+        )
+    return out
+
+
+def overlay_denominations(img: np.ndarray, read: list[dict]):
+    """Outline each coin in its denomination's colour and print the value."""
+    out = (to_float(img) * 0.55 * 255).astype(np.uint8).copy()
+    for coin in read:
+        cx, cy = coin["centre_xy"]
+        r = int(round(coin["diameter_px"] / 2))
+        colour = DENOM_COLOURS.get(coin["denomination"], (255, 255, 255))
+        cv2.circle(out, (int(round(cx)), int(round(cy))), r, colour, 2)
+        text = str(coin["denomination"])
+        (tw, _), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
+        cv2.putText(
+            out, text, (int(cx) - tw // 2, int(cy) + 6),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 4, cv2.LINE_AA,
+        )
+        cv2.putText(
+            out, text, (int(cx) - tw // 2, int(cy) + 6),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.6, colour, 2, cv2.LINE_AA,
+        )
+    total = sum(c["denomination"] for c in read)
+    cv2.putText(out, f"Rs {total}", (10, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 5, cv2.LINE_AA)
+    cv2.putText(out, f"Rs {total}", (10, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+    return out
