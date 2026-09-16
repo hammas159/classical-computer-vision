@@ -23,15 +23,21 @@ import streamlit as st  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 
 import portrait_mode as pm  # noqa: E402
-from shared import io as io_shared  # noqa: E402
+from shared import io as io_shared, theme  # noqa: E402
 from shared import synth, ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 from shared.io import to_uint8  # noqa: E402
 from shared.metrics import dice, iou  # noqa: E402
 
 st.set_page_config(
-    page_title="Portrait Mode — Classical CV", layout="wide", initial_sidebar_state="collapsed"
+    page_title="Portrait Mode — Classical CV", layout="wide", initial_sidebar_state="collapsed",
+    page_icon="🖼️",
 )
+
+#: Project 02's identity: "Studio portrait". Each of the 58 apps has its own
+#: palette, face and corner radius, so a screenshot says which project it
+#: came from before the title is read. See shared/theme.py.
+PALETTE = theme.apply(2)
 
 st.title("Portrait mode")
 st.caption(

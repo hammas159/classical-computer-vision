@@ -22,13 +22,19 @@ import numpy as np  # noqa: E402
 import streamlit as st  # noqa: E402
 
 import seam_carving as sc  # noqa: E402
-from shared import io as shared_io  # noqa: E402
+from shared import io as shared_io, theme  # noqa: E402
 from shared import ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 
 st.set_page_config(
-    page_title="Seam carving — Classical CV", layout="wide", initial_sidebar_state="collapsed"
+    page_title="Seam carving — Classical CV", layout="wide", initial_sidebar_state="collapsed",
+    page_icon="✂️",
 )
+
+#: Project 10's identity: "Cut and fold". Each of the 58 apps has its own
+#: palette, face and corner radius, so a screenshot says which project it
+#: came from before the title is read. See shared/theme.py.
+PALETTE = theme.apply(10)
 
 # Carving is O(n) sequential dynamic programmes for n removed columns. A 600px
 # image takes over a second; capping the working width keeps the app responsive

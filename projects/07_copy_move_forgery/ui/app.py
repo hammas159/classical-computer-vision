@@ -23,7 +23,7 @@ import numpy as np  # noqa: E402
 import streamlit as st  # noqa: E402
 
 import forgery as fg  # noqa: E402
-from shared import io as shared_io  # noqa: E402
+from shared import io as shared_io, theme  # noqa: E402
 from shared import synth, ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 from shared.io import to_gray  # noqa: E402
@@ -31,9 +31,15 @@ from shared.metrics import iou  # noqa: E402
 
 st.set_page_config(
     page_title="Copy-move forgery — Classical CV",
+    page_icon="🔍",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+#: Project 07's identity: "Forensic". Each of the 58 apps has its own
+#: palette, face and corner radius, so a screenshot says which project it
+#: came from before the title is read. See shared/theme.py.
+PALETTE = theme.apply(7)
 
 st.title("Copy-move forgery detection")
 st.caption(

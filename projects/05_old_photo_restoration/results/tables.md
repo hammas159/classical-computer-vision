@@ -2,10 +2,10 @@
 
 | Method | PSNR whole (dB) | PSNR on damage (dB) | SSIM | Time (ms) |
 |---|---:|---:|---:|---:|
-| Telea (fast marching) | 38.11 | 26.555 | 0.9826 | 15.332 |
-| Navier-Stokes | 38.405 | 26.85 | 0.9838 | 15.083 |
-| Iterative masked mean | 37.328 | 25.773 | 0.9808 | 77.643 |
-| Harmonic diffusion | 38.21 | 26.655 | 0.983 | 396.14 |
+| Telea (fast marching) | 38.11 | 26.555 | 0.9826 | 16.359 |
+| Navier-Stokes | 38.405 | 26.85 | 0.9838 | 16.441 |
+| Iterative masked mean | 37.328 | 25.773 | 0.9808 | 84.564 |
+| Harmonic diffusion | 38.21 | 26.655 | 0.983 | 401.898 |
 
 ### PSNR on damaged pixels vs scratch width
 
@@ -44,12 +44,12 @@
 
 | Method | PSNR (dB) | SSIM | Cast error (deg) | Chroma | RMS contrast | Time (ms) |
 |---|---:|---:|---:|---:|---:|---:|
-| None (control) | 18.189 | 0.731 | 7.718 | 18.933 | 0.0983 | 0.033 |
-| Gray-world balance | 16.476 | 0.7167 | 14.282 | 5.625 | 0.0945 | 5.46 |
-| CLAHE on L only | 18.844 | 0.7258 | 7.75 | 18.944 | 0.1471 | 1.942 |
-| Per-channel stretch | 20.916 | 0.6994 | 6.573 | 23.025 | 0.2271 | 9.741 |
-| Stretch + CLAHE | 18.072 | 0.5622 | 5.88 | 22.977 | 0.2329 | 12.339 |
-| Stretch + saturate | 21.245 | 0.6601 | 7.028 | 26.213 | 0.2278 | 17.776 |
+| None (control) | 18.189 | 0.731 | 7.718 | 18.933 | 0.0983 | 0.025 |
+| Gray-world balance | 16.476 | 0.7167 | 14.282 | 5.625 | 0.0945 | 5.396 |
+| CLAHE on L only | 18.844 | 0.7258 | 7.75 | 18.944 | 0.1471 | 1.749 |
+| Per-channel stretch | 20.916 | 0.6994 | 6.573 | 23.025 | 0.2271 | 10.354 |
+| Stretch + CLAHE | 18.072 | 0.5622 | 5.88 | 22.977 | 0.2329 | 11.844 |
+| Stretch + saturate | 21.245 | 0.6601 | 7.028 | 26.213 | 0.2278 | 18.214 |
 
 ### Both degradations together, and the order they are undone in
 

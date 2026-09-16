@@ -189,6 +189,22 @@ REAL_PHOTOS = {
     "warplane": ("warplane.jpg", "a propeller fighter against a pale sky"),
     "lighthouse_cliff": ("lighthouse_cliff.jpg", "a lighthouse on a rocky headland"),
     "painted_chalet": ("painted_chalet.jpg", "a painted alpine chalet against a wooded hill"),
+    # people, for project 05. An old-photo restorer is judged on faces: nobody
+    # scans a landscape to save it, they scan the photograph of their family.
+    # Skin tone is also the hardest thing to get right after a colour cast, so
+    # these are the honest test as well as the evocative one.
+    "boy_laughing": ("boy_laughing.jpg", "a boy laughing, close up"),
+    "child_face_paint": ("child_face_paint.jpg", "a young child with painted face"),
+    "girl_red_hat": ("girl_red_hat.jpg", "a girl in a red hat against pink cloth"),
+    "woman_dress": ("woman_dress.jpg", "a woman in a grey dress, outdoors"),
+    "young_woman": ("young_woman.jpg", "a young woman against a dark background"),
+    "man_glasses": ("man_glasses.jpg", "a young man in glasses, indoor light"),
+    "man_glasses_dark": ("man_glasses_dark.jpg", "the same man under much darker light"),
+    "man_outdoors": ("man_outdoors.jpg", "a man outdoors against bright sky"),
+    "couple_beach": ("couple_beach.jpg", "a couple walking a shoreline"),
+    "two_men": ("two_men.jpg", "two men in suits, shallow depth of field"),
+    "street_people": ("street_people.jpg", "people walking past a bus"),
+    "two_men_indoor": ("two_men_indoor.jpg", "two men in a corridor, flat indoor light"),
 }
 
 

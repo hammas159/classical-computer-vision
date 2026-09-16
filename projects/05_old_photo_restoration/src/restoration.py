@@ -430,8 +430,17 @@ IMAGES = ("astronaut", "coffee", "chelsea", "rocket", "camera", "moon")
 COLOUR_IMAGES = ("astronaut", "coffee", "chelsea", "rocket")
 WIDTH_LEVELS = (1, 3, 5, 9, 15, 25, 40)
 
+#: The pipeline's shipping defaults, named once so `restore()`, the UI and the
+#: comparison figure cannot drift apart. They are the *measured* winners, not the
+#: obvious picks: `Median residual (multi-scale)` has the WORST mask IoU of the
+#: four detectors and restores best by 6.5 dB, which is the finding this project
+#: is built around.
+DEFAULT_METHOD = "Telea (fast marching)"
+DEFAULT_DETECTOR = "Median residual (multi-scale)"
+DEFAULT_FADE = "Stretch + saturate"
 
-def _damage_only(pred: np.ndarray, truth: np.ndarray, mask: np.ndarray) -> float:
+
+def psnr_on_damage(pred: np.ndarray, truth: np.ndarray, mask: np.ndarray) -> float:
     """PSNR computed **only over the damaged pixels**.
 
     Whole-image PSNR is dominated by the undamaged majority: on a photo where the
@@ -464,7 +473,7 @@ def evaluate_methods(thickness: int = 3, images=IMAGES, runs: int = 3):
             out, timing = timeit(lambda f=fn: f(damaged, mask), runs=runs, warmup=1)
             acc[method]["psnr"].append(psnr(out, clean))
             acc[method]["ssim"].append(ssim(out, clean))
-            acc[method]["dmg"].append(_damage_only(out, clean, mask))
+            acc[method]["dmg"].append(psnr_on_damage(out, clean, mask))
             acc[method]["ms"].append(timing.median_ms)
 
     rows = []
@@ -499,7 +508,7 @@ def sweep_thickness(images=IMAGES, levels=WIDTH_LEVELS):
             damaged, mask = synth.add_scratches(clean, thickness=t, seed=i)
             fracs.append(float((mask > 0).mean()))
             for method, fn in METHODS.items():
-                per[method].append(_damage_only(fn(damaged, mask), clean, mask))
+                per[method].append(psnr_on_damage(fn(damaged, mask), clean, mask))
         row["damage_fraction"] = round(float(np.mean(fracs)), 4)
         for method, vals in per.items():
             row[method] = round(float(np.mean(vals)), 3)
@@ -538,7 +547,7 @@ def evaluate_detectors(thickness: int = 3, images=IMAGES):
             recs.append(hit / max(float(t.sum()), 1.0))
             fracs.append(float(p.mean()))
             restored = inpaint_telea(damaged, pred_mask)
-            dmg.append(_damage_only(restored, clean, true_mask))
+            dmg.append(psnr_on_damage(restored, clean, true_mask))
             whole.append(psnr(restored, clean))
         rows.append(
             {
@@ -667,7 +676,7 @@ def evaluate_pipeline(thickness: int = 3, images=COLOUR_IMAGES):
             acc[stage]["psnr"].append(psnr(out, clean))
             acc[stage]["ssim"].append(ssim(out, clean))
             acc[stage]["cast_err"].append(colour_cast_error(out, clean))
-            acc[stage]["dmg"].append(_damage_only(out, clean, mask))
+            acc[stage]["dmg"].append(psnr_on_damage(out, clean, mask))
 
     return [
         {
@@ -697,9 +706,9 @@ def add_damage_and_fade(img: np.ndarray, thickness: int = 3, seed: int | None = 
 def restore(
     img: np.ndarray,
     mask: np.ndarray | None = None,
-    method: str = "Telea (fast marching)",
-    detector: str = "Median residual (multi-scale)",
-    fade: str = "Stretch + saturate",
+    method: str = DEFAULT_METHOD,
+    detector: str = DEFAULT_DETECTOR,
+    fade: str = DEFAULT_FADE,
 ):
     """End-to-end restoration, for the UI and for inference.
 

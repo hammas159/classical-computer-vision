@@ -24,7 +24,7 @@ import numpy as np  # noqa: E402
 import streamlit as st  # noqa: E402
 
 import restoration as rs  # noqa: E402
-from shared import io as shared_io  # noqa: E402
+from shared import io as shared_io, theme  # noqa: E402
 from shared import synth, ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 from shared.io import to_gray  # noqa: E402
@@ -32,9 +32,15 @@ from shared.metrics import iou, psnr, rms_contrast, ssim  # noqa: E402
 
 st.set_page_config(
     page_title="Old photo restoration — Classical CV",
+    page_icon="🧩",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+#: Project 05's identity: "Sepia print". Each of the 58 apps has its own
+#: palette, face and corner radius, so a screenshot says which project it
+#: came from before the title is read. See shared/theme.py.
+PALETTE = theme.apply(5)
 
 st.title("Old photo restoration")
 st.caption(

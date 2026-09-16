@@ -23,13 +23,19 @@ import pandas as pd  # noqa: E402
 import streamlit as st  # noqa: E402
 
 import coins as cn  # noqa: E402
-from shared import io as shared_io  # noqa: E402
+from shared import io as shared_io, theme  # noqa: E402
 from shared import ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 
 st.set_page_config(
-    page_title="Coin counting — Classical CV", layout="wide", initial_sidebar_state="collapsed"
+    page_title="Coin counting — Classical CV", layout="wide", initial_sidebar_state="collapsed",
+    page_icon="🪙",
 )
+
+#: Project 09's identity: "Brass on felt". Each of the 58 apps has its own
+#: palette, face and corner radius, so a screenshot says which project it
+#: came from before the title is read. See shared/theme.py.
+PALETTE = theme.apply(9)
 
 st.title("Coin counting and measurement")
 st.caption(

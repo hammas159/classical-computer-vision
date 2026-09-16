@@ -1,6 +1,6 @@
 {
   "project": "05_old_photo_restoration",
-  "generated_utc": "2026-09-15T10:58:32+00:00",
+  "generated_utc": "2026-09-15T14:33:45+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -40,28 +40,28 @@
       "psnr_db": 38.11,
       "ssim": 0.9826,
       "damage_psnr_db": 26.555,
-      "median_ms": 15.332
+      "median_ms": 16.359
     },
     {
       "method": "Navier-Stokes",
       "psnr_db": 38.405,
       "ssim": 0.9838,
       "damage_psnr_db": 26.85,
-      "median_ms": 15.083
+      "median_ms": 16.441
     },
     {
       "method": "Iterative masked mean",
       "psnr_db": 37.328,
       "ssim": 0.9808,
       "damage_psnr_db": 25.773,
-      "median_ms": 77.643
+      "median_ms": 84.564
     },
     {
       "method": "Harmonic diffusion",
       "psnr_db": 38.21,
       "ssim": 0.983,
       "damage_psnr_db": 26.655,
-      "median_ms": 396.14
+      "median_ms": 401.898
     }
   ],
   "thickness_sweep": [
@@ -223,7 +223,7 @@
       "cast_error_deg": 7.718,
       "chroma": 18.933,
       "rms_contrast": 0.0983,
-      "median_ms": 0.033
+      "median_ms": 0.025
     },
     {
       "method": "Gray-world balance",
@@ -232,7 +232,7 @@
       "cast_error_deg": 14.282,
       "chroma": 5.625,
       "rms_contrast": 0.0945,
-      "median_ms": 5.46
+      "median_ms": 5.396
     },
     {
       "method": "CLAHE on L only",
@@ -241,7 +241,7 @@
       "cast_error_deg": 7.75,
       "chroma": 18.944,
       "rms_contrast": 0.1471,
-      "median_ms": 1.942
+      "median_ms": 1.749
     },
     {
       "method": "Per-channel stretch",
@@ -250,7 +250,7 @@
       "cast_error_deg": 6.573,
       "chroma": 23.025,
       "rms_contrast": 0.2271,
-      "median_ms": 9.741
+      "median_ms": 10.354
     },
     {
       "method": "Stretch + CLAHE",
@@ -259,7 +259,7 @@
       "cast_error_deg": 5.88,
       "chroma": 22.977,
       "rms_contrast": 0.2329,
-      "median_ms": 12.339
+      "median_ms": 11.844
     },
     {
       "method": "Stretch + saturate",
@@ -268,7 +268,7 @@
       "cast_error_deg": 7.028,
       "chroma": 26.213,
       "rms_contrast": 0.2278,
-      "median_ms": 17.776
+      "median_ms": 18.214
     }
   ],
   "pipeline": [

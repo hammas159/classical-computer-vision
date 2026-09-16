@@ -22,7 +22,7 @@ import numpy as np  # noqa: E402
 import streamlit as st  # noqa: E402
 
 import denoising as dn  # noqa: E402
-from shared import io as shared_io  # noqa: E402
+from shared import io as shared_io, theme  # noqa: E402
 from shared import ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 from shared.io import to_gray  # noqa: E402
@@ -30,8 +30,14 @@ from shared.metrics import psnr, ssim  # noqa: E402
 
 st.set_page_config(
     page_title="Denoising shootout — Classical CV", layout="wide",
+    page_icon="🧹",
     initial_sidebar_state="collapsed",
 )
+
+#: Project 13's identity: "Auto 13". Each of the 58 apps has its own
+#: palette, face and corner radius, so a screenshot says which project it
+#: came from before the title is read. See shared/theme.py.
+PALETTE = theme.apply(13)
 
 st.title("Denoising shootout")
 st.caption(

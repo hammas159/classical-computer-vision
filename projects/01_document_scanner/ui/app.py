@@ -24,16 +24,22 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 import document_scanner as ds  # noqa: E402
 from shared import io as io_shared  # noqa: E402
-from shared import synth, ui  # noqa: E402
+from shared import synth, theme, ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 from shared.io import to_gray  # noqa: E402
 from shared.metrics import corner_error, iou  # noqa: E402
 
 st.set_page_config(
     page_title="Document Scanner — Classical CV",
+    page_icon="📄",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+#: Project 01's identity: "Ink on paper" — a warm off-white page, a serif face,
+#: square corners and a printer's red accent. Each of the 58 apps has its own,
+#: so a screenshot says which project it came from without reading the title.
+PALETTE = theme.apply(1)
 
 #: Default lighting for the generated scene. It must be one of ILLUM_LEVELS —
 #: st.select_slider raises ValueError for a value outside its options list.

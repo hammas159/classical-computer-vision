@@ -22,15 +22,21 @@ import numpy as np  # noqa: E402
 import streamlit as st  # noqa: E402
 
 import dehazing as dz  # noqa: E402
-from shared import io as shared_io  # noqa: E402
+from shared import io as shared_io, theme  # noqa: E402
 from shared import synth, ui  # noqa: E402
 from shared.bench import timeit  # noqa: E402
 from shared.io import to_gray  # noqa: E402
 from shared.metrics import psnr, rms_contrast, ssim  # noqa: E402
 
 st.set_page_config(
-    page_title="Dehazing — Classical CV", layout="wide", initial_sidebar_state="collapsed"
+    page_title="Dehazing — Classical CV", layout="wide", initial_sidebar_state="collapsed",
+    page_icon="🌫️",
 )
+
+#: Project 04's identity: "Sea fog". Each of the 58 apps has its own
+#: palette, face and corner radius, so a screenshot says which project it
+#: came from before the title is read. See shared/theme.py.
+PALETTE = theme.apply(4)
 
 st.title("Dehazing")
 st.caption(
