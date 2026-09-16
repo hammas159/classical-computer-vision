@@ -26,6 +26,11 @@ from .io import ensure_rgb, to_float  # noqa: E402
 _TITLE_SIZE = 10
 _DPI = 130
 
+#: Widest a comparison gallery is allowed to be, in pixels. GitHub renders a
+#: README image at roughly 900 px, so this keeps ~2.5x of headroom for opening
+#: the file full size while stopping a nine-column figure reaching 4406 px.
+GALLERY_MAX_PX = 2400
+
 
 def _show(ax, img: np.ndarray, title: str = "") -> None:
     img = np.asarray(img)
@@ -635,6 +640,14 @@ def gallery(
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.tight_layout()
-    fig.savefig(out_path, dpi=_DPI, bbox_inches="tight")
+    # A gallery is the widest figure in the repo. Nine columns at the standard
+    # 130 dpi came out 4406 px wide and 12.8 MB, and GitHub renders it at about
+    # 900 px. Fifty-eight projects at that size is gigabytes of repository for
+    # detail nobody can see. Scale the dpi so a wide gallery lands near
+    # GALLERY_MAX_PX -- still roughly 2.5x what a README displays, so it stays
+    # sharp when opened full size -- and leave narrow ones at full resolution.
+    width_in = ncols * figsize_scale
+    dpi = min(_DPI, max(60, int(GALLERY_MAX_PX / max(width_in, 1))))
+    fig.savefig(out_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)
     return out_path

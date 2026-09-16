@@ -93,7 +93,7 @@ def test_every_method_beats_doing_nothing(name):
     clean = io.sample("astronaut")
     damaged, mask = synth.add_scratches(clean, thickness=3, seed=0)
     out = rs.METHODS[name](damaged, mask)
-    assert rs._damage_only(out, clean, mask) > rs._damage_only(damaged, clean, mask) + 10.0
+    assert rs.psnr_on_damage(out, clean, mask) > rs.psnr_on_damage(damaged, clean, mask) + 10.0
 
 
 def test_the_masked_mean_must_not_average_in_the_damage():
@@ -112,11 +112,11 @@ def test_the_masked_mean_must_not_average_in_the_damage():
     naive = damaged.copy()
     naive[mask > 0] = cv2.medianBlur(damaged, 7)[mask > 0]
 
-    assert rs._damage_only(good, clean, mask) > rs._damage_only(naive, clean, mask) + 10.0
+    assert rs.psnr_on_damage(good, clean, mask) > rs.psnr_on_damage(naive, clean, mask) + 10.0
 
 
 def test_whole_image_psnr_hides_what_damage_only_psnr_shows():
-    """The reason `_damage_only` exists, asserted rather than explained.
+    """The reason `psnr_on_damage` exists, asserted rather than explained.
 
     It is the *level* that differs, not the improvement. Doing nothing already
     scores 17 dB whole-image — a number that sounds like a working method —
@@ -131,7 +131,7 @@ def test_whole_image_psnr_hides_what_damage_only_psnr_shows():
     clean = io.sample("astronaut")
     damaged, mask = synth.add_scratches(clean, thickness=3, seed=0)
     assert psnr(damaged, clean) > 15.0
-    assert rs._damage_only(damaged, clean, mask) < 8.0
+    assert rs.psnr_on_damage(damaged, clean, mask) < 8.0
 
 
 # --------------------------------------------------------------------------- #
@@ -254,12 +254,39 @@ def test_neither_half_fixes_the_others_problem():
 
 
 def test_restore_detects_a_mask_when_none_is_given():
+    """With no mask supplied, the detector must find the damage and the
+    inpainter must repair it.
+
+    This used to assert that saturation rises after restoration. That is not
+    universally true and `chelsea` is the counterexample: its fur is genuinely
+    warm brown, so the grey-world fade corrector reads the subject's own colour
+    as a cast and pulls it out, leaving saturation a shade *lower* than the
+    faded input (18.93 vs 19.09) and the cast error *worse* (5.77 vs 3.00).
+    That is a property of grey-world on a tinted subject, not a bug, and it is
+    reported in the README rather than asserted away here.
+
+    What *is* universal across every image tried is the damage repair, so that
+    is what this pins: the detector recovers the scratches and inpainting gains
+    better than 10 dB over them.
+    """
     clean = io.sample("chelsea")
-    damaged, _ = rs.add_damage_and_fade(clean, thickness=3, seed=0)
+    faded = synth.fade_photo(clean, seed=0)
+    damaged, true_mask = synth.add_scratches(faded, thickness=3, seed=0)
+
     mask, inpainted, restored = rs.restore(damaged)
     assert mask.dtype == np.uint8 and mask.shape == damaged.shape[:2]
     assert inpainted.shape == restored.shape == damaged.shape
-    assert rs.saturation_of(restored) > rs.saturation_of(damaged)
+
+    # the detector found the damage rather than returning an empty mask
+    recall = float(((mask > 0) & (true_mask > 0)).sum() / max((true_mask > 0).sum(), 1))
+    assert recall > 0.6
+
+    # and inpainting actually repaired it. The reference is the *faded* image,
+    # not the clean one: fading happened before the scratches, so removing a
+    # scratch can only ever recover the faded print underneath it.
+    before = rs.psnr_on_damage(damaged, faded, true_mask)
+    after = rs.psnr_on_damage(inpainted, faded, true_mask)
+    assert after > before + 10.0
 
 
 def test_restore_uses_a_supplied_mask_verbatim():
