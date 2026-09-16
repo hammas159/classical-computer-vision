@@ -222,6 +222,22 @@ REAL_PHOTOS = {
     "baboon": ("baboon.jpg", "a mandrill's face — dense fur detail"),
     "office_block": ("office_block.jpg", "a concrete office block, flat grey"),
     "clock_tower": ("clock_tower.jpg", "a clock tower against open sky"),
+    # natural scenes for project 07. A copy-move forgery is only interesting
+    # where the paste could plausibly hide, so these are chosen for the texture
+    # AROUND the subject — ice, tarmac, pebbles, brush, grass — because that is
+    # what a block matcher has to tell a real duplicate apart from.
+    "bear_on_ice": ("bear_on_ice.jpg", "a bear on flat ice — almost no background texture"),
+    "fighter_jet": ("fighter_jet.jpg", "a jet on tarmac — man-made straight edges"),
+    "coral_reef": ("coral_reef.jpg", "a coral reef — dense self-similar texture"),
+    "family_by_van": ("family_by_van.jpg", "a family beside a van at a riverbank"),
+    "tortoise_rock": ("tortoise_rock.jpg", "a tortoise on broken rock"),
+    "deer_in_brush": ("deer_in_brush.jpg", "a deer in winter brush — busy, low contrast"),
+    "lioness_savanna": ("lioness_savanna.jpg", "a lioness on dry savanna"),
+    "penguin_pebbles": ("penguin_pebbles.jpg", "a penguin on a pebble beach — repeating stones"),
+    "elephant_herd": ("elephant_herd.jpg", "a herd of elephants — genuine repeated objects"),
+    "tiger_rocks": ("tiger_rocks.jpg", "a tiger lying on rocks"),
+    "rhinos_grass": ("rhinos_grass.jpg", "two rhinos on open grass"),
+    "wolf_woods": ("wolf_woods.jpg", "a wolf howling in leaf litter"),
 }
 
 

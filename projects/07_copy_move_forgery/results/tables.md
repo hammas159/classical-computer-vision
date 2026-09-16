@@ -2,12 +2,12 @@
 
 | Method | Mask IoU | Precision | Recall | Pixel accuracy | Time (ms) |
 |---|---:|---:|---:|---:|---:|
-| Block matching | 0.9925 | 0.9974 | 0.9951 | 0.9995 | 201.105 |
-| SIFT + similarity verify | 0.6767 | 0.7531 | 0.8854 | 0.9232 | 47.392 |
-| ORB + similarity verify | 0.5155 | 0.6305 | 0.8293 | 0.8257 | 72.891 |
-| SIFT + translation verify | 0.7944 | 0.9083 | 0.8675 | 0.98 | 39.605 |
-| SIFT blobs (no verify) | 0.4441 | 0.644 | 0.6648 | 0.9214 | 32.938 |
-| Predict nothing (control) | 0 | 0 | 0 | 0.9181 | 0.008 |
+| Block matching | 0.9925 | 0.9974 | 0.9951 | 0.9995 | 224.148 |
+| SIFT + similarity verify | 0.6767 | 0.7531 | 0.8854 | 0.9232 | 54.847 |
+| ORB + similarity verify | 0.5155 | 0.6305 | 0.8293 | 0.8257 | 82.883 |
+| SIFT + translation verify | 0.7944 | 0.9083 | 0.8675 | 0.98 | 45.028 |
+| SIFT blobs (no verify) | 0.4441 | 0.644 | 0.6648 | 0.9214 | 40.055 |
+| Predict nothing (control) | 0 | 0 | 0 | 0.9181 | 0.01 |
 
 ### Mask IoU vs paste rotation
 

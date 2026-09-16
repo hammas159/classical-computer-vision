@@ -1,6 +1,6 @@
 {
   "project": "07_copy_move_forgery",
-  "generated_utc": "2026-09-15T06:17:09+00:00",
+  "generated_utc": "2026-09-16T14:36:10+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -24,7 +24,7 @@
       "precision": 0.9974,
       "recall": 0.9951,
       "pixel_accuracy": 0.9995,
-      "median_ms": 201.105
+      "median_ms": 224.148
     },
     {
       "method": "SIFT + similarity verify",
@@ -33,7 +33,7 @@
       "precision": 0.7531,
       "recall": 0.8854,
       "pixel_accuracy": 0.9232,
-      "median_ms": 47.392
+      "median_ms": 54.847
     },
     {
       "method": "ORB + similarity verify",
@@ -42,7 +42,7 @@
       "precision": 0.6305,
       "recall": 0.8293,
       "pixel_accuracy": 0.8257,
-      "median_ms": 72.891
+      "median_ms": 82.883
     },
     {
       "method": "SIFT + translation verify",
@@ -51,7 +51,7 @@
       "precision": 0.9083,
       "recall": 0.8675,
       "pixel_accuracy": 0.98,
-      "median_ms": 39.605
+      "median_ms": 45.028
     },
     {
       "method": "SIFT blobs (no verify)",
@@ -60,7 +60,7 @@
       "precision": 0.644,
       "recall": 0.6648,
       "pixel_accuracy": 0.9214,
-      "median_ms": 32.938
+      "median_ms": 40.055
     },
     {
       "method": "Predict nothing (control)",
@@ -69,7 +69,7 @@
       "precision": 0.0,
       "recall": 0.0,
       "pixel_accuracy": 0.9181,
-      "median_ms": 0.008
+      "median_ms": 0.01
     }
   ],
   "rotation_sweep": [

@@ -11,7 +11,82 @@ the same sensor noise, the same illuminant and the same JPEG history as their ne
 neighbours. Every forensic signal that catches a splice from another photo is
 silent here. The only evidence is the duplication itself.
 
-**No neural network, no training, no GPU, no dataset download.**
+**No neural network, no training, no GPU.**
+
+---
+
+## Results
+
+The same four photographs, twice. Once with a 96 px region pasted in exactly,
+and once with that paste turned by **two degrees** — nothing else changed. Five
+detectors across the columns, mask IoU in every cell.
+
+### An exact copy — the case every demo shows
+
+![Four forgeries, exact copy](docs/images/compare_exact.png)
+
+| Sr | Scene | **Block matching** | SIFT + similarity | ORB + similarity | SIFT + translation | SIFT blobs (no verify) |
+|---:|---|---:|---:|---:|---:|---:|
+| 1 | penguin on pebbles · every stone resembles every stone | **1.000** | 0.855 | 0.854 | 0.851 | 0.748 |
+| 2 | fighter jet · man-made straight edges | **1.000** | 0.873 | 0.868 | 0.860 | 0.789 |
+| 3 | elephant herd · genuinely repeated objects | **1.000** | 0.861 | 0.845 | 0.848 | 0.836 |
+| 4 | tortoise on rock · broken rock texture | **1.000** | 0.843 | 0.661 | 0.842 | 0.798 |
+
+Block matching is perfect on all four. On this table it is obviously the method
+to ship.
+
+### The same four, paste turned 2°
+
+![The same four, rotated two degrees](docs/images/compare_rotated.png)
+
+| Sr | Scene | **Block matching** | **SIFT + similarity** | ORB + similarity | SIFT + translation | SIFT blobs (no verify) |
+|---:|---|---:|---:|---:|---:|---:|
+| 1 | penguin on pebbles | **0.000** | **0.847** | 0.844 | 0.109 | 0.699 |
+| 2 | fighter jet | **0.000** | **0.860** | 0.819 | 0.305 | 0.718 |
+| 3 | elephant herd | **0.000** | **0.851** | 0.773 | 0.000 | 0.857 |
+| 4 | tortoise on rock | **0.000** | **0.835** | 0.797 | 0.326 | 0.730 |
+
+**Block matching's column is empty. Not degraded — empty, on all four.** Two
+degrees is less than anyone would rotate a region deliberately; it is the kind
+of adjustment made by accident. `SIFT + similarity verify` loses 0.008, 0.013,
+0.010 and 0.008 across the four rows: within noise.
+
+**The two tables rank the five methods in opposite orders**, and nothing between
+them changed except a two-degree rotation. A comparison run only on the first
+table would ship the one method that cannot survive contact with a real forgery.
+
+**Row 3 is the honest stress test.** The elephant herd already contains three
+elephants — genuinely repeated objects that nobody pasted. A duplicate-region
+detector that cannot tell a copied region from a second elephant would flag the
+whole image. None of the five do, so the repetition they respond to is
+pixel-exact provenance rather than visual similarity.
+
+**Row 1 tests the opposite failure.** Every pebble on that beach resembles every
+other pebble, which is the classic false-positive generator for block matching.
+It scores 1.000 on the exact copy anyway.
+
+The four were **chosen by the code** from twelve candidates tagged by what
+surrounds the paste — low texture, self-similar, man-made, repeated objects,
+natural texture, high contrast — with the best survivor of each family kept.
+All twelve cleared the 0.50 IoU gate on the exact copy, which is itself worth
+stating: on the easy case the scene barely matters.
+
+```
+gallery candidate bear_on_ice        keep — best IoU 0.995  [low texture]
+gallery candidate penguin_pebbles    keep — best IoU 1.000  [self-similar]
+gallery candidate coral_reef         keep — best IoU 1.000  [self-similar]
+gallery candidate fighter_jet        keep — best IoU 1.000  [man-made]
+gallery candidate family_by_van      keep — best IoU 1.000  [man-made]
+gallery candidate elephant_herd      keep — best IoU 1.000  [repeated objects]
+gallery candidate rhinos_grass       keep — best IoU 0.998  [repeated objects]
+gallery candidate tortoise_rock      keep — best IoU 1.000  [natural texture]
+gallery candidate deer_in_brush      keep — best IoU 0.998  [natural texture]
+gallery candidate lioness_savanna    keep — best IoU 0.998  [natural texture]
+gallery candidate tiger_rocks        keep — best IoU 1.000  [high contrast]
+gallery candidate wolf_woods         keep — best IoU 1.000  [high contrast]
+```
+
+---
 
 > **The finding, in one sentence.** The best method on an exact copy is the worst
 > at every other setting. Block matching reaches **0.9925 mask IoU** on an

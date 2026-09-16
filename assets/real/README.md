@@ -62,6 +62,36 @@ structure, because haze depends on exactly one physical quantity: distance.
 | `tropical_island.jpg` | 16 | a low island under towering cloud | sky |
 | `warplane.jpg` | 20 | a propeller fighter against a pale sky | sky |
 
+### Berkeley Segmentation Dataset (BSDS500)
+
+Twelve natural scenes from the **BSDS500** test split, via
+[this mirror](https://github.com/BIDS/BSDS500). Added for **project 07
+copy-move forgery**, where what matters is the texture *around* the paste — a
+block matcher is judged on what it can tell a duplicate apart from.
+
+| File | What it is | Texture family |
+|---|---|---|
+| `bear_on_ice.jpg` | a bear on flat ice | almost none |
+| `penguin_pebbles.jpg` | a penguin on a pebble beach | self-similar |
+| `coral_reef.jpg` | a coral reef | self-similar |
+| `fighter_jet.jpg` | a jet on tarmac | man-made straight edges |
+| `family_by_van.jpg` | a family beside a van | man-made |
+| `elephant_herd.jpg` | a herd of elephants | genuinely repeated objects |
+| `rhinos_grass.jpg` | two rhinos on grass | repeated objects |
+| `tortoise_rock.jpg` | a tortoise on broken rock | natural |
+| `deer_in_brush.jpg` | a deer in winter brush | natural, low contrast |
+| `lioness_savanna.jpg` | a lioness on dry grass | natural |
+| `tiger_rocks.jpg` | a tiger on rocks | high contrast |
+| `wolf_woods.jpg` | a wolf in leaf litter | fine scattered detail |
+
+🚨 **Licence: research use, not a permissive licence.** BSDS500 is distributed
+by UC Berkeley for research and education; its photographs originate in a
+commercial stock collection. It is the standard segmentation benchmark and
+appears in thousands of public repositories, but it is **not** public domain and
+not equivalent to the OpenCV or Kodak material above. Stated here rather than
+left for someone to discover. If that is a problem for a given use, these twelve
+are the ones to replace.
+
 ### Source not recorded
 
 These eight were added for project 02's subject-variety comparison and **their

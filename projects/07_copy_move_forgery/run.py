@@ -20,6 +20,7 @@ import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 
 from shared import figures, io, synth  # noqa: E402
+from shared.metrics import iou  # noqa: E402
 from shared.report import init_console, markdown_table, write_results, write_tables  # noqa: E402
 
 import forgery as fg  # noqa: E402
@@ -57,6 +58,112 @@ def main() -> None:
     # ------------------------------------------------------------------ #
     # figures
     # ------------------------------------------------------------------ #
+    # ------------------------------------------------------------------ #
+    # the comparison at the top of the README:
+    # four forged photographs down the rows, every method across the columns
+    # ------------------------------------------------------------------ #
+    # A copy-move detector is judged on what it can tell a *duplicate* apart
+    # from, so the scenes are chosen for what surrounds the paste: flat ice with
+    # almost no texture, a pebble beach where every stone resembles every other,
+    # man-made straight edges, and a herd where the image genuinely contains
+    # repeated objects that are not forgeries. Twelve candidates, four kept.
+    #
+    # Each is scored against the exact mask -- both the paste and the region it
+    # was taken from, because marking only the paste caps precision at 0.5 no
+    # matter how good the method is.
+    GALLERY_MIN_IOU = 0.50
+    gallery_pool = [
+        ("bear on ice\nflat, untextured ground", "bear_on_ice", "low texture"),
+        ("penguin on pebbles\nevery stone resembles every stone", "penguin_pebbles", "self-similar"),
+        ("coral reef\ndense self-similar texture", "coral_reef", "self-similar"),
+        ("fighter jet\nman-made straight edges", "fighter_jet", "man-made"),
+        ("family by a van\npeople, vehicle, foliage", "family_by_van", "man-made"),
+        ("elephant herd\ngenuinely repeated objects", "elephant_herd", "repeated objects"),
+        ("two rhinos\nopen grass, two similar animals", "rhinos_grass", "repeated objects"),
+        ("tortoise on rock\nbroken rock texture", "tortoise_rock", "natural texture"),
+        ("deer in brush\nbusy, low contrast", "deer_in_brush", "natural texture"),
+        ("lioness on savanna\ndry grass", "lioness_savanna", "natural texture"),
+        ("tiger on rocks\nstrong stripes", "tiger_rocks", "high contrast"),
+        ("wolf in leaf litter\nfine scattered detail", "wolf_woods", "high contrast"),
+    ]
+    method_names = [n for n in fg.METHODS if not n.startswith("Predict nothing")]
+    survivors: dict[str, tuple] = {}
+    for label, name, family in gallery_pool:
+        src = io.real_photo(name)
+        forged = synth.copy_move_forgery(src, size=args.size, seed=0)
+        preds = [fg.METHODS[m](forged.image) for m in method_names]
+        scores = [iou(p > 0, forged.mask_both > 0) for p in preds]
+        if max(scores) < GALLERY_MIN_IOU:
+            print(f"gallery candidate {name:<18} DROP — best IoU {max(scores):.3f}  [{family}]")
+            continue
+        print(f"gallery candidate {name:<18} keep — best IoU {max(scores):.3f}  [{family}]")
+        row = (
+            label,
+            [forged.image, forged.mask_both] + preds,
+            ["forged", "truth"] + [f"IoU {s:.3f}" for s in scores],
+            max(scores),
+        )
+        if family not in survivors or row[3] > survivors[family][3]:
+            survivors[family] = row
+
+    chosen = sorted(survivors.values(), key=lambda r: -r[3])[:4]
+    kept = [(lbl, name) for lbl, name in
+            [(r[0], r[0].split("\n")[0]) for r in chosen]]
+
+    # The same four photographs, twice. Once with the paste dropped in exactly,
+    # and once with it turned by two degrees -- and two degrees is the whole
+    # point, because it is far less than anyone would rotate a region on
+    # purpose. One condition per figure, so nothing is confounded: the
+    # difference between the two figures is the rotation and nothing else.
+    gallery_names = [r[0] for r in chosen]
+    name_lookup = {lbl: nm for lbl, nm, _f in
+                   [(l, n, f) for l, n, f in gallery_pool]}
+    ROTATED_DEG = 2.0
+    tables = []
+    for tag, kwargs, out_name, caption in [
+        (
+            "exact",
+            {},
+            "compare_exact.png",
+            f"An exact {args.size}px copy-move — the case every demo shows",
+        ),
+        (
+            f"rotated {ROTATED_DEG:.0f}deg",
+            {"angle_deg": ROTATED_DEG},
+            "compare_rotated.png",
+            f"The same four forgeries with the paste turned {ROTATED_DEG:.0f}° — "
+            "nothing else changed",
+        ),
+    ]:
+        rows, notes, table_rows = [], [], []
+        for i, label in enumerate(gallery_names, start=1):
+            name = name_lookup[label]
+            src = io.real_photo(name)
+            forged = synth.copy_move_forgery(src, size=args.size, seed=0, **kwargs)
+            preds = [fg.METHODS[m](forged.image) for m in method_names]
+            scores = [iou(p > 0, forged.mask_both > 0) for p in preds]
+            rows.append((label, [forged.image, forged.mask_both] + preds))
+            notes.append(["forged", "truth"] + [f"{s:.3f}" for s in scores])
+            table_rows.append(
+                dict([("Sr", i), ("Scene", label.replace("\n", " · "))]
+                     + [(m, f"{s:.3f}") for m, s in zip(method_names, scores)])
+            )
+        figures.gallery(
+            ["forged image", "truth: both copies"] + method_names,
+            rows,
+            IMAGES / out_name,
+            cell_notes=notes,
+            suptitle=caption + ". Cells are mask IoU; the truth marks BOTH copies.",
+        )
+        tables.append(
+            (tag, markdown_table(table_rows, [("Sr", "Sr"), ("Scene", "Scene")]
+                                 + [(m, m) for m in method_names]))
+        )
+    print(f"front-on comparison: {len(gallery_names)} photographs x {len(method_names)} methods, "
+          f"exact and {ROTATED_DEG:.0f}deg")
+    for tag, table in tables:
+        print(f"\n--- {tag} ---\n{table}")
+
     clean = io.sample("astronaut")
     f0 = synth.copy_move_forgery(clean, size=args.size, seed=0)
 
