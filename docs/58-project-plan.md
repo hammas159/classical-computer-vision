@@ -4,11 +4,17 @@
 
 | Order | File | What it holds |
 |:---:|---|---|
-| **1st** | `C:\Users\dell\Desktop\chat classical cv.md` | The decisions and **why**, machine state, which metric for which task, synthetic ground-truth recipes, gotchas that waste hours, `shared/` design, repo layout |
-| **2nd** | `C:\Users\dell\Desktop\58 classical cv projects list.md` | **← you are here.** The 58 projects, the 14 families, the download split |
+| **1st** | `chat classical cv.md` *(not in this repo — written on the machine it was planned on)* | The decisions and **why**, machine state, which metric for which task, synthetic ground-truth recipes, gotchas that waste hours, `shared/` design, repo layout |
+| **2nd** | `docs/58-project-plan.md` | **← you are here.** The 58 projects, the standing brief, the 14 families, the download split |
+| **3rd** | [`docs/visualisation-plan.md`](visualisation-plan.md) | The signature visualisation chosen for each of the 58 |
 
-**If you are reading this file, open the other one as well.** This file says *what* to
-build; that file says *why*, *how*, and *what will go wrong*.
+**If you are reading this file, open the others as well.** This file says *what* to
+build; the first says *why*, *how*, and *what will go wrong*.
+
+> This list lived only on a desktop until 2026-09-16, which is why the project
+> numbering in `projects/` had unexplained gaps at 6, 8, 11, 12 and thirteen
+> other numbers — the names could not be recovered from the repo alone. It is
+> vendored here so that cannot happen again.
 
 ---
 
@@ -20,6 +26,218 @@ figure · pixel metrics · one stated finding with a number**.
 
 **Ranks 1–12 are the applied/real-world set.** Ranks 13 onward mix foundational family
 surveys with the remaining applied work.
+
+---
+
+## The standing brief
+
+This is the instruction every one of the 58 is built against. It supersedes the
+looser "one dataset, 3–6 methods" line above wherever the two disagree.
+
+> Work through all 58 in order: 1, 2, 3, 4, 5, 6, 7 … 58. Complete one project
+> fully, push it to GitHub, then move to the next automatically. Do not stop to
+> ask.
+>
+> For every one of the 58:
+>
+> 1. **UI** — each project gets its own distinct look. Different palette, accent
+>    colour, heading font and corner radius. No two of the 58 may look alike.
+>    Projects that have no UI yet need one built.
+>
+> 2. **Images** — download 10 to 12 candidates, run all of them, keep the best 4
+>    for the results figure. Drop any sample that fails the project's quality
+>    gate and replace it rather than shipping a broken one. Print the accept /
+>    reject decision for every candidate in the README.
+>
+> 3. **Variety** — the 4 kept samples must be genuinely different KINDS of
+>    subject: plant, animal, landscape, boy, girl, horse, couple, family photo,
+>    object, building, and so on. Never four variations of one thing.
+>
+> 4. **No image is reused across projects.** 58 projects, roughly 580 distinct
+>    images. Keep a registry so this is enforced, not hoped for.
+>
+> 5. **Video projects** (6, 8, 29, 30, 48, 55) — download 10 videos, keep the
+>    best 4.
+>
+> 6. **Results at the top** of the README, right after a short intro. The format
+>    is a comparison table made of pictures:
+>    `Sr | Input | Method 1 | Method 2 | …`, one row per sample, numbered, with
+>    the score printed inside each cell. If a project has only one method it is
+>    still `Sr | Input | Result`.
+>
+> 7. **No new methods.** The algorithms are fine. Only the presentation, the
+>    images and the UI change.
+>
+> 8. **Screenshots must differ from each other.** Measure before shipping — if
+>    two captures agree over more than 35% of their rows, keep one.
+>
+> 9. **Never write a number the code did not produce.** If a project has no
+>    honest finding, say so in the README rather than inventing one. If a number
+>    moves because the images changed, report that it moved.
+>
+> 10. **No `Co-Authored-By` or AI footer** on any commit.
+>
+> Push after each project. Keep going until all 58 are done.
+
+Each project also gets its **own signature visualisation** rather than the same
+three panels repeated fifty-eight times — see
+[`visualisation-plan.md`](visualisation-plan.md) for the one chosen for each.
+
+How the brief is enforced rather than remembered:
+
+| Rule | Enforced by |
+|---|---|
+| distinct UI per project | `shared/theme.py` — a palette per number, plus a generated `.streamlit/config.toml` |
+| screenshots must differ | `tools/shoot.py` refuses two captures agreeing over 35% of their rows |
+| no broken samples | each `run.py` gates candidates and prints the accept/reject log |
+| no reused images | `assets/real/README.md` records every image and which project uses it |
+
+---
+
+## How to build one project, start to finish
+
+Everything below is operational knowledge that was learned the expensive way.
+Read it before starting a project rather than rediscovering it.
+
+### 0 · Where images can actually come from
+
+**Only GitHub raw is reachable from this machine.** `upload.wikimedia.org`
+returns 400 and `commons.wikimedia.org` does not resolve. Do not waste a
+download budget finding this out again.
+
+| Source | URL pattern | What is there |
+|---|---|---|
+| Kodak PhotoCD suite | `raw.githubusercontent.com/MohamedBakrAli/Kodak-Lossless-True-Color-Image-Suite/master/PhotoCD_PCD0992/NN.png` | 24 varied 768×512 photographs, `01`–`24`. **All 24 are now used** (04 took twelve, 05 took five) |
+| OpenCV samples | `raw.githubusercontent.com/opencv/opencv/4.x/samples/data/<name>` | ~90 images. `aloeL/aloeR/aloeGT` = stereo **with ground truth**; `leuvenA/leuvenB` = an exposure pair; `left01`–`left14`/`right01`–`right14` = checkerboards for calibration |
+| OpenCV extra testdata | `raw.githubusercontent.com/opencv/opencv_extra/4.x/testdata/...` | faces under `cv/face/`, plus much more |
+| Ultralytics | `raw.githubusercontent.com/ultralytics/yolov5/master/data/images/<name>` | `zidane.jpg`, `bus.jpg` — people |
+| scikit-image | bundled, no download | 16 samples via `shared.io.sample` |
+
+List any GitHub folder before downloading:
+`curl -sS "https://api.github.com/repos/OWNER/REPO/contents/PATH" | grep '"download_url"'`
+
+Avoid `lena.jpg` — widely deprecated as a test image, and a portfolio is exactly
+the wrong place to use it.
+
+### 1 · Pick the candidates
+
+Ten to twelve, each tagged with a **family** describing what *kind* of subject
+it is. The family tags are what stop the figure filling with four portraits.
+Make them fine-grained on whatever axis the project cares about — project 05
+splits people into boy / girl / child / woman / man / couple / group, because a
+reader asking "will this fix my photo" is asking about a specific person.
+
+Install them with `cv2.imwrite(..., [cv2.IMWRITE_JPEG_QUALITY, 92])`, cap the
+long edge at 768 px, register them in `shared.io.REAL_PHOTOS` with a one-line
+description, and record provenance in `assets/real/README.md`.
+
+### 2 · Gate, then select
+
+In `run.py`: run every candidate, compute the project's own quality measure,
+**drop anything below a named threshold**, then keep the best survivor of each
+family and take the top four. Print one line per candidate — the accept/reject
+log goes in the README verbatim, because it is evidence the four were chosen by
+the code and not by hand.
+
+```
+gallery candidate old_street        keep — 12.7 dB hazy, +11.2 dB best  [street]
+gallery candidate warplane          keep — 17.8 dB hazy,  +3.3 dB best  [sky]
+```
+
+### 3 · Build the comparison figure
+
+`shared.figures.gallery(columns, rows, out, cell_notes=..., suptitle=...)`
+
+`columns` is `["input"] + method_names`; `rows` is `[(sample_label, [images])]`;
+`cell_notes` puts the score inside each cell. It numbers rows `Sr 1…4` and
+letterboxes **per row**, so stages of differing aspect still line up.
+
+Emit the same numbers as a markdown table from `run.py` so the README's table is
+generated, never transcribed.
+
+### 4 · Build the signature visualisation
+
+See [`visualisation-plan.md`](visualisation-plan.md). One per project, chosen to
+carry that project's finding. Most of these plotters do not exist in
+`shared/figures.py` yet and are real work.
+
+### 5 · Theme and screenshot the UI
+
+`shared/theme.py` owns the look. In the app, immediately after
+`st.set_page_config`:
+
+```python
+PALETTE = theme.apply(NN)     # NN = project number
+```
+
+and regenerate `.streamlit/config.toml` from the same palette — CSS alone leaves
+BaseWeb widgets (selectbox, radio, checkbox) in the stock dark theme, which puts
+a navy dropdown on a cream page.
+
+Then:
+
+```bash
+python tools/shoot.py 04_dehazing 01_pipeline "02_transmission:Transmission map"
+```
+
+It picks a free port, launches from **inside** the project folder (Streamlit
+resolves `.streamlit/config.toml` against the working directory), photographs
+each tab, tears the server down, and **fails if two captures agree over 35% of
+their rows**.
+
+### 6 · README order
+
+```
+# title + badges
+short intro
+## Results          <- comparison figure, generated table, accept/reject log
+> the finding, in one sentence
+Jump to …
+## What it does
+## Screenshots
+## Full results tables
+## Run it yourself / Inference / How it works
+## Problems hit, and how they were solved
+## Limitations / Tests / Keywords / References
+```
+
+### 7 · Verify, then commit
+
+```bash
+cd projects/NN_name && python run.py
+cd ../.. && .venv/Scripts/python.exe -m pytest projects/NN_name/tests -q
+```
+
+Look at the generated `docs/images/samples.png` before committing. Four rows,
+four genuinely different subjects, every cell a usable result.
+
+Commit messages state what was found and what it cost. **No `Co-Authored-By`,
+no AI footer** — it adds a second name to GitHub's contributor list.
+
+### Traps already paid for
+
+* **A stale Streamlit server answers.** It prints `Port N is not available`, the
+  new server exits, and the *old* one keeps serving — so the screenshot silently
+  shows the previous build. `tools/shoot.py` exists because of this.
+* **Bash heredocs mangle `\n` inside Python string literals**, producing real
+  newlines and an unterminated-string SyntaxError. Use the `Edit` tool for code.
+* **`st.set_page_config` on one line** has no trailing comma, so inserting an
+  argument after it breaks the file. Four apps broke this way.
+* **Whole-image PSNR hides everything** when the change covers a few percent of
+  pixels. Score the region that changed.
+* **A method can win its own objective and lose the real one.** Keep a
+  do-nothing control column in every comparison; several projects turn out worse
+  than doing nothing in part of their range.
+
+### Known outstanding
+
+* `projects/05_old_photo_restoration` has one failing test,
+  `test_restore_detects_a_mask_when_none_is_given` — it asserts saturation rises
+  after restoration, which is not universally true. Pre-existing, not caused by
+  the format work.
+* Eight photographs in `assets/real/` have **no recorded provenance**
+  (`girl`, `dog`, `coffee_cup`, `woman_field`, `leopard`, `man_camera`, `hiker`,
+  `man_skyline`). Stated in `assets/real/README.md` rather than guessed at.
 
 ---
 
