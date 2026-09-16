@@ -60,7 +60,7 @@ def main() -> None:
     for g in ll.GAMMA_LEVELS:
         estimates = []
         for name in images:
-            clean = io.sample(name)
+            clean = ll.load_scene(name)
             dark = synth.low_light(clean, gamma=g, noise_sigma=args.noise, seed=0)
             estimates.append(1.0 / ll.estimate_gamma(dark))
         recovery_rows.append(
@@ -76,55 +76,93 @@ def main() -> None:
     # ------------------------------------------------------------------ #
     # figures
     # ------------------------------------------------------------------ #
-    clean = io.sample("coffee")
+    # The single scene the detail figures are drawn on.
+    clean = ll.load_scene("red_barn")
     dark = synth.low_light(clean, gamma=args.gamma, noise_sigma=args.noise, seed=0)
 
     # ------------------------------------------------------------------ #
-    # four images, end to end
+    # the comparison at the top of the README:
+    # four photographs down the rows, every method across the columns
     # ------------------------------------------------------------------ #
-    # Four photographs that are *bright in different ways* — a dark still life, a
-    # mid-key portrait, a light animal close-up, a night scene with point
-    # highlights. This project's central finding is that an adaptive method beats
-    # a fixed constant where its assumption holds and loses badly where it does
-    # not, and that only shows up across images with different tonality.
+    # A low-light method is judged on what it does to a TONE DISTRIBUTION, so
+    # the candidates are chosen for where they sit on the histogram, not for
+    # being pretty: high key (white sails on water), low key (an apple lit from
+    # one side), a single saturated hue filling the frame, dense fur, flat grey
+    # concrete, sky-and-reflection. Twelve candidates across six families, best
+    # survivor of each kept, so the table cannot fill with four mid-key scenes.
     #
-    # Each candidate is scored before it goes in: an enhancement that does not
-    # actually beat the darkened input is a broken sample, not an example.
+    # This project's central finding is that an adaptive method beats a fixed
+    # constant where its brightness assumption holds and loses badly where it
+    # does not. That is invisible on one image and obvious across four.
     GALLERY_MIN_GAIN_DB = 3.0
-    gallery_pool = ("coffee", "astronaut", "chelsea", "rocket", "retina")
+    gallery_pool = [
+        ("red door\nsingle saturated hue", "red_door", "texture"),
+        ("mandrill\ndense fur detail", "baboon", "texture"),
+        ("sailboats\nhigh key - white on water", "sailboat_race", "high-key"),
+        ("clock tower\nsubject against open sky", "clock_tower", "high-key"),
+        ("apple\nlow key - lit from one side", "apple_desk", "low-key"),
+        ("boat and pier\nshaded water, weathered wood", "boat_pier", "low-key"),
+        ("office block\nflat grey concrete", "office_block", "architecture"),
+        ("red barn\nreflected in still water", "red_barn", "architecture"),
+        ("stone statue\npale stone, gilded urn", "stone_statue", "monument"),
+        ("caps on a wall\nhard shadows, primaries", "caps_row", "object"),
+        ("macaws\nsaturated primaries", "parrots", "colour"),
+        ("hibiscus\nflowers against shutters", "window_flowers", "colour"),
+    ]
     best_named = max(
         (r for r in method_rows if r["method"] != ll.ORACLE_NAME),
         key=lambda r: r["psnr_db"],
     )["method"]
 
-    g_labels, g_dark, g_out, g_oracle = [], [], [], []
-    for name in gallery_pool:
-        src = io.sample(name)
+    method_names = list(ll.METHODS)
+    survivors: dict[str, tuple] = {}
+    for label, name, family in gallery_pool:
+        src = ll.load_scene(name)
         low = synth.low_light(src, gamma=args.gamma, noise_sigma=args.noise, seed=0)
-        out = ll.METHODS[best_named](low)
-        gain = psnr(out, src) - psnr(low, src)
-        passes = gain >= GALLERY_MIN_GAIN_DB
-        verdict = "KEEP" if passes and len(g_labels) < 4 else ("FULL" if passes else "DROP")
-        print(
-            f"gallery candidate {name:<12} {verdict} — "
-            f"{psnr(low, src):.1f} dB dark -> {psnr(out, src):.1f} dB ({gain:+.1f})"
-        )
-        if verdict != "KEEP":
+        dark_db = psnr(low, src)
+        outs = [ll.METHODS[m](low) for m in method_names]
+        oracle_out = ll.enhance_oracle(low, args.gamma)
+        gain = psnr(outs[method_names.index(best_named)], src) - dark_db
+        if gain < GALLERY_MIN_GAIN_DB:
+            print(f"gallery candidate {name:<15} DROP — {best_named} gained only {gain:+.1f} dB  [{family}]")
             continue
-        g_labels.append(f"{name}\n{psnr(out, src):.1f} dB ({gain:+.1f})")
-        g_dark.append(low)
-        g_out.append(out)
-        g_oracle.append(ll.enhance_oracle(low, args.gamma))
+        print(f"gallery candidate {name:<15} keep — {dark_db:.1f} dB dark, {gain:+.1f} dB best  [{family}]")
+        row = (
+            label,
+            [low] + outs + [oracle_out],
+            [f"{dark_db:.1f} dB"]
+            + [f"{psnr(o, src):.1f} dB" for o in outs]
+            + [f"{psnr(oracle_out, src):.1f} dB"],
+            gain,
+        )
+        if family not in survivors or gain > survivors[family][3]:
+            survivors[family] = row
 
+    chosen = sorted(survivors.values(), key=lambda r: -r[3])[:4]
     figures.gallery(
-        g_labels,
-        [("darkened input", g_dark), (f"{best_named}", g_out), ("oracle — the ceiling", g_oracle)],
+        ["darkened input"] + method_names + ["oracle"],
+        [(label, imgs) for label, imgs, _n, _g in chosen],
         IMAGES / "samples.png",
+        cell_notes=[notes for _l, _i, notes, _g in chosen],
         suptitle=(
-            f"Four images darkened by gamma {args.gamma} and recovered by the best "
-            f"named method, against the exact-inverse ceiling"
+            f"Four photographs darkened by gamma {args.gamma}, every method across "
+            "the columns. The oracle applies the exact inverse and is the ceiling."
         ),
     )
+    print(f"front-on comparison: {len(chosen)} photographs x {len(method_names)} methods + oracle")
+
+    gallery_rows = [
+        dict([("Sr", i), ("Photograph", label.replace("\n", " · "))]
+             + list(zip(["Darkened"] + method_names + ["Oracle"], notes)))
+        for i, (label, _i, notes, _g) in enumerate(chosen, start=1)
+    ]
+    gallery_table = markdown_table(
+        gallery_rows,
+        [("Sr", "Sr"), ("Photograph", "Photograph"), ("Darkened input", "Darkened")]
+        + [(m, m) for m in method_names]
+        + [("Oracle", "Oracle")],
+    )
+    print("\n" + gallery_table)
 
     panels = [("Original (truth)", clean), (f"Darkened, gamma={args.gamma}", dark)]
     for name, fn in ll.METHODS.items():

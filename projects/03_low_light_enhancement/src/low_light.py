@@ -336,7 +336,35 @@ def quantisation_ceiling(gamma: float, levels: int = 256) -> int:
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "chelsea", "rocket", "retina", "immunohistochemistry")
+#: Six photographs that are bright in genuinely DIFFERENT ways, because a
+#: low-light method is judged on what it does to a tone distribution. The
+#: previous six were scikit-image's bundled samples, four of which sat in the
+#: same mid-key band -- that measured one histogram shape six times. These span
+#: the range: a saturated red door filling the frame, white sails against water
+#: (high key), a side-lit apple on a dark ground (low key), dense mandrill fur,
+#: a flat grey office block, and a barn reflected in still water.
+IMAGES = (
+    "red_door",
+    "sailboat_race",
+    "apple_desk",
+    "baboon",
+    "office_block",
+    "red_barn",
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """Load a benchmark scene by name, from either image source.
+
+    Dispatches so the bundled scikit-image samples and the downloaded
+    photographs can both be addressed by name, and so a caller that wants one
+    of each does not need two code paths.
+    """
+    from shared import io
+
+    if name in io.REAL_PHOTOS:
+        return io.real_photo(name)
+    return io.sample(name)
 GAMMA_LEVELS = (1.5, 2.0, 2.5, 3.0, 4.0, 5.0)
 
 
@@ -401,7 +429,7 @@ def evaluate_methods(
     dark_stats = {"entropy": [], "brightness": [], "noise": []}
 
     for name in images:
-        clean = io.sample(name)
+        clean = load_scene(name)
         dark = synth.low_light(clean, gamma=gamma, noise_sigma=noise_sigma, seed=0)
         for k in dark_stats:
             dark_stats[k].append(_score(dark, clean)[k])
@@ -450,7 +478,7 @@ def sweep_gamma(images=IMAGES, levels=GAMMA_LEVELS, noise_sigma: float = 4.0) ->
         per_method = {n: [] for n in list(METHODS) + [ORACLE_NAME]}
 
         for name in images:
-            clean = io.sample(name)
+            clean = load_scene(name)
             dark = synth.low_light(clean, gamma=gamma, noise_sigma=noise_sigma, seed=0)
             for method, fn in METHODS.items():
                 per_method[method].append(psnr(fn(dark), clean))
@@ -477,7 +505,7 @@ def evaluate_noise_amplification(
     for method, fn in list(METHODS.items()) + [(ORACLE_NAME, None)]:
         gains, after = [], []
         for name in images:
-            clean = io.sample(name)
+            clean = load_scene(name)
             dark = synth.low_light(clean, gamma=gamma, noise_sigma=noise_sigma, seed=0)
             before = estimate_noise_sigma(dark)
             out = enhance_oracle(dark, gamma) if fn is None else fn(dark)
@@ -507,7 +535,7 @@ def brightness_assumption_table(images=IMAGES, gammas=(1.5, 3.0, 5.0)) -> list[d
 
     rows = []
     for name in images:
-        clean = shared_io.sample(name)
+        clean = load_scene(name)
         true_mean = float(clean.astype(np.float64).mean() / 255.0)
         errors = []
         for g in gammas:
@@ -540,7 +568,7 @@ def fixed_vs_auto_per_image(images=IMAGES, gamma: float = 3.0, noise_sigma: floa
 
     rows = []
     for name in images:
-        clean = shared_io.sample(name)
+        clean = load_scene(name)
         true_mean = float(clean.astype(np.float64).mean() / 255.0)
         dark = synth.low_light(clean, gamma=gamma, noise_sigma=noise_sigma, seed=0)
         fixed = psnr(enhance_gamma(dark), clean)

@@ -205,6 +205,23 @@ REAL_PHOTOS = {
     "two_men": ("two_men.jpg", "two men in suits, shallow depth of field"),
     "street_people": ("street_people.jpg", "people walking past a bus"),
     "two_men_indoor": ("two_men_indoor.jpg", "two men in a corridor, flat indoor light"),
+    # scenes that are bright in DIFFERENT WAYS, for project 03. A low-light
+    # method is judged on its tone distribution, so a pool of six images that
+    # are all mid-key measures one thing six times: a saturated red door, a
+    # white sail against water, dark fur, a pale office block and a night-ish
+    # pier each put the histogram somewhere else entirely.
+    "red_door": ("red_door.jpg", "a weathered red door, filling the frame"),
+    "caps_row": ("caps_row.jpg", "a row of bright caps on a wall, hard shadows"),
+    "window_flowers": ("window_flowers.jpg", "hibiscus against a shuttered window"),
+    "sailboat_race": ("sailboat_race.jpg", "white sails against water — high key"),
+    "boat_pier": ("boat_pier.jpg", "a boat beside a weathered pier"),
+    "stone_statue": ("stone_statue.jpg", "a pale stone statue holding a gilded urn"),
+    "red_barn": ("red_barn.jpg", "a red barn reflected in still water"),
+    "parrots": ("parrots.jpg", "two macaws, saturated primaries"),
+    "apple_desk": ("apple_desk.jpg", "an apple lit from one side — a dark still life"),
+    "baboon": ("baboon.jpg", "a mandrill's face — dense fur detail"),
+    "office_block": ("office_block.jpg", "a concrete office block, flat grey"),
+    "clock_tower": ("clock_tower.jpg", "a clock tower against open sky"),
 }
 
 

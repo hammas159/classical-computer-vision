@@ -30,8 +30,8 @@ them separately so that cannot be hidden.
 > **further from the truth** than the faded print it started from (14.28° of
 > error against the input's 7.72°). It did not correct the colour. It removed it.
 
-**Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
-[UI → results](#how-the-ui-connects-to-the-results) · [Results](#results) ·
+**Jump to:** [What it does](#what-it-does) · 
+[Results](#results) ·
 [Run it](#run-it-yourself) · [Inference](#inference-try-it-on-your-own-photo) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
 [Limitations](#limitations) · [Keywords](#keywords)
@@ -73,123 +73,7 @@ the detector is the limiting factor.
 
 ---
 
-## Screenshots
 
-The interactive app — `streamlit run ui/app.py` — takes an image, ages it by a
-controllable amount, and runs both halves of the restoration with live
-measurement.
-
-### The main view: five stages, one row
-
-![The restoration UI](results/ui_main.png)
-
-Left to right: the truth, the aged print, what the detector found, what
-inpainting fixed, and what fade correction fixed. Note panel 4 — **after
-inpainting the picture is still yellow**, because inpainting only ever touches
-the pixels in the mask. The sentence under the metrics is the project in one
-line: *5.79 dB of this result is lost to detection, not to the inpainting
-method.*
-
-### The experiment that separates the methods
-
-![Damage width sweep](results/ui_width_sweep.png)
-
-Every method here is interpolation across a gap, so the only real question is how
-wide a gap it survives. At 1 px they are within 2 dB of each other. Harmonic
-diffusion — the textbook Laplace solution — falls off a cliff past 9 px, because
-the solution to Laplace's equation over a wide hole is a smooth surface with no
-texture at all: plausible, and wrong. The 20-line masked-mean baseline is the
-green line that *stops losing* at the right-hand end.
-
-### Detector comparison — where IoU and PSNR disagree
-
-![Detector matrix](results/ui_detector_matrix.png)
-
-Three detectors, scored on mask quality *and* on what that mask is worth
-downstream. The IoU column and the restored-PSNR column do not rank the same way,
-and precision/recall is why.
-
-### Method comparison
-
-![Method matrix](results/ui_method_matrix.png)
-
-Two PSNR columns, deliberately. Whole-image PSNR barely moves between methods
-because 93% of the photograph was never damaged — the damage-only column is the
-one that is actually about inpainting.
-
-### The scratch, read as numbers
-
-![Pixel matrix](results/ui_pixel_matrix.png)
-
-A 12×12 patch straddling a scratch. The damaged column is a block of values with
-no relationship to their neighbours; every method in this project is guessing
-what belongs there, and this is the guess.
-
-### Tone distribution
-
-![Tone distribution](results/ui_tone.png)
-
-A faded print occupies a narrow band in the middle of the range. The per-channel
-stretch is nothing more sophisticated than putting the two ends back where they
-belong — which is exactly why it beats CLAHE, a *local* method applied to a
-*global* problem.
-
-### Every method, and every fade correction, on one image
-
-![All inpainting methods](results/ui_all_methods.png)
-
-![All fade corrections](results/ui_all_fades.png)
-
----
-
-## How the UI connects to the results
-
-```mermaid
-flowchart TD
-    subgraph INPUT["Input"]
-        I1[Pick a sample image]
-        I2[Scratch width 1-40 px]
-        I3[Blotch count]
-        I4[Fade the print?]
-        I5[OR upload your own scan]
-    end
-
-    subgraph PIPE["Pipeline — the app runs the same code as run.py"]
-        P1[synth.fade_photo]
-        P2[synth.add_scratches<br/>keeps the exact mask]
-        P3[DETECTORS - find the damage]
-        P4[METHODS - fill it]
-        P5[FADE_METHODS - fix the tone]
-    end
-
-    subgraph OUT["Displayed results"]
-        O1[5-panel strip:<br/>truth, damaged, mask, inpainted, restored]
-        O2[Metrics: time, flagged %,<br/>chroma, contrast, PSNR]
-        O3[The ceiling sentence:<br/>what the TRUE mask would have scored]
-        O4[Width sweep, live, on YOUR image]
-        O5[Method x metric matrix + CSV]
-        O6[Detector x metric matrix + CSV]
-        O7[Pixel grid and histogram]
-    end
-
-    I1 & I2 & I3 & I4 --> P1 --> P2 --> P3 --> P4 --> P5
-    I5 --> P3
-    P5 --> O1 & O2
-    P2 -.true mask.-> O3
-    P4 --> O4 & O5
-    P3 --> O6
-    P5 --> O7
-
-    style O3 fill:#fee2e2,stroke:#dc2626
-    style P2 fill:#fef3c7,stroke:#d97706
-```
-
-Uploading your own scan disables O3, O4 and the reference columns of O5/O6 — and
-the app says so rather than showing a number it cannot compute. There is no
-original to compare a real archive print against, and inventing one is how
-restoration demos end up reporting scores for images that have no ground truth.
-
----
 
 ## Results
 
@@ -330,7 +214,6 @@ pip install -r ../../requirements.txt
 
 python run.py                  # regenerate every number and figure (~3 min)
 python run.py --thickness 15   # rerun the whole thing at a different damage width
-streamlit run ui/app.py        # the interactive app
 pytest ../..                   # 29 tests for this project, 193 for the repo
 ```
 
@@ -684,7 +567,7 @@ detection, MAD threshold, Otsu thresholding, colour cast correction, gray-world
 white balance, per-channel histogram stretch, CLAHE, LAB colour space, chroma
 restoration, dye fading, sepia, photo colourisation alternatives, PSNR, SSIM,
 IoU, Dice, precision recall asymmetry, ground truth mask, oracle ceiling,
-classical computer vision, OpenCV, Python, no deep learning, CPU only, Streamlit,
+classical computer vision, OpenCV, Python, no deep learning, CPU only,
 image restoration without neural networks
 
 ---

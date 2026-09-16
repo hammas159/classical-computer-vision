@@ -32,8 +32,8 @@ much better than `cv2.resize` is it, and what does that cost?**
 > **3/4** — on `coffee` it retains **79.0%** against a plain rescale's **80.0%**.
 > The subject fills the frame, so there is nowhere to route around.
 
-**Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
-[UI → results](#how-the-ui-connects-to-the-results) · [Results](#results) ·
+**Jump to:** [What it does](#what-it-does) · 
+[Results](#results) ·
 [Run it](#run-it-yourself) · [Inference](#inference-resize-your-own-image) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
 [Limitations](#limitations) · [Keywords](#keywords)
@@ -75,108 +75,7 @@ you cannot argue with is worth more than a second sophisticated method.
 
 ---
 
-## Screenshots
 
-The interactive app — `streamlit run ui/app.py` — resizes both ways at once and
-measures the difference live.
-
-### The main view
-
-![The seam carving UI](results/ui_main.png)
-
-Left: the seams that are about to be removed, in red — they cluster in the
-low-detail wood grain and bend around the cup. Centre and right: the same target
-width reached two ways. The metrics row ends with the number the project is
-about: **843× the cost** of the rescale beside it.
-
-### The reduction sweep
-
-![Reduction sweep](results/ui_sweep.png)
-
-Recomputed live on whatever image you pick. The **green and red** lines (retained
-energy) separate much further than the **blue and orange** ones (retained
-region) — seam carving wins its own objective more decisively than the one you
-care about, and that gap widens with the reduction.
-
-### Four definitions of "boring"
-
-![Energy comparison](results/ui_energies.png)
-
-The energy maps look completely different and carve almost identically.
-
-![Energy maps](results/ui_maps.png)
-
-Every energy is dominated by near-zero pixels — which is *why* seam carving works
-at all, and also why swapping between them changes so little.
-
-### What the advantage costs
-
-![Cost](results/ui_cost.png)
-
-### Past the point where it works
-
-![Extreme reduction](results/ui_extreme.png)
-
-Seam carving works by having somewhere to route *around*. Past roughly 45% of the
-width there are no low-energy paths left, every remaining seam has to cross
-something, and the distortion arrives as bent edges rather than as uniform
-squashing.
-
----
-
-## How the UI connects to the results
-
-```mermaid
-flowchart TD
-    subgraph INPUT["Input"]
-        I1[Sample image, or your own]
-        I2[Width reduction 5-70%]
-        I3[Energy function]
-        I4[Show the seams?]
-    end
-
-    subgraph PIPE["Pipeline — the app runs the same code as run.py"]
-        P1["Downscale to 420px<br/>(carving is O(columns) sequential DPs)"]
-        P2[subject_region — highest-energy box]
-        P3[carve: energy → DP → backtrack → delete]
-        P4[cv2.resize — the control]
-    end
-
-    subgraph OUT["Displayed results"]
-        O1["3 panels: seams, carved, rescaled"]
-        O2[Region kept, with the delta vs rescale]
-        O3["Energy kept — carving's OWN objective"]
-        O4["COST vs rescale, as a multiplier"]
-        O5[Reduction sweep, live, on your image]
-        O6[Energy x metric matrix + CSV]
-        O7[Energy maps and their histogram]
-        O8[Extreme reduction gallery]
-    end
-
-    I1 --> P1 --> P2 --> P3
-    I2 --> P3 & P4
-    I3 --> P2 & P3
-    P1 --> P4
-    P3 --> O1 & O2 & O3 & O5
-    P4 --> O2 & O3 & O4
-    I4 --> O1
-    P3 --> O6 & O8
-    I3 --> O7
-
-    style O4 fill:#fee2e2,stroke:#dc2626
-    style O3 fill:#fef3c7,stroke:#d97706
-```
-
-The app **states its own downscale** rather than hiding it: carving is one
-sequential dynamic programme per removed column, so full resolution would take
-seconds per slider move. That limitation is the project's main practical finding,
-so the UI says it out loud instead of quietly resizing behind your back.
-
-When the advantage comes out negative — which it does on some images — the app
-says so in red and explains why, rather than reporting a number and leaving you
-to notice.
-
----
 
 ## Results
 
@@ -279,7 +178,6 @@ pip install -r ../../requirements.txt
 
 python run.py                     # regenerate every number and figure (~4 min)
 python run.py --reduction 0.45    # rerun the whole study harder
-streamlit run ui/app.py           # the interactive app
 pytest ../..                      # 19 tests for this project, 262 for the repo
 ```
 
@@ -537,7 +435,7 @@ backtracking, gradient energy, Sobel, Laplacian, local standard deviation, image
 energy function, integral image, aspect ratio preservation, image resizing
 comparison, cv2.resize, INTER_AREA, numpy vectorisation, take_along_axis,
 boolean masking, benchmark, classical computer vision, OpenCV, Python, no deep
-learning, CPU only, Streamlit, image resizing without neural networks
+learning, CPU only, image resizing without neural networks
 
 ---
 

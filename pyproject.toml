@@ -14,10 +14,9 @@ dependencies = [
     "matplotlib>=3.7",
     "numpy>=1.24,<2.3",
     "scipy>=1.10",
-    "streamlit>=1.30",
-    # used by shared/ui.py for the styled comparison matrices in the apps.
-    # Streamlit already depends on pandas, but this repo imports it directly,
-    # so it is declared directly rather than relied on transitively.
+    # Streamlit was a dependency while each project shipped a dashboard. The
+    # dashboards were removed -- a screenshot of a control panel is not a
+    # result -- and with them roughly 40 MB of transitive install.
     "pandas>=2.0",
 ]
 

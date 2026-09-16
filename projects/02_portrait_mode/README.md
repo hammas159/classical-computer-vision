@@ -88,7 +88,7 @@ only image here with an exact alpha matte to score against.
 > agreement **0.9988**). **The instability is a property of the scene, not the
 > algorithm** — see [the sweep](#grabcut-is-not-deterministic).
 
-**Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
+**Jump to:** [What it does](#what-it-does) · 
 [Input & output](#input--output) · [Results](#results) ·
 [Run it yourself](#run-it-yourself) · [Inference](#inference-try-it-on-your-own-image) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
@@ -112,109 +112,7 @@ trained by someone else, it is not a neural network, and nothing here is trained
 
 ---
 
-## Screenshots
 
-A capture of the **live app**. Every number in it was computed at the moment
-the screenshot was taken.
-
-### Matte, blur, composite
-
-Pick a matting method and an aperture, and read the IoU, the hair recovered and
-the halo error live. The tabs below the fold hold the per-region matrix (body,
-hair and background scored separately — find the row that wins IoU and loses
-Hair), the halo error distribution, and each bokeh kernel printed as raw numbers.
-
-![Portrait pipeline](results/screenshots/01_portrait.png)
-
-### The confusion matrix, and why pixel accuracy is the wrong metric
-
-The `Confusion matrix` tab scores one method's matte against the truth, as
-counts and as recall per class. `Haar + GrabCut` gets **169,087 of 187,416
-pixels right — 90.22%** — while recovering only **47.7% of the subject**. It
-loses over half the person and still reports ninety percent, because the
-background is the majority class by a wide margin.
-
-That is the whole argument for quoting IoU rather than accuracy, and it is much
-harder to dismiss as a caveat when the two numbers are sitting next to each
-other on the same screen.
-
-![Confusion matrix tab](results/screenshots/05_confusion_matrix.png)
-
----
-
-## How the UI connects to the results
-
-```mermaid
-flowchart TD
-    subgraph INPUT["1 · Input"]
-        A1[Generated portrait<br/>exact alpha matte, body/hair split,<br/>clean background plate]
-        A2[Your own photo<br/>uploaded through the UI]
-    end
-
-    subgraph CONTROLS["2 · Controls"]
-        B1[Background + seed]
-        B2[Matting method, 6]
-        B3[Aperture shape, 4]
-        B4[Blur radius 3-35 px]
-        B5[Compositing, 2]
-    end
-
-    subgraph PIPE["3 · Pipeline"]
-        C1[Cut out the subject<br/>-> binary matte]
-        C2[Build the bokeh kernel]
-        C3[Blur the background]
-        C4[Composite]
-    end
-
-    subgraph SCORE["4 · Scoring vs the known matte"]
-        D1[IoU / Dice]
-        D2[Body / hair / background recall]
-        D3[Boundary F1]
-        D4[Halo error in the ring]
-        D5[peak/mean, rim energy]
-        D6[Wall-clock ms]
-    end
-
-    subgraph OUT["5 · Output"]
-        E1[Input, matte, portrait]
-        E2[Live metric tiles]
-        E3[Region matrix + CSV]
-        E4[Halo distribution]
-        E5[Kernel number grid]
-        E6[Confusion matrix]
-    end
-
-    A1 --> C1
-    A2 --> C1
-    B1 --> A1
-    B2 --> C1
-    B3 & B4 --> C2
-    B5 --> C4
-    C1 --> C3
-    C2 --> C3 --> C4
-    C1 -.-> D1 & D2 & D3
-    C4 -.-> D4
-    C2 --> D5
-    C1 & C3 & C4 -.-> D6
-    C1 & C4 --> E1
-    D1 & D2 & D4 --> E2
-    D2 --> E3
-    D4 --> E4
-    D5 --> E5
-    D1 --> E6
-
-    style A1 fill:#dbeafe,stroke:#2563eb
-    style A2 fill:#dbeafe,stroke:#2563eb
-    style SCORE fill:#fef3c7
-    style OUT fill:#dcfce7
-```
-
-**The dotted lines need ground truth**, so they exist only for the generated
-portrait — where the true matte, the body/hair split and the clean background
-plate are all known. On an uploaded photo the app shows the pictures and says
-plainly that it cannot score them.
-
----
 
 ## Input & output
 
@@ -417,10 +315,9 @@ cd classical-computer-vision/projects/02_portrait_mode
 
 python -m venv .venv && .venv/Scripts/activate       # Windows
 # python3 -m venv .venv && source .venv/bin/activate   # macOS / Linux
-pip install "opencv-python-headless<5" scikit-image matplotlib numpy scipy streamlit pytest
+pip install "opencv-python-headless<5" scikit-image matplotlib numpy scipy pytest
 
 python run.py --scenes 12     # reproduces every number and figure
-streamlit run ui/app.py       # interactive demo
 ```
 
 > `opencv-python-headless<5` is not optional here. **OpenCV 5 removed the bundled
@@ -434,14 +331,6 @@ streamlit run ui/app.py       # interactive demo
 
 Three ways, from easiest to most scriptable.
 
-### 1 · In the browser
-
-```bash
-streamlit run ui/app.py
-```
-
-Choose **“Upload your own photo”** and drop in a portrait. Every panel recomputes
-on your image.
 
 ### 2 · From the command line
 
@@ -526,7 +415,6 @@ Full walkthrough and workflow diagram: **[PROJECT.md](PROJECT.md)**.
 |---|---|
 | [`src/portrait_mode.py`](src/portrait_mode.py) | six matting methods, four kernels, two compositors, scoring |
 | [`run.py`](run.py) | the experiment: writes every number and figure |
-| [`ui/app.py`](ui/app.py) | the Streamlit app |
 | [`tests/`](tests/) | 23 tests, including the GrabCut instability as a regression test |
 
 ---
@@ -542,7 +430,7 @@ the **code that replaced it**.
 | 2 | A cheat scored best on a real metric | [`src/portrait_mode.py:487`](src/portrait_mode.py#L487) | nearly published as a finding |
 | 3 | Test scene was mostly white helmet | [`shared/synth.py:369`](../../shared/synth.py#L369) | changed what colour methods saw |
 | 4 | Colour restoration came out dark | [`03_low_light/src/low_light.py`](../03_low_light_enhancement/src/low_light.py) | a method looked broken that wasn't |
-| 5 | `StreamlitAPIException` in the live app | [`ui/app.py`](ui/app.py) | crash, invisible to every test |
+| 5 | A float matte whose maximum was 1.0000001 | `src/portrait_mode.py` | a crash no test caught |
 | 6 | Output looks fine, is wrong by 6× | [`src/portrait_mode.py:348`](src/portrait_mode.py#L348) | undetectable by eye |
 
 ---
@@ -664,27 +552,28 @@ for c in range(3):
 
 A method that looked broken was fine; the *scoring* of it was broken.
 
-### 5 · A Streamlit crash only a running app would reveal
+### 5 · A float that was very slightly greater than 1.0
+
+`rendered / rendered.max()` lands a hair *above* 1.0 in float32 — the division
+does not guarantee a maximum of exactly 1.0 — and the display layer rejected it
+outright:
 
 ```
-StreamlitAPIException: Data is outside [0.0, 1.0] and clamp is not set
+Data is outside [0.0, 1.0] and clamp is not set
 ```
 
-`rendered / rendered.max()` lands a hair above 1.0 in float32, and `st.image`
-refuses it. Every test passed — the bug lived in display code that no test
-exercised.
+Every test passed. The bug lived where nothing was asserting.
 
 ```python
-# WRONG
-st.image(rendered / rendered.max())
+# WRONG - assumes x / x.max() <= 1.0
+rendered / rendered.max()
 
-# RIGHT - float32 division does not guarantee a <= 1.0 maximum
-st.image(np.clip(rendered / max(float(rendered.max()), 1e-9), 0.0, 1.0))
+# RIGHT - clip, and guard the divisor
+np.clip(rendered / max(float(rendered.max()), 1e-9), 0.0, 1.0)
 ```
 
-Two more of the same class were found the same way, by screenshotting the live
-app: a `StreamlitDuplicateElementId` from two selectboxes sharing a label, and
-threshold labels overprinting when two thresholds nearly coincide.
+The lesson outlived the display code it was found in: **normalising by a
+maximum is not the same as clamping to a range**, and float32 is the difference.
 
 ### 6 · The compositing bug that looks fine until measured
 
@@ -767,7 +656,7 @@ matting classical · image matting without deep learning · subject segmentation
 Python · depth of field simulation · aperture shape bokeh · normalised
 convolution · halo artifact compositing · skin detection YCrCb · watershed
 segmentation markers · IoU vs boundary F1 · hair segmentation failure · CPU only
-computer vision · no training segmentation · Streamlit computer vision demo ·
+computer vision · no training segmentation ·
 synthetic alpha matte ground truth
 
 ---

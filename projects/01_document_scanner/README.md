@@ -83,7 +83,7 @@ nowhere.
 > real newspaper photographed at an angle — found, flattened and binarised into
 > readable text. No accuracy is quoted there, because a real photo has no answer key.
 
-**Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
+**Jump to:** [What it does](#what-it-does) · 
 [Input & output](#input--output) · [Results](#results) · [Full tables](#full-results-tables) ·
 [Run it yourself](#run-it-yourself) · [Inference](#inference-try-it-on-your-own-image) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
@@ -114,106 +114,7 @@ Each stage is **scored against exact ground truth**, not judged by eye:
 
 ---
 
-## Screenshots
 
-A capture of the **live app**, not a mockup. Every number visible in it was
-computed by the code at the moment the screenshot was taken.
-
-### On a real photograph
-
-A newspaper page photographed at an angle — nobody constructed this image for the
-pipeline. It is found, flattened, and binarised into **readable text**. Upload a
-photo or generate a scene, switch detector and binariser, and read the corner
-error in pixels live. The tabs below the fold hold the pixel matrix, the
-six-detector comparison matrix (downloadable as CSV) and the per-binariser
-confusion matrix.
-
-![Real photograph](results/screenshots/00_real_photo.png)
-
-**No accuracy is reported here, and that is deliberate.** Nobody recorded where
-this page's corners truly are, so a corner error would be invented. The measured
-comparison below uses generated scenes for exactly that reason.
-
-The photograph is [`assets/real/sudoku.png`](../../assets/real/sudoku.png), from
-OpenCV's BSD-licensed sample data.
-
-> **One real finding from this image.** The default detector used to be
-> `Otsu + contour`, which is the most accurate on generated scenes (1.07 px). On
-> this photo it returns a **wedge across the whole frame** — the newsprint is
-> bright enough that Otsu thresholds the entire image as "page". `Canny + contour`
-> keys off the page border instead and gets it right, so it is now the default.
-> **The method that wins on the benchmark is not the method to ship.**
-
----
-
-## How the UI connects to the results
-
-```mermaid
-flowchart TD
-    subgraph INPUT["1 · Input"]
-        A1[Generated scene<br/>known corners + known shading]
-        A2[Your own photo<br/>uploaded through the UI]
-    end
-
-    subgraph CONTROLS["2 · Controls"]
-        B1[Scene seed]
-        B2[Lighting 0.1 - 1.0]
-        B3[Detector, 6 options]
-        B4[Binariser, 4 options]
-        B5[Aspect method toggle]
-    end
-
-    subgraph PIPELINE["3 · Pipeline, timed per stage"]
-        C1[Detect page<br/>quadrilateral]
-        C2[Recover aspect ratio<br/>closed form]
-        C3[Rectify<br/>homography warp]
-        C4[Binarise]
-    end
-
-    subgraph SCORE["4 · Scoring vs ground truth"]
-        D1[Corner error px]
-        D2[Area IoU]
-        D3[Text IoU]
-        D4[Wall-clock ms]
-    end
-
-    subgraph OUT["5 · Output"]
-        E1[4 stage images]
-        E2[Live metric tiles]
-        E3[Pixel distribution]
-        E4[Pixel value matrix]
-        E5[Comparison matrix + CSV]
-        E6[Confusion matrix]
-    end
-
-    A1 --> C1
-    A2 --> C1
-    B1 & B2 --> A1
-    B3 --> C1
-    B5 --> C2
-    B4 --> C4
-    C1 --> C2 --> C3 --> C4
-    C1 -.-> D1 & D2
-    C4 -.-> D3
-    C1 & C2 & C3 & C4 -.-> D4
-    C1 & C3 & C4 --> E1
-    D1 & D2 & D3 & D4 --> E2
-    C3 --> E3 & E4
-    C1 --> E5
-    C4 --> E6
-
-    style A1 fill:#dbeafe,stroke:#2563eb
-    style A2 fill:#dbeafe,stroke:#2563eb
-    style SCORE fill:#fef3c7
-    style OUT fill:#dcfce7
-```
-
-**The dotted lines are what makes this a study rather than a demo.** They only
-exist for the generated scene, where the true corner positions and the clean page
-are known — so the app is not showing you a picture that looks about right, it is
-showing you how many pixels wrong it is.
-
----
 
 ## Input & output
 
@@ -407,13 +308,12 @@ cd classical-computer-vision/projects/01_document_scanner
 # install (~60 MB, no model weights, no dataset)
 python -m venv .venv && .venv/Scripts/activate      # Windows
 # python3 -m venv .venv && source .venv/bin/activate  # macOS / Linux
-pip install "opencv-python-headless<5" scikit-image matplotlib numpy scipy streamlit pytest
+pip install "opencv-python-headless<5" scikit-image matplotlib numpy scipy pytest
 
 # reproduce every number and figure in this README
 python run.py --scenes 30
 
 # launch the interactive app
-streamlit run ui/app.py
 ```
 
 `run.py` writes `results/results.json`, `results/tables.md` and every figure in
@@ -425,15 +325,6 @@ streamlit run ui/app.py
 
 Three ways, from easiest to most scriptable.
 
-### 1 · In the browser
-
-```bash
-streamlit run ui/app.py
-```
-
-Choose **“Upload your own photo”** and drop in any photo of a page. Every panel —
-the stage images, the metric tiles, the pixel matrix, the comparison matrix —
-recomputes on your image.
 
 ### 2 · From the command line
 
@@ -513,7 +404,6 @@ Full walkthrough with the workflow diagram: **[PROJECT.md](PROJECT.md)**.
 |---|---|
 | [`src/document_scanner.py`](src/document_scanner.py) | the six detectors, four binarisers, aspect recovery, scoring |
 | [`run.py`](run.py) | the experiment: writes every number and figure |
-| [`ui/app.py`](ui/app.py) | the Streamlit app |
 | [`tests/`](tests/) | 22 tests, including the central finding as a regression test |
 | `../../shared/` | ground-truth generators, metrics, figures, timing harness |
 
@@ -796,16 +686,6 @@ def init_console() -> None:
 Files were always written with an explicit
 `encoding="utf-8"` and were never affected.
 
-### 8 · Headless screenshots captured a skeleton loader
-
-`chrome --screenshot` fires at the load event, but Streamlit renders over a
-websocket afterwards, so every capture was an empty grey placeholder.
-`--virtual-time-budget` does not help — it fast-forwards timers, not a real
-network round trip. Written properly in
-[`tools/screenshot.py`](../../tools/screenshot.py), driving the DevTools Protocol
-and waiting for the render. The very first working capture revealed a
-`ValueError: 0.62 is not in iterable` crash in the UI, from a `select_slider`
-default that was not one of its options.
 
 ---
 
@@ -859,7 +739,7 @@ camera intrinsic matrix homography · image rectification without deep learning 
 CPU only computer vision · no training computer vision · scanned document
 preprocessing · OCR preprocessing pipeline · corner detection accuracy ·
 IoU segmentation metric · synthetic ground truth computer vision · Python OpenCV
-tutorial alternative · Streamlit computer vision demo
+tutorial alternative
 
 ---
 

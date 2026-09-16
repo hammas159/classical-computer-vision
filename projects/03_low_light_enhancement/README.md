@@ -21,8 +21,8 @@ training, no GPU, no dataset download.**
 > images it looks **2.28 dB worse** than the naive constant. The average states
 > the opposite of what is happening.
 
-**Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
-[UI → results](#how-the-ui-connects-to-the-results) · [Input & output](#input--output) ·
+**Jump to:** [What it does](#what-it-does) · 
+[Input & output](#input--output) ·
 [Results](#results) · [Run it](#run-it-yourself) · [Inference](#inference-try-it-on-your-own-image) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
 [Limitations](#limitations) · [Keywords](#keywords)
@@ -52,115 +52,7 @@ The degradation is **generated**, so the original is known exactly:
 
 ---
 
-## Screenshots
 
-A capture of the **live app**. Every number was computed at the
-moment the screenshot was taken.
-
-### 0 · Four images, end to end
-
-![Four sample recoveries](docs/images/samples.png)
-
-Four photographs that are bright in *different ways* — a dark still life, a
-mid-key portrait, a light animal close-up, and a night scene with point
-highlights — each darkened by gamma 3.0 and recovered by the best named method,
-with the exact-inverse oracle underneath as the ceiling.
-
-The four tonalities are the point. This project's central finding is that an
-adaptive method beats a fixed constant by **+5.46 dB** where its brightness
-assumption holds and loses by **−7.70 dB** where it does not, and that only
-becomes visible across images whose tone distributions differ.
-
-Every column is checked before it goes in: a candidate has to gain at least 3 dB
-over the darkened input, and `run.py` prints the decision for each —
-
-```
-gallery candidate coffee       KEEP — 11.9 dB dark -> 20.0 dB (+8.2)
-gallery candidate astronaut    KEEP — 11.6 dB dark -> 20.5 dB (+8.9)
-gallery candidate chelsea      KEEP —  9.6 dB dark -> 18.9 dB (+9.3)
-gallery candidate rocket       KEEP — 12.5 dB dark -> 18.5 dB (+6.0)
-gallery candidate retina       FULL — 12.8 dB dark -> 19.3 dB (+6.5)
-```
-
-`FULL` means the gallery already had four; `DROP` would mean the sample failed
-the bar and was excluded.
-
-### The live app
-
-Four panels side by side. The grain visible in panels 3 and 4 is not compression
-— it is the **noise amplification**, which is the hidden cost of every brightening
-method. The tabs below the fold hold the tone distribution, the every-method
-comparison matrix (note the `PSNR matched` column — 6.7 dB higher than raw PSNR
-for Retinex, and that gap is entirely the metric, not the method), and the
-surviving-tone-levels curve, which is computed with **no image at all**.
-
-![Enhancement pipeline](results/screenshots/01_enhancement.png)
-
----
-
-## How the UI connects to the results
-
-```mermaid
-flowchart TD
-    subgraph INPUT["1 · Input"]
-        A1[Known image + gamma + noise<br/>original retained as truth]
-        A2[Your own dark photo]
-    end
-
-    subgraph CONTROLS["2 · Controls"]
-        B1[Image, 6 options]
-        B2[Darkness gamma 1.2 - 5.0]
-        B3[Read noise sigma 0 - 12]
-        B4[Method, 8 options]
-    end
-
-    subgraph RUN["3 · Run"]
-        C1[Apply the chosen method]
-        C2[Apply the ORACLE<br/>exact inverse gamma]
-        C3[Compute the quantisation ceiling<br/>from gamma alone]
-    end
-
-    subgraph SCORE["4 · Scoring"]
-        D1[PSNR / SSIM vs original]
-        D2[Gap to the oracle in dB]
-        D3[Noise amplification x]
-        D4[Entropy, RMS contrast<br/>no reference needed]
-        D5[Exposure-matched PSNR]
-    end
-
-    subgraph OUT["5 · Output"]
-        E1[4 stage images]
-        E2[Live metric tiles]
-        E3[Tone distribution]
-        E4[Pixel value matrix]
-        E5[Comparison matrix + CSV]
-        E6[Ceiling curve]
-    end
-
-    A1 --> C1 & C2
-    A2 --> C1
-    B1 & B2 & B3 --> A1
-    B2 --> C2 & C3
-    B4 --> C1
-    C1 -.-> D1 & D2 & D5
-    C2 -.-> D2
-    C1 --> D3 & D4
-    C3 --> E6
-    C1 & C2 --> E1
-    D1 & D2 & D3 & D4 --> E2
-    C1 --> E3 & E4 & E5
-
-    style A1 fill:#dbeafe,stroke:#2563eb
-    style A2 fill:#dbeafe,stroke:#2563eb
-    style SCORE fill:#fef3c7
-    style OUT fill:#dcfce7
-```
-
-**The dotted paths need the original**, so they exist only when the app darkened
-a known image. On an uploaded photo it shows entropy, contrast and noise gain —
-all of which need no reference — and says plainly that PSNR is unavailable.
-
----
 
 ## Input & output
 
@@ -314,7 +206,6 @@ footnote.
 python run.py                      # full experiment, ~2 min
 python run.py --gamma 4.5          # a different darkness
 python run.py --images 3           # fewer images, faster
-streamlit run ui/app.py            # the interactive app
 pytest tests -v                    # 45 tests
 ```
 
@@ -322,14 +213,6 @@ pytest tests -v                    # 45 tests
 
 ## Inference: try it on your own image
 
-### 1 · In the browser
-
-```bash
-streamlit run ui/app.py
-```
-
-Choose **“Upload your own dark photo”**. Entropy, contrast and noise gain are
-reported; PSNR is not, because there is no original to compare against.
 
 ### 2 · From the command line
 

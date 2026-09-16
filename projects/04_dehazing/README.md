@@ -108,8 +108,8 @@ invented for an image that has no answer.
 > was never present. The error crosses zero at β ≈ 1.4, which is where the gain
 > peaks. **A dehazer needs a "do nothing" branch.**
 
-**Jump to:** [Results](#results) · [What it does](#what-it-does) · [Screenshots](#screenshots) ·
-[UI → results](#how-the-ui-connects-to-the-results) · [Full tables](#full-results-tables) ·
+**Jump to:** [Results](#results) · [What it does](#what-it-does) · 
+[Full tables](#full-results-tables) ·
 [Run it](#run-it-yourself) · [Inference](#inference-try-it-on-your-own-image) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
 [Limitations](#limitations) · [Keywords](#keywords)
@@ -142,111 +142,7 @@ by actually inverting the scattering.
 
 ---
 
-## Screenshots
 
-All captures of the **live app**. Every number was computed at the moment the
-screenshot was taken.
-
-### 1 · Original, hazy, dehazed, oracle
-
-Drag the haze density and watch the recovery fall apart. The four panels are the
-truth, the veiled input, the method's output and the oracle's.
-
-![Dehazing pipeline](results/screenshots/01_dehazing.png)
-
-### 2 · The transmission map — where the physics lives
-
-The true map, the dark channel it is estimated from, the blocky patch-wise
-estimate, and the guided-filter refinement. **The guided filter's job is not to
-be more accurate on average** — it is to put the depth edges on object
-boundaries instead of on patch boundaries.
-
-![Transmission](results/screenshots/02_transmission.png)
-
-### 3 · Every method against every metric
-
-Watch the **contrast column disagree with PSNR**.
-
-![Comparison matrix](results/screenshots/03_comparison_matrix.png)
-
-### 4 · The veil, as numbers
-
-A 12×12 patch. Haze pulls every value toward the airlight; dehazing pushes them
-back apart.
-
-![The veil as numbers](results/screenshots/04_veil_numbers.png)
-
-### 5 · Tone distribution
-
-![Tone distribution](results/screenshots/05_tone.png)
-
----
-
-## How the UI connects to the results
-
-```mermaid
-flowchart TD
-    subgraph INPUT["1 · Input"]
-        A1[Clear image + beta<br/>J and t both retained]
-        A2[Your own hazy photo]
-    end
-
-    subgraph CONTROLS["2 · Controls"]
-        B1[Image, 6 options]
-        B2[Haze density beta 0.2 - 3.0]
-        B3[Method, 5 options]
-    end
-
-    subgraph RUN["3 · Run"]
-        C1[Estimate airlight A]
-        C2[Estimate transmission t<br/>dark channel prior]
-        C3[Refine t<br/>guided filter]
-        C4["Invert: J = (I−A)/t + A"]
-        C5[Oracle: invert with the TRUE t]
-    end
-
-    subgraph SCORE["4 · Scoring"]
-        D1[PSNR / SSIM vs the original]
-        D2[Transmission MAE vs the true map]
-        D3[Airlight error]
-        D4[RMS contrast - no reference needed]
-    end
-
-    subgraph OUT["5 · Output"]
-        E1[4 stage images]
-        E2[Live metric tiles]
-        E3[Transmission maps]
-        E4[Pixel value matrix]
-        E5[Comparison matrix + CSV]
-        E6[Tone distribution]
-    end
-
-    A1 --> C1 & C5
-    A2 --> C1
-    B1 & B2 --> A1
-    B3 --> C4
-    C1 --> C2 --> C3 --> C4
-    C4 -.-> D1
-    C3 -.-> D2
-    C1 -.-> D3
-    C4 --> D4
-    C4 & C5 --> E1
-    D1 & D2 & D3 & D4 --> E2
-    C2 & C3 --> E3
-    C4 --> E4 & E5 & E6
-
-    style A1 fill:#dbeafe,stroke:#2563eb
-    style A2 fill:#dbeafe,stroke:#2563eb
-    style SCORE fill:#fef3c7
-    style OUT fill:#dcfce7
-```
-
-**The dotted paths need ground truth**, so they exist only when the app generated
-the haze. On an uploaded photo it still shows the airlight estimate, the
-transmission range and the contrast — all of which need no reference — and says
-plainly that PSNR is unavailable.
-
----
 
 ## Full results tables
 
@@ -374,20 +270,12 @@ inversion exists precisely because dividing by 0.05 amplifies noise catastrophic
 ```bash
 python run.py                   # full experiment
 python run.py --beta 2.2        # thicker haze
-streamlit run ui/app.py         # the interactive app
 ```
 
 ---
 
 ## Inference: try it on your own image
 
-### 1 · In the browser
-
-```bash
-streamlit run ui/app.py
-```
-
-Choose **“Upload your own hazy photo”**.
 
 ### 2 · From the command line
 

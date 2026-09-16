@@ -34,8 +34,8 @@ output.
 > Gaussian blur's 0.32 ms — and wins outright on exactly one of the three noise
 > models, by 0.31 dB.
 
-**Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
-[UI → results](#how-the-ui-connects-to-the-results) · [Results](#results) ·
+**Jump to:** [What it does](#what-it-does) · 
+[Results](#results) ·
 [Run it](#run-it-yourself) · [Inference](#inference-denoise-your-own-photo) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
 [Limitations](#limitations) · [Keywords](#keywords)
@@ -72,101 +72,7 @@ those tuned numbers were real.
 
 ---
 
-## Screenshots
 
-The interactive app — `streamlit run ui/app.py` — adds a known amount of a known
-kind of noise and scores every filter against the truth.
-
-### The main view
-
-![The denoising UI](results/ui_main.png)
-
-Clean, noisy, denoised, with PSNR against the actual clean image. The
-**Parameter** metric shows the measured-best setting for this noise model, and
-**Best alternative** always names a filter that would have done better — so the
-page can never leave you with a bad choice unchallenged.
-
-### Every filter on one noise model
-
-![All filters](results/ui_all_filters.png)
-
-Note where **Do nothing (control)** lands. At low noise it beats several real
-filters.
-
-### The role reversal
-
-![Role reversal](results/ui_role_reversal.png)
-
-The same two filters across all three noise models. Median wins salt-and-pepper
-by 6.8 dB and loses Gaussian; bilateral does the reverse. This is the project's
-whole claim in one row of pictures.
-
-### Where denoising starts being worth it
-
-![Level sweep](results/ui_level_sweep.png)
-
-Each filter against the do-nothing line, recomputed live. The crossing point is
-the practically useful number.
-
-### Why one filter cannot win all three
-
-![Noise histograms](results/ui_histograms.png)
-
-Three noise models, three different shapes. Gaussian moves every pixel a little;
-salt-and-pepper moves a few pixels all the way to 0 or 255; Poisson's variance
-grows with the signal.
-
-### Does the tuning mean anything?
-
-![Transfer](results/ui_transfer.png)
-
----
-
-## How the UI connects to the results
-
-```mermaid
-flowchart TD
-    subgraph INPUT["Input"]
-        I1[Sample image, or your own]
-        I2["Noise model: Gaussian / S&P / Poisson"]
-        I3[Level: sigma, density or lambda]
-        I4[Filter]
-        I5["Tuned parameter, or the default?"]
-    end
-
-    subgraph PIPE["Pipeline — the app runs the same code as run.py"]
-        P1[make_noisy — exact, seeded]
-        P2["tuned_call — the measured-best<br/>parameter for THIS noise model"]
-        P3[PSNR / SSIM against the true clean image]
-    end
-
-    subgraph OUT["Displayed results"]
-        O1["3 panels: clean, noisy, denoised"]
-        O2[PSNR and SSIM, with the delta vs noisy]
-        O3["BEST ALTERNATIVE — names a better filter"]
-        O4[Filter x metric matrix + CSV]
-        O5["Role reversal: 2 filters x 3 noise models"]
-        O6[Level sweep against the do-nothing line]
-        O7[Noise histograms]
-        O8["Held-out transfer table"]
-    end
-
-    I1 & I2 & I3 --> P1 --> P2 --> P3
-    I4 & I5 --> P2
-    P3 --> O1 & O2 & O3 & O4
-    P1 --> O5 & O6 & O7
-    I5 --> O8
-
-    style O3 fill:#dcfce7,stroke:#16a34a
-    style O8 fill:#fee2e2,stroke:#dc2626
-```
-
-Because the noise is generated, **every metric here has a ground truth** — which
-is why this project's UI reports PSNR where most of the others in this repo have
-to grey it out. Uploading your own photo still works: the app adds noise to
-*your* clean image, so the truth survives.
-
----
 
 ## Results
 
@@ -281,7 +187,6 @@ pip install -r ../../requirements.txt
 
 python run.py                 # regenerate every number and figure (~3 min)
 python run.py --retune        # re-run the grid search too (slow)
-streamlit run ui/app.py       # the interactive app
 pytest ../..                  # 31 tests for this project, 293 for the repo
 ```
 
@@ -500,7 +405,7 @@ noise, impulse noise, Gaussian noise, Poisson noise, shot noise, PSNR, SSIM,
 noise estimation, sigma estimation, parameter tuning, grid search, overfitting,
 held-out validation, transfer, edge-preserving smoothing, order statistics,
 OpenCV fastNlMeansDenoising, classical computer vision, Python, no deep learning,
-CPU only, Streamlit, denoising without neural networks
+CPU only, denoising without neural networks
 
 ---
 

@@ -33,8 +33,8 @@ silent here. The only evidence is the duplication itself.
 > accuracy** and 0.000 IoU. Any paper reporting accuracy on this task is
 > reporting the size of the forgery.
 
-**Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
-[UI → results](#how-the-ui-connects-to-the-results) · [Results](#results) ·
+**Jump to:** [What it does](#what-it-does) · 
+[Results](#results) ·
 [Run it](#run-it-yourself) · [Inference](#inference-check-your-own-photo) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
 [Limitations](#limitations) · [Keywords](#keywords)
@@ -81,103 +81,7 @@ rotation-robust methods stop looking free.
 
 ---
 
-## Screenshots
 
-The interactive app — `streamlit run ui/app.py` — lets you forge an image with
-sliders and watch six detectors respond, with the transform they recover
-displayed next to the one you applied.
-
-### The main view
-
-![The forgery UI](results/ui_main.png)
-
-A 96 px patch copied onto the astronaut's shoulder. Panel 4 is the truth, and it
-marks **both** squares — the copy and the region it came from — for the reason
-above. Here `SIFT + similarity verify` finds 86% of them at 100% precision.
-
-### The experiment: rotation
-
-![Rotation sweep](results/ui_rotation_sweep.png)
-
-The blue line is block matching. It leaves the chart between 0° and 2°. The
-orange line — same image, same forgery, a different verification hypothesis —
-barely notices. This sweep is recomputed live on whatever image and patch size
-you select.
-
-### What the keypoints actually produce
-
-![The matches](results/ui_matches.png)
-
-Every surviving self-match drawn as a line from one copy to its twin. They are
-*sparse* and they land on corners, which is why turning them into a region is a
-separate problem — and the one the verifier solves.
-
-### Method comparison
-
-![Method matrix](results/ui_method_matrix.png)
-
-Six detectors on one image. The control's pixel-accuracy cell is the point of
-that column.
-
-### False alarms — the number that decides which method to ship
-
-![False alarms](results/ui_false_alarms.png)
-
-Six **untampered** photographs. Anything flagged here is a false accusation.
-Block matching: nothing, on any of them. `ORB + similarity verify`: 14.9% on
-average and 44.6% on the worst. `SIFT blobs`: something on all six.
-
----
-
-## How the UI connects to the results
-
-```mermaid
-flowchart TD
-    subgraph INPUT["Input"]
-        I1[Pick an image]
-        I2[Patch size 24-192 px]
-        I3[Rotate the copy 0-90°]
-        I4[Rescale the copy 0.7-1.5×]
-        I5[OR upload a photo to check]
-    end
-
-    subgraph PIPE["Pipeline — the app runs the same code as run.py"]
-        P1[synth.copy_move_forgery<br/>keeps the exact pair mask]
-        P2[self_matches<br/>k=3, ratio test, min separation]
-        P3[RANSAC similarity fit]
-        P4[Dense verification + area filter]
-    end
-
-    subgraph OUT["Displayed results"]
-        O1[4-panel strip:<br/>original, forged, detected, truth]
-        O2[Time, flagged %, matched pairs]
-        O3[Fitted rotation vs the one APPLIED]
-        O4[Rotation sweep, live, on YOUR settings]
-        O5[Scale sweep, live]
-        O6[The match lines themselves]
-        O7[Method x metric matrix + CSV]
-        O8[False alarms on untampered images]
-    end
-
-    I1 & I2 & I3 & I4 --> P1 --> P2 --> P3 --> P4
-    I5 --> P2
-    P4 --> O1 & O2
-    P3 --> O3 & O6
-    P4 --> O4 & O5 & O7
-    P4 --> O8
-
-    style O3 fill:#dbeafe,stroke:#2563eb
-    style O8 fill:#fee2e2,stroke:#dc2626
-```
-
-Uploading your own photo disables every reference metric — there is no known
-forgery mask — and the app replaces them with a warning carrying the measured
-false-alarm rate, so a flagged percentage is read against what that method flags
-on images known to be clean. The **fitted rotation** (blue) stays available
-either way, and on a real photo it is the most informative single number the tool
-produces.
-
----
 
 ## Results
 
@@ -291,7 +195,6 @@ pip install -r ../../requirements.txt
 
 python run.py                 # regenerate every number and figure (~6 min)
 python run.py --size 48       # rerun the whole study at a smaller forgery
-streamlit run ui/app.py       # the interactive app
 pytest ../..                  # 26 tests for this project, 219 for the repo
 ```
 
@@ -632,7 +535,7 @@ ratio test, RANSAC, estimateAffinePartial2D, similarity transform, dense
 verification, normalized convolution, connected components, mask IoU, Dice,
 precision recall, false alarm rate, pixel accuracy fallacy, rotation invariance,
 scale invariance, classical computer vision, OpenCV, Python, no deep learning,
-CPU only, Streamlit, forgery detection without neural networks
+CPU only, forgery detection without neural networks
 
 ---
 

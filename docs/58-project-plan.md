@@ -41,9 +41,11 @@ looser "one dataset, 3–6 methods" line above wherever the two disagree.
 >
 > For every one of the 58:
 >
-> 1. **UI** — each project gets its own distinct look. Different palette, accent
->    colour, heading font and corner radius. No two of the 58 may look alike.
->    Projects that have no UI yet need one built.
+> 1. **No UI, no dashboard.** No Streamlit app, no app screenshots, nothing that
+>    has to be launched to be understood. A project is `src/`, `run.py`,
+>    `infer.py`, `tests/`, the generated figures, and the README. What a reader
+>    sees is the **input and the output**, side by side, with the number in the
+>    cell — not a photograph of somebody's control panel.
 >
 > 2. **Images** — download 10 to 12 candidates, run all of them, keep the best 4
 >    for the results figure. Drop any sample that fails the project's quality
@@ -66,11 +68,12 @@ looser "one dataset, 3–6 methods" line above wherever the two disagree.
 >    the score printed inside each cell. If a project has only one method it is
 >    still `Sr | Input | Result`.
 >
-> 7. **No new methods.** The algorithms are fine. Only the presentation, the
->    images and the UI change.
+> 7. **No new methods.** The algorithms are fine. Only the presentation and the
+>    images change.
 >
-> 8. **Screenshots must differ from each other.** Measure before shipping — if
->    two captures agree over more than 35% of their rows, keep one.
+> 8. **Every figure earns its place.** Two pictures that show the same thing
+>    means one of them goes. A figure that a reader would scroll past without
+>    learning anything is not neutral, it is noise.
 >
 > 9. **Never write a number the code did not produce.** If a project has no
 >    honest finding, say so in the README rather than inventing one. If a number
@@ -104,7 +107,7 @@ these have to be true:
 | **The four samples are four different kinds of subject** | two rows are variations on one thing |
 | **Every number in the README came from this run** | a figure was regenerated and a number above it was not updated |
 | **The tests pass** | any test fails, including ones the project did not touch |
-| **The screenshots differ from each other** | two agree over more than 35% of their rows |
+| **There is no UI anywhere in the project** | a `ui/` folder, a `.streamlit/` folder, or an app screenshot in the README |
 | **The finding is real** | the README asserts something the data does not actually show |
 
 The last one is the one worth guarding hardest. A project that honestly reports
@@ -152,8 +155,7 @@ How the brief is enforced rather than remembered:
 
 | Rule | Enforced by |
 |---|---|
-| distinct UI per project | `shared/theme.py` — a palette per number, plus a generated `.streamlit/config.toml` |
-| screenshots must differ | `tools/shoot.py` refuses two captures agreeing over 35% of their rows |
+| no UI anywhere | `tools/verify.py` fails a project that has a `ui/` or `.streamlit/` folder |
 | no broken samples | each `run.py` gates candidates and prints the accept/reject log |
 | no reused images | `assets/real/README.md` records every image and which project uses it |
 
@@ -233,29 +235,17 @@ See [`visualisation-plan.md`](visualisation-plan.md). One per project, chosen to
 carry that project's finding. Most of these plotters do not exist in
 `shared/figures.py` yet and are real work.
 
-### 5 · Theme and screenshot the UI
+### 5 · No UI
 
-`shared/theme.py` owns the look. In the app, immediately after
-`st.set_page_config`:
+There is deliberately nothing to launch. This repo was briefly built with a
+Streamlit app per project and they were removed: a dashboard screenshot shows a
+reader somebody else's control panel, not a result, and nine apps that each
+needed launching, theming and photographing was a large amount of work standing
+between the reader and the comparison figure.
 
-```python
-PALETTE = theme.apply(NN)     # NN = project number
-```
-
-and regenerate `.streamlit/config.toml` from the same palette — CSS alone leaves
-BaseWeb widgets (selectbox, radio, checkbox) in the stock dark theme, which puts
-a navy dropdown on a cream page.
-
-Then:
-
-```bash
-python tools/shoot.py 04_dehazing 01_pipeline "02_transmission:Transmission map"
-```
-
-It picks a free port, launches from **inside** the project folder (Streamlit
-resolves `.streamlit/config.toml` against the working directory), photographs
-each tab, tears the server down, and **fails if two captures agree over 35% of
-their rows**.
+What replaces it is `infer.py` — a command-line entry point per project that
+takes an image path and prints what the method decided. No server, no browser,
+no port.
 
 ### 6 · README order
 
@@ -266,12 +256,13 @@ short intro
 > the finding, in one sentence
 Jump to …
 ## What it does
-## Screenshots
 ## Full results tables
 ## Run it yourself / Inference / How it works
 ## Problems hit, and how they were solved
 ## Limitations / Tests / Keywords / References
 ```
+
+There is no Screenshots section. There is nothing to screenshot.
 
 ### 7 · Verify, then commit
 
@@ -288,13 +279,8 @@ no AI footer** — it adds a second name to GitHub's contributor list.
 
 ### Traps already paid for
 
-* **A stale Streamlit server answers.** It prints `Port N is not available`, the
-  new server exits, and the *old* one keeps serving — so the screenshot silently
-  shows the previous build. `tools/shoot.py` exists because of this.
 * **Bash heredocs mangle `\n` inside Python string literals**, producing real
   newlines and an unterminated-string SyntaxError. Use the `Edit` tool for code.
-* **`st.set_page_config` on one line** has no trailing comma, so inserting an
-  argument after it breaks the file. Four apps broke this way.
 * **Whole-image PSNR hides everything** when the change covers a few percent of
   pixels. Score the region that changed.
 * **A method can win its own objective and lose the real one.** Keep a

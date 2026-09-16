@@ -34,8 +34,8 @@ known reference in the frame, and that is where the errors live.
 > self-consistent while being uniformly wrong, so nothing downstream can detect
 > it.
 
-**Jump to:** [What it does](#what-it-does) · [Screenshots](#screenshots) ·
-[UI → results](#how-the-ui-connects-to-the-results) · [Results](#results) ·
+**Jump to:** [What it does](#what-it-does) · 
+[Results](#results) ·
 [Run it](#run-it-yourself) · [Inference](#inference-count-your-own-photo) ·
 [How it works](#how-it-works) · [Problems solved](#problems-hit-and-how-they-were-solved) ·
 [Limitations](#limitations) · [Keywords](#keywords)
@@ -72,113 +72,7 @@ Three things this separates that a segmentation demo runs together:
 
 ---
 
-## Screenshots
 
-The interactive app — `streamlit run ui/app.py` — counts and measures live, with
-a checkbox that breaks the mask on purpose and a reference field you can get
-wrong on purpose.
-
-### The main view
-
-![The coin counting UI](results/ui_main.png)
-
-All 24 coins found and numbered. The warning underneath is the project's second
-finding stated about this exact run: the count is perfect **and two of the
-measurements are not**.
-
-### The ablation — two decisions, crossed
-
-![The seeding ablation](results/ui_ablation.png)
-
-The interesting cell is top-left. With the **same broken mask**, the tutorial's
-global-fraction rule finds 1 object and local-maxima seeding finds all 24. The
-two mask images below it show why: a band of background brighter than Otsu's
-global threshold has merged with the entire top row.
-
-### How the seeds are found
-
-![The seeds](results/ui_seeds.png)
-
-The distance transform's value at a pixel **is** the distance to the nearest
-background pixel, so at a coin's centre it equals that coin's radius — and it
-peaks once per coin even where two coins touch. Everything turns on finding
-those peaks *locally*, one per object.
-
-### Per-object measurements
-
-![Per-object measurements](results/ui_measurements.png)
-
-The output a measuring tool actually produces, sorted by size so a sliver stands
-out at the bottom.
-
-### Method comparison
-
-![Method matrix](results/ui_method_matrix.png)
-
-Count and "implausible regions" are separate columns because they disagree.
-
-### What a wrong reference costs
-
-![Calibration sensitivity](results/ui_calibration.png)
-
-The line is `y = x`. A single multiplication cannot attenuate an error.
-
----
-
-## How the UI connects to the results
-
-```mermaid
-flowchart TD
-    subgraph INPUT["Input"]
-        I1[The coins plate, or your own photo]
-        I2["Flatten illumination? (breaks the mask on purpose)"]
-        I3[Reference diameter in mm]
-        I4[Seed neighbourhood radius]
-        I5[Method]
-    end
-
-    subgraph PIPE["Pipeline — the app runs the same code as run.py"]
-        P1[_flatten_illumination]
-        P2[Otsu + clean + fill holes]
-        P3[Local maxima of the distance transform]
-        P4[cv2.watershed]
-        P5[region_properties + calibrate]
-    end
-
-    subgraph OUT["Displayed results"]
-        O1["3-panel strip: input, mask, labelled objects"]
-        O2["Count, with error when a truth exists"]
-        O3["Scale in mm/px, diameter range"]
-        O4["IMPLAUSIBLE REGIONS — needs no ground truth"]
-        O5[Per-object table + histogram]
-        O6[Method x metric matrix + CSV]
-        O7["The 2x2 ablation, live"]
-        O8["The tutorial's knob, swept live"]
-        O9["Calibration sensitivity, live"]
-    end
-
-    I1 --> P1
-    I2 --> P1 --> P2 --> P3 --> P4 --> P5
-    I4 --> P3
-    I5 --> P4
-    I3 --> P5
-    P5 --> O1 & O2 & O3 & O4 & O5 & O6
-    I2 --> O7
-    P3 --> O8
-    I3 --> O9
-
-    style O4 fill:#fef3c7,stroke:#d97706
-    style O7 fill:#dcfce7,stroke:#16a34a
-```
-
-Uploading your own photo removes the count error — there is no truth to compare
-against — but **keeps the implausible-regions column**, which needs no ground
-truth at all: a region measuring under 45% of the reference is not a small
-object, it is a broken region. That is the one quality signal that survives
-having no annotation, and it is why it is in the app rather than only in the
-paper.
-
----
 
 ## Results
 
@@ -289,7 +183,6 @@ cd classical-computer-vision/projects/09_coin_counting
 pip install -r ../../requirements.txt
 
 python run.py                 # regenerate every number and figure (~30 s)
-streamlit run ui/app.py       # the interactive app
 pytest ../..                  # 23 tests for this project, 242 for the repo
 ```
 
@@ -554,7 +447,7 @@ illumination correction, background flattening, hole filling, Hough circle
 transform, shape prior, equivalent diameter, region properties, pixel to
 millimetre calibration, reference object, measurement error propagation,
 scikit-image coins, classical computer vision, OpenCV, Python, no deep learning,
-CPU only, Streamlit, counting without neural networks
+CPU only, counting without neural networks
 
 ---
 

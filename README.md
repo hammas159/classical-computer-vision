@@ -78,8 +78,8 @@ claims:**
 
 | | Meaning |
 |:--:|---|
-| ✅ | **Shipped.** Measured, figures generated, UI built and screenshotted, tests passing, findings written from real output |
-| 🟡 | **Code written, executes, not yet measured.** Runs without error on a smoke test, but no figures, no UI, no verified numbers |
+| ✅ | **Shipped.** Measured, figures generated, tests passing, findings written from real output |
+| 🟡 | **Code written, executes, not yet measured.** Runs without error on a smoke test, but no figures and no verified numbers |
 | ⚪ | **Code written, not yet executed.** Imports cleanly; nothing beyond that is claimed |
 | ❌ | **Not started.** No code. Every one of these needs data that has to be downloaded — a video clip, a stereo pair, an exposure bracket, a dataset |
 
@@ -209,8 +209,8 @@ Then run any project:
 
 ```bash
 cd projects/01_document_scanner
-python run.py                 # reproduces every number and figure
-streamlit run ui/app.py       # interactive demo, upload your own image
+python run.py                          # reproduces every number and figure
+python infer.py path/to/your/image.jpg # run it on your own image
 ```
 
 Total install is about **60 MB** — OpenCV, scikit-image and matplotlib. There are
@@ -233,28 +233,32 @@ rather than 41 copies of the same boilerplate.
 | [`shared/synth.py`](shared/synth.py) | every ground-truth generator: noise, blur kernels, haze, low light, known homographies and flow fields, copy-move forgery, damage masks, and a camera-accurate document scene |
 | [`shared/metrics.py`](shared/metrics.py) | PSNR, SSIM, IoU, Dice, edge P/R/F1 **with a pixel tolerance**, Pratt's FOM, endpoint error, repeatability, reprojection error |
 | [`shared/figures.py`](shared/figures.py) | comparison grids, before/after pairs, error heatmaps, sweep line plots, **pixel-value distributions, confusion matrices, numeric pixel matrices, and methods-x-metrics comparison matrices** |
-| [`shared/ui.py`](shared/ui.py) | the same distributions and matrices as **live** components for the apps — returns matplotlib figures and pandas Stylers, and deliberately does not import Streamlit so the shared layer stays testable headless |
 | [`shared/bench.py`](shared/bench.py) | timing harness — warm-up discarded, median of N runs |
 | [`shared/report.py`](shared/report.py) | markdown tables, `results.json` with version provenance, a UTF-8-safe console |
-| [`tools/screenshot.py`](tools/screenshot.py) | headless screenshots of the Streamlit apps, driven over the DevTools Protocol |
+| [`tools/verify.py`](tools/verify.py) | the pre-push checklist — every figure regenerates, no number is stale, no UI has crept back in |
 
-### Every project shows its results four ways
+### What a reader actually sees
 
-A table alone hides mechanism, so each project also renders:
+**There is no app to launch.** This repo briefly had a Streamlit dashboard per
+project and they were deleted: a screenshot of somebody else's control panel is
+not a result, and it put a launch step between the reader and the comparison.
 
-* **a distribution** — the pixel populations a method actually has to separate,
-  with the threshold it chose drawn on top;
-* **a pixel matrix** — a small patch of the image printed as raw numbers,
-  because at some point the argument *is* the numbers;
-* **a confusion matrix** — counts and per-class recall, so a high headline
-  accuracy built on a majority class is visible rather than implied;
-* **a comparison matrix** — every method against every metric, each column
-  scaled on its own and coloured by rank so one catastrophic outlier cannot
-  flatten the scale. Ties share a shade, so the colouring never invents an
-  ordering the numbers do not support.
+Every project opens with the same figure instead — **the input down the left,
+every method across the columns, four different subjects down the rows, and the
+score printed inside each cell.** Nothing to run, nothing to install, visible in
+the README.
 
-All four are live in the Streamlit apps as well as static figures in the
-READMEs, and the comparison matrix downloads as CSV.
+Under it sits **one signature visualisation chosen for that project alone** —
+see [`docs/visualisation-plan.md`](docs/visualisation-plan.md). Project 03 gets
+the tone-level survival curve, 09 a diameter histogram with denomination bands,
+57 a DET curve. Three generic panels repeated fifty-eight times cannot carry
+fifty-eight different findings.
+
+And **one panel that is deliberately the same everywhere**: the methods ×
+metrics matrix, each column scaled on its own and coloured by rank, so a reader
+can compare project 14's best edge detector against project 28's without
+relearning a chart. Ties share a shade, so the colouring never invents an
+ordering the numbers do not support.
 
 Three conventions are enforced by the shared layer because getting them wrong
 produces a *plausible wrong answer* rather than an error:
