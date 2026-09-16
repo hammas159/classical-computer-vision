@@ -19,7 +19,8 @@ build; the first says *why*, *how*, and *what will go wrong*.
 ---
 
 Written 2026-09-14. **No deep learning, no training, no fine-tuning** in any of these.
-Target repo: `classical-cv-lab` (the empty `computer-vision-lab` folder was deleted).
+Target repo: **`classical-computer-vision`** (the plan was written against a working name of
+`classical-cv-lab`; the repo that exists is this one).
 
 Every project = **one dataset · 3–6 classical methods · comparative table · side-by-side
 figure · pixel metrics · one stated finding with a number**.
@@ -77,7 +78,71 @@ looser "one dataset, 3–6 methods" line above wherever the two disagree.
 >
 > 10. **No `Co-Authored-By` or AI footer** on any commit.
 >
+> 11. **No broken project, no broken result.** Nothing ships half-working. If a
+>     sample gives a bad result, it is deleted and replaced — never left in the
+>     figure with an excuse under it. If a method produces garbage, that is
+>     either a bug to fix or a finding to state plainly; it is not something to
+>     quietly crop out of the picture.
+>
+> 12. **Keep improving until the results are genuinely good, and only then move
+>     on.** The first run is never the one to push. Look at the figure, find
+>     what is weak, fix it, run again. A project is finished when there is
+>     nothing left that is obviously wrong with it — not when it executes
+>     without an error.
+>
 > Push after each project. Keep going until all 58 are done.
+
+### What "not broken" means, concretely
+
+"It ran without crashing" is not the bar. Before a project is pushed, all of
+these have to be true:
+
+| Check | Fails if |
+|---|---|
+| **Every cell in the comparison figure is a usable result** | a panel is black, blank, all-white, or visibly worse than the input with no explanation |
+| **Every sample passes the project's own quality gate** | a sample stayed in because dropping it would have left only three |
+| **The four samples are four different kinds of subject** | two rows are variations on one thing |
+| **Every number in the README came from this run** | a figure was regenerated and a number above it was not updated |
+| **The tests pass** | any test fails, including ones the project did not touch |
+| **The screenshots differ from each other** | two agree over more than 35% of their rows |
+| **The finding is real** | the README asserts something the data does not actually show |
+
+The last one is the one worth guarding hardest. A project that honestly reports
+*"the six methods are within 0.4 dB of each other and the choice does not
+matter"* is worth more than one that inflates a rounding difference into a
+headline. **If there is no finding, say there is no finding.**
+
+### The improvement loop
+
+Running `run.py` once produces a draft, not a result. The loop that has actually
+produced every good figure in this repo so far:
+
+1. Run it. Open the generated figure and **look at it**.
+2. Find the weakest thing in it — a sample that gained least, a method whose
+   output looks wrong, a row that duplicates another row.
+3. Work out whether that is a bad sample, a bad parameter, or a real property
+   of the method. These need different fixes and confusing them wastes hours.
+4. Fix it. Run again. Compare against what you had.
+5. Repeat until nothing in the picture is obviously wrong.
+
+Examples of this loop finding real bugs rather than cosmetic ones, all from
+projects already shipped:
+
+* **05** — the damage generator painted a constant 255, which made detection
+  trivial and the whole benchmark meaningless. Then `inpaint_median` averaged
+  the scratch into its own replacement: 3.87 dB, fixed to 25.77 dB by
+  normalized convolution.
+* **07** — the truth mask marked only the pasted region, so precision was
+  capped at 0.5 no matter how good the method was. And a stride of 8 meant
+  duplicated blocks were never sampled in phase: 0.068 IoU, fixed to 0.9925.
+* **09** — the tutorial's watershed seeding counted **1 coin of 24** because a
+  bright background band merged the mask into one component.
+* **01** — one row was an image with no page border at all, so every detector
+  "failed" on a scene that was never solvable. The sample was the bug.
+
+None of those would have been caught by checking that the script exited zero.
+
+---
 
 Each project also gets its **own signature visualisation** rather than the same
 three panels repeated fifty-eight times — see
@@ -107,7 +172,7 @@ download budget finding this out again.
 
 | Source | URL pattern | What is there |
 |---|---|---|
-| Kodak PhotoCD suite | `raw.githubusercontent.com/MohamedBakrAli/Kodak-Lossless-True-Color-Image-Suite/master/PhotoCD_PCD0992/NN.png` | 24 varied 768×512 photographs, `01`–`24`. **All 24 are now used** (04 took twelve, 05 took five) |
+| Kodak PhotoCD suite | `raw.githubusercontent.com/MohamedBakrAli/Kodak-Lossless-True-Color-Image-Suite/master/PhotoCD_PCD0992/NN.png` | 24 varied 768×512 photographs, `01`–`24`. **Spent** — 04 took twelve, 05 took five, 03 took the rest |
 | OpenCV samples | `raw.githubusercontent.com/opencv/opencv/4.x/samples/data/<name>` | ~90 images. `aloeL/aloeR/aloeGT` = stereo **with ground truth**; `leuvenA/leuvenB` = an exposure pair; `left01`–`left14`/`right01`–`right14` = checkerboards for calibration |
 | OpenCV extra testdata | `raw.githubusercontent.com/opencv/opencv_extra/4.x/testdata/...` | faces under `cv/face/`, plus much more |
 | Ultralytics | `raw.githubusercontent.com/ultralytics/yolov5/master/data/images/<name>` | `zidane.jpg`, `bus.jpg` — people |
@@ -115,6 +180,13 @@ download budget finding this out again.
 
 List any GitHub folder before downloading:
 `curl -sS "https://api.github.com/repos/OWNER/REPO/contents/PATH" | grep '"download_url"'`
+
+**More sources are needed.** The brief wants roughly 580 distinct images and the
+sources above hold a few hundred at most, with Kodak already spent. Finding
+further GitHub-hosted, permissively licensed image sets is part of the work, not
+a precondition for starting it — and every new source goes in this table and in
+`assets/real/README.md` with its licence, so the next session does not repeat
+the search.
 
 Avoid `lena.jpg` — widely deprecated as a test image, and a portfolio is exactly
 the wrong place to use it.
