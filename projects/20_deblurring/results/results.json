@@ -1,0 +1,307 @@
+{
+  "project": "20_deblurring",
+  "generated_utc": "2026-09-17T09:07:56+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "paraglider_peak",
+    "ox_in_pasture",
+    "surfer_barrel",
+    "three_owlets",
+    "geisha_costume",
+    "child_fur_hood",
+    "tiger_wading",
+    "woman_white_fence",
+    "castle_gatehouse",
+    "man_laying_paving",
+    "marmot_boulder",
+    "owl_in_grass"
+  ],
+  "noise_sigma": 3.0,
+  "wiener_nsr": 0.05,
+  "knows_kernel": [
+    "Inverse filter",
+    "Regularised LS",
+    "Richardson-Lucy",
+    "Wiener"
+  ],
+  "motion": [
+    {
+      "method": "Inverse filter",
+      "knows_kernel": true,
+      "psnr_db": 6.183,
+      "ssim": 0.0178,
+      "median_ms": 37.718
+    },
+    {
+      "method": "Wiener",
+      "knows_kernel": true,
+      "psnr_db": 23.408,
+      "ssim": 0.6609,
+      "median_ms": 38.425
+    },
+    {
+      "method": "Richardson-Lucy",
+      "knows_kernel": true,
+      "psnr_db": 25.991,
+      "ssim": 0.7133,
+      "median_ms": 191.673
+    },
+    {
+      "method": "Regularised LS",
+      "knows_kernel": true,
+      "psnr_db": 20.718,
+      "ssim": 0.5257,
+      "median_ms": 52.484
+    },
+    {
+      "method": "Unsharp (no kernel)",
+      "knows_kernel": false,
+      "psnr_db": 22.67,
+      "ssim": 0.5164,
+      "median_ms": 1.518
+    },
+    {
+      "method": "Do nothing (control)",
+      "knows_kernel": false,
+      "psnr_db": 23.157,
+      "ssim": 0.5665,
+      "median_ms": 0.058
+    }
+  ],
+  "motion_blurred_input": {
+    "psnr": 23.1568,
+    "ssim": 0.5665
+  },
+  "defocus": [
+    {
+      "method": "Inverse filter",
+      "knows_kernel": true,
+      "psnr_db": 5.786,
+      "ssim": 0.0122,
+      "median_ms": 37.659
+    },
+    {
+      "method": "Wiener",
+      "knows_kernel": true,
+      "psnr_db": 22.488,
+      "ssim": 0.5548,
+      "median_ms": 37.094
+    },
+    {
+      "method": "Richardson-Lucy",
+      "knows_kernel": true,
+      "psnr_db": 24.372,
+      "ssim": 0.6159,
+      "median_ms": 182.079
+    },
+    {
+      "method": "Regularised LS",
+      "knows_kernel": true,
+      "psnr_db": 19.403,
+      "ssim": 0.433,
+      "median_ms": 51.237
+    },
+    {
+      "method": "Unsharp (no kernel)",
+      "knows_kernel": false,
+      "psnr_db": 22.156,
+      "ssim": 0.4128,
+      "median_ms": 1.476
+    },
+    {
+      "method": "Do nothing (control)",
+      "knows_kernel": false,
+      "psnr_db": 22.457,
+      "ssim": 0.4825,
+      "median_ms": 0.052
+    }
+  ],
+  "defocus_blurred_input": {
+    "psnr": 22.4574,
+    "ssim": 0.4825
+  },
+  "rl_iterations": [
+    {
+      "iterations": 1,
+      "psnr_db": 22.821,
+      "ssim": 0.5663
+    },
+    {
+      "iterations": 3,
+      "psnr_db": 23.922,
+      "ssim": 0.6284
+    },
+    {
+      "iterations": 5,
+      "psnr_db": 24.367,
+      "ssim": 0.6541
+    },
+    {
+      "iterations": 10,
+      "psnr_db": 25.0,
+      "ssim": 0.6863
+    },
+    {
+      "iterations": 20,
+      "psnr_db": 25.665,
+      "ssim": 0.7101
+    },
+    {
+      "iterations": 30,
+      "psnr_db": 25.991,
+      "ssim": 0.7133
+    },
+    {
+      "iterations": 50,
+      "psnr_db": 26.156,
+      "ssim": 0.6978
+    },
+    {
+      "iterations": 80,
+      "psnr_db": 25.877,
+      "ssim": 0.6615
+    },
+    {
+      "iterations": 120,
+      "psnr_db": 25.209,
+      "ssim": 0.6161
+    },
+    {
+      "iterations": 200,
+      "psnr_db": 23.862,
+      "ssim": 0.549
+    }
+  ],
+  "nsr_sweep": [
+    {
+      "nsr": 0.0001,
+      "psnr_db": 12.16,
+      "ssim": 0.1492
+    },
+    {
+      "nsr": 0.001,
+      "psnr_db": 17.589,
+      "ssim": 0.3381
+    },
+    {
+      "nsr": 0.005,
+      "psnr_db": 21.728,
+      "ssim": 0.5214
+    },
+    {
+      "nsr": 0.01,
+      "psnr_db": 23.056,
+      "ssim": 0.5959
+    },
+    {
+      "nsr": 0.05,
+      "psnr_db": 23.408,
+      "ssim": 0.6609
+    },
+    {
+      "nsr": 0.1,
+      "psnr_db": 21.868,
+      "ssim": 0.6422
+    },
+    {
+      "nsr": 0.3,
+      "psnr_db": 17.38,
+      "ssim": 0.576
+    }
+  ],
+  "noise_sweep": [
+    {
+      "noise_sigma": 0.0,
+      "blurred_input": 23.255,
+      "Inverse filter": 7.377,
+      "Wiener": 23.528,
+      "Richardson-Lucy": 26.606,
+      "Regularised LS": 20.881,
+      "Unsharp (no kernel)": 23.154,
+      "Do nothing (control)": 23.255
+    },
+    {
+      "noise_sigma": 1.0,
+      "blurred_input": 23.2427,
+      "Inverse filter": 6.836,
+      "Wiener": 23.514,
+      "Richardson-Lucy": 26.521,
+      "Regularised LS": 20.868,
+      "Unsharp (no kernel)": 23.086,
+      "Do nothing (control)": 23.243
+    },
+    {
+      "noise_sigma": 3.0,
+      "blurred_input": 23.1568,
+      "Inverse filter": 6.183,
+      "Wiener": 23.408,
+      "Richardson-Lucy": 25.991,
+      "Regularised LS": 20.718,
+      "Unsharp (no kernel)": 22.67,
+      "Do nothing (control)": 23.157
+    },
+    {
+      "noise_sigma": 6.0,
+      "blurred_input": 22.8992,
+      "Inverse filter": 5.788,
+      "Wiener": 23.08,
+      "Richardson-Lucy": 24.74,
+      "Regularised LS": 20.266,
+      "Unsharp (no kernel)": 21.678,
+      "Do nothing (control)": 22.899
+    },
+    {
+      "noise_sigma": 12.0,
+      "blurred_input": 22.1173,
+      "Inverse filter": 5.5,
+      "Wiener": 22.061,
+      "Richardson-Lucy": 22.005,
+      "Regularised LS": 19.04,
+      "Unsharp (no kernel)": 19.44,
+      "Do nothing (control)": 22.117
+    }
+  ],
+  "blind_angle": [
+    {
+      "true_angle_deg": 0.0,
+      "mean_abs_error_deg": 1.17
+    },
+    {
+      "true_angle_deg": 15.0,
+      "mean_abs_error_deg": 5.67
+    },
+    {
+      "true_angle_deg": 30.0,
+      "mean_abs_error_deg": 10.83
+    },
+    {
+      "true_angle_deg": 45.0,
+      "mean_abs_error_deg": 11.75
+    },
+    {
+      "true_angle_deg": 60.0,
+      "mean_abs_error_deg": 9.58
+    },
+    {
+      "true_angle_deg": 90.0,
+      "mean_abs_error_deg": 1.75
+    },
+    {
+      "true_angle_deg": 120.0,
+      "mean_abs_error_deg": 10.25
+    },
+    {
+      "true_angle_deg": 135.0,
+      "mean_abs_error_deg": 11.25
+    },
+    {
+      "true_angle_deg": 160.0,
+      "mean_abs_error_deg": 8.17
+    }
+  ]
+}

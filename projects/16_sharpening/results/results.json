@@ -1,0 +1,220 @@
+{
+  "project": "16_sharpening",
+  "generated_utc": "2026-09-17T02:18:21+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "albatross_pair",
+    "lionesses",
+    "elk_water",
+    "deer_water",
+    "rhino_road",
+    "stone_face_leaves"
+  ],
+  "blur_sigma": 1.5,
+  "clean": [
+    {
+      "method": "Laplacian (add, +centre)",
+      "psnr_db": 20.19,
+      "ssim": 0.6437,
+      "acutance": 0.58564,
+      "overshoot": 0.4582,
+      "rms_contrast": 0.1994,
+      "median_ms": 3.641
+    },
+    {
+      "method": "Laplacian (sub, -centre)",
+      "psnr_db": 20.19,
+      "ssim": 0.6437,
+      "acutance": 0.58564,
+      "overshoot": 0.4582,
+      "rms_contrast": 0.1994,
+      "median_ms": 3.411
+    },
+    {
+      "method": "Laplacian (WRONG sign)",
+      "psnr_db": 18.896,
+      "ssim": 0.1494,
+      "acutance": 0.30204,
+      "overshoot": 0.223,
+      "rms_contrast": 0.1628,
+      "median_ms": 3.453
+    },
+    {
+      "method": "Unsharp mask",
+      "psnr_db": 28.883,
+      "ssim": 0.9056,
+      "acutance": 0.40415,
+      "overshoot": 0.1882,
+      "rms_contrast": 0.1651,
+      "median_ms": 4.297
+    },
+    {
+      "method": "High-boost",
+      "psnr_db": 13.688,
+      "ssim": 0.7662,
+      "acutance": 0.28677,
+      "overshoot": 0.8972,
+      "rms_contrast": 0.0965,
+      "median_ms": 4.282
+    },
+    {
+      "method": "Do nothing (control)",
+      "psnr_db": Infinity,
+      "ssim": 1.0,
+      "acutance": 0.24452,
+      "overshoot": 0.0,
+      "rms_contrast": 0.1465,
+      "median_ms": 0.015
+    }
+  ],
+  "blurred": [
+    {
+      "method": "Laplacian (add, +centre)",
+      "psnr_db": 29.849,
+      "psnr_matched_db": 29.85,
+      "ssim": 0.8122,
+      "acutance": 0.15231
+    },
+    {
+      "method": "Laplacian (sub, -centre)",
+      "psnr_db": 29.849,
+      "psnr_matched_db": 29.85,
+      "ssim": 0.8122,
+      "acutance": 0.15231
+    },
+    {
+      "method": "Laplacian (WRONG sign)",
+      "psnr_db": 26.537,
+      "psnr_matched_db": 26.533,
+      "ssim": 0.6311,
+      "acutance": 0.08965
+    },
+    {
+      "method": "Unsharp mask",
+      "psnr_db": 29.557,
+      "psnr_matched_db": 29.554,
+      "ssim": 0.8031,
+      "acutance": 0.14392
+    },
+    {
+      "method": "High-boost",
+      "psnr_db": 13.471,
+      "psnr_matched_db": 30.083,
+      "ssim": 0.5773,
+      "acutance": 0.08906
+    },
+    {
+      "method": "Do nothing (control)",
+      "psnr_db": 28.395,
+      "psnr_matched_db": 28.391,
+      "ssim": 0.7493,
+      "acutance": 0.11378
+    },
+    {
+      "method": "Wiener deconvolution (oracle)",
+      "psnr_db": 31.902,
+      "psnr_matched_db": 31.899,
+      "ssim": 0.8833,
+      "acutance": 0.22081
+    }
+  ],
+  "blurred_input": {
+    "psnr": 28.3952,
+    "acutance": 0.1138
+  },
+  "amount_sweep": [
+    {
+      "amount": 0.0,
+      "psnr_db": Infinity,
+      "acutance": 0.24452,
+      "overshoot": 0.0
+    },
+    {
+      "amount": 0.25,
+      "psnr_db": 40.53,
+      "acutance": 0.28469,
+      "overshoot": 0.0304
+    },
+    {
+      "amount": 0.5,
+      "psnr_db": 34.669,
+      "acutance": 0.32514,
+      "overshoot": 0.083
+    },
+    {
+      "amount": 1.0,
+      "psnr_db": 28.883,
+      "acutance": 0.40415,
+      "overshoot": 0.1882
+    },
+    {
+      "amount": 1.5,
+      "psnr_db": 25.621,
+      "acutance": 0.47953,
+      "overshoot": 0.2808
+    },
+    {
+      "amount": 2.0,
+      "psnr_db": 23.401,
+      "acutance": 0.55069,
+      "overshoot": 0.3587
+    },
+    {
+      "amount": 3.0,
+      "psnr_db": 20.452,
+      "acutance": 0.68007,
+      "overshoot": 0.4773
+    }
+  ],
+  "blur_sweep": [
+    {
+      "blur_sigma": 0.8,
+      "blurred_input": 32.0496,
+      "Laplacian (add, +centre)": 34.384,
+      "Laplacian (sub, -centre)": 34.384,
+      "Laplacian (WRONG sign)": 24.993,
+      "Unsharp mask": 34.3,
+      "High-boost": 13.607,
+      "Do nothing (control)": 32.05,
+      "Wiener deconvolution (oracle)": 40.059
+    },
+    {
+      "blur_sigma": 1.5,
+      "blurred_input": 28.3952,
+      "Laplacian (add, +centre)": 29.849,
+      "Laplacian (sub, -centre)": 29.849,
+      "Laplacian (WRONG sign)": 26.537,
+      "Unsharp mask": 29.557,
+      "High-boost": 13.471,
+      "Do nothing (control)": 28.395,
+      "Wiener deconvolution (oracle)": 31.902
+    },
+    {
+      "blur_sigma": 2.5,
+      "blurred_input": 26.39,
+      "Laplacian (add, +centre)": 26.787,
+      "Laplacian (sub, -centre)": 26.787,
+      "Laplacian (WRONG sign)": 25.83,
+      "Unsharp mask": 26.848,
+      "High-boost": 13.354,
+      "Do nothing (control)": 26.39,
+      "Wiener deconvolution (oracle)": 29.036
+    },
+    {
+      "blur_sigma": 4.0,
+      "blurred_input": 24.8995,
+      "Laplacian (add, +centre)": 25.035,
+      "Laplacian (sub, -centre)": 25.035,
+      "Laplacian (WRONG sign)": 24.676,
+      "Unsharp mask": 25.089,
+      "High-boost": 13.247,
+      "Do nothing (control)": 24.899,
+      "Wiener deconvolution (oracle)": 27.186
+    }
+  ]
+}

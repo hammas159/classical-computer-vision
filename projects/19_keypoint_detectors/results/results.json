@@ -1,0 +1,268 @@
+{
+  "project": "19_keypoint_detectors",
+  "generated_utc": "2026-09-17T03:46:59+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "eagle_flat_sky",
+    "regatta_spinnakers",
+    "scuba_diver_fish",
+    "portrait_yellow",
+    "blue_footed_boobies",
+    "polar_bear_rail",
+    "geologist_rocks",
+    "man_fur_hat",
+    "glass_pyramid",
+    "bobcat_rock",
+    "snake_coiled",
+    "monitor_lizard_grass"
+  ],
+  "gallery_degrees": 30.0,
+  "match_threshold_px": 3.0,
+  "detectors": [
+    {
+      "detector": "Harris",
+      "repeatability": 0.9387,
+      "keypoints": 1000,
+      "coverage_pct": 33.5,
+      "median_ms": 2.931,
+      "slowdown_vs_fastest": 2.5
+    },
+    {
+      "detector": "Shi-Tomasi",
+      "repeatability": 0.8463,
+      "keypoints": 856,
+      "coverage_pct": 79.3,
+      "median_ms": 2.533,
+      "slowdown_vs_fastest": 2.2
+    },
+    {
+      "detector": "FAST",
+      "repeatability": 0.7752,
+      "keypoints": 2309,
+      "coverage_pct": 79.9,
+      "median_ms": 1.178,
+      "slowdown_vs_fastest": 1.0
+    },
+    {
+      "detector": "SIFT",
+      "repeatability": 0.7698,
+      "keypoints": 821,
+      "coverage_pct": 80.6,
+      "median_ms": 21.212,
+      "slowdown_vs_fastest": 18.0
+    },
+    {
+      "detector": "ORB",
+      "repeatability": 0.8429,
+      "keypoints": 922,
+      "coverage_pct": 58.3,
+      "median_ms": 3.906,
+      "slowdown_vs_fastest": 3.3
+    },
+    {
+      "detector": "AKAZE",
+      "repeatability": 0.8478,
+      "keypoints": 357,
+      "coverage_pct": 63.5,
+      "median_ms": 14.423,
+      "slowdown_vs_fastest": 12.2
+    },
+    {
+      "detector": "BRISK",
+      "repeatability": 0.7617,
+      "keypoints": 1948,
+      "coverage_pct": 77.1,
+      "median_ms": 40.435,
+      "slowdown_vs_fastest": 34.3
+    }
+  ],
+  "rotation_sweep": [
+    {
+      "rotation_deg": 0.0,
+      "Harris": 1.0,
+      "Shi-Tomasi": 1.0,
+      "FAST": 1.0,
+      "SIFT": 1.0,
+      "ORB": 1.0,
+      "AKAZE": 1.0,
+      "BRISK": 1.0
+    },
+    {
+      "rotation_deg": 10.0,
+      "Harris": 0.9295,
+      "Shi-Tomasi": 0.8427,
+      "FAST": 0.7669,
+      "SIFT": 0.7291,
+      "ORB": 0.8864,
+      "AKAZE": 0.8963,
+      "BRISK": 0.7756
+    },
+    {
+      "rotation_deg": 30.0,
+      "Harris": 0.9387,
+      "Shi-Tomasi": 0.8463,
+      "FAST": 0.7752,
+      "SIFT": 0.7698,
+      "ORB": 0.8429,
+      "AKAZE": 0.8478,
+      "BRISK": 0.7617
+    },
+    {
+      "rotation_deg": 60.0,
+      "Harris": 0.9467,
+      "Shi-Tomasi": 0.8503,
+      "FAST": 0.7806,
+      "SIFT": 0.7897,
+      "ORB": 0.7877,
+      "AKAZE": 0.7715,
+      "BRISK": 0.7427
+    },
+    {
+      "rotation_deg": 90.0,
+      "Harris": 0.9961,
+      "Shi-Tomasi": 0.9901,
+      "FAST": 0.9852,
+      "SIFT": 0.9202,
+      "ORB": 0.7486,
+      "AKAZE": 0.759,
+      "BRISK": 0.8473
+    },
+    {
+      "rotation_deg": 180.0,
+      "Harris": 0.9568,
+      "Shi-Tomasi": 0.9838,
+      "FAST": 0.9974,
+      "SIFT": 0.926,
+      "ORB": 0.9264,
+      "AKAZE": 0.9948,
+      "BRISK": 0.968
+    }
+  ],
+  "scale_sweep": [
+    {
+      "scale": 1.0,
+      "Harris": 1.0,
+      "Shi-Tomasi": 1.0,
+      "FAST": 1.0,
+      "SIFT": 1.0,
+      "ORB": 1.0,
+      "AKAZE": 1.0,
+      "BRISK": 1.0
+    },
+    {
+      "scale": 0.9,
+      "Harris": 0.8722,
+      "Shi-Tomasi": 0.7685,
+      "FAST": 0.7707,
+      "SIFT": 0.7057,
+      "ORB": 0.9157,
+      "AKAZE": 0.8428,
+      "BRISK": 0.8139
+    },
+    {
+      "scale": 0.75,
+      "Harris": 0.8306,
+      "Shi-Tomasi": 0.6812,
+      "FAST": 0.7797,
+      "SIFT": 0.5931,
+      "ORB": 0.8805,
+      "AKAZE": 0.6963,
+      "BRISK": 0.817
+    },
+    {
+      "scale": 0.6,
+      "Harris": 0.7751,
+      "Shi-Tomasi": 0.6227,
+      "FAST": 0.8087,
+      "SIFT": 0.4665,
+      "ORB": 0.8782,
+      "AKAZE": 0.5496,
+      "BRISK": 0.83
+    },
+    {
+      "scale": 1.25,
+      "Harris": 0.9692,
+      "Shi-Tomasi": 0.8885,
+      "FAST": 0.7324,
+      "SIFT": 0.647,
+      "ORB": 0.7593,
+      "AKAZE": 0.7203,
+      "BRISK": 0.6498
+    },
+    {
+      "scale": 1.6,
+      "Harris": 0.9448,
+      "Shi-Tomasi": 0.8583,
+      "FAST": 0.628,
+      "SIFT": 0.6278,
+      "ORB": 0.577,
+      "AKAZE": 0.5012,
+      "BRISK": 0.5638
+    }
+  ],
+  "noise_sweep": [
+    {
+      "noise_sigma": 0.0,
+      "Harris": 1.0,
+      "Shi-Tomasi": 1.0,
+      "FAST": 1.0,
+      "SIFT": 1.0,
+      "ORB": 1.0,
+      "AKAZE": 1.0,
+      "BRISK": 1.0
+    },
+    {
+      "noise_sigma": 5.0,
+      "Harris": 0.9704,
+      "Shi-Tomasi": 0.8929,
+      "FAST": 0.9439,
+      "SIFT": 0.8053,
+      "ORB": 0.9787,
+      "AKAZE": 0.9749,
+      "BRISK": 0.9623
+    },
+    {
+      "noise_sigma": 15.0,
+      "Harris": 0.9278,
+      "Shi-Tomasi": 0.749,
+      "FAST": 0.9367,
+      "SIFT": 0.641,
+      "ORB": 0.9495,
+      "AKAZE": 0.9396,
+      "BRISK": 0.947
+    },
+    {
+      "noise_sigma": 30.0,
+      "Harris": 0.8467,
+      "Shi-Tomasi": 0.5878,
+      "FAST": 0.965,
+      "SIFT": 0.501,
+      "ORB": 0.8941,
+      "AKAZE": 0.8878,
+      "BRISK": 0.9627
+    }
+  ],
+  "density_control": [
+    {
+      "budget": 100,
+      "repeatability": 0.9417
+    },
+    {
+      "budget": 250,
+      "repeatability": 0.9372
+    },
+    {
+      "budget": 500,
+      "repeatability": 0.9365
+    },
+    {
+      "budget": 1000,
+      "repeatability": 0.9387
+    }
+  ]
+}

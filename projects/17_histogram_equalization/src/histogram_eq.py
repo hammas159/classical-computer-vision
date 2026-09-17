@@ -91,6 +91,23 @@ def eq_clahe(img: np.ndarray, clip: float = 2.0, grid: int = 8) -> np.ndarray:
     )
 
 
+#: The photograph every "Histogram matching" row is matched *to*. A real
+#: reference has to come from somewhere, and naming it once here is what stops
+#: the method quietly being handed a different target in each experiment. It is
+#: deliberately NOT one of the images under test.
+MATCH_REFERENCE = "alpine_chalet_snow"
+
+
+def _match_to(g: np.ndarray, ref_gray: np.ndarray) -> np.ndarray:
+    """Map ``g``'s CDF onto ``ref_gray``'s. The shared core of method and oracle."""
+    src_hist = np.bincount(g.ravel(), minlength=256).astype(np.float64)
+    ref_hist = np.bincount(ref_gray.ravel(), minlength=256).astype(np.float64)
+    src_cdf = np.cumsum(src_hist) / max(src_hist.sum(), 1)
+    ref_cdf = np.cumsum(ref_hist) / max(ref_hist.sum(), 1)
+    lut = np.interp(src_cdf, ref_cdf, np.arange(256)).astype(np.uint8)
+    return lut[g]
+
+
 def eq_match(img: np.ndarray, reference: np.ndarray | None = None) -> np.ndarray:
     """Histogram matching: reshape the histogram to match a reference image.
 
@@ -98,20 +115,8 @@ def eq_match(img: np.ndarray, reference: np.ndarray | None = None) -> np.ndarray
     reference is a *targeted* transform, where equalisation aims at a flat
     histogram nobody actually wants.
     """
-    from shared import io as shared_io
-
-    ref = reference if reference is not None else shared_io.sample("coffee")
-
-    def _match(g: np.ndarray) -> np.ndarray:
-        r = to_gray(ref)
-        src_hist = np.bincount(g.ravel(), minlength=256).astype(np.float64)
-        ref_hist = np.bincount(r.ravel(), minlength=256).astype(np.float64)
-        src_cdf = np.cumsum(src_hist) / max(src_hist.sum(), 1)
-        ref_cdf = np.cumsum(ref_hist) / max(ref_hist.sum(), 1)
-        lut = np.interp(src_cdf, ref_cdf, np.arange(256)).astype(np.uint8)
-        return lut[g]
-
-    return _on_luma(img, _match)
+    ref = reference if reference is not None else load_scene(MATCH_REFERENCE)
+    return _on_luma(img, lambda g: _match_to(g, to_gray(ref)))
 
 
 def eq_gamma(img: np.ndarray, gamma: float = 0.6) -> np.ndarray:
@@ -121,6 +126,28 @@ def eq_gamma(img: np.ndarray, gamma: float = 0.6) -> np.ndarray:
     any of the adaptive machinery is earning its keep.
     """
     return to_uint8(np.power(to_float(img), gamma))
+
+
+ORACLE_NAME = "Match the TRUE histogram (oracle)"
+
+
+def eq_match_oracle(img: np.ndarray, truth: np.ndarray) -> np.ndarray:
+    """**Oracle**: match the histogram of the clean original itself.
+
+    Not a method — it is handed the answer. Every row in this table is a *tone
+    curve*: a single monotonic map from input grey to output grey, applied
+    either globally or per tile. This one is given the exact histogram the
+    restored image is supposed to have, so it is the best a global tone curve
+    can possibly do on this degradation.
+
+    That matters because it separates two failures that look identical in a
+    table of PSNRs. If a method scores badly and the oracle scores well, the
+    method chose a poor curve. If the oracle scores badly too, **no tone curve
+    was going to work**, and the honest conclusion is that the information was
+    destroyed rather than mis-mapped — which is exactly what low-contrast
+    quantisation does.
+    """
+    return _on_luma(img, lambda g: _match_to(g, to_gray(truth)))
 
 
 METHODS: dict[str, Callable[[np.ndarray], np.ndarray]] = {
@@ -137,7 +164,36 @@ METHODS: dict[str, Callable[[np.ndarray], np.ndarray]] = {
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("moon", "coffee", "chelsea", "astronaut", "camera", "retina")
+#: Twelve photographs chosen to span **how much of the tone range the image
+#: already uses**, measured between the 1st and 99th percentiles. That is the
+#: axis equalisation acts on, so a pool that does not vary along it would run
+#: the same experiment twelve times. Selected by
+#: `tools/select_images.py --axis tone`; the range here is 25% to 98%.
+IMAGES = (
+    "moonlit_pines",       # tone 25.5 — a night scene using a quarter of the range
+    "desert_arch",         # tone 59.6
+    "two_horses_field",    # tone 66.7
+    "ostrich_head",        # tone 71.0
+    "mare_and_foal",       # tone 76.1
+    "horse_blossom",       # tone 78.4
+    "covered_wagons",      # tone 83.5
+    "skiers_woods",        # tone 85.5
+    "penguin_dark_shore",  # tone 87.8 — bright subject on a near-black ground
+    "beached_dinghy",      # tone 90.6
+    "alpine_chalet_snow",  # tone 93.7 — the histogram-matching reference
+    "child_on_water",      # tone 98.0 — extreme backlight, already full range
+)
+
+#: The ten scored images: every one except the matching reference, which is
+#: excluded so that "Histogram matching" is never handed its own target.
+SCORED_IMAGES = tuple(n for n in IMAGES if n != "alpine_chalet_snow")
+
+
+def load_scene(name: str) -> np.ndarray:
+    """Load one of this project's photographs by name."""
+    from shared import io
+
+    return io.real_photo(name)
 CLIP_LEVELS = (0.5, 1.0, 2.0, 3.0, 5.0, 10.0, 20.0, 40.0)
 GRID_LEVELS = (2, 4, 8, 16, 32)
 
@@ -162,16 +218,21 @@ def degrade(clean: np.ndarray, kind: str = "low_contrast", noise_sigma: float = 
     return out
 
 
-def evaluate_methods(kind: str = "low_contrast", images=IMAGES, noise_sigma: float = 3.0, runs: int = 3):
-    """Score every method with full-reference *and* no-reference metrics."""
+def evaluate_methods(kind: str = "low_contrast", images=SCORED_IMAGES,
+                     noise_sigma: float = 3.0, runs: int = 3):
+    """Score every method with full-reference *and* no-reference metrics.
+
+    The oracle is scored alongside them, on exactly the same degraded input and
+    the same metrics, so the ceiling is comparable with the rows it bounds.
+    """
     from shared import io
 
     keys = ("psnr", "ssim", "entropy", "contrast", "noise", "ms")
-    acc = {n: {k: [] for k in keys} for n in METHODS}
+    acc = {n: {k: [] for k in keys} for n in list(METHODS) + [ORACLE_NAME]}
     degraded_stats = {"psnr": [], "entropy": [], "contrast": [], "noise": []}
 
     for i, name in enumerate(images):
-        clean = io.sample(name)
+        clean = load_scene(name)
         bad = degrade(clean, kind=kind, noise_sigma=noise_sigma, seed=i)
         degraded_stats["psnr"].append(psnr(bad, clean))
         degraded_stats["entropy"].append(entropy(bad))
@@ -186,6 +247,14 @@ def evaluate_methods(kind: str = "low_contrast", images=IMAGES, noise_sigma: flo
             acc[method]["contrast"].append(rms_contrast(out))
             acc[method]["noise"].append(estimate_noise_sigma(out))
             acc[method]["ms"].append(timing.median_ms)
+
+        rec, timing = timeit(lambda: eq_match_oracle(bad, clean), runs=runs, warmup=1)
+        acc[ORACLE_NAME]["psnr"].append(psnr(rec, clean))
+        acc[ORACLE_NAME]["ssim"].append(ssim(rec, clean))
+        acc[ORACLE_NAME]["entropy"].append(entropy(rec))
+        acc[ORACLE_NAME]["contrast"].append(rms_contrast(rec))
+        acc[ORACLE_NAME]["noise"].append(estimate_noise_sigma(rec))
+        acc[ORACLE_NAME]["ms"].append(timing.median_ms)
 
     rows = [
         {
@@ -202,7 +271,7 @@ def evaluate_methods(kind: str = "low_contrast", images=IMAGES, noise_sigma: flo
     return rows, {k: round(float(np.mean(v)), 4) for k, v in degraded_stats.items()}
 
 
-def sweep_clip_limit(images=IMAGES, clips=CLIP_LEVELS, noise_sigma: float = 3.0):
+def sweep_clip_limit(images=SCORED_IMAGES, clips=CLIP_LEVELS, noise_sigma: float = 3.0):
     """The parameter that decides whether CLAHE helps.
 
     PSNR against the truth should peak at a moderate clip and fall away either
@@ -215,7 +284,7 @@ def sweep_clip_limit(images=IMAGES, clips=CLIP_LEVELS, noise_sigma: float = 3.0)
     for clip in clips:
         p, s, e, n = [], [], [], []
         for i, name in enumerate(images):
-            clean = io.sample(name)
+            clean = load_scene(name)
             bad = degrade(clean, noise_sigma=noise_sigma, seed=i)
             out = eq_clahe(bad, clip=clip)
             p.append(psnr(out, clean))
@@ -234,7 +303,7 @@ def sweep_clip_limit(images=IMAGES, clips=CLIP_LEVELS, noise_sigma: float = 3.0)
     return rows
 
 
-def sweep_grid(images=IMAGES, grids=GRID_LEVELS, clip: float = 2.0):
+def sweep_grid(images=SCORED_IMAGES, grids=GRID_LEVELS, clip: float = 2.0):
     """Tile size: too few tiles is global HE, too many is per-pixel noise."""
     from shared import io
 
@@ -242,7 +311,7 @@ def sweep_grid(images=IMAGES, grids=GRID_LEVELS, clip: float = 2.0):
     for grid in grids:
         p, e = [], []
         for i, name in enumerate(images):
-            clean = io.sample(name)
+            clean = load_scene(name)
             bad = degrade(clean, seed=i)
             out = eq_clahe(bad, clip=clip, grid=grid)
             p.append(psnr(out, clean))
@@ -257,7 +326,7 @@ def sweep_grid(images=IMAGES, grids=GRID_LEVELS, clip: float = 2.0):
     return rows
 
 
-def metric_disagreement(images=IMAGES):
+def metric_disagreement(images=SCORED_IMAGES):
     """Rank the methods by each metric and report where the rankings differ.
 
     If entropy and PSNR disagree about the winner — and they should — then every

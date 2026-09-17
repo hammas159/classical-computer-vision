@@ -131,18 +131,73 @@ METHODS: dict[str, Callable[..., np.ndarray]] = {
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "chelsea", "camera", "brick", "moon")
+#: Twelve photographs spanning **texture density** — the fraction of spectral
+#: energy above a quarter Nyquist. That is precisely the content downsampling
+#: destroys and upsampling has to invent, so a pool that did not vary along it
+#: would be twelve runs of the same experiment. Selected by
+#: `tools/select_images.py --axis texture`; the range is 53.5 to 84.3.
+IMAGES = (
+    "hawk_in_scrub",        # texture 53.5
+    "helicopter_dusk",      # texture 60.4 — large smooth sky, little to lose
+    "rider_and_herd",       # texture 63.8
+    "indian_corn",          # texture 66.3
+    "man_green_parka",      # texture 67.6
+    "longtail_boats",       # texture 68.9
+    "moated_chateau",       # texture 70.2 — fine roof detail and a reflection
+    "woman_wading",         # texture 71.5
+    "parasols_willows",     # texture 72.7
+    "steam_train_viaduct",  # texture 74.4
+    "shark_shallows",       # texture 77.0
+    "raked_zen_garden",     # texture 84.3 — the finest repeating texture here
+)
 SCALES = (2, 3, 4, 6, 8)
+
+ORACLE_NAME = "Band-limited reference"
+
+
+def load_scene(name: str) -> np.ndarray:
+    """Load one of this project's photographs by name."""
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def oracle_band_limited(hr: np.ndarray, scale: int = 4) -> np.ndarray:
+    """The original, low-passed by the same blur the downsample applied.
+
+    Handed the high-resolution image, so it is not a method. It answers the
+    question the table otherwise cannot: *how much of this picture was still
+    present in the low-resolution file at all?* Downsampling blurs and then
+    throws away every other pixel; applying the blur without the decimation
+    gives the image a reconstruction is aiming at.
+
+    **It is a reference, not a ceiling, and the difference is measurable.** A
+    Gaussian is not a brick-wall filter: it attenuates the frequencies above the
+    new Nyquist rather than removing them, so the decimated samples still carry
+    a folded, weakened copy of them. A method that models the degradation can
+    partly invert that attenuation and score *above* this row. Back-projection
+    does exactly that on 1 of the 12 photographs here, by 0.35 dB, and comes in
+    0.2 to 0.5 dB below it on the other eleven.
+
+    Calling it an oracle would have been the tidier story and the false one.
+    What it actually marks is the point past which an interpolator has to start
+    modelling the degradation rather than just resampling -- which is precisely
+    the line back-projection crosses and the other five do not.
+    """
+    from shared import synth
+
+    sigma = 0.5 * scale
+    return cv2.GaussianBlur(hr, (0, 0), sigma, borderType=cv2.BORDER_REFLECT)
 
 
 def evaluate_methods(scale: int = 4, images=IMAGES, runs: int = 3, noise_sigma: float = 0.0):
     """Score every method against the true high-resolution original."""
     from shared import io, synth
 
-    acc = {n: {"psnr": [], "ssim": [], "ms": []} for n in METHODS}
+    acc = {n: {"psnr": [], "ssim": [], "ms": []} for n in list(METHODS) + [ORACLE_NAME]}
 
     for i, name in enumerate(images):
-        hr = io.sample(name)
+        hr = load_scene(name)
         # crop so the dimensions divide exactly by the scale; otherwise the
         # comparison silently includes a resampling mismatch at the edge
         h = (hr.shape[0] // scale) * scale
@@ -160,6 +215,11 @@ def evaluate_methods(scale: int = 4, images=IMAGES, runs: int = 3, noise_sigma: 
             acc[method]["ssim"].append(ssim(out, hr))
             acc[method]["ms"].append(timing.median_ms)
 
+        rec, timing = timeit(lambda: oracle_band_limited(hr, scale), runs=1, warmup=0)
+        acc[ORACLE_NAME]["psnr"].append(psnr(rec, hr))
+        acc[ORACLE_NAME]["ssim"].append(ssim(rec, hr))
+        acc[ORACLE_NAME]["ms"].append(timing.median_ms)
+
     rows = [
         {
             "method": m,
@@ -169,9 +229,14 @@ def evaluate_methods(scale: int = 4, images=IMAGES, runs: int = 3, noise_sigma: 
         }
         for m, a in acc.items()
     ]
-    best = max(r["psnr_db"] for r in rows)
-    worst = min(r["psnr_db"] for r in rows)
-    return rows, {"psnr_spread_db": round(best - worst, 3)}
+    real = [r for r in rows if r["method"] != ORACLE_NAME]
+    best = max(r["psnr_db"] for r in real)
+    worst = min(r["psnr_db"] for r in real)
+    oracle = next(r["psnr_db"] for r in rows if r["method"] == ORACLE_NAME)
+    return rows, {
+        "psnr_spread_db": round(best - worst, 3),
+        "oracle_headroom_db": round(oracle - best, 3),
+    }
 
 
 def sweep_scale(images=IMAGES, scales=SCALES):
@@ -183,7 +248,11 @@ def sweep_scale(images=IMAGES, scales=SCALES):
     rows = []
     for s in scales:
         scored, extra = evaluate_methods(scale=s, images=images, runs=1)
-        row: dict[str, float | int] = {"scale": s, "spread_db": extra["psnr_spread_db"]}
+        row: dict[str, float | int] = {
+            "scale": s,
+            "spread_db": extra["psnr_spread_db"],
+            "oracle_headroom_db": extra["oracle_headroom_db"],
+        }
         for r in scored:
             row[r["method"]] = r["psnr_db"]
         rows.append(row)
@@ -202,7 +271,7 @@ def compare_degradations(images=IMAGES, scale: int = 4):
 
     correct, naive, difference = [], [], []
     for name in images:
-        hr = io.sample(name)
+        hr = load_scene(name)
         h = (hr.shape[0] // scale) * scale
         w = (hr.shape[1] // scale) * scale
         hr = hr[:h, :w]
@@ -247,7 +316,7 @@ def evaluate_frequency(scale: int = 4, images=IMAGES):
     originals = []
     per = {n: [] for n in METHODS}
     for name in images:
-        hr = io.sample(name)
+        hr = load_scene(name)
         h = (hr.shape[0] // scale) * scale
         w = (hr.shape[1] // scale) * scale
         hr = hr[:h, :w]

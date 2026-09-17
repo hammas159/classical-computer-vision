@@ -1,0 +1,171 @@
+{
+  "project": "21_super_resolution",
+  "generated_utc": "2026-09-17T09:25:27+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "hawk_in_scrub",
+    "helicopter_dusk",
+    "rider_and_herd",
+    "indian_corn",
+    "man_green_parka",
+    "longtail_boats",
+    "moated_chateau",
+    "woman_wading",
+    "parasols_willows",
+    "steam_train_viaduct",
+    "shark_shallows",
+    "raked_zen_garden"
+  ],
+  "scale": 4,
+  "methods": [
+    {
+      "method": "Nearest",
+      "psnr_db": 22.45,
+      "ssim": 0.5398,
+      "median_ms": 0.199
+    },
+    {
+      "method": "Bilinear",
+      "psnr_db": 22.738,
+      "ssim": 0.5505,
+      "median_ms": 0.23
+    },
+    {
+      "method": "Bicubic",
+      "psnr_db": 22.913,
+      "ssim": 0.5676,
+      "median_ms": 0.848
+    },
+    {
+      "method": "Lanczos-4",
+      "psnr_db": 22.937,
+      "ssim": 0.5711,
+      "median_ms": 2.051
+    },
+    {
+      "method": "Edge-directed",
+      "psnr_db": 22.913,
+      "ssim": 0.5676,
+      "median_ms": 13.435
+    },
+    {
+      "method": "Back-projection",
+      "psnr_db": 24.56,
+      "ssim": 0.6435,
+      "median_ms": 117.073
+    },
+    {
+      "method": "Band-limited reference",
+      "psnr_db": 24.863,
+      "ssim": 0.6568,
+      "median_ms": 0.744
+    }
+  ],
+  "summary": {
+    "psnr_spread_db": 2.11,
+    "oracle_headroom_db": 0.303
+  },
+  "scale_sweep": [
+    {
+      "scale": 2,
+      "spread_db": 2.611,
+      "oracle_headroom_db": -0.166,
+      "Nearest": 25.679,
+      "Bilinear": 25.771,
+      "Bicubic": 26.263,
+      "Lanczos-4": 26.337,
+      "Edge-directed": 26.308,
+      "Back-projection": 28.29,
+      "Band-limited reference": 28.124
+    },
+    {
+      "scale": 3,
+      "spread_db": 2.278,
+      "oracle_headroom_db": 0.16,
+      "Nearest": 23.594,
+      "Bilinear": 23.898,
+      "Bicubic": 24.114,
+      "Lanczos-4": 24.145,
+      "Edge-directed": 24.117,
+      "Back-projection": 25.872,
+      "Band-limited reference": 26.032
+    },
+    {
+      "scale": 4,
+      "spread_db": 2.11,
+      "oracle_headroom_db": 0.303,
+      "Nearest": 22.45,
+      "Bilinear": 22.738,
+      "Bicubic": 22.913,
+      "Lanczos-4": 22.937,
+      "Edge-directed": 22.913,
+      "Back-projection": 24.56,
+      "Band-limited reference": 24.863
+    },
+    {
+      "scale": 6,
+      "spread_db": 1.804,
+      "oracle_headroom_db": 0.43,
+      "Nearest": 21.203,
+      "Bilinear": 21.481,
+      "Bicubic": 21.588,
+      "Lanczos-4": 21.603,
+      "Edge-directed": 21.588,
+      "Back-projection": 23.007,
+      "Band-limited reference": 23.437
+    },
+    {
+      "scale": 8,
+      "spread_db": 1.592,
+      "oracle_headroom_db": 0.565,
+      "Nearest": 20.387,
+      "Bilinear": 20.657,
+      "Bicubic": 20.733,
+      "Lanczos-4": 20.746,
+      "Edge-directed": 20.733,
+      "Back-projection": 21.979,
+      "Band-limited reference": 22.544
+    }
+  ],
+  "degradation_comparison": {
+    "blur_then_decimate_psnr_db": 22.913,
+    "cv2_resize_area_psnr_db": 25.033,
+    "difference_db": 2.12,
+    "lr_images_differ_psnr_db": 27.921
+  },
+  "frequency_content": [
+    {
+      "method": "Original (truth)",
+      "high_freq_energy": 0.55121
+    },
+    {
+      "method": "Nearest",
+      "high_freq_energy": 0.34429
+    },
+    {
+      "method": "Bilinear",
+      "high_freq_energy": 0.1605
+    },
+    {
+      "method": "Bicubic",
+      "high_freq_energy": 0.14661
+    },
+    {
+      "method": "Lanczos-4",
+      "high_freq_energy": 0.14216
+    },
+    {
+      "method": "Edge-directed",
+      "high_freq_energy": 0.14668
+    },
+    {
+      "method": "Back-projection",
+      "high_freq_energy": 0.1365
+    }
+  ]
+}

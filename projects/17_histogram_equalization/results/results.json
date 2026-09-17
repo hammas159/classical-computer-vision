@@ -1,0 +1,227 @@
+{
+  "project": "17_histogram_equalization",
+  "generated_utc": "2026-09-17T02:48:07+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "moonlit_pines",
+    "desert_arch",
+    "two_horses_field",
+    "ostrich_head",
+    "mare_and_foal",
+    "horse_blossom",
+    "covered_wagons",
+    "skiers_woods",
+    "penguin_dark_shore",
+    "beached_dinghy",
+    "alpine_chalet_snow",
+    "child_on_water"
+  ],
+  "scored_images": [
+    "moonlit_pines",
+    "desert_arch",
+    "two_horses_field",
+    "ostrich_head",
+    "mare_and_foal",
+    "horse_blossom",
+    "covered_wagons",
+    "skiers_woods",
+    "penguin_dark_shore",
+    "beached_dinghy",
+    "child_on_water"
+  ],
+  "match_reference": "alpine_chalet_snow",
+  "methods": [
+    {
+      "method": "Do nothing (control)",
+      "psnr_db": 15.349,
+      "ssim": 0.6356,
+      "entropy_bits": 5.615,
+      "rms_contrast": 0.0648,
+      "noise_sigma": 3.25,
+      "median_ms": 0.028
+    },
+    {
+      "method": "Global HE",
+      "psnr_db": 13.826,
+      "ssim": 0.5049,
+      "entropy_bits": 5.598,
+      "rms_contrast": 0.2871,
+      "noise_sigma": 20.66,
+      "median_ms": 0.456
+    },
+    {
+      "method": "AHE (unclipped)",
+      "psnr_db": 10.983,
+      "ssim": 0.3629,
+      "entropy_bits": 7.953,
+      "rms_contrast": 0.2671,
+      "noise_sigma": 36.884,
+      "median_ms": 0.619
+    },
+    {
+      "method": "CLAHE (clip 2.0)",
+      "psnr_db": 15.939,
+      "ssim": 0.734,
+      "entropy_bits": 6.625,
+      "rms_contrast": 0.1095,
+      "noise_sigma": 8.106,
+      "median_ms": 0.608
+    },
+    {
+      "method": "Histogram matching",
+      "psnr_db": 13.772,
+      "ssim": 0.5054,
+      "entropy_bits": 5.551,
+      "rms_contrast": 0.3075,
+      "noise_sigma": 21.803,
+      "median_ms": 3.801
+    },
+    {
+      "method": "Gamma 0.6",
+      "psnr_db": 10.581,
+      "ssim": 0.5266,
+      "entropy_bits": 5.325,
+      "rms_contrast": 0.0516,
+      "noise_sigma": 2.639,
+      "median_ms": 8.06
+    },
+    {
+      "method": "Match the TRUE histogram (oracle)",
+      "psnr_db": 24.527,
+      "ssim": 0.8335,
+      "entropy_bits": 5.596,
+      "rms_contrast": 0.1836,
+      "noise_sigma": 8.771,
+      "median_ms": 2.13
+    }
+  ],
+  "degraded_input": {
+    "psnr": 15.3494,
+    "entropy": 5.6154,
+    "contrast": 0.0648,
+    "noise": 3.2496
+  },
+  "clip_sweep": [
+    {
+      "clip_limit": 0.5,
+      "psnr_db": 15.527,
+      "ssim": 0.6852,
+      "entropy_bits": 5.918,
+      "noise_sigma": 4.313
+    },
+    {
+      "clip_limit": 1.0,
+      "psnr_db": 15.782,
+      "ssim": 0.7256,
+      "entropy_bits": 6.206,
+      "noise_sigma": 5.601
+    },
+    {
+      "clip_limit": 2.0,
+      "psnr_db": 15.939,
+      "ssim": 0.734,
+      "entropy_bits": 6.625,
+      "noise_sigma": 8.106
+    },
+    {
+      "clip_limit": 3.0,
+      "psnr_db": 15.764,
+      "ssim": 0.6946,
+      "entropy_bits": 6.898,
+      "noise_sigma": 10.469
+    },
+    {
+      "clip_limit": 5.0,
+      "psnr_db": 14.952,
+      "ssim": 0.596,
+      "entropy_bits": 7.239,
+      "noise_sigma": 14.573
+    },
+    {
+      "clip_limit": 10.0,
+      "psnr_db": 13.16,
+      "ssim": 0.4463,
+      "entropy_bits": 7.639,
+      "noise_sigma": 22.726
+    },
+    {
+      "clip_limit": 20.0,
+      "psnr_db": 11.642,
+      "ssim": 0.3751,
+      "entropy_bits": 7.874,
+      "noise_sigma": 31.53
+    },
+    {
+      "clip_limit": 40.0,
+      "psnr_db": 10.983,
+      "ssim": 0.3629,
+      "entropy_bits": 7.953,
+      "noise_sigma": 36.884
+    }
+  ],
+  "grid_sweep": [
+    {
+      "grid": 2,
+      "psnr_db": 17.437,
+      "entropy_bits": 6.779
+    },
+    {
+      "grid": 4,
+      "psnr_db": 16.617,
+      "entropy_bits": 6.749
+    },
+    {
+      "grid": 8,
+      "psnr_db": 15.939,
+      "entropy_bits": 6.625
+    },
+    {
+      "grid": 16,
+      "psnr_db": 15.439,
+      "entropy_bits": 6.537
+    },
+    {
+      "grid": 32,
+      "psnr_db": 8.981,
+      "entropy_bits": 6.682
+    }
+  ],
+  "disagreement": {
+    "rank_by_psnr": [
+      "Match the TRUE histogram (oracle)",
+      "CLAHE (clip 2.0)",
+      "Do nothing (control)",
+      "Global HE",
+      "Histogram matching",
+      "AHE (unclipped)",
+      "Gamma 0.6"
+    ],
+    "rank_by_entropy": [
+      "AHE (unclipped)",
+      "CLAHE (clip 2.0)",
+      "Do nothing (control)",
+      "Global HE",
+      "Match the TRUE histogram (oracle)",
+      "Histogram matching",
+      "Gamma 0.6"
+    ],
+    "rank_by_contrast": [
+      "Histogram matching",
+      "Global HE",
+      "AHE (unclipped)",
+      "Match the TRUE histogram (oracle)",
+      "CLAHE (clip 2.0)",
+      "Do nothing (control)",
+      "Gamma 0.6"
+    ],
+    "psnr_winner": "Match the TRUE histogram (oracle)",
+    "entropy_winner": "AHE (unclipped)",
+    "contrast_winner": "Histogram matching",
+    "winners_agree": false
+  }
+}

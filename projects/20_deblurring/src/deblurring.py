@@ -71,7 +71,18 @@ def deblur_inverse(img: np.ndarray, psf: np.ndarray, epsilon: float = 1e-3) -> n
     return to_uint8(np.real(np.fft.ifft2(np.fft.fft2(f) / H_safe)))
 
 
-def deblur_wiener(img: np.ndarray, psf: np.ndarray, nsr: float = 0.01) -> np.ndarray:
+#: Noise-to-signal ratio Wiener runs at in the main table. The textbook example
+#: value is 0.01; swept against the truth on this project's twelve photographs
+#: the PSNR optimum is **0.05**, and 0.01 costs 0.75 dB.
+#:
+#: Reported at its own best setting rather than at the textbook one, because the
+#: finding here is that Wiener loses to doing nothing *even when tuned* -- and
+#: that claim is only worth making about a fairly tuned Wiener. Note that SSIM
+#: prefers 0.1, so the two metrics do not agree on this number either.
+WIENER_NSR = 0.05
+
+
+def deblur_wiener(img: np.ndarray, psf: np.ndarray, nsr: float = WIENER_NSR) -> np.ndarray:
     """Wiener filter: the minimum-mean-squared-error linear inverse.
 
         G = conj(H) / (|H|^2 + NSR)
@@ -167,29 +178,101 @@ KNOWS_KERNEL = {"Inverse filter", "Wiener", "Richardson-Lucy", "Regularised LS"}
 # --------------------------------------------------------------------------- #
 
 
-def estimate_motion_angle(img: np.ndarray) -> float:
-    """Estimate a motion-blur direction from the log power spectrum.
+#: Radius band of the log-spectrum the angle search samples, as a fraction of
+#: the shortest half-axis. The very centre is the DC blob, which is bright at
+#: every angle and swamps the signal; the outermost ring is mostly noise.
+ANGLE_RADII = (0.06, 1.0)
+
+
+def estimate_motion_angle(img: np.ndarray, n_angles: int = 180) -> float:
+    """Estimate a motion-blur direction from the log power spectrum, blind.
 
     Linear motion blur multiplies the spectrum by a sinc whose zero-crossings
-    form parallel stripes perpendicular to the motion. Finding the stripe
-    orientation gives the angle without knowing anything else.
+    form parallel stripes **perpendicular** to the motion. Averaging the log
+    spectrum along rays from the centre gives a profile over angle, and the
+    motion direction falls out of where that profile peaks.
+
+    Two things about this were wrong before, and together they made the
+    estimator look like it worked at one angle and nowhere else.
+
+    **It used `cv2.HoughLines` on a thresholded spectrum.** Hough found the FFT's
+    own axis-aligned and diagonal structure rather than the sinc stripes, so the
+    answer snapped to multiples of 45 degrees: exact at 0, 45, 90 and 135, and
+    20 degrees or more out at every angle between.
+
+    **And the perpendicular was never taken.** The stripes run across the motion,
+    so the reported angle was the stripe orientation, not the blur direction.
+    Scored against the truth that produced errors of 50 to 80 degrees -- worse
+    than guessing, on a quantity with only 180 degrees to be wrong in -- while
+    the one angle where the two errors happened to cancel (90) came out at 3.25
+    and made the whole thing look plausible.
+
+    The radial profile below carries no preference for any particular direction,
+    and gets within about 10 degrees at every angle tested.
     """
     f = to_float(to_gray(img))
-    spectrum = np.log1p(np.abs(np.fft.fftshift(np.fft.fft2(f))))
-    spectrum = cv2.normalize(spectrum, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
-    _, binary = cv2.threshold(spectrum, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    lines = cv2.HoughLines(binary, 1, np.pi / 180, threshold=120)
-    if lines is None:
-        return 0.0
-    theta = float(np.median(lines[:, 0, 1]))
-    return float(np.degrees(theta) % 180.0)
+    h, w = f.shape
+    # Windowing first: a rectangular crop has a hard edge at the frame boundary,
+    # whose spectrum is a bright cross through the origin at exactly 0 and 90
+    # degrees -- the two answers the estimator is most likely to be asked for.
+    window = np.outer(np.hanning(h), np.hanning(w)).astype(np.float32)
+    spectrum = np.log1p(np.abs(np.fft.fftshift(np.fft.fft2(f * window))))
+
+    cy, cx = h // 2, w // 2
+    lo, hi = ANGLE_RADII
+    limit = min(cy, cx)
+    radii = np.arange(max(2, int(lo * limit)), int(hi * limit))
+    thetas = np.deg2rad(np.arange(n_angles))
+    ys = np.clip((cy + radii[None, :] * np.sin(thetas)[:, None]).astype(int), 0, h - 1)
+    xs = np.clip((cx + radii[None, :] * np.cos(thetas)[:, None]).astype(int), 0, w - 1)
+    profile = spectrum[ys, xs].mean(axis=1)
+
+    stripe_angle = float(np.argmax(profile))
+    return float((90.0 - stripe_angle) % 180.0)
 
 
 # --------------------------------------------------------------------------- #
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("camera", "astronaut", "coffee", "moon", "chelsea")
+#: Twelve photographs spanning **detail density** — mean gradient magnitude.
+#: Deblurring is judged on how much fine structure it puts back, so an image
+#: with none cannot show a difference between methods and an image made of it
+#: shows the largest difference there is. Selected by
+#: `tools/select_images.py --axis detail`; the range is 57 to 732, a factor of 13.
+IMAGES = (
+    "paraglider_peak",    # detail  57 — a smooth sky, almost nothing to restore
+    "ox_in_pasture",      # detail 154
+    "surfer_barrel",      # detail 193
+    "three_owlets",       # detail 222
+    "geisha_costume",     # detail 249
+    "child_fur_hood",     # detail 278
+    "tiger_wading",       # detail 299 — stripes, a direction a motion blur hides in
+    "woman_white_fence",  # detail 322
+    "castle_gatehouse",   # detail 361 — hard man-made edges
+    "man_laying_paving",  # detail 406
+    "marmot_boulder",     # detail 454
+    "owl_in_grass",       # detail 732 — the finest detail in the pool
+)
+
+
+def detail_of(img) -> float:
+    """Mean gradient magnitude x1000 — the axis this pool was selected on.
+
+    Repeated here so a figure can label each row with the quantity that decides
+    how much there was to restore in the first place.
+    """
+    g = to_float(to_gray(img))
+    dx = cv2.Sobel(g, cv2.CV_32F, 1, 0, ksize=3)
+    dy = cv2.Sobel(g, cv2.CV_32F, 0, 1, ksize=3)
+    return float(np.mean(np.hypot(dx, dy)) * 1000)
+
+
+def load_scene(name: str):
+    """Load one of this project's photographs by name."""
+    from shared import io
+
+    return io.real_photo(name)
 RL_ITERATIONS = (1, 3, 5, 10, 20, 30, 50, 80, 120, 200)
 NSR_LEVELS = (0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.3)
 NOISE_LEVELS = (0.0, 1.0, 3.0, 6.0, 12.0)
@@ -201,9 +284,9 @@ def make_blurred(image: str, kind: str = "motion", noise_sigma: float = 3.0, see
     Returns ``(clean_gray, blurred, psf)``. Noise is what makes the problem hard:
     without it even the naive inverse filter works.
     """
-    from shared import io, synth
+    from shared import synth
 
-    clean = io.sample(image)
+    clean = load_scene(image)
     psf = synth.motion_blur_kernel(15, 30.0) if kind == "motion" else synth.defocus_kernel(7)
     blurred = synth.apply_kernel(clean, psf)
     if noise_sigma > 0:
@@ -304,13 +387,13 @@ def sweep_noise(images=IMAGES, levels=NOISE_LEVELS):
 
 def evaluate_blind_angle(images=IMAGES, angles=(0.0, 30.0, 60.0, 90.0, 135.0)):
     """Can the motion direction be recovered from the image alone?"""
-    from shared import io, synth
+    from shared import synth
 
     rows = []
     for true_angle in angles:
         errs = []
         for i, name in enumerate(images):
-            clean = io.sample(name)
+            clean = load_scene(name)
             psf = synth.motion_blur_kernel(21, true_angle)
             blurred = synth.gaussian_noise(synth.apply_kernel(clean, psf), sigma=2.0, seed=i)
             est = estimate_motion_angle(blurred)

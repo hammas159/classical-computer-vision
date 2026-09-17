@@ -160,7 +160,62 @@ def apply_homography(img: np.ndarray, H: np.ndarray) -> np.ndarray:
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "chelsea", "brick", "camera")
+#: Twelve photographs spanning **edge density** — the percentage of pixels
+#: Canny calls an edge at its own Otsu-derived thresholds. Every detector here
+#: looks for distinctive local structure, so a pool that did not vary along that
+#: axis would measure the same thing twelve times. Selected by
+#: `tools/select_images.py --axis edges`; the range is 0.9% to 37.2%.
+IMAGES = (
+    "eagle_flat_sky",        # edges  0.9 — an eagle on plain blue, nothing to find
+    "regatta_spinnakers",    # edges  8.4
+    "scuba_diver_fish",      # edges 11.3
+    "portrait_yellow",       # edges 13.1 — a backdrop of repeated identical dots
+    "blue_footed_boobies",   # edges 15.0
+    "polar_bear_rail",       # edges 17.1
+    "geologist_rocks",       # edges 18.6
+    "man_fur_hat",           # edges 20.2
+    "glass_pyramid",         # edges 22.7 — dense man-made corners
+    "bobcat_rock",           # edges 25.2
+    "snake_coiled",          # edges 29.5
+    "monitor_lizard_grass",  # edges 37.2 — the busiest frame in the pool
+)
+
+
+#: Grid the coverage measure divides the frame into.
+SPREAD_GRID = 8
+
+
+def spatial_coverage(pts: np.ndarray, shape: tuple[int, int]) -> float:
+    """Percentage of an 8x8 grid of cells holding at least one keypoint.
+
+    Reported beside repeatability because the two disagree, and the disagreement
+    changes the headline. Harris is the most repeatable detector in the table and
+    covers **a third of the frame**; every other detector covers 58-81%.
+
+    Part of why it is so repeatable is that it concentrates on the few strongest
+    corners, and the strongest corners are the most stable ones. That is a real
+    property, and it is also exactly what you do not want when estimating a
+    homography: a thousand keypoints inside one patch of gravel constrain a
+    global transform no better than a handful spanning the picture.
+
+    A repeatability table alone would have reported the concentration as a
+    virtue.
+    """
+    if len(pts) == 0:
+        return 0.0
+    h, w = shape[:2]
+    xs = np.clip((pts[:, 0] / w * SPREAD_GRID).astype(int), 0, SPREAD_GRID - 1)
+    ys = np.clip((pts[:, 1] / h * SPREAD_GRID).astype(int), 0, SPREAD_GRID - 1)
+    return float(len(set(zip(xs.tolist(), ys.tolist())))) / (SPREAD_GRID ** 2) * 100
+
+
+def load_scene(name: str) -> np.ndarray:
+    """Load one of this project's photographs by name."""
+    from shared import io
+
+    return io.real_photo(name)
+
+
 ROTATIONS = (0.0, 10.0, 30.0, 60.0, 90.0, 180.0)
 SCALES = (1.0, 0.9, 0.75, 0.6, 1.25, 1.6)
 NOISE_LEVELS = (0.0, 5.0, 15.0, 30.0)
@@ -174,10 +229,10 @@ def evaluate_detectors(
     """Repeatability and cost for every detector under one known transform."""
     from shared import io, synth
 
-    acc = {n: {"rep": [], "count": [], "ms": []} for n in DETECTORS}
+    acc = {n: {"rep": [], "count": [], "ms": [], "cov": []} for n in DETECTORS}
 
     for i, name in enumerate(images):
-        img = io.sample(name)
+        img = load_scene(name)
         gray = to_gray(img)
         if transform == "rotation":
             H = homography_rotation(gray.shape, amount)
@@ -196,8 +251,15 @@ def evaluate_detectors(
         for det_name, fn in DETECTORS.items():
             a, timing = timeit(lambda f=fn: f(gray), runs=runs, warmup=1)
             b = fn(warped_gray)
-            acc[det_name]["rep"].append(repeatability(a, b, H, MATCH_THRESHOLD))
+            # `shape` excludes keypoints the transform carried out of frame --
+            # see `shared.metrics.repeatability`. Without it a 45-degree
+            # rotation scores every detector down by the third of the image the
+            # crop removed, which reads as a failure of rotation invariance
+            # rather than as the crop it actually is.
+            acc[det_name]["rep"].append(
+                repeatability(a, b, H, MATCH_THRESHOLD, shape=warped_gray.shape))
             acc[det_name]["count"].append(len(a))
+            acc[det_name]["cov"].append(spatial_coverage(a, gray.shape))
             acc[det_name]["ms"].append(timing.median_ms)
 
     rows = [
@@ -205,6 +267,7 @@ def evaluate_detectors(
             "detector": n,
             "repeatability": round(float(np.mean(a["rep"])), 4),
             "keypoints": int(np.mean(a["count"])),
+            "coverage_pct": round(float(np.mean(a["cov"])), 1),
             "median_ms": round(float(np.median(a["ms"])), 3),
         }
         for n, a in acc.items()
@@ -248,6 +311,43 @@ def sweep_noise(images=IMAGES, levels=NOISE_LEVELS):
         for r in scored:
             row[r["detector"]] = r["repeatability"]
         rows.append(row)
+    return rows
+
+
+KEYPOINT_BUDGETS = (100, 250, 500, 1000)
+
+
+def sweep_keypoint_budget(images=IMAGES, budgets=KEYPOINT_BUDGETS,
+                          detector: str = "Harris", degrees: float = 30.0,
+                          seed: int = 0):
+    """Control for the obvious objection to the repeatability table.
+
+    Harris returns 1000 keypoints and AKAZE returns 248. More keypoints means
+    more chances for one to land within the 3 px match radius, so the natural
+    suspicion is that Harris wins on density rather than on quality.
+
+    This answers it by randomly discarding Harris keypoints down to each budget
+    and re-scoring. Randomly, so the subsample is not quietly reselected for the
+    good ones. If density were driving the result, repeatability would fall with
+    the budget.
+    """
+    from shared.io import to_gray
+
+    rng = np.random.default_rng(seed)
+    fn = DETECTORS[detector]
+    rows = []
+    for n in budgets:
+        scores = []
+        for name in images:
+            img = load_scene(name)
+            gray = to_gray(img)
+            H = homography_rotation(gray.shape, degrees)
+            warped_gray = to_gray(apply_homography(img, H))
+            a, b = fn(gray), fn(warped_gray)
+            if len(a) > n:
+                a = a[rng.choice(len(a), n, replace=False)]
+            scores.append(repeatability(a, b, H, MATCH_THRESHOLD, shape=warped_gray.shape))
+        rows.append({"budget": n, "repeatability": round(float(np.mean(scores)), 4)})
     return rows
 
 
