@@ -184,11 +184,11 @@ def ransac_iterations_needed(outlier_fraction: float, confidence: float = 0.99, 
 # --------------------------------------------------------------------------- #
 
 
-def make_pair(image: str = "astronaut", jitter: float = 0.08, seed: int = 0):
+def make_pair(image: str = "leopard_in_tree", jitter: float = 0.08, seed: int = 0):
     """Two views of one image related by a **known** homography."""
-    from shared import io, synth
+    from shared import synth
 
-    first = io.sample(image)
+    first = load_scene(image)
     H = synth.random_homography(first.shape, jitter=jitter, seed=seed)
     return first, synth.warp_by_homography(first, H), H
 
@@ -232,7 +232,32 @@ def inject_outliers(src, dst, truth, fraction: float, shape, seed: int = 0):
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "chelsea", "brick")
+#: Twelve photographs spanning **entropy** — bits per pixel in the luminance
+#: histogram, a direct measure of how much there is in the frame for a
+#: descriptor to describe. A dancer on a black stage and a wall of dried fish
+#: are opposite problems for matching, and a pool that did not span that would
+#: run one experiment twelve times. Selected by
+#: `tools/select_images.py --axis entropy`; the range is 4.34 to 7.91 bits.
+IMAGES = (
+    "archer_dancer",        # entropy 4.34 — most of the frame is black stage
+    "sea_shell_coral",      # entropy 6.53
+    "potted_bonsai",        # entropy 6.91
+    "porcupine_on_branch",  # entropy 7.02
+    "roadrunner_rocks",     # entropy 7.15
+    "gilded_stupa",         # entropy 7.24 — repeated architecture
+    "headland_lighthouse",  # entropy 7.32
+    "station_platform",     # entropy 7.41
+    "leopard_in_tree",      # entropy 7.49
+    "snowboarder_pines",    # entropy 7.59
+    "sparkler_family",      # entropy 7.68
+    "man_drying_fish",      # entropy 7.91 — the densest frame in the pool
+)
+
+
+def load_scene(name: str):
+    from shared import io
+
+    return io.real_photo(name)
 OUTLIER_FRACTIONS = (0.0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
 RATIOS = (0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1.0)
 
@@ -295,6 +320,40 @@ def sweep_ratio(descriptor: str = "SIFT", ratios=RATIOS, images=IMAGES):
             }
         )
     return rows
+
+
+def estimate_and_draw(a, b, H, estimator: str = "RANSAC", descriptor: str = "SIFT",
+                      outlier_fraction: float = 0.5, seed: int = 0,
+                      max_lines: int = 60):
+    """One pair, one estimator: the reprojection error and a picture of the inliers.
+
+    Returns ``(error_px, inlier_count, image)``. The error is measured against
+    the **true** homography using the true correspondences, not against the
+    estimator's own chosen inliers -- an estimator that keeps four points and
+    fits them perfectly would otherwise report zero.
+    """
+    kp_a, desc_a, norm = DESCRIPTORS[descriptor](to_gray(a))
+    kp_b, desc_b, _ = DESCRIPTORS[descriptor](to_gray(b))
+    matches = match_ratio(desc_a, desc_b, norm)
+    src, dst, truth = label_matches(kp_a, kp_b, matches, H)
+    src, dst, truth = inject_outliers(src, dst, truth, outlier_fraction, a.shape, seed=seed)
+
+    Hest, mask = ESTIMATORS[estimator](src, dst)
+    good_src, good_dst = src[truth], dst[truth]
+    err = (float("nan") if Hest is None or len(good_src) < 4
+           else reprojection_error(Hest, good_src, good_dst))
+
+    keep = mask if mask is not None else np.ones(len(src), bool)
+    canvas = a.copy()
+    idx = np.flatnonzero(keep)[:max_lines]
+    for j in idx:
+        x0, y0 = src[j]
+        x1, y1 = dst[j]
+        # green where the estimator is right, red where it kept an outlier --
+        # the picture then shows the mistake rather than only the score
+        colour = (0, 200, 0) if truth[j] else (220, 0, 0)
+        cv2.line(canvas, (int(x0), int(y0)), (int(x1), int(y1)), colour, 1, cv2.LINE_AA)
+    return err, int(keep.sum()), canvas
 
 
 def sweep_outliers(

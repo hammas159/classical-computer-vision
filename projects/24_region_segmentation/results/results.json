@@ -1,0 +1,333 @@
+{
+  "project": "24_region_segmentation",
+  "generated_utc": "2026-09-17T13:37:46+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "wolf_on_snowline",
+    "tiger_in_shade",
+    "train_on_viaduct",
+    "caterpillar_on_stem",
+    "gunner_reenactor",
+    "morel_mushrooms",
+    "woman_and_child",
+    "fox_cubs",
+    "memorial_arch",
+    "florence_duomo",
+    "two_beefeaters",
+    "man_yellow_barrels"
+  ],
+  "grid_tiles": 180,
+  "methods_boundary_f": [
+    {
+      "method": "Grid tiles (control)",
+      "precision": 0.1225,
+      "recall": 0.292,
+      "f": 0.1663,
+      "regions": 175,
+      "median_ms": 0.99
+    },
+    {
+      "method": "Watershed (no markers)",
+      "precision": 0.1258,
+      "recall": 0.9993,
+      "f": 0.219,
+      "regions": 7126,
+      "median_ms": 6.59
+    },
+    {
+      "method": "Watershed + markers",
+      "precision": 0.4181,
+      "recall": 0.3342,
+      "f": 0.3512,
+      "regions": 7,
+      "median_ms": 4.69
+    },
+    {
+      "method": "Region growing",
+      "precision": 0.4103,
+      "recall": 0.4677,
+      "f": 0.4051,
+      "regions": 7,
+      "median_ms": 1.87
+    },
+    {
+      "method": "Mean-shift",
+      "precision": 0.3728,
+      "recall": 0.6244,
+      "f": 0.4331,
+      "regions": 185,
+      "median_ms": 1041.18
+    },
+    {
+      "method": "SLIC superpixels",
+      "precision": 0.2046,
+      "recall": 0.743,
+      "f": 0.3115,
+      "regions": 171,
+      "median_ms": 140.81
+    },
+    {
+      "method": "GrabCut (seeded)",
+      "precision": 0.5291,
+      "recall": 0.2732,
+      "f": 0.3358,
+      "regions": 7,
+      "median_ms": 1169.03
+    }
+  ],
+  "methods_iou": [
+    {
+      "method": "Grid tiles (control)",
+      "iou": 0.914,
+      "dice": 0.9546,
+      "regions": 175,
+      "boundary_recall": 0.3514,
+      "underseg_error": 0.0499,
+      "median_ms": 0.93
+    },
+    {
+      "method": "Watershed (no markers)",
+      "iou": 0.6876,
+      "dice": 0.8143,
+      "regions": 7126,
+      "boundary_recall": 0.9963,
+      "underseg_error": 0.005,
+      "median_ms": 6.34
+    },
+    {
+      "method": "Watershed + markers",
+      "iou": 0.286,
+      "dice": 0.3698,
+      "regions": 7,
+      "boundary_recall": 0.4143,
+      "underseg_error": 0.0071,
+      "median_ms": 4.54
+    },
+    {
+      "method": "Region growing",
+      "iou": 0.4081,
+      "dice": 0.4833,
+      "regions": 7,
+      "boundary_recall": 0.5004,
+      "underseg_error": 0.3119,
+      "median_ms": 2.13
+    },
+    {
+      "method": "Mean-shift",
+      "iou": 0.3699,
+      "dice": 0.477,
+      "regions": 185,
+      "boundary_recall": 0.624,
+      "underseg_error": 0.0259,
+      "median_ms": 1124.02
+    },
+    {
+      "method": "SLIC superpixels",
+      "iou": 0.9295,
+      "dice": 0.9629,
+      "regions": 171,
+      "boundary_recall": 0.6843,
+      "underseg_error": 0.0408,
+      "median_ms": 132.14
+    },
+    {
+      "method": "GrabCut (seeded)",
+      "iou": 0.3384,
+      "dice": 0.4479,
+      "regions": 7,
+      "boundary_recall": 0.3801,
+      "underseg_error": 0.0197,
+      "median_ms": 1277.85
+    }
+  ],
+  "human_ceilings": [
+    {
+      "image": "wolf_on_snowline",
+      "annotators": 5,
+      "best": 0.9975,
+      "mean": 0.9556
+    },
+    {
+      "image": "tiger_in_shade",
+      "annotators": 5,
+      "best": 0.8826,
+      "mean": 0.8304
+    },
+    {
+      "image": "train_on_viaduct",
+      "annotators": 5,
+      "best": 0.9295,
+      "mean": 0.8457
+    },
+    {
+      "image": "caterpillar_on_stem",
+      "annotators": 5,
+      "best": 0.928,
+      "mean": 0.8681
+    },
+    {
+      "image": "gunner_reenactor",
+      "annotators": 5,
+      "best": 0.917,
+      "mean": 0.8744
+    },
+    {
+      "image": "morel_mushrooms",
+      "annotators": 7,
+      "best": 0.9345,
+      "mean": 0.8799
+    },
+    {
+      "image": "woman_and_child",
+      "annotators": 5,
+      "best": 0.9409,
+      "mean": 0.9046
+    },
+    {
+      "image": "fox_cubs",
+      "annotators": 5,
+      "best": 0.7902,
+      "mean": 0.7081
+    },
+    {
+      "image": "memorial_arch",
+      "annotators": 6,
+      "best": 0.8657,
+      "mean": 0.7714
+    },
+    {
+      "image": "florence_duomo",
+      "annotators": 5,
+      "best": 0.7932,
+      "mean": 0.7193
+    },
+    {
+      "image": "two_beefeaters",
+      "annotators": 6,
+      "best": 0.8807,
+      "mean": 0.772
+    },
+    {
+      "image": "man_yellow_barrels",
+      "annotators": 7,
+      "best": 0.992,
+      "mean": 0.9639
+    }
+  ],
+  "watershed_markers": [
+    {
+      "fg_ratio": 0.2,
+      "regions": 22,
+      "iou": 0.338
+    },
+    {
+      "fg_ratio": 0.3,
+      "regions": 15,
+      "iou": 0.3188
+    },
+    {
+      "fg_ratio": 0.4,
+      "regions": 10,
+      "iou": 0.2996
+    },
+    {
+      "fg_ratio": 0.5,
+      "regions": 7,
+      "iou": 0.286
+    },
+    {
+      "fg_ratio": 0.6,
+      "regions": 4,
+      "iou": 0.2668
+    },
+    {
+      "fg_ratio": 0.7,
+      "regions": 3,
+      "iou": 0.2453
+    },
+    {
+      "fg_ratio": 0.8,
+      "regions": 2,
+      "iou": 0.2188
+    }
+  ],
+  "slic_count": [
+    {
+      "requested": 50,
+      "actual_regions": 29,
+      "boundary_recall": 0.5035,
+      "underseg_error": 0.0996
+    },
+    {
+      "requested": 100,
+      "actual_regions": 61,
+      "boundary_recall": 0.577,
+      "underseg_error": 0.0686
+    },
+    {
+      "requested": 250,
+      "actual_regions": 171,
+      "boundary_recall": 0.6843,
+      "underseg_error": 0.0408
+    },
+    {
+      "requested": 600,
+      "actual_regions": 453,
+      "boundary_recall": 0.7846,
+      "underseg_error": 0.027
+    },
+    {
+      "requested": 1200,
+      "actual_regions": 1036,
+      "boundary_recall": 0.8897,
+      "underseg_error": 0.0181
+    }
+  ],
+  "noise_sweep": [
+    {
+      "noise_sigma": 0.0,
+      "Grid tiles (control)": 175,
+      "Watershed (no markers)": 7126,
+      "Watershed + markers": 7,
+      "Region growing": 7,
+      "Mean-shift": 185,
+      "SLIC superpixels": 171,
+      "GrabCut (seeded)": 7
+    },
+    {
+      "noise_sigma": 5.0,
+      "Grid tiles (control)": 175,
+      "Watershed (no markers)": 8308,
+      "Watershed + markers": 7,
+      "Region growing": 7,
+      "Mean-shift": 194,
+      "SLIC superpixels": 163,
+      "GrabCut (seeded)": 16
+    },
+    {
+      "noise_sigma": 15.0,
+      "Grid tiles (control)": 175,
+      "Watershed (no markers)": 9897,
+      "Watershed + markers": 7,
+      "Region growing": 7,
+      "Mean-shift": 242,
+      "SLIC superpixels": 35,
+      "GrabCut (seeded)": 8
+    },
+    {
+      "noise_sigma": 30.0,
+      "Grid tiles (control)": 175,
+      "Watershed (no markers)": 10608,
+      "Watershed + markers": 10,
+      "Region growing": 7,
+      "Mean-shift": 413,
+      "SLIC superpixels": 5,
+      "GrabCut (seeded)": 6
+    }
+  ]
+}

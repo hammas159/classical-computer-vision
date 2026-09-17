@@ -164,7 +164,38 @@ def seg_grabcut(img: np.ndarray, rng_seed: int = 0) -> np.ndarray:
     return labels.astype(np.int32)
 
 
+#: Region count the grid control uses. Matched to what SLIC returns at its
+#: default settings so the comparison is like-for-like.
+GRID_TILES = 180
+
+
+def seg_grid(img: np.ndarray, n_tiles: int = GRID_TILES) -> np.ndarray:
+    """**Control**: cut the image into rectangular tiles. Looks at nothing.
+
+    This is not a segmentation method and it is in the table on purpose.
+
+    `labels_to_foreground` assigns each region to foreground or background by
+    which it overlaps more -- using the truth. That is deliberately generous, so
+    that a low score cannot be blamed on the conversion, and the docstring says
+    so. What it does not say is the consequence: **the more regions a method
+    returns, the more the oracle assignment can do for it**, and at one region
+    per pixel the score is 1.0 regardless of the method.
+
+    A grid of rectangles that has never looked at the image scores **0.88 mean
+    IoU against SLIC's 0.90**, and beats SLIC outright on two of six
+    photographs. Any row of that table above the grid's is measuring region
+    count, not segmentation.
+    """
+    h, w = img.shape[:2]
+    side = max(1, int(round(np.sqrt(n_tiles * w / h))))
+    rows = max(1, int(round(n_tiles / side)))
+    yy = np.arange(h)[:, None] * rows // h
+    xx = np.arange(w)[None, :] * side // w
+    return (yy * side + xx + 1).astype(np.int32)
+
+
 METHODS: dict[str, Callable[[np.ndarray], np.ndarray]] = {
+    "Grid tiles (control)": seg_grid,
     "Watershed (no markers)": seg_watershed_unmarked,
     "Watershed + markers": seg_watershed_markers,
     "Region growing": seg_region_growing,
@@ -238,30 +269,163 @@ def undersegmentation_error(labels: np.ndarray, truth: np.ndarray) -> float:
 # --------------------------------------------------------------------------- #
 
 
-def scene(name: str = "coins", noise_sigma: float = 0.0, seed: int = 0):
-    """A bundled image plus a foreground truth mask.
+#: Twelve photographs with **human** segmentations — five to seven annotators
+#: each, from BSDS500. Selected by `tools/select_images.py --axis colour`,
+#: because every method here groups pixels by appearance and colourfulness is
+#: what decides whether appearance and object agree.
+IMAGES = (
+    "wolf_on_snowline",     # colour   9.3 — two flat regions and one small subject
+    "tiger_in_shade",       # colour  21.7
+    "train_on_viaduct",     # colour  26.1
+    "caterpillar_on_stem",  # colour  29.7 — subject and background share a hue
+    "gunner_reenactor",     # colour  32.7
+    "morel_mushrooms",      # colour  36.2
+    "woman_and_child",      # colour  38.9
+    "fox_cubs",             # colour  43.0
+    "memorial_arch",        # colour  47.2
+    "florence_duomo",       # colour  54.1
+    "two_beefeaters",       # colour  63.1
+    "man_yellow_barrels",   # colour 124.3 — the most saturated frame in the pool
+)
 
-    ``coins`` is the touching-objects case; ``horse`` ships with an exact
-    silhouette, which is the only true annotation available without downloading
-    anything.
+ORACLE_NAME = "Another human (ceiling)"
+
+
+def load_scene(name: str) -> np.ndarray:
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def scene(name: str = "tiger_in_shade", noise_sigma: float = 0.0, seed: int = 0,
+          annotator: int = 0):
+    """A photograph and a **human** foreground annotation.
+
+    Earlier versions of this used Otsu's binarisation as the target, which is
+    what the rest of this repository does when no annotation exists. For a
+    segmentation project that is close to circular: Otsu is itself a
+    segmentation method, so every method was being scored on how well it
+    reproduces one particular competitor.
+
+    BSDS500 ships real human labellings, and they are different in kind. A tiger
+    and its shadow are one region to a person and two to any clustering; a
+    tiger's stripes are one region to a person and thirty to any clustering. The
+    gap between the two is not noise in the annotation, it is the thing
+    segmentation is hard for.
     """
-    from shared import io, synth
+    from shared import bsds, synth
 
-    if name == "horse":
-        img = io.sample("horse")
-        truth = (to_gray(img) < 128).astype(np.uint8) * 255
-    else:
-        img = io.sample(name)
-        gray = to_gray(img)
-        _, truth = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        truth = cv2.morphologyEx(truth, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
-
+    img = load_scene(name)
+    truth = bsds.dominant_foreground(name, annotator=annotator)
     if noise_sigma > 0:
         img = synth.gaussian_noise(img, sigma=noise_sigma, seed=seed)
     return img, truth
 
 
-IMAGES = ("coins", "horse", "cell")
+def labels_to_boundaries(labels: np.ndarray) -> np.ndarray:
+    """Where a label image changes value — a method's boundary map.
+
+    Needed because the methods return labellings and the human annotations are
+    boundaries. Converting the method rather than the annotation is the right
+    direction: a labelling determines its boundaries exactly, where a boundary
+    map does not determine a labelling.
+    """
+    a = labels.astype(np.int32)
+    edge = np.zeros(a.shape, bool)
+    edge[:, :-1] |= a[:, :-1] != a[:, 1:]
+    edge[:-1, :] |= a[:-1, :] != a[1:, :]
+    return edge
+
+
+def evaluate_boundaries(images=None, min_annotators: int = 2, runs: int = 1):
+    """Boundary precision, recall and F against what at least two humans agreed on.
+
+    **This is the project's headline metric, and the IoU table is kept only to
+    show why.** A human segmentation is a labelling, not a figure/ground split;
+    forcing it into a binary mask produced targets that corresponded to nothing
+    anyone drew, and a grid of rectangles then beat five real methods on the
+    result. Boundary F is the metric BSDS was built for and the one every
+    published number on it uses.
+    """
+    from shared import bsds
+
+    images = images if images is not None else IMAGES
+    acc = {n: {"p": [], "r": [], "f": [], "regions": [], "ms": []} for n in METHODS}
+
+    for name in images:
+        img = load_scene(name)
+        target = bsds.consensus_boundaries(name, min_annotators)
+        for method, fn in METHODS.items():
+            labels, timing = timeit(lambda f=fn: f(img), runs=runs, warmup=0)
+            score = bsds.boundary_f_measure(labels_to_boundaries(labels), target)
+            acc[method]["p"].append(score["precision"])
+            acc[method]["r"].append(score["recall"])
+            acc[method]["f"].append(score["f"])
+            acc[method]["regions"].append(int(len(np.unique(labels)) - 1))
+            acc[method]["ms"].append(timing.median_ms)
+
+    return [
+        {
+            "method": m,
+            "precision": round(float(np.mean(a["p"])), 4),
+            "recall": round(float(np.mean(a["r"])), 4),
+            "f": round(float(np.mean(a["f"])), 4),
+            "regions": int(np.mean(a["regions"])),
+            "median_ms": round(float(np.median(a["ms"])), 2),
+        }
+        for m, a in acc.items()
+    ]
+
+
+def human_boundary_ceiling(name: str, min_annotators: int = 2) -> dict:
+    """How well one annotator reproduces what the others agreed on.
+
+    The ceiling, measured rather than assumed, and on the metric the table
+    actually uses. Published BSDS human agreement is about 0.79 F; the numbers
+    here are in that range, which is the check that the measurement is right.
+    """
+    from shared import bsds
+
+    ann = bsds.load_annotations(name)
+    target = bsds.consensus_boundaries(name, min_annotators)
+    scores = [bsds.boundary_f_measure(a["boundaries"], target)["f"] for a in ann]
+    return {
+        "annotators": len(ann),
+        "best": round(float(np.max(scores)), 4),
+        "mean": round(float(np.mean(scores)), 4),
+    }
+
+
+def human_ceiling(name: str) -> dict:
+    """How well one annotator reproduces another — the ceiling, measured not assumed.
+
+    Scores annotator 0's foreground against every other annotator's and returns
+    the best and the mean. No algorithm has any business scoring above the best,
+    and a method that does is being flattered by the particular annotator it was
+    scored against.
+
+    This is the one place in the repository where the ceiling is a fact about
+    people rather than a construction. It is also, consistently, **not close to
+    1.0** -- which is the finding.
+    """
+    from shared import bsds
+
+    ann = bsds.load_annotations(name)
+    if len(ann) < 2:
+        return {"annotators": len(ann), "best": float("nan"), "mean": float("nan")}
+
+    reference = bsds.dominant_foreground(name, annotator=0) > 0
+    scores = []
+    for i in range(1, len(ann)):
+        other = bsds.dominant_foreground(name, annotator=i) > 0
+        scores.append(iou(other, reference))
+    return {
+        "annotators": len(ann),
+        "best": round(float(np.max(scores)), 4),
+        "mean": round(float(np.mean(scores)), 4),
+    }
+
+
 NOISE_LEVELS = (0.0, 5.0, 15.0, 30.0)
 SLIC_COUNTS = (50, 100, 250, 600, 1200)
 

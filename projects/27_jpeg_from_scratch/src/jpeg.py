@@ -150,13 +150,27 @@ def encode_decode(
     """
     stats: dict[str, float] = {}
 
-    if use_colour_transform and img.ndim == 3:
+    if img.ndim == 3 and use_colour_transform:
         ycrcb = cv2.cvtColor(img, cv2.COLOR_RGB2YCrCb).astype(np.float32)
         channels = [ycrcb[..., 0], ycrcb[..., 1], ycrcb[..., 2]]
         tables = [Q_LUMA, Q_CHROMA, Q_CHROMA]
+    elif img.ndim == 3:
+        # "No colour transform" means compress R, G and B directly -- each with
+        # the luma table, since there is no chroma channel to give the chroma
+        # table to. It does NOT mean discard the colour.
+        #
+        # This branch used to call `to_gray`, so the ablation row labelled "No
+        # colour transform (RGB)" was actually measuring "throw the colour
+        # away": a grayscale reconstruction, three times smaller by
+        # construction, scored against a colour original. It made the colour
+        # transform look like it costs bits rather than saves them, and on a
+        # colour-only image pool it raised a shape error rather than a wrong
+        # number, which is the only reason it was caught.
+        rgb = img.astype(np.float32)
+        channels = [rgb[..., 0], rgb[..., 1], rgb[..., 2]]
+        tables = [Q_LUMA, Q_LUMA, Q_LUMA]
     else:
-        gray = to_gray(img).astype(np.float32)
-        channels = [gray]
+        channels = [to_gray(img).astype(np.float32)]
         tables = [Q_LUMA]
 
     out_channels = []
@@ -203,7 +217,12 @@ def encode_decode(
 
     if len(out_channels) == 3:
         merged = np.stack(out_channels, axis=-1).astype(np.uint8)
-        recon = cv2.cvtColor(merged, cv2.COLOR_YCrCb2RGB)
+        # Only convert back if a conversion was applied going in. With the colour
+        # transform off these three channels are already R, G and B, and running
+        # the inverse YCrCb transform over them produced a lurid image that still
+        # scored plausibly -- the loss looked like a cost of "not using YCrCb".
+        recon = (cv2.cvtColor(merged, cv2.COLOR_YCrCb2RGB)
+                 if use_colour_transform else merged)
     else:
         recon = out_channels[0].astype(np.uint8)
 
@@ -285,7 +304,44 @@ def blockiness(img: np.ndarray) -> float:
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "chelsea", "camera", "brick")
+#: Twelve photographs spanning **texture density** — the fraction of spectral
+#: energy above a quarter Nyquist. JPEG quantises the DCT, and the DCT is a
+#: frequency decomposition, so how much of the picture lives in the high bands
+#: is exactly what decides its compressibility. Selected by
+#: `tools/select_images.py --axis texture`; the range is 54.0 to 83.0.
+IMAGES = (
+    "sprinter_start",        # texture 54.0
+    "girl_with_basin",       # texture 60.7
+    "model_gloves",          # texture 64.1 — large flat areas
+    "worker_with_pails",     # texture 66.7
+    "polo_riders",           # texture 67.9
+    "borobudur_stupas",      # texture 69.2 — dense regular geometry
+    "coyotes_in_haze",       # texture 70.3
+    "crocodile_bank",        # texture 71.7
+    "bay_with_boats",        # texture 73.1
+    "mare_foal_meadow_two",  # texture 74.7
+    "tulip_beds",            # texture 77.4
+    "snake_on_sand",         # texture 83.0 — the finest uniform texture here
+)
+
+
+def texture_of(img) -> float:
+    """Fraction of spectral energy above a quarter Nyquist, as a percentage.
+
+    The axis this pool was selected on, repeated here so a figure can label each
+    row with the quantity that decides how compressible it is.
+    """
+    g = cv2.resize(to_gray(img), (256, 256)).astype(np.float32) / 255.0
+    f = np.abs(np.fft.fftshift(np.fft.fft2(g - g.mean())))
+    y, x = np.ogrid[:256, :256]
+    total = f.sum()
+    return float(f[np.hypot(y - 128, x - 128) > 32].sum() / total * 100) if total else 0.0
+
+
+def load_scene(name: str):
+    from shared import io
+
+    return io.real_photo(name)
 QUALITIES = (5, 10, 20, 30, 50, 70, 85, 95)
 
 
@@ -303,7 +359,7 @@ def rate_distortion(images=IMAGES, qualities=QUALITIES):
         ours_psnr, ours_ssim, ours_bpp, ours_block = [], [], [], []
         cv_psnr, cv_bpp = [], []
         for name in images:
-            clean = io.sample(name)
+            clean = load_scene(name)
             recon, stats = encode_decode(clean, quality=q)
             ours_psnr.append(psnr(recon, clean))
             ours_ssim.append(ssim(recon, clean))
@@ -354,7 +410,7 @@ def stage_ablation(quality: int = 50, images=IMAGES):
     for label, kwargs in configs.items():
         p, s, bpp, block = [], [], [], []
         for name in images:
-            clean = io.sample(name)
+            clean = load_scene(name)
             recon, stats = encode_decode(clean, quality=quality, **kwargs)
             p.append(psnr(recon, clean))
             s.append(ssim(recon, clean))
@@ -386,7 +442,7 @@ def coefficient_statistics(quality: int = 50, images=IMAGES):
         surviving = np.zeros((BLOCK, BLOCK), np.float64)
         total = 0
         for name in images:
-            clean = io.sample(name)
+            clean = load_scene(name)
             gray = to_gray(clean).astype(np.float32) - 128.0
             table = scaled_table(Q_LUMA, q)
             h, w = gray.shape

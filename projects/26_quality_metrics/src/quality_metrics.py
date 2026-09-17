@@ -97,8 +97,19 @@ def metric_vif_approx(a, b) -> float:
     distorted image to that in the reference — using local variances at several
     scales, and is labelled an approximation rather than passed off as VIF.
     """
+    # `a` is the DISTORTED image and `b` the reference -- the order every metric
+    # in this module takes. VIF's denominator is the information in the
+    # *reference*, so the reference has to be `x`.
+    #
+    # An earlier version had these the other way round, making the distorted
+    # image the reference. On contrast loss that shrinks the denominator without
+    # bound and the score ran to **40.7** -- a "fidelity" measure rewarding the
+    # damage, and rising monotonically with it. VIF above 1 is meaningful (it
+    # means the distorted image carries more information than the reference,
+    # which enhancement can do) so the absurd value did not look obviously wrong
+    # until it was swept.
     num, den = 0.0, 0.0
-    x, y = to_float(to_gray(a)), to_float(to_gray(b))
+    x, y = to_float(to_gray(b)), to_float(to_gray(a))
     for scale in range(4):
         if scale > 0:
             x = cv2.pyrDown(x)
@@ -221,7 +232,31 @@ def find_strength_for_psnr(
     return mid, psnr(fn(img, mid), img)
 
 
-IMAGES = ("astronaut", "coffee", "chelsea", "camera", "brick", "moon")
+#: Twelve photographs spanning **mean brightness**, 33 to 212. PSNR is a
+#: function of squared error and is blind to where in the tone range that error
+#: sits, so a pool that did not span brightness would never expose the one thing
+#: everybody already suspects about it. Selected by
+#: `tools/select_images.py --axis brightness`.
+IMAGES = (
+    "wolf_dark_wood",      # brightness  33 — the darkest frame in the pool
+    "gulls_on_ledge",      # brightness  71
+    "conical_hat_worker",  # brightness  83
+    "egrets_in_thicket",   # brightness  91
+    "elephant_pair",       # brightness  98
+    "man_yellow_turban",   # brightness 105
+    "flag_and_parade",     # brightness 111
+    "iceberg_cloud",       # brightness 117 — near-white throughout
+    "statues_stairwell",   # brightness 124
+    "stone_bridge_river",  # brightness 132
+    "sampan_still_water",  # brightness 145
+    "woman_on_steps",      # brightness 212 — the brightest frame here
+)
+
+
+def load_scene(name: str):
+    from shared import io
+
+    return io.real_photo(name)
 TARGET_PSNRS = (24.0, 28.0, 32.0)
 
 
@@ -230,14 +265,12 @@ def equal_psnr_comparison(target_psnr: float = 28.0, images=IMAGES):
 
     If PSNR were sufficient, every row would be identical under every metric.
     """
-    from shared import io
-
     rows = []
     for degradation in DEGRADATIONS:
         scores = {name: [] for name in METRICS}
         achieved, strengths = [], []
         for image in images:
-            clean = io.sample(image)
+            clean = load_scene(image)
             strength, got = find_strength_for_psnr(clean, degradation, target_psnr)
             fn, _ = DEGRADATIONS[degradation]
             bad = fn(clean, strength)
@@ -252,6 +285,12 @@ def equal_psnr_comparison(target_psnr: float = 28.0, images=IMAGES):
         }
         for name, vals in scores.items():
             row[name] = round(float(np.nanmean(vals)), 5)
+            # Full precision kept alongside, for ranking only. At equal PSNR the
+            # MSE values differ in the eighth decimal place, so rounding for
+            # display created ties -- and ties made MSE appear to *disagree* with
+            # PSNR (Kendall tau 0.733) when the two are monotone transforms of
+            # each other and must agree exactly.
+            row[f"{name}__exact"] = float(np.nanmean(vals))
         rows.append(row)
     return rows
 
@@ -267,7 +306,7 @@ def ranking_disagreement(target_psnr: float = 28.0, images=IMAGES):
 
     rankings: dict[str, list[str]] = {}
     for metric, (_, higher_better) in METRICS.items():
-        order = sorted(rows, key=lambda r: r[metric], reverse=higher_better)
+        order = sorted(rows, key=lambda r: r[f"{metric}__exact"], reverse=higher_better)
         rankings[metric] = [r["degradation"] for r in order]
 
     def kendall_tau(a: list[str], b: list[str]) -> float:
@@ -286,8 +325,21 @@ def ranking_disagreement(target_psnr: float = 28.0, images=IMAGES):
         return (concordant - discordant) / total if total else 1.0
 
     reference = rankings["PSNR"]
+    # MSE and PSNR are monotone transforms of one another *per image*, so on a
+    # single image they must rank identically. Across a SET of images they need
+    # not, and here they do not: PSNR is a logarithm, and the mean of logarithms
+    # is not the logarithm of the mean.
+    #
+    # At a 24 dB target this reverses JPEG and contrast loss -- mean PSNR says
+    # JPEG is the milder damage (24.0021 vs 23.9948) and mean MSE says contrast
+    # loss is (0.0039860 vs 0.0039912). Both are computed correctly from the same
+    # twelve images. This is the reason "average PSNR" is a quantity to be
+    # suspicious of, and it is reported rather than smoothed over.
+    mse_vs_psnr = kendall_tau(rankings["PSNR"], rankings["MSE"])
     return {
         "rankings": rankings,
+        "mse_vs_psnr_tau": round(mse_vs_psnr, 4),
+        "averaging_reorders_mse_and_psnr": mse_vs_psnr < 1.0,
         "kendall_tau_vs_psnr": {
             m: round(kendall_tau(reference, r), 4) for m, r in rankings.items()
         },
@@ -311,7 +363,7 @@ def sweep_strength(degradation: str = "Blur", images=IMAGES, steps: int = 9):
     for strength in np.linspace(lo, hi, steps):
         scores = {name: [] for name in METRICS}
         for image in images:
-            clean = io.sample(image)
+            clean = load_scene(image)
             bad = fn(clean, float(strength))
             for name, (metric, _) in METRICS.items():
                 scores[name].append(metric(bad, clean))
@@ -335,7 +387,7 @@ def shift_sensitivity(images=IMAGES, shifts=(0, 1, 2, 4, 8)):
     for dx in shifts:
         scores = {name: [] for name in METRICS}
         for image in images:
-            clean = io.sample(image)
+            clean = load_scene(image)
             shifted = degrade_shift(clean, dx)
             for name, (metric, _) in METRICS.items():
                 scores[name].append(metric(shifted, clean))

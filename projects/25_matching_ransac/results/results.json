@@ -1,0 +1,171 @@
+{
+  "project": "25_matching_ransac",
+  "generated_utc": "2026-09-17T13:28:05+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "archer_dancer",
+    "sea_shell_coral",
+    "potted_bonsai",
+    "porcupine_on_branch",
+    "roadrunner_rocks",
+    "gilded_stupa",
+    "headland_lighthouse",
+    "station_platform",
+    "leopard_in_tree",
+    "snowboarder_pines",
+    "sparkler_family",
+    "man_drying_fish"
+  ],
+  "gallery_outlier_fraction": 0.5,
+  "descriptors": [
+    {
+      "descriptor": "SIFT",
+      "matches": 596,
+      "inlier_precision": 0.9854,
+      "reprojection_px": 0.222,
+      "median_ms": 27.31
+    },
+    {
+      "descriptor": "ORB",
+      "matches": 969,
+      "inlier_precision": 0.9633,
+      "reprojection_px": 0.927,
+      "median_ms": 5.71
+    },
+    {
+      "descriptor": "AKAZE",
+      "matches": 369,
+      "inlier_precision": 0.9823,
+      "reprojection_px": 0.363,
+      "median_ms": 15.42
+    }
+  ],
+  "filters": [
+    {
+      "filter": "All nearest neighbours",
+      "matches_kept": 989,
+      "inlier_precision": 0.6347,
+      "inlier_recall": 1.0
+    },
+    {
+      "filter": "Cross-check",
+      "matches_kept": 664,
+      "inlier_precision": 0.9113,
+      "inlier_recall": 0.9774
+    },
+    {
+      "filter": "Ratio test 0.75",
+      "matches_kept": 596,
+      "inlier_precision": 0.9854,
+      "inlier_recall": 0.9486
+    }
+  ],
+  "ratio_sweep": [
+    {
+      "ratio": 0.5,
+      "matches_kept": 515,
+      "inlier_precision": 0.999
+    },
+    {
+      "ratio": 0.6,
+      "matches_kept": 558,
+      "inlier_precision": 0.9969
+    },
+    {
+      "ratio": 0.7,
+      "matches_kept": 584,
+      "inlier_precision": 0.9917
+    },
+    {
+      "ratio": 0.75,
+      "matches_kept": 596,
+      "inlier_precision": 0.9854
+    },
+    {
+      "ratio": 0.8,
+      "matches_kept": 610,
+      "inlier_precision": 0.9719
+    },
+    {
+      "ratio": 0.9,
+      "matches_kept": 679,
+      "inlier_precision": 0.8921
+    },
+    {
+      "ratio": 1.0,
+      "matches_kept": 989,
+      "inlier_precision": 0.6347
+    }
+  ],
+  "outlier_sweep": [
+    {
+      "outlier_fraction": 0.0,
+      "iterations_needed": 0.2,
+      "Least squares (control)": 1.53,
+      "RANSAC": 0.222,
+      "LMEDS": 0.22,
+      "MAGSAC++": 0.223
+    },
+    {
+      "outlier_fraction": 0.2,
+      "iterations_needed": 8.7,
+      "Least squares (control)": 26.471,
+      "RANSAC": 0.224,
+      "LMEDS": 0.222,
+      "MAGSAC++": 0.227
+    },
+    {
+      "outlier_fraction": 0.4,
+      "iterations_needed": 33.2,
+      "Least squares (control)": 88.005,
+      "RANSAC": 0.224,
+      "LMEDS": 0.222,
+      "MAGSAC++": 0.227
+    },
+    {
+      "outlier_fraction": 0.5,
+      "iterations_needed": 71.4,
+      "Least squares (control)": 122.583,
+      "RANSAC": 0.219,
+      "LMEDS": 2.004,
+      "MAGSAC++": 0.225
+    },
+    {
+      "outlier_fraction": 0.6,
+      "iterations_needed": 177.6,
+      "Least squares (control)": 194.47,
+      "RANSAC": 0.218,
+      "LMEDS": 190.862,
+      "MAGSAC++": 0.224
+    },
+    {
+      "outlier_fraction": 0.7,
+      "iterations_needed": 566.2,
+      "Least squares (control)": 186.002,
+      "RANSAC": 0.23,
+      "LMEDS": 224.154,
+      "MAGSAC++": 0.242
+    },
+    {
+      "outlier_fraction": 0.8,
+      "iterations_needed": 2875.9,
+      "Least squares (control)": 256.445,
+      "RANSAC": 0.229,
+      "LMEDS": 365.15,
+      "MAGSAC++": 0.245
+    },
+    {
+      "outlier_fraction": 0.9,
+      "iterations_needed": 46049.4,
+      "Least squares (control)": 385.639,
+      "RANSAC": 13.362,
+      "LMEDS": 341.584,
+      "MAGSAC++": 98.458
+    }
+  ]
+}

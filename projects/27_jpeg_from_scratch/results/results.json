@@ -1,0 +1,174 @@
+{
+  "project": "27_jpeg_from_scratch",
+  "generated_utc": "2026-09-17T13:58:36+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "sprinter_start",
+    "girl_with_basin",
+    "model_gloves",
+    "worker_with_pails",
+    "polo_riders",
+    "borobudur_stupas",
+    "coyotes_in_haze",
+    "crocodile_bank",
+    "bay_with_boats",
+    "mare_foal_meadow_two",
+    "tulip_beds",
+    "snake_on_sand"
+  ],
+  "rate_distortion": [
+    {
+      "quality": 5,
+      "bpp_ours": 0.2266,
+      "psnr_ours": 22.839,
+      "ssim_ours": 0.5682,
+      "blockiness": 4.944,
+      "bpp_opencv": 0.26,
+      "psnr_opencv": 23.194
+    },
+    {
+      "quality": 10,
+      "bpp_ours": 0.3373,
+      "psnr_ours": 25.133,
+      "ssim_ours": 0.685,
+      "blockiness": 3.009,
+      "bpp_opencv": 0.3852,
+      "psnr_opencv": 25.67
+    },
+    {
+      "quality": 20,
+      "bpp_ours": 0.5001,
+      "psnr_ours": 26.932,
+      "ssim_ours": 0.7818,
+      "blockiness": 2.125,
+      "bpp_opencv": 0.6087,
+      "psnr_opencv": 27.828
+    },
+    {
+      "quality": 30,
+      "bpp_ours": 0.6264,
+      "psnr_ours": 27.884,
+      "ssim_ours": 0.8239,
+      "blockiness": 1.84,
+      "bpp_opencv": 0.7975,
+      "psnr_opencv": 29.011
+    },
+    {
+      "quality": 50,
+      "bpp_ours": 0.8202,
+      "psnr_ours": 28.964,
+      "ssim_ours": 0.8633,
+      "blockiness": 1.611,
+      "bpp_opencv": 1.0953,
+      "psnr_opencv": 30.464
+    },
+    {
+      "quality": 70,
+      "bpp_ours": 1.0989,
+      "psnr_ours": 30.057,
+      "ssim_ours": 0.8991,
+      "blockiness": 1.298,
+      "bpp_opencv": 1.5561,
+      "psnr_opencv": 32.083
+    },
+    {
+      "quality": 85,
+      "bpp_ours": 1.798,
+      "psnr_ours": 31.327,
+      "ssim_ours": 0.9468,
+      "blockiness": 0.925,
+      "bpp_opencv": 2.7675,
+      "psnr_opencv": 34.312
+    },
+    {
+      "quality": 95,
+      "bpp_ours": 2.3697,
+      "psnr_ours": 33.901,
+      "ssim_ours": 0.9881,
+      "blockiness": 1.028,
+      "bpp_opencv": 4.1424,
+      "psnr_opencv": 43.542
+    }
+  ],
+  "ablation": [
+    {
+      "configuration": "Full codec",
+      "psnr_db": 28.964,
+      "ssim": 0.8633,
+      "estimated_bpp": 0.8202,
+      "blockiness": 1.611
+    },
+    {
+      "configuration": "No chroma subsampling",
+      "psnr_db": 28.994,
+      "ssim": 0.869,
+      "estimated_bpp": 1.0728,
+      "blockiness": 1.532
+    },
+    {
+      "configuration": "No colour transform (RGB)",
+      "psnr_db": 26.82,
+      "ssim": 0.7516,
+      "estimated_bpp": 1.0952,
+      "blockiness": 1.327
+    },
+    {
+      "configuration": "No quantisation",
+      "psnr_db": 34.943,
+      "ssim": 0.9942,
+      "estimated_bpp": 2.9104,
+      "blockiness": 1.064
+    },
+    {
+      "configuration": "No DCT (quantise pixels)",
+      "psnr_db": 19.632,
+      "ssim": 0.5066,
+      "estimated_bpp": 1.8896,
+      "blockiness": 1.313
+    },
+    {
+      "configuration": "No DCT, no quantisation",
+      "psnr_db": 46.791,
+      "ssim": 0.9969,
+      "estimated_bpp": 6.1342,
+      "blockiness": 0.952
+    }
+  ],
+  "coefficient_statistics": [
+    {
+      "quality": 10,
+      "nonzero_fraction": 0.0524,
+      "dc_survival": 0.9113,
+      "highest_freq_survival": 0.0
+    },
+    {
+      "quality": 30,
+      "nonzero_fraction": 0.1286,
+      "dc_survival": 0.9715,
+      "highest_freq_survival": 0.0
+    },
+    {
+      "quality": 50,
+      "nonzero_fraction": 0.1798,
+      "dc_survival": 0.9856,
+      "highest_freq_survival": 0.0
+    },
+    {
+      "quality": 75,
+      "nonzero_fraction": 0.2641,
+      "dc_survival": 0.9902,
+      "highest_freq_survival": 0.0005
+    },
+    {
+      "quality": 95,
+      "nonzero_fraction": 0.5309,
+      "dc_survival": 0.9983,
+      "highest_freq_survival": 0.0767
+    }
+  ]
+}

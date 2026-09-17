@@ -271,6 +271,99 @@ def binary_scene(size: int = 512, noise_density: float = 0.0, seed: int = 0):
 
 SIZES = (3, 5, 7, 9, 13, 21)
 
+#: Twelve photographs spanning **edge density** — the percentage of pixels Canny
+#: calls an edge. Morphology acts on the *size* of structures, so the pool has to
+#: contain silhouettes with almost no internal edge and frames that are nothing
+#: but twigs. Selected by `tools/select_images.py --axis edges`; 1.5% to 37.1%.
+IMAGES = (
+    "bomber_overcast",       # edges  1.5 — one clean silhouette
+    "lone_palm_beach",       # edges  8.6
+    "hilltop_ruin",          # edges 11.3
+    "climber_on_dome",       # edges 13.1
+    "carved_figurine",       # edges 15.2
+    "elder_headscarf",       # edges 17.2
+    "monk_at_table",         # edges 18.8
+    "parthenon_columns",     # edges 20.2 — regular vertical structure
+    "woman_bundling_straw",  # edges 22.7
+    "two_rhinos_scrub",      # edges 25.2
+    "diver_sea_fans",        # edges 29.2 — thin branching structure
+    "bench_bare_hedge",      # edges 37.1 — the finest twig structure here
+)
+
+#: Salt-and-pepper density added to the binarised photograph before cleaning.
+PHOTO_NOISE = 0.06
+
+
+def load_scene(name: str) -> np.ndarray:
+    """Load one of this project's photographs by name."""
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def photo_binary(name: str, noise_density: float = PHOTO_NOISE, seed: int = 0):
+    """A real photograph turned into a binary problem **with exact ground truth**.
+
+    Morphology is defined on binary images, so a photograph has to be binarised
+    before any of it applies. That step usually destroys the possibility of
+    scoring: nobody recorded which pixels of a photograph are foreground.
+
+    The trick here is to define the truth *by construction*. Otsu's binarisation
+    of the clean photograph **is** the target -- not because it is the correct
+    segmentation of the scene, but because it is a real, structurally complex
+    binary image whose every pixel is known. Salt-and-pepper noise is then added
+    to it, and the question becomes the one morphology actually answers: how much
+    of that damage can an opening or a closing undo, and what does it cost the
+    structures that were already there?
+
+    Returns ``(truth, noisy)``. The truth is a genuine photograph's structure at
+    every scale from silhouette to twig, which is exactly what a synthetic scene
+    of rectangles and lines cannot supply.
+    """
+    from shared.io import to_gray
+
+    rng = np.random.default_rng(seed)
+    gray = to_gray(load_scene(name))
+    _, truth = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    noisy = truth.copy()
+    r = rng.random(truth.shape)
+    noisy[r < noise_density / 2] = 255
+    noisy[r > 1.0 - noise_density / 2] = 0
+    return truth, noisy
+
+
+def evaluate_photo_cleaning(images=None, sizes=(3, 5, 7),
+                            noise_density: float = PHOTO_NOISE, seed: int = 0):
+    """Score every operation at cleaning salt-and-pepper off a binarised photograph.
+
+    The same experiment as `evaluate_denoising`, on real structure instead of
+    rectangles. A median filter is included as the control that is *not*
+    morphology, because it is what anyone would actually reach for and any
+    morphological result has to be read against it.
+    """
+    from shared.metrics import iou
+
+    images = images if images is not None else IMAGES
+    rows = []
+    for size in sizes:
+        se = element("ellipse", size)
+        acc: dict[str, list[float]] = {}
+        for name in images:
+            truth, noisy = photo_binary(name, noise_density, seed)
+            acc.setdefault("Do nothing (control)", []).append(iou(noisy > 0, truth > 0))
+            acc.setdefault("Median filter", []).append(
+                iou(cv2.medianBlur(noisy, size) > 0, truth > 0))
+            for op_name, fn in OPERATIONS.items():
+                acc.setdefault(op_name, []).append(iou(fn(noisy, se) > 0, truth > 0))
+        for op_name, scores in acc.items():
+            rows.append({
+                "size": size,
+                "operation": op_name,
+                "iou": round(float(np.mean(scores)), 4),
+            })
+    return rows
+
 
 def verify_algebraic_identities(size: int = 5, seeds=(0, 1, 2)) -> list[dict]:
     """Check the laws morphology must obey. A failure here is a bug, not a result."""

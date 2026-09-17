@@ -1,0 +1,185 @@
+{
+  "project": "23_fft_filtering",
+  "generated_utc": "2026-09-17T12:03:12+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "hazy_ridges",
+    "whitewashed_chapel",
+    "child_red_jumper",
+    "geese_and_goslings",
+    "fjord_harbour",
+    "woman_hanbok",
+    "graffiti_wall",
+    "stone_wellhead",
+    "lizard_on_gravel",
+    "hawk_and_chick",
+    "tower_and_spire",
+    "couple_autumn_bank"
+  ],
+  "gallery_cutoff": 40.0,
+  "ringing_cutoff": 20.0,
+  "periodic_noise": {
+    "fx": 40,
+    "fy": 25,
+    "amplitude": 0.25
+  },
+  "lowpass": [
+    {
+      "filter": "Ideal",
+      "psnr_db": 23.573,
+      "ssim": 0.6075,
+      "ringing": 0.2733,
+      "median_ms": 22.851
+    },
+    {
+      "filter": "Butterworth (n=2)",
+      "psnr_db": 24.378,
+      "ssim": 0.6826,
+      "ringing": 0.3057,
+      "median_ms": 22.617
+    },
+    {
+      "filter": "Butterworth (n=8)",
+      "psnr_db": 23.78,
+      "ssim": 0.6343,
+      "ringing": 0.2833,
+      "median_ms": 22.721
+    },
+    {
+      "filter": "Gaussian",
+      "psnr_db": 24.995,
+      "ssim": 0.7229,
+      "ringing": 0.3276,
+      "median_ms": 23.384
+    }
+  ],
+  "butterworth_order": [
+    {
+      "order": 1,
+      "ringing": 0.2822,
+      "psnr_db": 24.989
+    },
+    {
+      "order": 2,
+      "ringing": 0.3057,
+      "psnr_db": 24.378
+    },
+    {
+      "order": 4,
+      "ringing": 0.2924,
+      "psnr_db": 23.983
+    },
+    {
+      "order": 8,
+      "ringing": 0.2833,
+      "psnr_db": 23.78
+    },
+    {
+      "order": 16,
+      "ringing": 0.2788,
+      "psnr_db": 23.676
+    }
+  ],
+  "cutoff_sweep": [
+    {
+      "cutoff": 10.0,
+      "Ideal": 19.418,
+      "Butterworth (n=2)": 19.943,
+      "Butterworth (n=8)": 19.543,
+      "Gaussian": 20.322
+    },
+    {
+      "cutoff": 20.0,
+      "Ideal": 21.278,
+      "Butterworth (n=2)": 21.92,
+      "Butterworth (n=8)": 21.443,
+      "Gaussian": 22.382
+    },
+    {
+      "cutoff": 40.0,
+      "Ideal": 23.573,
+      "Butterworth (n=2)": 24.378,
+      "Butterworth (n=8)": 23.78,
+      "Gaussian": 24.995
+    },
+    {
+      "cutoff": 80.0,
+      "Ideal": 26.663,
+      "Butterworth (n=2)": 28.026,
+      "Butterworth (n=8)": 27.039,
+      "Gaussian": 29.157
+    },
+    {
+      "cutoff": 150.0,
+      "Ideal": 32.641,
+      "Butterworth (n=2)": 34.288,
+      "Butterworth (n=8)": 33.505,
+      "Gaussian": 35.599
+    }
+  ],
+  "notch": [
+    {
+      "method": "Noisy input",
+      "psnr_db": 15.517
+    },
+    {
+      "method": "Median filter (spatial)",
+      "psnr_db": 17.248
+    },
+    {
+      "method": "Notch, blind peaks",
+      "psnr_db": 30.135
+    },
+    {
+      "method": "Notch, true peaks (oracle)",
+      "psnr_db": 30.135
+    }
+  ],
+  "notch_extra": {
+    "peak_localisation_error_px": 0.0
+  },
+  "homomorphic": [
+    {
+      "method": "Uneven input",
+      "psnr_db": 14.613,
+      "psnr_matched_db": 14.613
+    },
+    {
+      "method": "CLAHE (spatial)",
+      "psnr_db": 17.707,
+      "psnr_matched_db": 17.707
+    },
+    {
+      "method": "Homomorphic",
+      "psnr_db": 9.46,
+      "psnr_matched_db": 15.839
+    }
+  ],
+  "ringing_on_step": [
+    {
+      "filter": "Ideal",
+      "oscillations": 4,
+      "overshoot": 0.09078
+    },
+    {
+      "filter": "Butterworth (n=2)",
+      "oscillations": 0,
+      "overshoot": 0.03355
+    },
+    {
+      "filter": "Butterworth (n=8)",
+      "oscillations": 4,
+      "overshoot": 0.08406
+    },
+    {
+      "filter": "Gaussian",
+      "oscillations": 0,
+      "overshoot": 0.0
+    }
+  ]
+}

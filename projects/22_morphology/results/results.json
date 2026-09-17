@@ -1,0 +1,327 @@
+{
+  "project": "22_morphology",
+  "generated_utc": "2026-09-17T11:56:32+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "bomber_overcast",
+    "lone_palm_beach",
+    "hilltop_ruin",
+    "climber_on_dome",
+    "carved_figurine",
+    "elder_headscarf",
+    "monk_at_table",
+    "parthenon_columns",
+    "woman_bundling_straw",
+    "two_rhinos_scrub",
+    "diver_sea_fans",
+    "bench_bare_hedge"
+  ],
+  "gallery_element_size": 3,
+  "photo_noise_density": 0.06,
+  "identities": [
+    {
+      "element": "rect",
+      "opening_idempotent": true,
+      "opening_anti_extensive": true,
+      "closing_extensive": true,
+      "erode_dilate_dual": true
+    },
+    {
+      "element": "ellipse",
+      "opening_idempotent": true,
+      "opening_anti_extensive": true,
+      "closing_extensive": true,
+      "erode_dilate_dual": true
+    },
+    {
+      "element": "cross",
+      "opening_idempotent": true,
+      "opening_anti_extensive": true,
+      "closing_extensive": true,
+      "erode_dilate_dual": true
+    }
+  ],
+  "elements": [
+    {
+      "element": "rect",
+      "axis_aligned": 0.8897,
+      "diagonal": 0.0003,
+      "curved": 0.8592,
+      "thin": 0.0
+    },
+    {
+      "element": "ellipse",
+      "axis_aligned": 0.8897,
+      "diagonal": 0.0003,
+      "curved": 0.8867,
+      "thin": 0.0
+    },
+    {
+      "element": "cross",
+      "axis_aligned": 0.8897,
+      "diagonal": 0.1084,
+      "curved": 0.8996,
+      "thin": 0.0
+    }
+  ],
+  "size_sweep": [
+    {
+      "size": 3,
+      "fraction_kept": 0.9916
+    },
+    {
+      "size": 5,
+      "fraction_kept": 0.9664
+    },
+    {
+      "size": 7,
+      "fraction_kept": 0.9244
+    },
+    {
+      "size": 9,
+      "fraction_kept": 0.848
+    },
+    {
+      "size": 13,
+      "fraction_kept": 0.8461
+    },
+    {
+      "size": 21,
+      "fraction_kept": 0.8446
+    }
+  ],
+  "denoise_sweep": [
+    {
+      "element": "rect",
+      "size": 3,
+      "iou": 0.9518,
+      "dice": 0.9753
+    },
+    {
+      "element": "rect",
+      "size": 5,
+      "iou": 0.8778,
+      "dice": 0.9349
+    },
+    {
+      "element": "rect",
+      "size": 7,
+      "iou": 0.7012,
+      "dice": 0.8244
+    },
+    {
+      "element": "ellipse",
+      "size": 3,
+      "iou": 0.9596,
+      "dice": 0.9794
+    },
+    {
+      "element": "ellipse",
+      "size": 5,
+      "iou": 0.9122,
+      "dice": 0.9541
+    },
+    {
+      "element": "ellipse",
+      "size": 7,
+      "iou": 0.8203,
+      "dice": 0.9013
+    },
+    {
+      "element": "cross",
+      "size": 3,
+      "iou": 0.9596,
+      "dice": 0.9794
+    },
+    {
+      "element": "cross",
+      "size": 5,
+      "iou": 0.9297,
+      "dice": 0.9636
+    },
+    {
+      "element": "cross",
+      "size": 7,
+      "iou": 0.8877,
+      "dice": 0.9405
+    }
+  ],
+  "photo_cleaning": [
+    {
+      "size": 3,
+      "operation": "Do nothing (control)",
+      "iou": 0.9338
+    },
+    {
+      "size": 3,
+      "operation": "Median filter",
+      "iou": 0.9167
+    },
+    {
+      "size": 3,
+      "operation": "Erode",
+      "iou": 0.6942
+    },
+    {
+      "size": 3,
+      "operation": "Dilate",
+      "iou": 0.7513
+    },
+    {
+      "size": 3,
+      "operation": "Open",
+      "iou": 0.892
+    },
+    {
+      "size": 3,
+      "operation": "Close",
+      "iou": 0.899
+    },
+    {
+      "size": 3,
+      "operation": "Gradient",
+      "iou": 0.2229
+    },
+    {
+      "size": 3,
+      "operation": "Top-hat",
+      "iou": 0.0733
+    },
+    {
+      "size": 3,
+      "operation": "Black-hat",
+      "iou": 0.0258
+    },
+    {
+      "size": 5,
+      "operation": "Do nothing (control)",
+      "iou": 0.9338
+    },
+    {
+      "size": 5,
+      "operation": "Median filter",
+      "iou": 0.8824
+    },
+    {
+      "size": 5,
+      "operation": "Erode",
+      "iou": 0.4004
+    },
+    {
+      "size": 5,
+      "operation": "Dilate",
+      "iou": 0.6067
+    },
+    {
+      "size": 5,
+      "operation": "Open",
+      "iou": 0.7687
+    },
+    {
+      "size": 5,
+      "operation": "Close",
+      "iou": 0.8137
+    },
+    {
+      "size": 5,
+      "operation": "Gradient",
+      "iou": 0.3562
+    },
+    {
+      "size": 5,
+      "operation": "Top-hat",
+      "iou": 0.1931
+    },
+    {
+      "size": 5,
+      "operation": "Black-hat",
+      "iou": 0.0245
+    },
+    {
+      "size": 7,
+      "operation": "Do nothing (control)",
+      "iou": 0.9338
+    },
+    {
+      "size": 7,
+      "operation": "Median filter",
+      "iou": 0.8632
+    },
+    {
+      "size": 7,
+      "operation": "Erode",
+      "iou": 0.2208
+    },
+    {
+      "size": 7,
+      "operation": "Dilate",
+      "iou": 0.5445
+    },
+    {
+      "size": 7,
+      "operation": "Open",
+      "iou": 0.6444
+    },
+    {
+      "size": 7,
+      "operation": "Close",
+      "iou": 0.735
+    },
+    {
+      "size": 7,
+      "operation": "Gradient",
+      "iou": 0.4191
+    },
+    {
+      "size": 7,
+      "operation": "Top-hat",
+      "iou": 0.313
+    },
+    {
+      "size": 7,
+      "operation": "Black-hat",
+      "iou": 0.0223
+    }
+  ],
+  "skeletons": [
+    {
+      "method": "Morphological (open-subtract)",
+      "components": 61.0,
+      "thinness": 0.0429,
+      "median_ms": 14.64
+    },
+    {
+      "method": "Zhang-Suen thinning",
+      "components": 9.0,
+      "thinness": 0.0332,
+      "median_ms": 6986.18
+    }
+  ],
+  "hit_or_miss": [
+    {
+      "corner": "top-left",
+      "detections": 1,
+      "expected": 1
+    },
+    {
+      "corner": "top-right",
+      "detections": 1,
+      "expected": 1
+    },
+    {
+      "corner": "bottom-left",
+      "detections": 1,
+      "expected": 1
+    },
+    {
+      "corner": "bottom-right",
+      "detections": 1,
+      "expected": 1
+    }
+  ]
+}

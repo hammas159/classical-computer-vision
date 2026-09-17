@@ -59,6 +59,92 @@ def canny(gray: np.ndarray, sigma: float, low: int, ratio: float) -> np.ndarray:
     return cv2.Canny(work, int(low), high)
 
 
+#: Twelve photographs with **human** boundary annotations, spanning edge
+#: density 1.6% to 36.7%. Canny is an edge detector and BSDS is the edge
+#: benchmark, so unlike most of this repository the real-image half of this
+#: project has a target a person actually drew. Selected by
+#: `tools/select_images.py --axis edges`.
+IMAGES = (
+    "acacia_and_herd",      # edges  1.6 — one silhouette and open sky
+    "clownfish_anemone",    # edges  9.0
+    "alpine_church",        # edges 11.6
+    "three_astronauts",     # edges 13.2
+    "man_floral_shirt",     # edges 15.7
+    "hawk_on_stump",        # edges 17.4
+    "baboon_in_foliage",    # edges 19.1
+    "deer_and_fawn",        # edges 20.5
+    "firefighter_debris",   # edges 22.8
+    "blossom_pavilion",     # edges 25.4
+    "deer_bare_branches",   # edges 29.7
+    "bears_on_hillside",    # edges 36.7 — the busiest frame in the pool
+)
+
+
+def load_scene(name: str):
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def photo_grid(images=None, sigmas=(1.0, 1.4, 2.0), lows=(25, 50, 100),
+               ratios=(2.0, 3.0), min_annotators: int = 2):
+    """Canny's parameter grid scored against **human** boundaries.
+
+    The synthetic half of this project has exact geometry and an unambiguous
+    answer. This half does not, and the difference is the point: on a generated
+    scene of shapes there is one correct edge map, and on a photograph five
+    people draw five different ones.
+
+    Scored with the same boundary F-measure project 24 uses, against what at
+    least `min_annotators` of them agreed on.
+    """
+    from shared import bsds
+
+    images = images if images is not None else IMAGES
+    rows = []
+    for sigma in sigmas:
+        for low in lows:
+            for ratio in ratios:
+                p, r, f = [], [], []
+                for name in images:
+                    gray = to_gray(load_scene(name))
+                    target = bsds.consensus_boundaries(name, min_annotators)
+                    score = bsds.boundary_f_measure(
+                        canny(gray, sigma, low, ratio), target, TOLERANCE)
+                    p.append(score["precision"])
+                    r.append(score["recall"])
+                    f.append(score["f"])
+                rows.append({
+                    "sigma": sigma, "low": low, "ratio": ratio,
+                    "precision": round(float(np.mean(p)), 4),
+                    "recall": round(float(np.mean(r)), 4),
+                    "f": round(float(np.mean(f)), 4),
+                })
+    return rows
+
+
+def photo_human_ceiling(images=None, min_annotators: int = 2):
+    """How well one annotator reproduces what the others agreed on.
+
+    The ceiling for the photograph half, measured rather than assumed. Canny has
+    no colour, no semantics and no idea what an object is, so the gap between it
+    and this number is not a tuning problem.
+    """
+    from shared import bsds
+
+    images = images if images is not None else IMAGES
+    best, mean = [], []
+    for name in images:
+        ann = bsds.load_annotations(name)
+        target = bsds.consensus_boundaries(name, min_annotators)
+        scores = [bsds.boundary_f_measure(a["boundaries"], target, TOLERANCE)["f"]
+                  for a in ann]
+        best.append(max(scores))
+        mean.append(float(np.mean(scores)))
+    return {"best": round(float(np.mean(best)), 4),
+            "mean": round(float(np.mean(mean)), 4)}
+
+
 def scene(size: int = 512, noise_sigma: float = 0.0, seed: int = 0):
     from shared import synth
 

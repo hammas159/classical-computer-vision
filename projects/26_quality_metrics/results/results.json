@@ -1,0 +1,891 @@
+{
+  "project": "26_quality_metrics",
+  "generated_utc": "2026-09-17T13:47:44+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "wolf_dark_wood",
+    "gulls_on_ledge",
+    "conical_hat_worker",
+    "egrets_in_thicket",
+    "elephant_pair",
+    "man_yellow_turban",
+    "flag_and_parade",
+    "iceberg_cloud",
+    "statues_stairwell",
+    "stone_bridge_river",
+    "sampan_still_water",
+    "woman_on_steps"
+  ],
+  "target_psnr": 28.0,
+  "equal_psnr": [
+    {
+      "degradation": "Gaussian noise",
+      "strength": 10.515,
+      "achieved_psnr": 27.998,
+      "MSE": 0.00159,
+      "MSE__exact": 0.0015855639649089426,
+      "PSNR": 27.99821,
+      "PSNR__exact": 27.998209402668454,
+      "SSIM": 0.69227,
+      "SSIM__exact": 0.6922741482655207,
+      "MS-SSIM": 0.88013,
+      "MS-SSIM__exact": 0.8801298124922646,
+      "GMSD": 0.23294,
+      "GMSD__exact": 0.23293858021497726,
+      "VIF (approx)": 0.92836,
+      "VIF (approx)__exact": 0.9283580891874338
+    },
+    {
+      "degradation": "Blur",
+      "strength": 1.05,
+      "achieved_psnr": 28.005,
+      "MSE": 0.00158,
+      "MSE__exact": 0.0015830362875324984,
+      "PSNR": 28.00515,
+      "PSNR__exact": 28.005154660209726,
+      "SSIM": 0.86232,
+      "SSIM__exact": 0.8623200456301371,
+      "MS-SSIM": 0.94758,
+      "MS-SSIM__exact": 0.9475831968916787,
+      "GMSD": 0.16807,
+      "GMSD__exact": 0.1680707453439633,
+      "VIF (approx)": 0.56531,
+      "VIF (approx)__exact": 0.565312166154171
+    },
+    {
+      "degradation": "JPEG",
+      "strength": 78.375,
+      "achieved_psnr": 27.959,
+      "MSE": 0.0016,
+      "MSE__exact": 0.00160043877743495,
+      "PSNR": 27.95858,
+      "PSNR__exact": 27.958582819041037,
+      "SSIM": 0.82506,
+      "SSIM__exact": 0.8250614653031031,
+      "MS-SSIM": 0.9117,
+      "MS-SSIM__exact": 0.9116998083061643,
+      "GMSD": 0.21716,
+      "GMSD__exact": 0.21716337402661642,
+      "VIF (approx)": 0.70733,
+      "VIF (approx)__exact": 0.7073267008743026
+    },
+    {
+      "degradation": "Contrast loss",
+      "strength": 0.1444,
+      "achieved_psnr": 28.02,
+      "MSE": 0.00158,
+      "MSE__exact": 0.001577601709868759,
+      "PSNR": 28.02009,
+      "PSNR__exact": 28.020094749553394,
+      "SSIM": 0.9547,
+      "SSIM__exact": 0.9546961734692255,
+      "MS-SSIM": 0.95884,
+      "MS-SSIM__exact": 0.9588415324687958,
+      "GMSD": 0.01095,
+      "GMSD__exact": 0.010949540844497582,
+      "VIF (approx)": 0.83542,
+      "VIF (approx)__exact": 0.8354227153562944
+    },
+    {
+      "degradation": "Sub-pixel shift",
+      "strength": 1.0,
+      "achieved_psnr": 24.26,
+      "MSE": 0.00426,
+      "MSE__exact": 0.004257212228064115,
+      "PSNR": 24.25985,
+      "PSNR__exact": 24.259854544498722,
+      "SSIM": 0.76877,
+      "SSIM__exact": 0.7687721153100332,
+      "MS-SSIM": 0.90455,
+      "MS-SSIM__exact": 0.9045532345771791,
+      "GMSD": 0.17973,
+      "GMSD__exact": 0.17973169311881065,
+      "VIF (approx)": 0.54158,
+      "VIF (approx)__exact": 0.5415846906182384
+    },
+    {
+      "degradation": "Salt & pepper",
+      "strength": 0.0047,
+      "achieved_psnr": 28.011,
+      "MSE": 0.00158,
+      "MSE__exact": 0.0015807641514887412,
+      "PSNR": 28.01143,
+      "PSNR__exact": 28.01142939638494,
+      "SSIM": 0.90611,
+      "SSIM__exact": 0.9061140616734823,
+      "MS-SSIM": 0.95307,
+      "MS-SSIM__exact": 0.9530684732728534,
+      "GMSD": 0.12028,
+      "GMSD__exact": 0.12028275740643342,
+      "VIF (approx)": 0.93915,
+      "VIF (approx)__exact": 0.9391532505733405
+    }
+  ],
+  "disagreement": {
+    "rankings": {
+      "MSE": [
+        "Contrast loss",
+        "Salt & pepper",
+        "Blur",
+        "Gaussian noise",
+        "JPEG",
+        "Sub-pixel shift"
+      ],
+      "PSNR": [
+        "Contrast loss",
+        "Salt & pepper",
+        "Blur",
+        "Gaussian noise",
+        "JPEG",
+        "Sub-pixel shift"
+      ],
+      "SSIM": [
+        "Contrast loss",
+        "Salt & pepper",
+        "Blur",
+        "JPEG",
+        "Sub-pixel shift",
+        "Gaussian noise"
+      ],
+      "MS-SSIM": [
+        "Contrast loss",
+        "Salt & pepper",
+        "Blur",
+        "JPEG",
+        "Sub-pixel shift",
+        "Gaussian noise"
+      ],
+      "GMSD": [
+        "Contrast loss",
+        "Salt & pepper",
+        "Blur",
+        "Sub-pixel shift",
+        "JPEG",
+        "Gaussian noise"
+      ],
+      "VIF (approx)": [
+        "Salt & pepper",
+        "Gaussian noise",
+        "Contrast loss",
+        "JPEG",
+        "Blur",
+        "Sub-pixel shift"
+      ]
+    },
+    "mse_vs_psnr_tau": 1.0,
+    "averaging_reorders_mse_and_psnr": false,
+    "kendall_tau_vs_psnr": {
+      "MSE": 1.0,
+      "PSNR": 1.0,
+      "SSIM": 0.7333,
+      "MS-SSIM": 0.7333,
+      "GMSD": 0.6,
+      "VIF (approx)": 0.4667
+    },
+    "worst_by_psnr": "Sub-pixel shift",
+    "worst_by_ssim": "Gaussian noise",
+    "psnr_and_ssim_agree": false
+  },
+  "disagreement_by_target": {
+    "24.0": {
+      "rankings": {
+        "MSE": [
+          "Gaussian noise",
+          "Blur",
+          "Contrast loss",
+          "JPEG",
+          "Salt & pepper",
+          "Sub-pixel shift"
+        ],
+        "PSNR": [
+          "Gaussian noise",
+          "Blur",
+          "JPEG",
+          "Contrast loss",
+          "Salt & pepper",
+          "Sub-pixel shift"
+        ],
+        "SSIM": [
+          "Contrast loss",
+          "Salt & pepper",
+          "Blur",
+          "Sub-pixel shift",
+          "JPEG",
+          "Gaussian noise"
+        ],
+        "MS-SSIM": [
+          "Contrast loss",
+          "Salt & pepper",
+          "Sub-pixel shift",
+          "Blur",
+          "Gaussian noise",
+          "JPEG"
+        ],
+        "GMSD": [
+          "Contrast loss",
+          "Salt & pepper",
+          "Sub-pixel shift",
+          "Blur",
+          "Gaussian noise",
+          "JPEG"
+        ],
+        "VIF (approx)": [
+          "Salt & pepper",
+          "Gaussian noise",
+          "Contrast loss",
+          "JPEG",
+          "Sub-pixel shift",
+          "Blur"
+        ]
+      },
+      "mse_vs_psnr_tau": 0.8667,
+      "averaging_reorders_mse_and_psnr": true,
+      "kendall_tau_vs_psnr": {
+        "MSE": 0.8667,
+        "PSNR": 1.0,
+        "SSIM": -0.3333,
+        "MS-SSIM": -0.3333,
+        "GMSD": -0.3333,
+        "VIF (approx)": -0.0667
+      },
+      "worst_by_psnr": "Sub-pixel shift",
+      "worst_by_ssim": "Gaussian noise",
+      "psnr_and_ssim_agree": false
+    },
+    "28.0": {
+      "rankings": {
+        "MSE": [
+          "Contrast loss",
+          "Salt & pepper",
+          "Blur",
+          "Gaussian noise",
+          "JPEG",
+          "Sub-pixel shift"
+        ],
+        "PSNR": [
+          "Contrast loss",
+          "Salt & pepper",
+          "Blur",
+          "Gaussian noise",
+          "JPEG",
+          "Sub-pixel shift"
+        ],
+        "SSIM": [
+          "Contrast loss",
+          "Salt & pepper",
+          "Blur",
+          "JPEG",
+          "Sub-pixel shift",
+          "Gaussian noise"
+        ],
+        "MS-SSIM": [
+          "Contrast loss",
+          "Salt & pepper",
+          "Blur",
+          "JPEG",
+          "Sub-pixel shift",
+          "Gaussian noise"
+        ],
+        "GMSD": [
+          "Contrast loss",
+          "Salt & pepper",
+          "Blur",
+          "Sub-pixel shift",
+          "JPEG",
+          "Gaussian noise"
+        ],
+        "VIF (approx)": [
+          "Salt & pepper",
+          "Gaussian noise",
+          "Contrast loss",
+          "JPEG",
+          "Blur",
+          "Sub-pixel shift"
+        ]
+      },
+      "mse_vs_psnr_tau": 1.0,
+      "averaging_reorders_mse_and_psnr": false,
+      "kendall_tau_vs_psnr": {
+        "MSE": 1.0,
+        "PSNR": 1.0,
+        "SSIM": 0.7333,
+        "MS-SSIM": 0.7333,
+        "GMSD": 0.6,
+        "VIF (approx)": 0.4667
+      },
+      "worst_by_psnr": "Sub-pixel shift",
+      "worst_by_ssim": "Gaussian noise",
+      "psnr_and_ssim_agree": false
+    },
+    "32.0": {
+      "rankings": {
+        "MSE": [
+          "Gaussian noise",
+          "Blur",
+          "Contrast loss",
+          "Salt & pepper",
+          "JPEG",
+          "Sub-pixel shift"
+        ],
+        "PSNR": [
+          "Gaussian noise",
+          "Blur",
+          "Contrast loss",
+          "Salt & pepper",
+          "JPEG",
+          "Sub-pixel shift"
+        ],
+        "SSIM": [
+          "Contrast loss",
+          "Salt & pepper",
+          "Blur",
+          "JPEG",
+          "Gaussian noise",
+          "Sub-pixel shift"
+        ],
+        "MS-SSIM": [
+          "Salt & pepper",
+          "Blur",
+          "Contrast loss",
+          "JPEG",
+          "Gaussian noise",
+          "Sub-pixel shift"
+        ],
+        "GMSD": [
+          "Contrast loss",
+          "Salt & pepper",
+          "Blur",
+          "JPEG",
+          "Gaussian noise",
+          "Sub-pixel shift"
+        ],
+        "VIF (approx)": [
+          "Salt & pepper",
+          "Gaussian noise",
+          "Contrast loss",
+          "JPEG",
+          "Blur",
+          "Sub-pixel shift"
+        ]
+      },
+      "mse_vs_psnr_tau": 1.0,
+      "averaging_reorders_mse_and_psnr": false,
+      "kendall_tau_vs_psnr": {
+        "MSE": 1.0,
+        "PSNR": 1.0,
+        "SSIM": 0.2,
+        "MS-SSIM": 0.2,
+        "GMSD": 0.2,
+        "VIF (approx)": 0.3333
+      },
+      "worst_by_psnr": "Sub-pixel shift",
+      "worst_by_ssim": "Sub-pixel shift",
+      "psnr_and_ssim_agree": false
+    }
+  },
+  "strength_sweeps": {
+    "Gaussian noise": [
+      {
+        "strength": 1.0,
+        "MSE": 2e-05,
+        "PSNR": 47.85929,
+        "SSIM": 0.99328,
+        "MS-SSIM": 0.99711,
+        "GMSD": 0.02344,
+        "VIF (approx)": 0.99858
+      },
+      {
+        "strength": 10.875,
+        "MSE": 0.0017,
+        "PSNR": 27.70226,
+        "SSIM": 0.6816,
+        "MS-SSIM": 0.87547,
+        "GMSD": 0.23689,
+        "VIF (approx)": 0.92389
+      },
+      {
+        "strength": 20.75,
+        "MSE": 0.00592,
+        "PSNR": 22.30229,
+        "SSIM": 0.4671,
+        "MS-SSIM": 0.76822,
+        "GMSD": 0.29357,
+        "VIF (approx)": 0.79319
+      },
+      {
+        "strength": 30.625,
+        "MSE": 0.01236,
+        "PSNR": 19.10985,
+        "SSIM": 0.34332,
+        "MS-SSIM": 0.68558,
+        "GMSD": 0.31478,
+        "VIF (approx)": 0.6687
+      },
+      {
+        "strength": 40.5,
+        "MSE": 0.02068,
+        "PSNR": 16.87696,
+        "SSIM": 0.26465,
+        "MS-SSIM": 0.61917,
+        "GMSD": 0.32367,
+        "VIF (approx)": 0.5671
+      },
+      {
+        "strength": 50.375,
+        "MSE": 0.03051,
+        "PSNR": 15.18754,
+        "SSIM": 0.21113,
+        "MS-SSIM": 0.56448,
+        "GMSD": 0.32716,
+        "VIF (approx)": 0.48661
+      },
+      {
+        "strength": 60.25,
+        "MSE": 0.04146,
+        "PSNR": 13.85173,
+        "SSIM": 0.17293,
+        "MS-SSIM": 0.5186,
+        "GMSD": 0.32808,
+        "VIF (approx)": 0.42243
+      },
+      {
+        "strength": 70.125,
+        "MSE": 0.05316,
+        "PSNR": 12.76659,
+        "SSIM": 0.14467,
+        "MS-SSIM": 0.47951,
+        "GMSD": 0.32765,
+        "VIF (approx)": 0.37049
+      },
+      {
+        "strength": 80.0,
+        "MSE": 0.06527,
+        "PSNR": 11.87011,
+        "SSIM": 0.12319,
+        "MS-SSIM": 0.4457,
+        "GMSD": 0.32655,
+        "VIF (approx)": 0.32784
+      }
+    ],
+    "Blur": [
+      {
+        "strength": 0.2,
+        "MSE": 0.0,
+        "PSNR": null,
+        "SSIM": 1.0,
+        "MS-SSIM": 1.0,
+        "GMSD": 0.0,
+        "VIF (approx)": 1.0
+      },
+      {
+        "strength": 1.175,
+        "MSE": 0.00242,
+        "PSNR": 26.59293,
+        "SSIM": 0.80741,
+        "MS-SSIM": 0.92549,
+        "GMSD": 0.19879,
+        "VIF (approx)": 0.49072
+      },
+      {
+        "strength": 2.15,
+        "MSE": 0.00459,
+        "PSNR": 23.84777,
+        "SSIM": 0.66512,
+        "MS-SSIM": 0.84654,
+        "GMSD": 0.26714,
+        "VIF (approx)": 0.30568
+      },
+      {
+        "strength": 3.125,
+        "MSE": 0.00615,
+        "PSNR": 22.6021,
+        "SSIM": 0.58828,
+        "MS-SSIM": 0.78351,
+        "GMSD": 0.29282,
+        "VIF (approx)": 0.21709
+      },
+      {
+        "strength": 4.1,
+        "MSE": 0.00736,
+        "PSNR": 21.83811,
+        "SSIM": 0.54522,
+        "MS-SSIM": 0.73377,
+        "GMSD": 0.30509,
+        "VIF (approx)": 0.16666
+      },
+      {
+        "strength": 5.075,
+        "MSE": 0.00841,
+        "PSNR": 21.26835,
+        "SSIM": 0.51773,
+        "MS-SSIM": 0.69225,
+        "GMSD": 0.31265,
+        "VIF (approx)": 0.13308
+      },
+      {
+        "strength": 6.05,
+        "MSE": 0.00937,
+        "PSNR": 20.80612,
+        "SSIM": 0.49749,
+        "MS-SSIM": 0.65666,
+        "GMSD": 0.31812,
+        "VIF (approx)": 0.10923
+      },
+      {
+        "strength": 7.025,
+        "MSE": 0.01018,
+        "PSNR": 20.44112,
+        "SSIM": 0.48496,
+        "MS-SSIM": 0.6279,
+        "GMSD": 0.32184,
+        "VIF (approx)": 0.09217
+      },
+      {
+        "strength": 8.0,
+        "MSE": 0.011,
+        "PSNR": 20.10504,
+        "SSIM": 0.47366,
+        "MS-SSIM": 0.60129,
+        "GMSD": 0.32519,
+        "VIF (approx)": 0.0783
+      }
+    ],
+    "JPEG": [
+      {
+        "strength": 1.0,
+        "MSE": 1e-05,
+        "PSNR": 49.57387,
+        "SSIM": 0.99777,
+        "MS-SSIM": 0.99869,
+        "GMSD": 0.00474,
+        "VIF (approx)": 0.99926
+      },
+      {
+        "strength": 13.0,
+        "MSE": 0.0002,
+        "PSNR": 37.44333,
+        "SSIM": 0.97482,
+        "MS-SSIM": 0.98907,
+        "GMSD": 0.05845,
+        "VIF (approx)": 1.02261
+      },
+      {
+        "strength": 25.0,
+        "MSE": 0.00049,
+        "PSNR": 33.46095,
+        "SSIM": 0.93052,
+        "MS-SSIM": 0.97168,
+        "GMSD": 0.11222,
+        "VIF (approx)": 0.88185
+      },
+      {
+        "strength": 37.0,
+        "MSE": 0.00066,
+        "PSNR": 32.1329,
+        "SSIM": 0.91315,
+        "MS-SSIM": 0.96361,
+        "GMSD": 0.13015,
+        "VIF (approx)": 0.84465
+      },
+      {
+        "strength": 49.0,
+        "MSE": 0.00084,
+        "PSNR": 31.14434,
+        "SSIM": 0.89775,
+        "MS-SSIM": 0.95626,
+        "GMSD": 0.14603,
+        "VIF (approx)": 0.81806
+      },
+      {
+        "strength": 61.0,
+        "MSE": 0.001,
+        "PSNR": 30.39691,
+        "SSIM": 0.88372,
+        "MS-SSIM": 0.94911,
+        "GMSD": 0.15998,
+        "VIF (approx)": 0.79514
+      },
+      {
+        "strength": 73.0,
+        "MSE": 0.00128,
+        "PSNR": 29.30146,
+        "SSIM": 0.85805,
+        "MS-SSIM": 0.93519,
+        "GMSD": 0.18221,
+        "VIF (approx)": 0.75319
+      },
+      {
+        "strength": 85.0,
+        "MSE": 0.00193,
+        "PSNR": 27.48104,
+        "SSIM": 0.80471,
+        "MS-SSIM": 0.90197,
+        "GMSD": 0.22783,
+        "VIF (approx)": 0.68223
+      },
+      {
+        "strength": 97.0,
+        "MSE": 0.00744,
+        "PSNR": 21.48785,
+        "SSIM": 0.52821,
+        "MS-SSIM": 0.67695,
+        "GMSD": 0.35119,
+        "VIF (approx)": 0.42014
+      }
+    ],
+    "Contrast loss": [
+      {
+        "strength": 0.02,
+        "MSE": 4e-05,
+        "PSNR": 44.83572,
+        "SSIM": 0.99733,
+        "MS-SSIM": 0.99768,
+        "GMSD": 0.00557,
+        "VIF (approx)": 0.97778
+      },
+      {
+        "strength": 0.13,
+        "MSE": 0.00152,
+        "PSNR": 28.66641,
+        "SSIM": 0.95394,
+        "MS-SSIM": 0.95802,
+        "GMSD": 0.01148,
+        "VIF (approx)": 0.8535
+      },
+      {
+        "strength": 0.24,
+        "MSE": 0.00516,
+        "PSNR": 23.34674,
+        "SSIM": 0.90468,
+        "MS-SSIM": 0.91027,
+        "GMSD": 0.01792,
+        "VIF (approx)": 0.72659
+      },
+      {
+        "strength": 0.35,
+        "MSE": 0.01098,
+        "PSNR": 20.06987,
+        "SSIM": 0.84993,
+        "MS-SSIM": 0.85546,
+        "GMSD": 0.03252,
+        "VIF (approx)": 0.59728
+      },
+      {
+        "strength": 0.46,
+        "MSE": 0.01899,
+        "PSNR": 17.69507,
+        "SSIM": 0.78581,
+        "MS-SSIM": 0.79014,
+        "GMSD": 0.05761,
+        "VIF (approx)": 0.46675
+      },
+      {
+        "strength": 0.57,
+        "MSE": 0.02911,
+        "PSNR": 15.83729,
+        "SSIM": 0.71004,
+        "MS-SSIM": 0.71216,
+        "GMSD": 0.09419,
+        "VIF (approx)": 0.33807
+      },
+      {
+        "strength": 0.68,
+        "MSE": 0.04142,
+        "PSNR": 14.30574,
+        "SSIM": 0.62169,
+        "MS-SSIM": 0.62066,
+        "GMSD": 0.14168,
+        "VIF (approx)": 0.21514
+      },
+      {
+        "strength": 0.79,
+        "MSE": 0.05591,
+        "PSNR": 13.00282,
+        "SSIM": 0.52177,
+        "MS-SSIM": 0.51675,
+        "GMSD": 0.20123,
+        "VIF (approx)": 0.1064
+      },
+      {
+        "strength": 0.9,
+        "MSE": 0.07258,
+        "PSNR": 11.86993,
+        "SSIM": 0.41362,
+        "MS-SSIM": 0.40419,
+        "GMSD": 0.26678,
+        "VIF (approx)": 0.02706
+      }
+    ],
+    "Sub-pixel shift": [
+      {
+        "strength": 1.0,
+        "MSE": 0.00426,
+        "PSNR": 24.25985,
+        "SSIM": 0.76877,
+        "MS-SSIM": 0.90455,
+        "GMSD": 0.17973,
+        "VIF (approx)": 0.54158
+      },
+      {
+        "strength": 1.875,
+        "MSE": 0.00902,
+        "PSNR": 21.01133,
+        "SSIM": 0.59896,
+        "MS-SSIM": 0.80561,
+        "GMSD": 0.21985,
+        "VIF (approx)": 0.36458
+      },
+      {
+        "strength": 2.75,
+        "MSE": 0.01189,
+        "PSNR": 19.85368,
+        "SSIM": 0.54474,
+        "MS-SSIM": 0.73985,
+        "GMSD": 0.2389,
+        "VIF (approx)": 0.29372
+      },
+      {
+        "strength": 3.625,
+        "MSE": 0.0144,
+        "PSNR": 19.05,
+        "SSIM": 0.50266,
+        "MS-SSIM": 0.68345,
+        "GMSD": 0.24985,
+        "VIF (approx)": 0.25087
+      },
+      {
+        "strength": 4.5,
+        "MSE": 0.0144,
+        "PSNR": 19.05,
+        "SSIM": 0.50266,
+        "MS-SSIM": 0.68345,
+        "GMSD": 0.24985,
+        "VIF (approx)": 0.25087
+      },
+      {
+        "strength": 5.375,
+        "MSE": 0.01655,
+        "PSNR": 18.45868,
+        "SSIM": 0.47749,
+        "MS-SSIM": 0.63923,
+        "GMSD": 0.2572,
+        "VIF (approx)": 0.22338
+      },
+      {
+        "strength": 6.25,
+        "MSE": 0.01853,
+        "PSNR": 17.96772,
+        "SSIM": 0.45964,
+        "MS-SSIM": 0.60241,
+        "GMSD": 0.2624,
+        "VIF (approx)": 0.20444
+      },
+      {
+        "strength": 7.125,
+        "MSE": 0.02041,
+        "PSNR": 17.54585,
+        "SSIM": 0.44539,
+        "MS-SSIM": 0.57107,
+        "GMSD": 0.26658,
+        "VIF (approx)": 0.19039
+      },
+      {
+        "strength": 8.0,
+        "MSE": 0.02214,
+        "PSNR": 17.18646,
+        "SSIM": 0.43369,
+        "MS-SSIM": 0.54449,
+        "GMSD": 0.26991,
+        "VIF (approx)": 0.179
+      }
+    ],
+    "Salt & pepper": [
+      {
+        "strength": 0.001,
+        "MSE": 0.00036,
+        "PSNR": 34.43569,
+        "SSIM": 0.97723,
+        "MS-SSIM": 0.98864,
+        "GMSD": 0.0593,
+        "VIF (approx)": 0.98622
+      },
+      {
+        "strength": 0.0259,
+        "MSE": 0.00883,
+        "PSNR": 20.56914,
+        "SSIM": 0.61113,
+        "MS-SSIM": 0.79951,
+        "GMSD": 0.25902,
+        "VIF (approx)": 0.73005
+      },
+      {
+        "strength": 0.0508,
+        "MSE": 0.01722,
+        "PSNR": 17.67077,
+        "SSIM": 0.42552,
+        "MS-SSIM": 0.69269,
+        "GMSD": 0.32667,
+        "VIF (approx)": 0.57776
+      },
+      {
+        "strength": 0.0756,
+        "MSE": 0.0253,
+        "PSNR": 16.00097,
+        "SSIM": 0.32101,
+        "MS-SSIM": 0.62503,
+        "GMSD": 0.36012,
+        "VIF (approx)": 0.4799
+      },
+      {
+        "strength": 0.1005,
+        "MSE": 0.03399,
+        "PSNR": 14.71859,
+        "SSIM": 0.25242,
+        "MS-SSIM": 0.57305,
+        "GMSD": 0.37841,
+        "VIF (approx)": 0.40716
+      },
+      {
+        "strength": 0.1254,
+        "MSE": 0.04227,
+        "PSNR": 13.77102,
+        "SSIM": 0.20904,
+        "MS-SSIM": 0.53558,
+        "GMSD": 0.38554,
+        "VIF (approx)": 0.35645
+      },
+      {
+        "strength": 0.1502,
+        "MSE": 0.05071,
+        "PSNR": 12.98045,
+        "SSIM": 0.17827,
+        "MS-SSIM": 0.50342,
+        "GMSD": 0.38648,
+        "VIF (approx)": 0.31693
+      },
+      {
+        "strength": 0.1751,
+        "MSE": 0.05898,
+        "PSNR": 12.32434,
+        "SSIM": 0.15577,
+        "MS-SSIM": 0.47787,
+        "GMSD": 0.38383,
+        "VIF (approx)": 0.28659
+      },
+      {
+        "strength": 0.2,
+        "MSE": 0.06754,
+        "PSNR": 11.73604,
+        "SSIM": 0.13778,
+        "MS-SSIM": 0.45363,
+        "GMSD": 0.37875,
+        "VIF (approx)": 0.26089
+      }
+    ]
+  }
+}

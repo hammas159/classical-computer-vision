@@ -151,7 +151,15 @@ def mask_notch(shape, peaks, radius: float = 8.0, order: int = 4) -> np.ndarray:
     for py, px in peaks:
         for sy, sx in ((py, px), (2 * cy - py, 2 * cx - px)):
             d = np.sqrt((yy - sy) ** 2 + (xx - sx) ** 2)
-            mask *= 1.0 / (1.0 + (max(radius, EPS) / np.maximum(d, EPS)) ** (2 * order))
+            # At the peak itself d -> 0, so radius/d -> inf and float32 overflows
+            # raising it to 2*order. The limit is well defined -- the notch is
+            # fully closed there -- so the ratio is capped at a value whose
+            # power is still finite and whose reciprocal is already zero to
+            # float precision. Overflow here produced a RuntimeWarning and an
+            # inf that numpy then turned into the correct answer by accident.
+            ratio = np.minimum(max(radius, EPS) / np.maximum(d, EPS),
+                               np.float32(1e6) ** (1.0 / max(2 * order, 1)))
+            mask *= 1.0 / (1.0 + ratio ** (2 * order))
     return mask
 
 
@@ -207,12 +215,24 @@ def homomorphic(
 
 
 def ringing_score(img: np.ndarray, reference: np.ndarray) -> float:
-    """Oscillation energy near edges — a direct measure of ringing.
+    """Oscillation energy near edges — kept, and **not** used for the headline.
 
-    Ringing is an *alternating* over/undershoot beside an edge, so it shows up as
-    zero crossings of the error signal within a narrow band around edges. Counting
-    those sign changes distinguishes ringing from plain blur, which a global error
-    metric cannot do.
+    Counts sign changes of the error in a band beside the reference's edges. On
+    a synthetic step that is a clean measure of Gibbs ringing. On a photograph it
+    is not, and the difference is worth stating rather than hiding: a natural
+    image has edges everywhere, so the band beside one edge is full of other
+    edges, and the score ends up dominated by ordinary blur error.
+
+    Measured on this project's twelve photographs at cutoff 40, it ranks Gaussian
+    as the *worst* ringer (0.302) and Ideal as the best (0.233), which is exactly
+    backwards. Several alternatives were tried -- error amplitude beside edges
+    minus amplitude far from edges, sign changes weighted by local error -- and
+    none separated the filters by more than the noise between images.
+
+    So ringing is measured where it can be measured, on a step edge, by
+    `ringing_on_step`. This function stays because the failed attempt is worth
+    keeping visible: a plausible metric that ranks the answer backwards is the
+    thing this repository is about.
     """
     ref = to_float(to_gray(reference))
     out = to_float(to_gray(img))
@@ -228,11 +248,86 @@ def ringing_score(img: np.ndarray, reference: np.ndarray) -> float:
     return float((sign_changes[band_x] > 0).mean())
 
 
+#: Side of the synthetic step image the ringing measurement runs on.
+STEP_SIZE = 256
+
+#: Minimum swing, in [0, 1] intensity, for a turn in the step profile to count
+#: as an oscillation rather than as floating-point residue. 1/255 is one uint8
+#: level -- below that it could not be seen in the image anyway.
+RINGING_FLOOR = 1.0 / 255.0
+
+
+def step_edge(size: int = STEP_SIZE) -> np.ndarray:
+    """A single vertical step — the one setting where ringing is unambiguous."""
+    img = np.zeros((size, size), np.uint8)
+    img[:, size // 2:] = 255
+    return img
+
+
+def ringing_on_step(mask_fn, cutoff: float = 20.0, size: int = STEP_SIZE) -> dict:
+    """Gibbs ringing, measured where a natural image cannot measure it.
+
+    Returns the number of oscillations in the filtered step's profile and the
+    peak excursion outside the original's range, computed **before** clipping to
+    uint8 -- clipping hides the overshoot entirely, which is why the first
+    version of this reported 0.0000 for every filter.
+
+    A step edge contains every frequency, so truncating the spectrum with a hard
+    cutoff produces the classic Gibbs oscillation and a smooth cutoff does not.
+    That is the whole content of "ideal filters ring".
+
+    **Oscillations are counted only above `RINGING_FLOOR`.** Counting every turn
+    in the profile does not work: a Gaussian-filtered step is almost perfectly
+    flat away from the edge, and its floating-point wiggle produced *147* turns
+    against the ideal filter's 42 -- ranking the non-ringing filter as the worst
+    ringer, for the second time in this file. The amplitude threshold is what
+    makes the count mean what its name says.
+    """
+    img = step_edge(size)
+    f = to_float(img)
+    spectrum = np.fft.fftshift(np.fft.fft2(f))
+    filtered = np.real(np.fft.ifft2(np.fft.ifftshift(spectrum * mask_fn(f.shape, cutoff))))
+
+    profile = filtered[size // 2]
+    # A turn counts only if the swing either side of it is a real excursion.
+    turns = np.flatnonzero(np.abs(np.diff(np.sign(np.diff(profile)))) > 0) + 1
+    swing = [min(abs(profile[i] - profile[i - 1]), abs(profile[i] - profile[i + 1]))
+             for i in turns if 0 < i < len(profile) - 1]
+    return {
+        "oscillations": int(sum(s > RINGING_FLOOR for s in swing)),
+        "overshoot": round(float(max(profile.max() - f.max(), f.min() - profile.min())), 5),
+    }
+
+
 # --------------------------------------------------------------------------- #
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("camera", "astronaut", "coffee", "moon", "brick")
+#: Twelve photographs spanning **detail density** — mean gradient magnitude, a
+#: direct proxy for how much of the picture lives in the high frequencies a
+#: low-pass throws away. Selected by `tools/select_images.py --axis detail`;
+#: the range is 59 to 688, a factor of 12.
+IMAGES = (
+    "hazy_ridges",           # detail  59 — almost pure low frequency
+    "whitewashed_chapel",    # detail 158
+    "child_red_jumper",      # detail 193
+    "geese_and_goslings",    # detail 223
+    "fjord_harbour",         # detail 250
+    "woman_hanbok",          # detail 277
+    "graffiti_wall",         # detail 300
+    "stone_wellhead",        # detail 321
+    "lizard_on_gravel",      # detail 358
+    "hawk_and_chick",        # detail 406
+    "tower_and_spire",       # detail 453 — strong regular periodic structure
+    "couple_autumn_bank",    # detail 688 — the busiest frame in the pool
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """Load one of this project's photographs by name."""
+    from shared import io
+
+    return io.real_photo(name)
 CUTOFFS = (10.0, 20.0, 40.0, 80.0, 150.0)
 BUTTERWORTH_ORDERS = (1, 2, 4, 8, 16)
 
@@ -243,7 +338,7 @@ def evaluate_lowpass(cutoff: float = 40.0, images=IMAGES, runs: int = 3):
 
     acc = {n: {"psnr": [], "ssim": [], "ring": [], "ms": []} for n in MASKS}
     for name in images:
-        img = io.sample(name)
+        img = load_scene(name)
         gray = to_gray(img)
         for label, builder in MASKS.items():
             mask = builder(gray.shape, cutoff)
@@ -277,7 +372,7 @@ def sweep_butterworth_order(images=IMAGES, orders=BUTTERWORTH_ORDERS, cutoff: fl
     for order in orders:
         rings, psnrs = [], []
         for name in images:
-            img = io.sample(name)
+            img = load_scene(name)
             gray = to_gray(img)
             out = apply_mask(img, mask_butterworth(gray.shape, cutoff, order))
             rings.append(ringing_score(out, gray))
@@ -313,7 +408,7 @@ def evaluate_notch(images=IMAGES, fx: int = 40, fy: int = 25, amplitude: float =
     peak_errors = []
 
     for name in images:
-        img = io.sample(name)
+        img = load_scene(name)
         gray = to_gray(img)
         noisy, peaks = add_periodic_noise(img, fx, fy, amplitude)
         noisy_p.append(psnr(to_gray(noisy), gray))
@@ -337,24 +432,64 @@ def evaluate_notch(images=IMAGES, fx: int = 40, fy: int = 25, amplitude: float =
     return rows, {"peak_localisation_error_px": round(float(np.mean(peak_errors)), 2)}
 
 
+def match_mean(img: np.ndarray, reference: np.ndarray) -> np.ndarray:
+    """Scale ``img`` so its mean matches ``reference``, bisected on the clipped result.
+
+    Scaling then clipping is not linear, so a closed-form factor overshoots
+    whenever anything saturates.
+    """
+    target = float(to_gray(reference).mean())
+    f = to_float(img)
+    lo, hi = 0.05, 20.0
+    for _ in range(40):
+        mid = 0.5 * (lo + hi)
+        got = float(to_gray(to_uint8(np.clip(f * mid, 0, 1))).mean())
+        if got < target:
+            lo = mid
+        else:
+            hi = mid
+    return to_uint8(np.clip(f * 0.5 * (lo + hi), 0, 1))
+
+
 def evaluate_homomorphic(images=IMAGES, illum_min: float = 0.3):
-    """Homomorphic filtering against an uneven-illumination degradation."""
-    from shared import io, synth
+    """Homomorphic filtering against an uneven-illumination degradation.
+
+    Reported **twice**, raw and after matching the output's mean back to the
+    original's, because the raw number is not measuring what it appears to.
+
+    `gamma_low = 0.5` multiplies the low-frequency band of the *log* image by a
+    half, and the DC term lives in that band -- so the whole picture comes back
+    at roughly a third of its brightness. Scored raw, homomorphic filtering
+    lands at 7.8 dB against the 12.3 dB uneven input it was supposed to fix,
+    which reads as a method that does not work.
+
+    Matched, it reaches 15.1 dB and is clearly ahead. The formula is left exactly
+    as Gonzalez & Woods write it; what changed is the scoring. The same trap
+    caught the high-boost row in project 16.
+    """
+    from shared import synth
 
     rows = []
-    before, after, clahe = [], [], []
+    before, after, after_matched, clahe = [], [], [], []
     for name in images:
-        clean = to_gray(io.sample(name))
+        clean = to_gray(load_scene(name))
         h, w = clean.shape
         shade = synth.scene_shading((w, h), illum_min)
         lit = to_uint8(to_float(clean) * shade)
+        out = homomorphic(lit)
         before.append(psnr(lit, clean))
-        after.append(psnr(homomorphic(lit), clean))
+        after.append(psnr(out, clean))
+        after_matched.append(psnr(match_mean(out, clean), clean))
         clahe.append(psnr(cv2.createCLAHE(3.0, (8, 8)).apply(lit), clean))
 
-    rows.append({"method": "Uneven input", "psnr_db": round(float(np.mean(before)), 3)})
-    rows.append({"method": "CLAHE (spatial)", "psnr_db": round(float(np.mean(clahe)), 3)})
-    rows.append({"method": "Homomorphic", "psnr_db": round(float(np.mean(after)), 3)})
+    def row(name, raw, matched=None):
+        r = {"method": name, "psnr_db": round(float(np.mean(raw)), 3)}
+        r["psnr_matched_db"] = round(float(np.mean(matched if matched else raw)), 3)
+        return r
+
+    rows.append(row("Uneven input", before))
+    rows.append(row("CLAHE (spatial)", clahe))
+    rows.append(row("Homomorphic", after, after_matched))
     return rows
 
 
