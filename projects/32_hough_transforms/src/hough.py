@@ -273,6 +273,97 @@ def match_circles(detected, truth, centre_tol: float = 15.0):
 # experiments
 # --------------------------------------------------------------------------- #
 
+#: Twelve photographs spanning **edge density** 1.9% to 36.3%, from BSDS500 so
+#: they carry human boundary annotations. Hough finds straight structure and a
+#: photograph's straight structure is mostly man-made, so the pool deliberately
+#: mixes glazed roofs and window grids with cheetahs and rock faces.
+IMAGES = (
+    "camel_at_sunset",     # edges  1.9 - one long horizon and little else
+    "woman_black_beret",   # edges  9.2
+    "held_sunfish",        # edges 11.6
+    "clouded_leopard",     # edges 13.1
+    "palms_at_dusk",       # edges 15.3
+    "cheetah_walking",     # edges 17.5
+    "two_women_street",    # edges 19.1
+    "rocky_cove",          # edges 20.5
+    "glass_roof_trees",    # edges 23.0 - dense man-made straight lines
+    "barges_and_blocks",   # edges 25.4
+    "hotel_rossiya",       # edges 29.9 - a grid of windows
+    "ocelot_on_rock",      # edges 36.3 - the busiest frame in the pool
+)
+
+
+def load_scene(name: str):
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def rasterise_lines(lines, shape) -> np.ndarray:
+    """Draw detected lines as a binary mask, so they can be compared to a boundary map.
+
+    `detect_lines_standard` returns infinite (rho, theta) lines and
+    `detect_lines_probabilistic` returns finite segments. Drawing both onto a
+    canvas is what puts them on the same footing -- and it is also the honest
+    representation of the difference, because an infinite line crosses the whole
+    frame including the parts where nothing supported it.
+    """
+    canvas = np.zeros(shape[:2], np.uint8)
+    h, w = shape[:2]
+    for item in lines:
+        if len(item) == 4:
+            x1, y1, x2, y2 = (int(v) for v in item)
+        else:
+            rho, theta = float(item[0]), float(item[1])
+            a, b = np.cos(theta), np.sin(theta)
+            x0, y0 = a * rho, b * rho
+            big = max(h, w) * 2
+            x1, y1 = int(x0 + big * (-b)), int(y0 + big * a)
+            x2, y2 = int(x0 - big * (-b)), int(y0 - big * a)
+        cv2.line(canvas, (x1, y1), (x2, y2), 255, 1, cv2.LINE_8)
+    return canvas
+
+
+def evaluate_photo_lines(images=None, tolerance: int = 2, min_annotators: int = 2):
+    """How many of Hough's lines land on something a person actually drew.
+
+    **Precision only, and deliberately so.** A photograph's human boundary map
+    contains every contour a person traced, most of which are not straight;
+    asking a line detector to recall them would be asking it to be a different
+    algorithm. Precision -- of the line pixels Hough drew, how many sit on a real
+    boundary -- is exactly the question a line detector should be asked.
+
+    The `Canny edges` row is the control. Hough is built on Canny's output, so a
+    Hough precision below Canny's means the voting stage *added* error rather
+    than removing it.
+    """
+    from shared import bsds
+
+    images = images if images is not None else IMAGES
+    variants = {
+        "Canny edges (control)": lambda g: cv2.Canny(g, 50, 150),
+        "Standard Hough": lambda g: rasterise_lines(detect_lines_standard(g), g.shape),
+        "Probabilistic Hough": lambda g: rasterise_lines(
+            detect_lines_probabilistic(g)[0], g.shape),
+    }
+    rows = []
+    for label, fn in variants.items():
+        precisions, coverage = [], []
+        for name in images:
+            gray = to_gray(load_scene(name))
+            target = bsds.consensus_boundaries(name, min_annotators)
+            drawn = fn(gray)
+            score = bsds.boundary_f_measure(drawn, target, tolerance)
+            precisions.append(score["precision"])
+            coverage.append(float((drawn > 0).mean()))
+        rows.append({
+            "method": label,
+            "precision": round(float(np.mean(precisions)), 4),
+            "pixels_drawn": round(float(np.mean(coverage)) * 100, 3),
+        })
+    return rows
+
+
 NOISE_LEVELS = (0.0, 10.0, 25.0, 45.0)
 CLUTTER_LEVELS = (0, 3, 8, 15)
 LINE_THRESHOLDS = (60, 90, 120, 160, 220)

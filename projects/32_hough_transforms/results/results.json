@@ -1,0 +1,179 @@
+{
+  "project": "32_hough_transforms",
+  "generated_utc": "2026-09-17T14:33:19+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "camel_at_sunset",
+    "woman_black_beret",
+    "held_sunfish",
+    "clouded_leopard",
+    "palms_at_dusk",
+    "cheetah_walking",
+    "two_women_street",
+    "rocky_cove",
+    "glass_roof_trees",
+    "barges_and_blocks",
+    "hotel_rossiya",
+    "ocelot_on_rock"
+  ],
+  "lines_clean": [
+    {
+      "method": "Standard Hough",
+      "recall": 1.0,
+      "precision": 0.3476,
+      "angle_error_deg": 0.225,
+      "rho_error_px": 0.753,
+      "median_ms": 2.019
+    },
+    {
+      "method": "Probabilistic Hough",
+      "recall": 1.0,
+      "precision": 0.236,
+      "angle_error_deg": 0.1076,
+      "rho_error_px": 0.756,
+      "median_ms": 4.954
+    }
+  ],
+  "lines_clutter": [
+    {
+      "method": "Standard Hough",
+      "recall": 1.0,
+      "precision": 0.335,
+      "angle_error_deg": 0.225,
+      "rho_error_px": 0.753,
+      "median_ms": 1.758
+    },
+    {
+      "method": "Probabilistic Hough",
+      "recall": 1.0,
+      "precision": 0.2137,
+      "angle_error_deg": 0.1233,
+      "rho_error_px": 0.667,
+      "median_ms": 4.031
+    }
+  ],
+  "circles": [
+    {
+      "method": "Hough circles (gradient)",
+      "recall": 1.0,
+      "precision": 0.754,
+      "centre_error_px": 1.837,
+      "radius_error_px": 0.661,
+      "median_ms": 5.329
+    }
+  ],
+  "photo_lines": [
+    {
+      "method": "Canny edges (control)",
+      "precision": 0.1937,
+      "pixels_drawn": 17.781
+    },
+    {
+      "method": "Standard Hough",
+      "precision": 0.112,
+      "pixels_drawn": 55.288
+    },
+    {
+      "method": "Probabilistic Hough",
+      "precision": 0.1167,
+      "pixels_drawn": 27.528
+    }
+  ],
+  "threshold_sweep": [
+    {
+      "threshold": 60,
+      "recall": 1.0,
+      "precision": 0.0941,
+      "angle_error_deg": 0.2154
+    },
+    {
+      "threshold": 90,
+      "recall": 1.0,
+      "precision": 0.1962,
+      "angle_error_deg": 0.2154
+    },
+    {
+      "threshold": 120,
+      "recall": 1.0,
+      "precision": 0.2941,
+      "angle_error_deg": 0.2154
+    },
+    {
+      "threshold": 160,
+      "recall": 1.0,
+      "precision": 0.4773,
+      "angle_error_deg": 0.2071
+    },
+    {
+      "threshold": 220,
+      "recall": 0.6,
+      "precision": 0.5,
+      "angle_error_deg": 0.1133
+    }
+  ],
+  "noise_sweep": [
+    {
+      "noise_sigma": 0.0,
+      "line_recall": 1.0,
+      "line_angle_error_deg": 0.2154,
+      "circle_recall": 1.0,
+      "circle_radius_error_px": 0.604
+    },
+    {
+      "noise_sigma": 10.0,
+      "line_recall": 1.0,
+      "line_angle_error_deg": 0.1848,
+      "circle_recall": 1.0,
+      "circle_radius_error_px": 1.384
+    },
+    {
+      "noise_sigma": 25.0,
+      "line_recall": 1.0,
+      "line_angle_error_deg": 0.1848,
+      "circle_recall": 1.0,
+      "circle_radius_error_px": 0.576
+    },
+    {
+      "noise_sigma": 45.0,
+      "line_recall": 1.0,
+      "line_angle_error_deg": 0.1848,
+      "circle_recall": 1.0,
+      "circle_radius_error_px": 0.632
+    }
+  ],
+  "clutter_sweep": [
+    {
+      "clutter": 0,
+      "standard_precision": 0.2941,
+      "standard_recall": 1.0,
+      "probabilistic_precision": 0.2648,
+      "probabilistic_recall": 1.0
+    },
+    {
+      "clutter": 3,
+      "standard_precision": 0.2941,
+      "standard_recall": 1.0,
+      "probabilistic_precision": 0.2432,
+      "probabilistic_recall": 1.0
+    },
+    {
+      "clutter": 8,
+      "standard_precision": 0.2941,
+      "standard_recall": 1.0,
+      "probabilistic_precision": 0.2488,
+      "probabilistic_recall": 1.0
+    },
+    {
+      "clutter": 15,
+      "standard_precision": 0.2566,
+      "standard_recall": 1.0,
+      "probabilistic_precision": 0.2149,
+      "probabilistic_recall": 1.0
+    }
+  ]
+}

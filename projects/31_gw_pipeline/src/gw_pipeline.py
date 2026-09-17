@@ -143,6 +143,14 @@ def run_pipeline(
     the right kind and the ablation isolates that stage's contribution instead of
     breaking the chain.
     """
+    if skip is not None and skip not in ABLATABLE:
+        # A typo'd stage name used to be ignored, so the "ablation" silently ran
+        # the full pipeline and reported it as a row -- a table of six identical
+        # numbers that looks like every stage contributing nothing.
+        raise ValueError(
+            f"unknown stage {skip!r}; ablatable stages are {sorted(ABLATABLE)}"
+        )
+
     stages: dict[str, np.ndarray] = {}
 
     a = stage_a_original(img)
@@ -219,9 +227,32 @@ def measure(img: np.ndarray, reference: np.ndarray) -> dict[str, float]:
 # experiments
 # --------------------------------------------------------------------------- #
 
-#: `moon` and `retina` are the closest bundled analogues to the book's bone scan:
-#: low contrast, detail buried in the dark regions, fine structure throughout.
-IMAGES = ("moon", "retina", "camera", "cell", "astronaut")
+#: Twelve photographs spanning **mean brightness** 36 to 110, capped low on
+#: purpose. The book's worked example is a bone scan: low contrast with the
+#: detail buried in the dark regions, which is exactly what this pipeline's
+#: final power-law stage exists to lift. A pool of well-exposed photographs
+#: would give it nothing to do. Selected by
+#: `tools/select_images.py --axis brightness --max 110`.
+IMAGES = (
+    "diver_dark_reef",      # brightness  36 — detail buried in shadow
+    "red_canoes",           # brightness  65
+    "parasol_boat",         # brightness  73
+    "model_red_black",      # brightness  80
+    "sphinx_and_pyramid",   # brightness  85
+    "elder_in_shawl",       # brightness  89
+    "whitewashed_harbour",  # brightness  92
+    "glass_tower_tulips",   # brightness  96
+    "waterfall_cliff",      # brightness 101
+    "cougar_and_kitten",    # brightness 104 — low contrast throughout
+    "geisha_street",        # brightness 107
+    "collared_lizard",      # brightness 110
+)
+
+
+def load_scene(name: str):
+    from shared import io
+
+    return io.real_photo(name)
 GAMMAS = (0.3, 0.4, 0.5, 0.6, 0.8, 1.0)
 SMOOTH_SIZES = (1, 3, 5, 9, 15)
 ABLATABLE = ("c_sharpened", "e_smoothed_sobel", "f_mask", "g_sum", "h_power_law")
@@ -242,7 +273,7 @@ def ablation(images=IMAGES, gamma: float = 0.5):
         acc = {k: [] for k in ("acutance", "dark_detail", "rms_contrast",
                                "ssim_vs_original", "psnr_vs_original")}
         for name in images:
-            img = io.sample(name)
+            img = load_scene(name)
             final, _ = run_pipeline(img, skip=skip, gamma=gamma)
             for k, v in measure(final, img).items():
                 acc[k].append(v)
@@ -278,7 +309,7 @@ def laplacian_sign_test(images=IMAGES):
     for label, wrong in (("Correct sign (add +8 centre)", False), ("Wrong sign (add -8 centre)", True)):
         acut, ssims = [], []
         for name in images:
-            img = io.sample(name)
+            img = load_scene(name)
             gray = to_gray(img)
             out = stage_c_sharpened(gray, wrong_sign=wrong)
             acut.append(acutance(out))
@@ -293,7 +324,7 @@ def laplacian_sign_test(images=IMAGES):
 
     baseline = []
     for name in images:
-        baseline.append(acutance(to_gray(io.sample(name))))
+        baseline.append(acutance(to_gray(load_scene(name))))
     rows.insert(
         0,
         {
@@ -313,7 +344,7 @@ def sweep_gamma(images=IMAGES, gammas=GAMMAS):
     for g in gammas:
         acc = {"dark_detail": [], "rms_contrast": [], "ssim_vs_original": []}
         for name in images:
-            img = io.sample(name)
+            img = load_scene(name)
             final, _ = run_pipeline(img, gamma=g)
             m = measure(final, img)
             for k in acc:
@@ -338,7 +369,7 @@ def sweep_smoothing(images=IMAGES, sizes=SMOOTH_SIZES):
     for k in sizes:
         acc = {"acutance": [], "dark_detail": [], "ssim_vs_original": []}
         for name in images:
-            img = io.sample(name)
+            img = load_scene(name)
             final, _ = run_pipeline(img, smooth_ksize=k)
             m = measure(final, img)
             for key in acc:
@@ -354,29 +385,39 @@ def sweep_smoothing(images=IMAGES, sizes=SMOOTH_SIZES):
     return rows
 
 
+#: The eight-stage pipeline and the one-line alternatives it is supposed to
+#: beat, in one place so the figures, the tables and `infer.py` all measure
+#: exactly the same thing.
+VARIANTS = {
+    "G&W 8-stage pipeline": lambda a: run_pipeline(a)[0],
+    "CLAHE only": lambda a: cv2.createCLAHE(3.0, (8, 8)).apply(to_gray(a)),
+    "Unsharp mask only": lambda a: to_uint8(
+        to_float(to_gray(a))
+        + 1.0 * (to_float(to_gray(a)) - cv2.GaussianBlur(to_float(to_gray(a)), (0, 0), 1.5))
+    ),
+    "Gamma 0.5 only": lambda a: stage_h_power_law(to_gray(a), 0.5),
+    "Original (control)": lambda a: to_gray(a),
+}
+
+
+def apply_variant(img: np.ndarray, method: str = "G&W 8-stage pipeline"):
+    """Run one of `VARIANTS` by name."""
+    if method not in VARIANTS:
+        raise ValueError(f"unknown method {method!r}; choose from {sorted(VARIANTS)}")
+    return VARIANTS[method](img)
+
+
 def compare_to_simple_alternatives(images=IMAGES):
     """Eight stages against one-line alternatives.
 
     The uncomfortable question every pipeline should be asked: does CLAHE, in a
     single call, get most of the way there? If it does, that is worth knowing.
     """
-    from shared import io
-
     rows = []
-    variants = {
-        "G&W 8-stage pipeline": lambda a: run_pipeline(a)[0],
-        "CLAHE only": lambda a: cv2.createCLAHE(3.0, (8, 8)).apply(to_gray(a)),
-        "Unsharp mask only": lambda a: to_uint8(
-            to_float(to_gray(a))
-            + 1.0 * (to_float(to_gray(a)) - cv2.GaussianBlur(to_float(to_gray(a)), (0, 0), 1.5))
-        ),
-        "Gamma 0.5 only": lambda a: stage_h_power_law(to_gray(a), 0.5),
-        "Original (control)": lambda a: to_gray(a),
-    }
-    for label, fn in variants.items():
+    for label, fn in VARIANTS.items():
         acc = {k: [] for k in ("acutance", "dark_detail", "rms_contrast", "ssim_vs_original")}
         for name in images:
-            img = io.sample(name)
+            img = load_scene(name)
             out = fn(img)
             m = measure(out, img)
             for k in acc:

@@ -4,7 +4,7 @@
 [![OpenCV 4.14](https://img.shields.io/badge/OpenCV-4.14-5C3EE8?logo=opencv&logoColor=white)](https://opencv.org/)
 [![No deep learning](https://img.shields.io/badge/deep%20learning-none-success)](#the-rules)
 [![CPU only](https://img.shields.io/badge/hardware-CPU%20only-lightgrey)](#the-rules)
-[![Tests](https://img.shields.io/badge/tests-293%20passing-brightgreen)](#running-the-tests)
+[![Tests](https://img.shields.io/badge/tests-483%20passing-brightgreen)](#running-the-tests)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **Measured comparisons of classical computer vision algorithms.** Every project
@@ -14,14 +14,23 @@ and **one stated finding with a number in it**.
 
 No neural networks. No training. No GPU. Wherever a degradation can be applied
 on purpose — darken an image, add haze, paste a region — the ground truth is
-**generated rather than annotated**, so it is exact. Photographs are downloaded
-only to supply varied *subjects*; the answer key is still computed, never
-hand-labelled.
+**generated**, so it is exact.
 
-Each shipped project **also runs on a real photograph** (see
-[`assets/real/`](assets/real/)) to show it working on an image nobody constructed
-for it. Those are shown, never scored: a real photo has no answer key, so quoting
-an accuracy against one would be inventing a number.
+Where it cannot be, there are two other cases and they are kept apart on
+purpose. Some projects have **human annotations**: BSDS500 ships five to seven
+people's segmentations per image, so projects 24, 28 and 32 score against what
+someone actually drew *and* report the **human ceiling** — one annotator against
+the others' consensus, which lands near F 0.90 and not 1.0. The rest have
+**nothing**, and those photographs are shown and never scored, because quoting an
+accuracy against an image with no answer key would be inventing a number.
+
+**259 photographs, twelve per project, and no image appears in two projects.**
+Each pool is chosen on a *measured* axis — detail density, texture, tone range,
+edge density, entropy, colourfulness, brightness — so that the pool spans
+whatever the project actually tests, rather than being four pictures someone
+liked. `tools/check_image_reuse.py` enforces the no-reuse rule by perceptual
+hash, because filenames cannot: every image is renamed to something descriptive
+on the way in.
 
 **Jump to:** [Why](#why-this-exists) · [The rules](#the-rules) ·
 [Projects](#projects) · [Findings so far](#findings-so-far) ·
@@ -98,28 +107,28 @@ the unbuilt ones out would make the plan look smaller than it is.
 | 08 | **Video stabilisation** | feature trajectories + trajectory smoothing | *needs a handheld clip* | ❌ |
 | [09](projects/09_coin_counting/) | [**Coin counting & measurement**](projects/09_coin_counting/) | Otsu, top-hat illumination flattening, distance transform, local-maxima watershed, Hough circles | The OpenCV tutorial's seed rule (a fraction of the **global** distance maximum) counts **1 coin of 24** when a lighting artefact merges the mask; local-maxima seeding counts **24 of 24** on the same broken mask. And three methods count 24 while only **one** measures them plausibly — watershed's smallest basin implies a **5.75 mm** coin next to a 24.25 mm reference | ✅ |
 | [10](projects/10_seam_carving/) | [**Seam carving**](projects/10_seam_carving/) | dynamic programming, 4 energy functions, integral-image ROI, plain-rescale control | **11.6 points** more of the high-energy region retained than `cv2.resize`, for **2,844×** the compute. The four energy functions span **0.5 points** — the one-line choice write-ups argue about is **23× smaller** than the choice they skip. And it wins its own objective (retained energy) on 4 images of 4 while winning region retention on only 3 | ✅ |
-| 11 | **HDR exposure fusion** | Debevec, Mertens, Reinhard tone mapping | *needs an exposure bracket* | ❌ |
-| 12 | **Stereo → depth → 3D point cloud** | BM vs SGBM + 3D render | *needs a stereo pair* | ❌ |
+| [11](projects/11_hdr_exposure_fusion/) | [**HDR exposure fusion**](projects/11_hdr_exposure_fusion/) | Debevec + Reinhard/Drago/Mantiuk, Mertens fusion, naive mean, single-exposure controls | **Every real fusion method loses to averaging the frames** — the naive mean scores **0.928 SSIM** against Mertens' 0.848 and Debevec+Reinhard's 0.634, and runs in 9 ms against 1.8 s. And taking *one* photograph and doing nothing beats all three Debevec pipelines: 0.890 SSIM in 0.002 ms | ✅ |
+| [12](projects/12_stereo_depth/) | [**Stereo → depth**](projects/12_stereo_depth/) | naive SAD, StereoBM, StereoSGBM, disparity → depth, occlusion handling | **Block matching is at once the most accurate method here and the worst** — 1.3% of the pixels it answers are wrong, and 23.6% if its refusals count as misses. Nothing changed but the convention for scoring a blank. Stripping BM's uniqueness, left-right and speckle checks costs **3.8× the error rate**, so most of the quality is not the matching cost | ✅ |
 | [13](projects/13_denoising_shootout/) | [**Denoising shootout**](projects/13_denoising_shootout/) | box, Gaussian, median, bilateral, non-local means, adaptive Wiener, do-nothing control | Three noise models, **three different winners** — and the worst filter rotates too. Median wins impulse noise by **6.80 dB** and is the worst on Gaussian. Tuning transfers for **one filter of six** (bilateral +4.13 dB on held-out images; box **−0.81**). And below **sigma 10** every filter scores worse than leaving the image alone | ✅ |
-| [14](projects/14_edge_detectors/) | [Edge detectors](projects/14_edge_detectors/) | Roberts, Prewitt, Sobel, Scharr, LoG, Canny | every operator at its **own** best threshold | 🟡 |
-| [15](projects/15_thresholding_family/) | [Thresholding family](projects/15_thresholding_family/) | Otsu, triangle, multi-Otsu, adaptive, Niblack, Sauvola | illumination, class imbalance and noise varied **separately** | 🟡 |
-| [16](projects/16_sharpening/) | [Sharpening](projects/16_sharpening/) | Laplacian (both signs), unsharp, high-boost | tests "sharpening adds contrast, not information" | 🟡 |
-| [17](projects/17_histogram_equalization/) | [Histogram equalisation](projects/17_histogram_equalization/) | HE, AHE, CLAHE, matching, gamma | full-reference vs no-reference metrics disagreeing | ⚪ |
-| [18](projects/18_optical_flow/) | [Optical flow](projects/18_optical_flow/) | LK, pyramidal LK, Horn–Schunck, Farnebäck, DIS | quantifies "LK fails past 1–2 px" | ⚪ |
-| [19](projects/19_keypoint_detectors/) | [Keypoint detectors](projects/19_keypoint_detectors/) | Harris, Shi-Tomasi, FAST, SIFT, ORB, AKAZE, BRISK | repeatability under **known** homographies | ⚪ |
-| [20](projects/20_deblurring/) | [Deblurring](projects/20_deblurring/) | inverse, Wiener, Richardson–Lucy, regularised | the Richardson–Lucy **iteration optimum** | ⚪ |
-| [21](projects/21_super_resolution/) | [Single-image super-resolution](projects/21_super_resolution/) | nearest, bilinear, bicubic, Lanczos, back-projection | the interpolation **plateau** | ⚪ |
-| [22](projects/22_morphology/) | [Morphology](projects/22_morphology/) | erosion…top-hat, skeletons, hit-or-miss | structuring element vs operation | ⚪ |
-| [23](projects/23_fft_filtering/) | [FFT filtering](projects/23_fft_filtering/) | ideal, Butterworth, Gaussian, notch, homomorphic | ringing measured via error sign changes | ⚪ |
-| [24](projects/24_region_segmentation/) | [Region segmentation](projects/24_region_segmentation/) | watershed ±markers, region growing, mean-shift, SLIC, GrabCut | region count and accuracy move **opposite** ways | ⚪ |
-| [25](projects/25_matching_ransac/) | [Matching + RANSAC](projects/25_matching_ransac/) | ratio test, RANSAC, LMEDS, MAGSAC++ | measured breakdown vs the closed-form prediction | ⚪ |
-| [26](projects/26_quality_metrics/) | [**Do quality metrics agree?**](projects/26_quality_metrics/) | MSE, PSNR, SSIM, MS-SSIM, GMSD, VIF | equalise PSNR, then ask the other metrics | ⚪ |
-| [27](projects/27_jpeg_from_scratch/) | [JPEG from scratch](projects/27_jpeg_from_scratch/) | DCT, quantisation tables, zig-zag, RLE | the rate–distortion curve **is** the result | ⚪ |
-| [28](projects/28_canny_sensitivity/) | [Canny parameter sensitivity](projects/28_canny_sensitivity/) | σ × low × ratio grid | variance decomposition: which knob matters | ⚪ |
+| [14](projects/14_edge_detectors/) | [**Edge detectors**](projects/14_edge_detectors/) | Roberts, Prewitt, Sobel, Scharr, LoG, Canny | Normalising a gradient by its own maximum turned float rounding into a **constant 0.119 response on a flat image** — found by a test, not by looking. The operators separate on *thin* structure and nowhere else | ✅ |
+| [15](projects/15_thresholding_family/) | [**Thresholding family**](projects/15_thresholding_family/) | fixed, Otsu, triangle, multi-Otsu, 2 adaptive, Niblack, Sauvola, + exhaustive-search oracle | "Use adaptive thresholding when the light is uneven" is **half a sentence**. On the *same* bad lighting Sauvola beats Otsu by 0.75 IoU on thin strokes and by 0.13 on solid shapes — it depends on the **shape of the foreground**, not the light. The oracle separates "Otsu picked the wrong cut" (1.000 available) from "no cut exists" (0.741) | ✅ |
+| [16](projects/16_sharpening/) | [**Sharpening**](projects/16_sharpening/) | Laplacian (both signs + a deliberate sign error), unsharp, high-boost, + Wiener oracle | **Acutance cannot tell a sharpener from a sign error** — the wrong-signed Laplacian *raises* it (0.302 vs 0.245) while SSIM collapses to 0.149. High-boost goes from last to first, **+16.61 dB**, purely by matching brightness. And what a sharpener recovers collapses 12× with the blur while what *was* recoverable falls only 3.5× | ✅ |
+| [17](projects/17_histogram_equalization/) | [**Histogram equalisation**](projects/17_histogram_equalization/) | HE, unclipped AHE, CLAHE, histogram matching, gamma, + match-the-true-histogram oracle | **Entropy is blind to a 9 dB improvement.** The oracle gains +9.18 dB while entropy moves −0.019 bits — and entropy's favourite method is the *worst* in the table. On **5 of 11** photographs nothing beats doing nothing, and CLAHE's clip limit has an optimum entropy points away from | ✅ |
+| [18](projects/18_optical_flow/) | [**Optical flow**](projects/18_optical_flow/) | dense LK, pyramidal LK, Horn–Schunck, Farnebäck, DIS, + predict-zero control | "LK fails for large motion" — **the number is 1 pixel**, and each pyramid level roughly doubles it (1→4→8→16→32). Two harness bugs got there first: a negated truth made *every* method score worse than predicting zero, and an unnormalised Sobel made LK recover exactly ⅛ of the motion | ✅ |
+| [19](projects/19_keypoint_detectors/) | [**Keypoint detectors**](projects/19_keypoint_detectors/) | Harris, Shi-Tomasi, FAST, SIFT, ORB, AKAZE, BRISK | **Harris (1988) is the most repeatable detector**, and ORB is both faster *and* more repeatable than SIFT — the folklore is wrong about detection. But Harris covers **33% of the frame** against SIFT's 81%, so the column that wins it the ranking is the one that makes it a poor choice. Right-angle rotations test nothing | ✅ |
+| [20](projects/20_deblurring/) | [**Deblurring**](projects/20_deblurring/) | inverse, Wiener, Richardson–Lucy, regularised LS, unsharp control, + blind angle estimation | Handed the **true kernel**, the exact inverse scores **17 dB below doing nothing**. Only Richardson–Lucy clearly beats the control, and it diverges past an optimum PSNR and SSIM disagree about. The blind angle estimator was wrong twice over, the two errors cancelling at exactly 90° | ✅ |
+| [21](projects/21_super_resolution/) | [**Single-image super-resolution**](projects/21_super_resolution/) | nearest, bilinear, bicubic, Lanczos, edge-directed, back-projection, + band-limited reference | The entire nearest-to-Lanczos argument is worth **0.49 dB**; modelling the degradation is worth **+1.62**. And the choice of *downsampler* moves the score by **2.12 dB** — more than the spread between all six methods. Nearest scores the highest "high-frequency energy" and is the worst method | ✅ |
+| [22](projects/22_morphology/) | [**Morphology**](projects/22_morphology/) | erosion → black-hat, 3 structuring elements, skeletons, hit-or-miss | On a binarised photograph **no operation at any kernel size beats doing nothing** — a real binarisation has genuine single-pixel structure. The synthetic scene says the opposite, which is why both are reported. A cross keeps **360×** more diagonal structure than a rectangle | ✅ |
+| [23](projects/23_fft_filtering/) | [**FFT filtering**](projects/23_fft_filtering/) | ideal/Butterworth/Gaussian low-pass, notch rejection, homomorphic | The one thing the spatial domain cannot do: a **blind** notch removes periodic interference for **+14.62 dB** where a median filter manages +1.73 — and it matches its own oracle to **0.0 px**. Ringing had to be measured on a step edge, because on photographs the obvious metric ranks Gaussian as the *worst* ringer | ✅ |
+| [24](projects/24_region_segmentation/) | [**Region segmentation**](projects/24_region_segmentation/) | watershed ±markers, region growing, mean-shift, SLIC, GrabCut, + a grid of rectangles | **A grid of rectangles that never looked at the image beats five of six real methods on IoU.** Scored against *human* boundaries instead, the grid comes last where it belongs and the best method reaches **less than half** the human ceiling (0.433 against 0.904) | ✅ |
+| [25](projects/25_matching_ransac/) | [**Matching + RANSAC**](projects/25_matching_ransac/) | SIFT/ORB/AKAZE, ratio test, cross-check, least squares, RANSAC, LMEDS, MAGSAC++ | **LMEDS breaks at exactly its theoretical 50%** — 0.222 px at 40%, 190.9 px at 60%. RANSAC holds to 80% and costs **46,000 iterations** at 90%. And SIFT wins here on descriptor accuracy (0.222 px vs ORB's 0.927) having *lost* to ORB on detection in project 19 | ✅ |
+| [26](projects/26_quality_metrics/) | [**Do quality metrics agree?**](projects/26_quality_metrics/) | MSE, PSNR, SSIM, MS-SSIM, GMSD, VIF — six damages bisected to one PSNR | At an identical **28 dB**, SSIM spans 0.692 to 0.955. A one-pixel shift **cannot be made mild enough to reach 28 dB** while being nearly invisible. VIF was scoring the damage as an improvement, climbing to **40.7** as contrast was destroyed | ✅ |
+| [27](projects/27_jpeg_from_scratch/) | [**JPEG from scratch**](projects/27_jpeg_from_scratch/) | DCT, standard tables, 4:2:0, zig-zag, RLE, entropy estimate — every stage switchable | Quantising **pixels** instead of DCT coefficients costs **9.33 dB at 2.3× the bitrate** — the transform is what makes the quantisation affordable. Chroma subsampling costs **0.03 dB** for 24% of the bits. Below quality 75 the top-frequency coefficient survives in **no block of any image** | ✅ |
+| [28](projects/28_canny_sensitivity/) | [**Canny parameter sensitivity**](projects/28_canny_sensitivity/) | σ × low × ratio grid, on shapes **and** on human-annotated photographs | **Twelve settings score a perfect 1.000 on the synthetic scene** — a saturated benchmark cannot choose between them, and picking the wrong one costs **19%** on photographs. σ explains 30% of the variance; the high:low ratio every tutorial discusses explains **0.03%** | ✅ |
 | 29 | **Tracking** | Kalman, mean-shift, CAMShift, KCF, CSRT, MOSSE | *needs a short clip* | ❌ |
 | 30 | **Background subtraction** | frame diff, running average, MOG, MOG2, KNN | *needs a short clip* | ❌ |
-| [31](projects/31_gw_pipeline/) | [G&W 8-stage pipeline](projects/31_gw_pipeline/) | Laplacian + Sobel + smoothing + power-law | ablation: which stages earn their place | ⚪ |
-| [32](projects/32_hough_transforms/) | [Hough transforms](projects/32_hough_transforms/) | lines, probabilistic lines, circles | cost scales with parameter count | ⚪ |
+| [31](projects/31_gw_pipeline/) | [**The G&W 8-stage pipeline**](projects/31_gw_pipeline/) | Laplacian, Sobel, smoothing, mask, sum, power-law — ablated one stage at a time | **A single unsharp mask beats all eight stages on every column**, including SSIM. Stage (e) contributes **nothing** (+0.010 when removed), and the mask stage *restrains* rather than adds. Both Laplacian signs raise acutance; the wrong one scores SSIM **−0.055** | ✅ |
+| [32](projects/32_hough_transforms/) | [**Hough transforms**](projects/32_hough_transforms/) | standard and probabilistic lines, circles, on shapes **and** human-annotated photographs | Recall stays at **1.000 out to noise σ45** — voting is the strongest robustness result here. On photographs it is **less precise than the Canny it votes on** (0.117 vs 0.194) and marks **55% of the frame** as line | ✅ |
 | [33](projects/33_texture/) | [Texture](projects/33_texture/) | GLCM, LBP, Gabor, Laws | which **invariance** each one actually has | ⚪ |
 | [34](projects/34_rgb_to_grayscale/) | [RGB → grayscale](projects/34_rgb_to_grayscale/) | BT.601, BT.709, linear-light, value, contrast-preserving | when the one-line choice actually matters | ⚪ |
 | 35 | **Camera calibration & distortion** | reprojection error vs number of views | *needs checkerboard shots* | ❌ |

@@ -1,0 +1,208 @@
+{
+  "project": "31_gw_pipeline",
+  "generated_utc": "2026-09-17T14:28:26+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "diver_dark_reef",
+    "red_canoes",
+    "parasol_boat",
+    "model_red_black",
+    "sphinx_and_pyramid",
+    "elder_in_shawl",
+    "whitewashed_harbour",
+    "glass_tower_tulips",
+    "waterfall_cliff",
+    "cougar_and_kitten",
+    "geisha_street",
+    "collared_lizard"
+  ],
+  "ablation": [
+    {
+      "configuration": "Full pipeline",
+      "acutance": 0.34271,
+      "dark_detail": 0.50856,
+      "rms_contrast": 0.1731,
+      "ssim_vs_original": 0.7716,
+      "psnr_vs_original": 12.224
+    },
+    {
+      "configuration": "Without c_sharpened",
+      "acutance": 0.27787,
+      "dark_detail": 0.35361,
+      "rms_contrast": 0.1664,
+      "ssim_vs_original": 0.78,
+      "psnr_vs_original": 12.198,
+      "acutance_delta": -0.06484,
+      "dark_detail_delta": -0.15495
+    },
+    {
+      "configuration": "Without e_smoothed_sobel",
+      "acutance": 0.3451,
+      "dark_detail": 0.51886,
+      "rms_contrast": 0.1738,
+      "ssim_vs_original": 0.754,
+      "psnr_vs_original": 12.229,
+      "acutance_delta": 0.00239,
+      "dark_detail_delta": 0.0103
+    },
+    {
+      "configuration": "Without f_mask",
+      "acutance": 0.6194,
+      "dark_detail": 1.11516,
+      "rms_contrast": 0.2137,
+      "ssim_vs_original": 0.4382,
+      "psnr_vs_original": 7.671,
+      "acutance_delta": 0.27669,
+      "dark_detail_delta": 0.6066
+    },
+    {
+      "configuration": "Without g_sum",
+      "acutance": 0.25415,
+      "dark_detail": 0.35753,
+      "rms_contrast": 0.1522,
+      "ssim_vs_original": 0.8005,
+      "psnr_vs_original": 13.185,
+      "acutance_delta": -0.08856,
+      "dark_detail_delta": -0.15103
+    },
+    {
+      "configuration": "Without h_power_law",
+      "acutance": 0.44245,
+      "dark_detail": 0.56758,
+      "rms_contrast": 0.2121,
+      "ssim_vs_original": 0.9304,
+      "psnr_vs_original": 23.733,
+      "acutance_delta": 0.09974,
+      "dark_detail_delta": 0.05902
+    }
+  ],
+  "alternatives": [
+    {
+      "method": "G&W 8-stage pipeline",
+      "acutance": 0.34271,
+      "dark_detail": 0.50856,
+      "rms_contrast": 0.1731,
+      "ssim_vs_original": 0.7716
+    },
+    {
+      "method": "CLAHE only",
+      "acutance": 0.56977,
+      "dark_detail": 0.7489,
+      "rms_contrast": 0.2303,
+      "ssim_vs_original": 0.7471
+    },
+    {
+      "method": "Unsharp mask only",
+      "acutance": 0.50281,
+      "dark_detail": 0.78757,
+      "rms_contrast": 0.203,
+      "ssim_vs_original": 0.9068
+    },
+    {
+      "method": "Gamma 0.5 only",
+      "acutance": 0.25415,
+      "dark_detail": 0.35753,
+      "rms_contrast": 0.1522,
+      "ssim_vs_original": 0.8005
+    },
+    {
+      "method": "Original (control)",
+      "acutance": 0.30058,
+      "dark_detail": 0.34799,
+      "rms_contrast": 0.1741,
+      "ssim_vs_original": 1.0
+    }
+  ],
+  "laplacian_sign": [
+    {
+      "configuration": "Original (no sharpening)",
+      "acutance": 0.30058,
+      "ssim_vs_original": 1.0
+    },
+    {
+      "configuration": "Correct sign (add +8 centre)",
+      "acutance": 1.06663,
+      "ssim_vs_original": 0.4568
+    },
+    {
+      "configuration": "Wrong sign (add -8 centre)",
+      "acutance": 0.91565,
+      "ssim_vs_original": -0.0548
+    }
+  ],
+  "gamma_sweep": [
+    {
+      "gamma": 0.3,
+      "dark_detail": 0.40224,
+      "rms_contrast": 0.1312,
+      "ssim_vs_original": 0.6627
+    },
+    {
+      "gamma": 0.4,
+      "dark_detail": 0.46533,
+      "rms_contrast": 0.1551,
+      "ssim_vs_original": 0.7225
+    },
+    {
+      "gamma": 0.5,
+      "dark_detail": 0.50856,
+      "rms_contrast": 0.1731,
+      "ssim_vs_original": 0.7716
+    },
+    {
+      "gamma": 0.6,
+      "dark_detail": 0.53674,
+      "rms_contrast": 0.1866,
+      "ssim_vs_original": 0.8162
+    },
+    {
+      "gamma": 0.8,
+      "dark_detail": 0.56395,
+      "rms_contrast": 0.2034,
+      "ssim_vs_original": 0.8925
+    },
+    {
+      "gamma": 1.0,
+      "dark_detail": 0.56758,
+      "rms_contrast": 0.2121,
+      "ssim_vs_original": 0.9304
+    }
+  ],
+  "smoothing_sweep": [
+    {
+      "smooth_ksize": 1,
+      "acutance": 0.3451,
+      "dark_detail": 0.51886,
+      "ssim_vs_original": 0.754
+    },
+    {
+      "smooth_ksize": 3,
+      "acutance": 0.34876,
+      "dark_detail": 0.5052,
+      "ssim_vs_original": 0.7682
+    },
+    {
+      "smooth_ksize": 5,
+      "acutance": 0.34271,
+      "dark_detail": 0.50856,
+      "ssim_vs_original": 0.7716
+    },
+    {
+      "smooth_ksize": 9,
+      "acutance": 0.338,
+      "dark_detail": 0.50151,
+      "ssim_vs_original": 0.7742
+    },
+    {
+      "smooth_ksize": 15,
+      "acutance": 0.33595,
+      "dark_detail": 0.49615,
+      "ssim_vs_original": 0.7749
+    }
+  ]
+}
