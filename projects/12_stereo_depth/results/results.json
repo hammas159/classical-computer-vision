@@ -1,0 +1,192 @@
+{
+  "project": "12_stereo_depth",
+  "generated_utc": "2026-09-17T00:39:55+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "max_disparity": 64,
+  "generated_max_disparity": 48,
+  "generated_pairs": [
+    "windmills \u00b7 white walls, little texture",
+    "rocky coast \u00b7 large flat sky",
+    "stone arch \u00b7 stonework, heavy texture",
+    "tiger on rocks \u00b7 stripes and rubble",
+    "harbour and boat \u00b7 rigging, thin structures",
+    "temple dragon \u00b7 ornament against towers",
+    "gallery visitors \u00b7 people at several depths",
+    "elephant herd \u00b7 animals at several depths",
+    "penguin on pebbles \u00b7 repeating stones",
+    "windows and flowers \u00b7 repeating shutters",
+    "coral reef \u00b7 dense fine detail",
+    "wolf in leaf litter \u00b7 scattered fine detail"
+  ],
+  "generated": [
+    {
+      "method": "Block matching (BM)",
+      "median_ms": 4.78,
+      "density": 0.7742,
+      "mae_px": 0.3535,
+      "bad1_answered": 0.0169,
+      "bad1_all": 0.2388,
+      "bad2_answered": 0.0132,
+      "bad2_all": 0.236,
+      "bad4_answered": 0.0088,
+      "bad4_all": 0.2326
+    },
+    {
+      "method": "Semi-global (SGBM)",
+      "median_ms": 35.99,
+      "density": 0.8279,
+      "mae_px": 0.492,
+      "bad1_answered": 0.0236,
+      "bad1_all": 0.1916,
+      "bad2_answered": 0.0204,
+      "bad2_all": 0.189,
+      "bad4_answered": 0.0166,
+      "bad4_all": 0.1858
+    },
+    {
+      "method": "Semi-global, 8-path (HH)",
+      "median_ms": 52.553,
+      "density": 0.8274,
+      "mae_px": 0.3683,
+      "bad1_answered": 0.0166,
+      "bad1_all": 0.1863,
+      "bad2_answered": 0.0132,
+      "bad2_all": 0.1835,
+      "bad4_answered": 0.0092,
+      "bad4_all": 0.1802
+    },
+    {
+      "method": "Naive SAD (no filtering)",
+      "median_ms": 77.542,
+      "density": 0.8394,
+      "mae_px": 1.0284,
+      "bad1_answered": 0.0544,
+      "bad1_all": 0.2062,
+      "bad2_answered": 0.0496,
+      "bad2_all": 0.2021,
+      "bad4_answered": 0.0417,
+      "bad4_all": 0.1955
+    },
+    {
+      "method": "Constant disparity (control)",
+      "median_ms": 0.041,
+      "density": 1.0,
+      "mae_px": 11.2887,
+      "bad1_answered": 0.9981,
+      "bad1_all": 0.9981,
+      "bad2_answered": 0.997,
+      "bad2_all": 0.997,
+      "bad4_answered": 0.8754,
+      "bad4_all": 0.8754
+    }
+  ],
+  "real_aloe": [
+    {
+      "method": "Block matching (BM)",
+      "median_ms": 13.15,
+      "density": 0.7105,
+      "mae_px": 1.0307,
+      "bad1_answered": 0.0797,
+      "bad1_all": 0.3461,
+      "bad2_answered": 0.046,
+      "bad2_all": 0.3222,
+      "bad4_answered": 0.0335,
+      "bad4_all": 0.3133
+    },
+    {
+      "method": "Semi-global (SGBM)",
+      "median_ms": 83.326,
+      "density": 0.8114,
+      "mae_px": 1.5878,
+      "bad1_answered": 0.0978,
+      "bad1_all": 0.268,
+      "bad2_answered": 0.0717,
+      "bad2_all": 0.2468,
+      "bad4_answered": 0.0585,
+      "bad4_all": 0.2361
+    },
+    {
+      "method": "Semi-global, 8-path (HH)",
+      "median_ms": 128.427,
+      "density": 0.8071,
+      "mae_px": 1.5089,
+      "bad1_answered": 0.1016,
+      "bad1_all": 0.2749,
+      "bad2_answered": 0.0666,
+      "bad2_all": 0.2466,
+      "bad4_answered": 0.0543,
+      "bad4_all": 0.2367
+    },
+    {
+      "method": "Naive SAD (no filtering)",
+      "median_ms": 224.774,
+      "density": 0.8835,
+      "mae_px": 3.4374,
+      "bad1_answered": 0.1967,
+      "bad1_all": 0.2903,
+      "bad2_answered": 0.1691,
+      "bad2_all": 0.2659,
+      "bad4_answered": 0.1412,
+      "bad4_all": 0.2413
+    },
+    {
+      "method": "Constant disparity (control)",
+      "median_ms": 0.247,
+      "density": 1.0,
+      "mae_px": 19.8647,
+      "bad1_answered": 1.0,
+      "bad1_all": 1.0,
+      "bad2_answered": 1.0,
+      "bad2_all": 1.0,
+      "bad4_answered": 1.0,
+      "bad4_all": 1.0
+    }
+  ],
+  "error_regions": [
+    {
+      "method": "Block matching (BM)",
+      "discontinuity": 0.4189,
+      "textureless": 0.1611,
+      "well-textured": 0.2382,
+      "share of frame": ""
+    },
+    {
+      "method": "Semi-global (SGBM)",
+      "discontinuity": 0.3033,
+      "textureless": 0.1403,
+      "well-textured": 0.1998,
+      "share of frame": ""
+    },
+    {
+      "method": "Semi-global, 8-path (HH)",
+      "discontinuity": 0.3005,
+      "textureless": 0.1405,
+      "well-textured": 0.2025,
+      "share of frame": ""
+    },
+    {
+      "method": "Naive SAD (no filtering)",
+      "discontinuity": 0.3295,
+      "textureless": 0.1911,
+      "well-textured": 0.2056,
+      "share of frame": ""
+    },
+    {
+      "method": "Constant disparity (control)",
+      "discontinuity": 1.0,
+      "textureless": 1.0,
+      "well-textured": 1.0,
+      "share of frame": ""
+    }
+  ],
+  "region_coverage": {
+    "discontinuity": 0.4953,
+    "textureless": 0.0715,
+    "well-textured": 0.4332
+  }
+}

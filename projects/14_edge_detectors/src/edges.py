@@ -52,8 +52,26 @@ PREWITT_Y = np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]], np.float32)
 
 
 def _magnitude(gx: np.ndarray, gy: np.ndarray) -> np.ndarray:
+    """Gradient magnitude, normalised to [0, 1] — or all zeros if there is none.
+
+    The guard is not cosmetic. Normalising by ``max(m.max(), EPS)`` looks like
+    the safe way to avoid dividing by zero, and on an image with **no edges** it
+    does the opposite: the convolution of a flat region is not exactly zero in
+    float32, it is a few times 1e-8 of rounding, and dividing that by ``EPS``
+    scales the rounding up by two orders of magnitude.
+
+    Measured: a uniform mid-grey image came back with a **constant magnitude of
+    0.119 everywhere** — a detector confidently reporting an edge at every pixel
+    of a blank image, with no error and no warning. Caught by
+    `test_a_flat_image_has_no_edges`.
+
+    A frame with no gradient has no edges, so it returns zeros.
+    """
     m = np.sqrt(gx * gx + gy * gy)
-    return m / max(float(m.max()), EPS)
+    peak = float(m.max())
+    if peak <= EPS:
+        return np.zeros_like(m)
+    return m / peak
 
 
 def grad_sobel(gray: np.ndarray, ksize: int = 3) -> np.ndarray:

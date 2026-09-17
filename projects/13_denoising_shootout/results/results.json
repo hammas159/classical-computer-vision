@@ -1,6 +1,6 @@
 {
   "project": "13_denoising_shootout",
-  "generated_utc": "2026-09-15T08:12:46+00:00",
+  "generated_utc": "2026-09-17T00:50:52+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -8,12 +8,12 @@
     "numpy": "2.2.6"
   },
   "images": [
-    "astronaut",
-    "coffee",
-    "chelsea",
-    "camera",
-    "brick",
-    "moon"
+    "albatross_pair",
+    "lionesses",
+    "elk_water",
+    "deer_water",
+    "rhino_road",
+    "stone_face_leaves"
   ],
   "noise_types": [
     {
@@ -33,228 +33,228 @@
     }
   ],
   "noisy_input": {
-    "psnr": 20.4761,
-    "ssim": 0.2959
+    "psnr": 20.3195,
+    "ssim": 0.3583
   },
   "defaults": [
     {
       "method": "Box",
-      "psnr_db": 27.733,
-      "ssim": 0.7077,
-      "median_ms": 1.249
+      "psnr_db": 26.538,
+      "ssim": 0.6253,
+      "median_ms": 0.502
     },
     {
       "method": "Gaussian",
-      "psnr_db": 28.27,
-      "ssim": 0.7386,
-      "median_ms": 0.316
+      "psnr_db": 27.181,
+      "ssim": 0.6745,
+      "median_ms": 0.229
     },
     {
       "method": "Median",
-      "psnr_db": 27.685,
-      "ssim": 0.6778,
-      "median_ms": 1.974
+      "psnr_db": 26.294,
+      "ssim": 0.5943,
+      "median_ms": 0.951
     },
     {
       "method": "Bilateral",
-      "psnr_db": 26.604,
-      "ssim": 0.5479,
-      "median_ms": 5.813
+      "psnr_db": 26.055,
+      "ssim": 0.591,
+      "median_ms": 2.54
     },
     {
       "method": "Non-local means",
-      "psnr_db": 27.517,
-      "ssim": 0.7034,
-      "median_ms": 578.306
+      "psnr_db": 25.518,
+      "ssim": 0.6291,
+      "median_ms": 495.942
     },
     {
       "method": "Wiener (adaptive)",
-      "psnr_db": 28.559,
-      "ssim": 0.7149,
-      "median_ms": 21.471
+      "psnr_db": 27.417,
+      "ssim": 0.6635,
+      "median_ms": 9.49
     },
     {
       "method": "Do nothing (control)",
-      "psnr_db": 20.476,
-      "ssim": 0.2959,
-      "median_ms": 0.039
+      "psnr_db": 20.32,
+      "ssim": 0.3583,
+      "median_ms": 0.016
     }
   ],
   "tuned_by_noise": [
     {
       "noise": "Gaussian sigma=25",
-      "Box": 27.733,
-      "Gaussian": 28.48,
-      "Median": 27.685,
-      "Bilateral": 29.792,
-      "Non-local means": 28.618,
-      "Wiener (adaptive)": 28.559,
-      "Do nothing (control)": 20.476
+      "Box": 26.538,
+      "Gaussian": 27.399,
+      "Median": 26.294,
+      "Bilateral": 28.533,
+      "Non-local means": 26.643,
+      "Wiener (adaptive)": 27.417,
+      "Do nothing (control)": 20.32
     },
     {
       "noise": "Salt & pepper 6%",
-      "Box": 26.565,
-      "Gaussian": 26.892,
-      "Median": 33.688,
-      "Bilateral": 24.981,
-      "Non-local means": 24.81,
-      "Wiener (adaptive)": 25.118,
-      "Do nothing (control)": 17.421
+      "Box": 25.502,
+      "Gaussian": 25.944,
+      "Median": 30.673,
+      "Bilateral": 24.324,
+      "Non-local means": 24.07,
+      "Wiener (adaptive)": 24.583,
+      "Do nothing (control)": 17.527
     },
     {
       "noise": "Poisson lambda=30",
-      "Box": 27.197,
-      "Gaussian": 27.674,
-      "Median": 26.504,
-      "Bilateral": 28.553,
-      "Non-local means": 28.86,
-      "Wiener (adaptive)": 27.221,
-      "Do nothing (control)": 18.626
+      "Box": 26.237,
+      "Gaussian": 26.923,
+      "Median": 25.642,
+      "Bilateral": 27.492,
+      "Non-local means": 26.585,
+      "Wiener (adaptive)": 26.23,
+      "Do nothing (control)": 19.142
     }
   ],
   "cost_of_default": [
     {
       "method": "Box",
-      "default_psnr_db": 27.733,
-      "tuned_psnr_db": 27.733,
+      "default_psnr_db": 26.538,
+      "tuned_psnr_db": 26.538,
       "cost_of_default_db": 0.0
     },
     {
       "method": "Gaussian",
-      "default_psnr_db": 28.27,
-      "tuned_psnr_db": 28.48,
-      "cost_of_default_db": 0.21
+      "default_psnr_db": 27.181,
+      "tuned_psnr_db": 27.399,
+      "cost_of_default_db": 0.218
     },
     {
       "method": "Median",
-      "default_psnr_db": 27.685,
-      "tuned_psnr_db": 27.685,
+      "default_psnr_db": 26.294,
+      "tuned_psnr_db": 26.294,
       "cost_of_default_db": 0.0
     },
     {
       "method": "Bilateral",
-      "default_psnr_db": 26.604,
-      "tuned_psnr_db": 29.792,
-      "cost_of_default_db": 3.189
+      "default_psnr_db": 26.055,
+      "tuned_psnr_db": 28.533,
+      "cost_of_default_db": 2.479
     },
     {
       "method": "Non-local means",
-      "default_psnr_db": 27.517,
-      "tuned_psnr_db": 28.618,
-      "cost_of_default_db": 1.101
+      "default_psnr_db": 25.518,
+      "tuned_psnr_db": 26.643,
+      "cost_of_default_db": 1.126
     },
     {
       "method": "Wiener (adaptive)",
-      "default_psnr_db": 28.559,
-      "tuned_psnr_db": 28.559,
+      "default_psnr_db": 27.417,
+      "tuned_psnr_db": 27.417,
       "cost_of_default_db": 0.0
     }
   ],
   "transfer_check": [
     {
       "method": "Box",
-      "fitted_param": "ksize=3",
-      "train_psnr_db": 26.995,
-      "test_psnr_db": 28.214,
-      "test_default_db": 29.022,
-      "transfer_gain_db": -0.808
+      "fitted_param": "ksize=5",
+      "train_psnr_db": 27.661,
+      "test_psnr_db": 25.425,
+      "test_default_db": 25.425,
+      "transfer_gain_db": 0.0
     },
     {
       "method": "Gaussian",
       "fitted_param": "sigma=1.2",
-      "train_psnr_db": 27.415,
-      "test_psnr_db": 29.545,
-      "test_default_db": 29.562,
-      "transfer_gain_db": -0.017
+      "train_psnr_db": 28.448,
+      "test_psnr_db": 26.342,
+      "test_default_db": 26.058,
+      "transfer_gain_db": 0.284
     },
     {
       "method": "Median",
       "fitted_param": "ksize=5",
-      "train_psnr_db": 26.712,
-      "test_psnr_db": 28.658,
-      "test_default_db": 28.658,
+      "train_psnr_db": 27.369,
+      "test_psnr_db": 25.216,
+      "test_default_db": 25.216,
       "transfer_gain_db": 0.0
     },
     {
       "method": "Bilateral",
       "fitted_param": "sigma_color=120.0",
-      "train_psnr_db": 28.753,
-      "test_psnr_db": 30.832,
-      "test_default_db": 26.699,
-      "transfer_gain_db": 4.133
+      "train_psnr_db": 29.337,
+      "test_psnr_db": 27.723,
+      "test_default_db": 25.806,
+      "transfer_gain_db": 1.916
     },
     {
       "method": "Non-local means",
       "fitted_param": "h=18.0",
-      "train_psnr_db": 27.07,
-      "test_psnr_db": 30.166,
-      "test_default_db": 29.965,
-      "transfer_gain_db": 0.201
+      "train_psnr_db": 27.372,
+      "test_psnr_db": 25.922,
+      "test_default_db": 25.955,
+      "transfer_gain_db": -0.032
     },
     {
       "method": "Wiener (adaptive)",
       "fitted_param": "ksize=5",
-      "train_psnr_db": 27.993,
-      "test_psnr_db": 29.124,
-      "test_default_db": 29.124,
+      "train_psnr_db": 28.321,
+      "test_psnr_db": 26.518,
+      "test_default_db": 26.518,
       "transfer_gain_db": 0.0
     }
   ],
   "level_sweep": [
     {
       "level": 5.0,
-      "noisy_input": 34.2362,
-      "Box": 29.56,
-      "Gaussian": 30.156,
-      "Median": 30.778,
-      "Bilateral": 36.03,
-      "Non-local means": 32.767,
-      "Wiener (adaptive)": 34.197,
-      "Do nothing (control)": 34.236
+      "noisy_input": 34.1688,
+      "Box": 27.63,
+      "Gaussian": 28.335,
+      "Median": 28.27,
+      "Bilateral": 33.555,
+      "Non-local means": 29.401,
+      "Wiener (adaptive)": 31.244,
+      "Do nothing (control)": 34.169
     },
     {
       "level": 10.0,
-      "noisy_input": 28.2718,
-      "Box": 29.234,
-      "Gaussian": 29.821,
-      "Median": 30.083,
-      "Bilateral": 34.851,
-      "Non-local means": 32.405,
-      "Wiener (adaptive)": 32.603,
-      "Do nothing (control)": 28.272
+      "noisy_input": 28.1735,
+      "Box": 27.469,
+      "Gaussian": 28.165,
+      "Median": 27.897,
+      "Bilateral": 32.877,
+      "Non-local means": 29.446,
+      "Wiener (adaptive)": 30.288,
+      "Do nothing (control)": 28.173
     },
     {
       "level": 20.0,
-      "noisy_input": 22.3557,
-      "Box": 28.278,
-      "Gaussian": 28.834,
-      "Median": 28.462,
-      "Bilateral": 29.674,
-      "Non-local means": 29.848,
-      "Wiener (adaptive)": 29.742,
-      "Do nothing (control)": 22.356
+      "noisy_input": 22.2105,
+      "Box": 26.904,
+      "Gaussian": 27.567,
+      "Median": 26.866,
+      "Bilateral": 28.879,
+      "Non-local means": 27.953,
+      "Wiener (adaptive)": 28.319,
+      "Do nothing (control)": 22.211
     },
     {
       "level": 35.0,
-      "noisy_input": 17.6869,
-      "Box": 26.603,
-      "Gaussian": 27.097,
-      "Median": 26.246,
-      "Bilateral": 21.567,
-      "Non-local means": 20.965,
-      "Wiener (adaptive)": 26.514,
-      "Do nothing (control)": 17.687
+      "noisy_input": 17.5353,
+      "Box": 25.726,
+      "Gaussian": 26.324,
+      "Median": 25.144,
+      "Bilateral": 21.216,
+      "Non-local means": 19.347,
+      "Wiener (adaptive)": 25.821,
+      "Do nothing (control)": 17.535
     },
     {
       "level": 50.0,
-      "noisy_input": 14.852,
-      "Box": 24.938,
-      "Gaussian": 25.369,
-      "Median": 24.355,
-      "Bilateral": 16.817,
-      "Non-local means": 15.464,
-      "Wiener (adaptive)": 24.123,
-      "Do nothing (control)": 14.852
+      "noisy_input": 14.7425,
+      "Box": 24.443,
+      "Gaussian": 24.971,
+      "Median": 23.518,
+      "Bilateral": 16.606,
+      "Non-local means": 15.045,
+      "Wiener (adaptive)": 23.87,
+      "Do nothing (control)": 14.742
     }
   ],
   "tuned_parameters": {

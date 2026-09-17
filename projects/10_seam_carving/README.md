@@ -13,24 +13,100 @@ programme.
 The question this project asks is the one the elegance tends to postpone: **how
 much better than `cv2.resize` is it, and what does that cost?**
 
-**No neural network, no training, no GPU, no dataset download.**
+**No neural network, no training, no GPU.**
 
-> **The finding, in one sentence.** Seam carving retains **11.6 percentage points**
-> more of an image's high-energy region than a plain rescale, for **2,844× the
-> compute**. Whether that trade is worth taking is a real question, and the
-> literature mostly shows the pictures rather than the ratio.
+---
 
-> **The choice that is argued about is not the choice that matters.** Four energy
-> functions — the paper's `|dx|+|dy|`, true Sobel magnitude, Laplacian, local
-> standard deviation — span **0.5 points** of region retention. The gap between
-> carving and not carving is **11.6**. The one-line decision write-ups agonise
-> over is **23× smaller** than the one they do not discuss.
+## Results
 
-> **It wins its own objective more reliably than yours.** Retained gradient
-> energy is what seam carving optimises; region retention is what you want. Over
-> four photographs it wins the energy column **4/4** and the region column
-> **3/4** — on `coffee` it retains **79.0%** against a plain rescale's **80.0%**.
-> The subject fills the frame, so there is nowhere to route around.
+Four photographs chosen for **shape**, not subject — seam carving can only
+remove what the frame has room to lose. The green box is the highest-energy
+region of the original, found by the code; the percentage is how much of it
+survived a 20% narrowing.
+
+![Four shapes, seam carving against cv2.resize](docs/images/compare_resizers.png)
+
+| Sr | Photograph | **Seam carving** | `cv2.resize` | Advantage |
+|---:|---|---:|---:|---:|
+| 1 | squirrel on a rock · small subject, large background | **97.8%** | 80.2% | +17.6 pts |
+| 2 | harbour and boat · horizontal structure | **99.4%** | 79.7% | +19.7 pts |
+| 3 | gallery visitors · people and framed pictures | **97.2%** | 79.7% | +17.5 pts |
+| 4 | stone arch · architecture, strong verticals | **92.5%** | 80.2% | +12.2 pts |
+
+**The `cv2.resize` column is 80% four times over**, and that is not a
+coincidence — a plain rescale narrows everything by exactly the reduction, so it
+keeps exactly `1 − 0.20` of any region. It is arithmetic, which is what makes it
+a good control.
+
+**The rows are ordered by how much slack the photograph has.** A boat along a
+sea wall has water and sky to give up and keeps **99.4%**. A stone arch is
+filled edge to edge with structure a seam cannot cross without visible damage,
+and keeps **92.5%** — still comfortably ahead, but the advantage has nearly
+halved. **What seam carving buys you is a property of your photograph, not of
+the algorithm.**
+
+All twelve candidates cleared the 2-point gate, spanning **+9.4 to +19.7**:
+
+```
+shape candidate giraffe · tall subject, wide empty frame       keep — carve 97.2% vs rescale 79.7%, +17.5 pts  [slack]
+shape candidate squirrel on a rock · small subject, large bg   keep — carve 97.8% vs rescale 80.2%, +17.6 pts  [slack]
+shape candidate elephant in grass · wide subject, low-energy   keep — carve 89.7% vs rescale 79.7%, +10.0 pts  [slack]
+shape candidate rocky coast · wide, no single subject          keep — carve 94.4% vs rescale 80.5%, +14.0 pts  [no subject]
+shape candidate lake and shrine · foreground object, water     keep — carve 97.9% vs rescale 79.7%, +18.2 pts  [no subject]
+shape candidate stone arch · architecture, strong verticals    keep — carve 92.5% vs rescale 80.2%, +12.2 pts  [architecture]
+shape candidate windmills · repeated structure on a wall       keep — carve 93.8% vs rescale 79.7%, +14.1 pts  [architecture]
+shape candidate temple dragon · vertical subject, towers       keep — carve 89.6% vs rescale 80.2%,  +9.4 pts  [architecture]
+shape candidate harbour and boat · horizontal structure        keep — carve 99.4% vs rescale 79.7%, +19.7 pts  [horizontal]
+shape candidate boat and shed · moored, reflected              keep — carve 99.4% vs rescale 79.7%, +19.7 pts  [horizontal]
+shape candidate woman and child · faces filling the frame      keep — carve 90.4% vs rescale 79.7%, +10.8 pts  [faces]
+shape candidate gallery visitors · people and framed pictures  keep — carve 97.2% vs rescale 79.7%, +17.5 pts  [faces]
+```
+
+The four rows are one from each of four shape families in a **fixed order**, not
+the four best. Ranking by advantage returned the four shapes carving does best
+on and dropped architecture entirely — and a figure that only shows the cases a
+method wins is an advertisement.
+
+---
+
+> **The finding, in one sentence.** Seam carving retains **16.4 percentage
+> points** more of an image's high-energy region than a plain rescale (96.4%
+> against 80.0%), for **1,838× the compute** — 754 ms against 0.41 ms. Whether
+> that trade is worth taking is a real question, and the literature mostly shows
+> the pictures rather than the ratio.
+
+> 🚨 **Three of this project's findings changed when the images did, and the old
+> numbers were more flattering.** The benchmark used to be four scikit-image
+> samples — `coffee`, `rocket`, `chelsea`, `astronaut` — which are all roughly
+> centre-weighted and similarly proportioned. Choosing six photographs for
+> *shape* instead moved every headline:
+>
+> | | Old images | Chosen for shape |
+> |---|---:|---:|
+> | Advantage over `cv2.resize` | +11.6 pts | **+16.4 pts** |
+> | Cost multiple | 2,844× | **1,838×** |
+> | Spread across four energy functions | 0.5 pts | **5.1 pts** |
+> | Energy choice vs carving choice | **23× smaller** | **3.2× smaller** |
+> | Images where carving *loses* | 1 of 4 | **0 of 6** |
+>
+> The first two flatter the method and the third does not. The claim that the
+> energy function barely matters survives in direction and loses most of its
+> force: the Laplacian does badly on architecture, and there was no architecture
+> in the old set.
+
+> **The choice that is argued about is still not the choice that matters — just
+> less dramatically.** Four energy functions span **5.1 points** of region
+> retention (Laplacian 91.6%, local standard deviation 96.7%). The gap between
+> carving and not carving is **16.4**. Still 3.2× larger, but no longer the
+> order of magnitude the earlier images implied.
+
+> **It no longer loses anywhere, and that is also a correction.** The old
+> write-up said carving wins its own objective 4/4 and region retention only
+> 3/4, and presented that gap as the honest summary of the method. On six
+> shape-varied photographs it wins **both objectives on all six**. The honest
+> summary is different: seam carving is not unreliable at protecting a region —
+> it is expensive, and its advantage is a function of how much low-energy space
+> the photograph happens to contain.
 
 **Jump to:** [What it does](#what-it-does) · 
 [Results](#results) ·
@@ -84,43 +160,53 @@ All numbers from `python run.py`, written to
 [`results/tables.md`](results/tables.md). Four images, 20% width reduction unless
 stated.
 
-### The energy function barely matters
+### The energy function matters less than carving at all — but not by much
 
 | Energy | Region kept | Aspect retained | Energy kept | Time (ms) |
 |---|---:|---:|---:|---:|
-| Gradient `\|dx\|+\|dy\|` (the paper) | 0.9158 | 0.9344 | 0.9488 | 1364 |
-| Sobel magnitude | 0.9148 | 0.9341 | 0.9490 | 1308 |
-| **Laplacian** | **0.9199** | **0.9375** | **0.9567** | **1160** |
-| Local std (entropy-like) | 0.9187 | 0.9328 | 0.9503 | 1314 |
-| **Plain rescale (control)** | **0.8002** | **0.8002** | **0.7938** | **0.4** |
+| Gradient `\|dx\|+\|dy\|` (the paper) | 0.9642 | 0.9835 | 0.8978 | 820 |
+| Sobel magnitude | 0.9594 | 0.9831 | 0.8981 | 787 |
+| **Laplacian** | **0.9158** | **0.9453** | 0.9070 | **706** |
+| **Local std (entropy-like)** | **0.9671** | **0.9861** | 0.8960 | 829 |
+| **Plain rescale (control)** | **0.7999** | **0.7999** | **0.7689** | **0.4** |
 
-Spread across four energies: **0.0051** (0.5 points).
-Gap to the control: **0.1197** (12.0 points).
-**Ratio: 23×.**
+Spread across four energies: **0.0513** (5.1 points).
+Gap to the control: **0.1643** (16.4 points).
+**Ratio: 3.2×.**
 
 The energy function is the part of seam carving that gets discussed — it is where
-every extension paper goes. Measured here it is the smallest decision in the
-pipeline. The largest is whether to do this at all.
+every extension paper goes. It is still the smaller decision, but not by the
+order of magnitude the earlier image set implied. **The Laplacian is the outlier
+and architecture is why**: it responds to second derivatives, so a long straight
+edge produces two thin high-energy lines with a low-energy trough between them,
+and a seam runs straight down that trough. The old four-image benchmark
+contained no architecture and so could not see it.
 
-### Per image — and the average hides a sign change
+### Per image — the average still describes none of them
 
 | Image | Carved: region kept | Rescale: region kept | Advantage | Carved: energy | Rescale: energy |
 |---|---:|---:|---:|---:|---:|
-| **coffee** | 0.7896 | 0.8000 | **−0.0104** | 0.9342 | 0.7795 |
-| rocket | 0.9245 | 0.8008 | +0.1237 | 0.9740 | 0.7469 |
-| chelsea | **1.0000** | 0.8000 | **+0.2000** | 0.9315 | 0.8086 |
-| astronaut | 0.9492 | 0.8000 | +0.1492 | 0.9554 | 0.8401 |
+| **harbour and boat** | **0.9943** | 0.7969 | **+0.1975** | 0.8971 | 0.7635 |
+| squirrel on a rock | 0.9779 | 0.8021 | +0.1758 | 0.8797 | 0.7794 |
+| giraffe | 0.9721 | 0.7969 | +0.1753 | 0.9082 | 0.7779 |
+| gallery visitors | 0.9720 | 0.7969 | +0.1751 | 0.9167 | 0.7865 |
+| rocky coast | 0.9444 | 0.8047 | +0.1397 | 0.8888 | 0.7559 |
+| **stone arch** | **0.9245** | 0.8021 | **+0.1224** | 0.8961 | 0.7502 |
 
-The advantage ranges from **−1.0 to +20.0 points**. The average, +11.6, describes
-none of the four.
+The advantage ranges from **+12.2 to +19.8 points** — a 1.6× spread that the
+average, +16.4, describes none of.
 
-On `coffee` the high-energy region spans most of the frame, so there are no
-low-energy paths to route around it and every seam crosses something — seam
-carving is worse than doing nothing clever, at a thousand times the cost.
+It tracks *shape*, top to bottom. A boat along a sea wall has water and sky to
+give up; a stone arch is structure edge to edge and the seams have nowhere to go
+that does not cost something.
 
-**And yet the energy column is positive on all four.** That is the honest summary
-of the method: it reliably achieves what it optimises and unreliably achieves
-what you wanted.
+> **This table used to contain a negative number.** On the old four-image set
+> `coffee` scored **−1.0 points** — carving worse than doing nothing, at a
+> thousand times the cost — and that sign change was written up as the honest
+> summary of the method: *reliably achieves what it optimises, unreliably
+> achieves what you wanted.* On six photographs chosen for shape there is no
+> such image. The claim was true of those four photographs and is not a property
+> of the algorithm, so it is withdrawn here rather than left standing.
 
 ### How far it holds up
 
@@ -153,9 +239,9 @@ what makes it a control you cannot argue with.
 
 | Method | Region kept | Aspect retained | Energy kept | Time (ms) |
 |---|---:|---:|---:|---:|
-| Seam carving | 0.9158 | 0.9344 | 0.9488 | **1194.39** |
-| Plain rescale | 0.8002 | 0.8002 | 0.7938 | **0.42** |
-| **Difference** | **+0.1156** | **+0.1342** | **+0.1550** | **2,844×** |
+| Seam carving | 0.9642 | 0.9835 | 0.8978 | **753.67** |
+| Plain rescale | 0.7999 | 0.7999 | 0.7689 | **0.41** |
+| **Difference** | **+0.1643** | **+0.1836** | **+0.1289** | **1,838×** |
 
 Seam carving is `n` sequential dynamic programmes for `n` removed columns, and
 each walks the image row by row — the row loop **cannot** be vectorised, because
@@ -391,7 +477,7 @@ rendered row splits into the right number of columns on unescaped pipes.
 
 ### 6 · A test asserted a finding on too little data — again
 
-**Symptom.** `assert 0.1172 > (5.0 * 0.0258)` — the 23× ratio the README leads
+**Symptom.** `assert 0.1172 > (5.0 * 0.0258)` — the ratio the README leads
 with, failing at 4.5×.
 
 **Cause.** The test ran on a two-image subset for speed. The spread between

@@ -1,0 +1,377 @@
+{
+  "project": "15_thresholding_family",
+  "generated_utc": "2026-09-17T01:55:53+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "contrast_ratio": 0.3,
+  "thin_stroke_px": 3,
+  "methods": [
+    {
+      "method": "Fixed 127 (control)",
+      "iou": 1.0,
+      "dice": 1.0,
+      "median_ms": 0.245
+    },
+    {
+      "method": "Otsu",
+      "iou": 1.0,
+      "dice": 1.0,
+      "median_ms": 0.22
+    },
+    {
+      "method": "Triangle",
+      "iou": 1.0,
+      "dice": 1.0,
+      "median_ms": 0.19
+    },
+    {
+      "method": "Multi-Otsu (3 class)",
+      "iou": 1.0,
+      "dice": 1.0,
+      "median_ms": 1.277
+    },
+    {
+      "method": "Adaptive mean",
+      "iou": 0.3813,
+      "dice": 0.5517,
+      "median_ms": 0.324
+    },
+    {
+      "method": "Adaptive Gaussian",
+      "iou": 0.2217,
+      "dice": 0.3627,
+      "median_ms": 1.442
+    },
+    {
+      "method": "Niblack",
+      "iou": 0.3771,
+      "dice": 0.5475,
+      "median_ms": 15.363
+    },
+    {
+      "method": "Sauvola",
+      "iou": 0.3779,
+      "dice": 0.5482,
+      "median_ms": 17.287
+    },
+    {
+      "method": "Best global (oracle)",
+      "iou": 1.0,
+      "dice": 1.0,
+      "median_ms": null
+    }
+  ],
+  "scene": {
+    "oracle_threshold_mean": 60.0
+  },
+  "shape_x_illumination": [
+    {
+      "kind": "solid",
+      "illum_min": 1.0,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.447,
+      "Adaptive Gaussian": 0.2647,
+      "Niblack": 0.1318,
+      "Sauvola": 0.4428
+    },
+    {
+      "kind": "solid",
+      "illum_min": 0.8,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 0.8485,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.4372,
+      "Adaptive Gaussian": 0.2551,
+      "Niblack": 0.1661,
+      "Sauvola": 0.4387
+    },
+    {
+      "kind": "solid",
+      "illum_min": 0.6,
+      "Fixed 127 (control)": 0.842,
+      "Otsu": 1.0,
+      "Triangle": 0.8065,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.4261,
+      "Adaptive Gaussian": 0.2462,
+      "Niblack": 0.1405,
+      "Sauvola": 0.4346
+    },
+    {
+      "kind": "solid",
+      "illum_min": 0.45,
+      "Fixed 127 (control)": 0.319,
+      "Otsu": 0.9499,
+      "Triangle": 0.8065,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.4162,
+      "Adaptive Gaussian": 0.236,
+      "Niblack": 0.1329,
+      "Sauvola": 0.4322
+    },
+    {
+      "kind": "solid",
+      "illum_min": 0.3,
+      "Fixed 127 (control)": 0.2406,
+      "Otsu": 0.2983,
+      "Triangle": 0.8065,
+      "Multi-Otsu (3 class)": 0.8929,
+      "Adaptive mean": 0.4028,
+      "Adaptive Gaussian": 0.2249,
+      "Niblack": 0.1252,
+      "Sauvola": 0.4303
+    },
+    {
+      "kind": "solid",
+      "illum_min": 0.2,
+      "Fixed 127 (control)": 0.2082,
+      "Otsu": 0.2799,
+      "Triangle": 0.8065,
+      "Multi-Otsu (3 class)": 0.4089,
+      "Adaptive mean": 0.3911,
+      "Adaptive Gaussian": 0.2162,
+      "Niblack": 0.1208,
+      "Sauvola": 0.4274
+    },
+    {
+      "kind": "solid",
+      "illum_min": 0.1,
+      "Fixed 127 (control)": 0.1866,
+      "Otsu": 0.269,
+      "Triangle": 0.6836,
+      "Multi-Otsu (3 class)": 0.3313,
+      "Adaptive mean": 0.376,
+      "Adaptive Gaussian": 0.205,
+      "Niblack": 0.1162,
+      "Sauvola": 0.4264
+    },
+    {
+      "kind": "thin",
+      "illum_min": 1.0,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 1.0,
+      "Adaptive Gaussian": 1.0,
+      "Niblack": 0.2406,
+      "Sauvola": 1.0
+    },
+    {
+      "kind": "thin",
+      "illum_min": 0.8,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 1.0,
+      "Adaptive Gaussian": 1.0,
+      "Niblack": 0.3127,
+      "Sauvola": 1.0
+    },
+    {
+      "kind": "thin",
+      "illum_min": 0.6,
+      "Fixed 127 (control)": 0.8608,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 1.0,
+      "Adaptive Gaussian": 1.0,
+      "Niblack": 0.2916,
+      "Sauvola": 1.0
+    },
+    {
+      "kind": "thin",
+      "illum_min": 0.45,
+      "Fixed 127 (control)": 0.3296,
+      "Otsu": 0.9549,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 1.0,
+      "Adaptive Gaussian": 1.0,
+      "Niblack": 0.2765,
+      "Sauvola": 1.0
+    },
+    {
+      "kind": "thin",
+      "illum_min": 0.3,
+      "Fixed 127 (control)": 0.2243,
+      "Otsu": 0.2907,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 0.8151,
+      "Adaptive mean": 1.0,
+      "Adaptive Gaussian": 0.9994,
+      "Niblack": 0.2629,
+      "Sauvola": 1.0
+    },
+    {
+      "kind": "thin",
+      "illum_min": 0.2,
+      "Fixed 127 (control)": 0.1985,
+      "Otsu": 0.2562,
+      "Triangle": 0.2562,
+      "Multi-Otsu (3 class)": 0.5487,
+      "Adaptive mean": 1.0,
+      "Adaptive Gaussian": 0.9974,
+      "Niblack": 0.2532,
+      "Sauvola": 1.0
+    },
+    {
+      "kind": "thin",
+      "illum_min": 0.1,
+      "Fixed 127 (control)": 0.1815,
+      "Otsu": 0.2403,
+      "Triangle": 0.1717,
+      "Multi-Otsu (3 class)": 0.3914,
+      "Adaptive mean": 1.0,
+      "Adaptive Gaussian": 0.9828,
+      "Niblack": 0.2459,
+      "Sauvola": 1.0
+    }
+  ],
+  "foreground_fraction": [
+    {
+      "fg_fraction": 0.02,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.4502,
+      "Adaptive Gaussian": 0.2647,
+      "Niblack": 0.0389,
+      "Sauvola": 0.4459,
+      "Best global (oracle)": 1.0
+    },
+    {
+      "fg_fraction": 0.05,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.3944,
+      "Adaptive Gaussian": 0.2286,
+      "Niblack": 0.07,
+      "Sauvola": 0.3899,
+      "Best global (oracle)": 1.0
+    },
+    {
+      "fg_fraction": 0.1,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.4229,
+      "Adaptive Gaussian": 0.2481,
+      "Niblack": 0.1375,
+      "Sauvola": 0.4193,
+      "Best global (oracle)": 1.0
+    },
+    {
+      "fg_fraction": 0.2,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.4082,
+      "Adaptive Gaussian": 0.2389,
+      "Niblack": 0.2311,
+      "Sauvola": 0.4045,
+      "Best global (oracle)": 1.0
+    },
+    {
+      "fg_fraction": 0.35,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.3815,
+      "Adaptive Gaussian": 0.2208,
+      "Niblack": 0.4337,
+      "Sauvola": 0.3776,
+      "Best global (oracle)": 1.0
+    },
+    {
+      "fg_fraction": 0.5,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.3245,
+      "Adaptive Gaussian": 0.1865,
+      "Niblack": 0.6184,
+      "Sauvola": 0.3212,
+      "Best global (oracle)": 1.0
+    }
+  ],
+  "noise": [
+    {
+      "noise_sigma": 0.0,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 1.0,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.3824,
+      "Adaptive Gaussian": 0.2222,
+      "Niblack": 0.3827,
+      "Sauvola": 0.3788,
+      "Best global (oracle)": 1.0
+    },
+    {
+      "noise_sigma": 5.0,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 0.9978,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.385,
+      "Adaptive Gaussian": 0.2378,
+      "Niblack": 0.3945,
+      "Sauvola": 0.3868,
+      "Best global (oracle)": 1.0
+    },
+    {
+      "noise_sigma": 12.0,
+      "Fixed 127 (control)": 1.0,
+      "Otsu": 1.0,
+      "Triangle": 0.995,
+      "Multi-Otsu (3 class)": 1.0,
+      "Adaptive mean": 0.368,
+      "Adaptive Gaussian": 0.2729,
+      "Niblack": 0.3783,
+      "Sauvola": 0.4756,
+      "Best global (oracle)": 1.0
+    },
+    {
+      "noise_sigma": 25.0,
+      "Fixed 127 (control)": 0.9923,
+      "Otsu": 0.9919,
+      "Triangle": 0.9818,
+      "Multi-Otsu (3 class)": 0.9898,
+      "Adaptive mean": 0.3397,
+      "Adaptive Gaussian": 0.2773,
+      "Niblack": 0.3564,
+      "Sauvola": 0.4635,
+      "Best global (oracle)": 0.9924
+    },
+    {
+      "noise_sigma": 40.0,
+      "Fixed 127 (control)": 0.8904,
+      "Otsu": 0.8819,
+      "Triangle": 0.3435,
+      "Multi-Otsu (3 class)": 0.8582,
+      "Adaptive mean": 0.324,
+      "Adaptive Gaussian": 0.2793,
+      "Niblack": 0.344,
+      "Sauvola": 0.3934,
+      "Best global (oracle)": 0.8922
+    }
+  ]
+}

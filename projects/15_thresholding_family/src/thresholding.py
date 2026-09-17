@@ -149,17 +149,54 @@ def thresh_best_global(gray: np.ndarray, truth: np.ndarray) -> tuple[np.ndarray,
     global-threshold failure raises and almost no comparison asks: was a global
     threshold available at all?
     """
-    best_iou, best_t = -1.0, 0
+    best_iou, best_t, best_above = -1.0, 0, True
     for t in range(1, 255):
-        score = iou((gray > t).astype(np.uint8) * 255, truth)
-        if score > best_iou:
-            best_iou, best_t = score, t
-    return ((gray > best_t).astype(np.uint8) * 255), best_t
+        # BOTH polarities. "Foreground is above the cut" is a convention, not a
+        # property of thresholding -- cv2.THRESH_BINARY and THRESH_BINARY_INV
+        # are the same operation. This scene is dark-on-light, so searching only
+        # `gray > t` cannot express the right answer at any threshold, and the
+        # oracle settled on a degenerate cut scoring **0.122 IoU** -- below every
+        # method it exists to place a ceiling over. A ceiling that sits under the
+        # thing it bounds is worse than no ceiling: it reads as "no global
+        # threshold was available" when in fact a perfect one was.
+        for above in (True, False):
+            mask = ((gray > t) if above else (gray < t)).astype(np.uint8) * 255
+            score = iou(mask, truth)
+            if score > best_iou:
+                best_iou, best_t, best_above = score, t, above
+    mask = ((gray > best_t) if best_above else (gray < best_t)).astype(np.uint8) * 255
+    return mask, best_t
 
 
 # --------------------------------------------------------------------------- #
 # the test scene — three properties varied independently
 # --------------------------------------------------------------------------- #
+
+
+#: Stroke width, in pixels, of the "thin" scene. Deliberately well under the
+#: 31 px window the local methods use — that relationship is the whole reason
+#: the two scene kinds rank the methods differently.
+THIN_STROKE_PX = 3
+
+
+def _draw_thin_strokes(truth: np.ndarray, rng, size: int, fg_fraction: float) -> None:
+    """Text-like strokes: thin, scattered, and mostly boundary.
+
+    Local thresholding compares a pixel to its own neighbourhood, so it needs a
+    neighbourhood that contains some background. A stroke narrower than the
+    window always has some; the interior of a filled circle never does.
+    """
+    target = fg_fraction * size * size
+    guard = 0
+    while float((truth > 0).sum()) < target and guard < 4000:
+        guard += 1
+        x = int(rng.integers(8, size - 8))
+        y = int(rng.integers(8, size - 8))
+        length = int(rng.integers(size // 20, size // 5))
+        if rng.random() < 0.5:
+            cv2.line(truth, (x, y), (min(x + length, size - 1), y), 255, THIN_STROKE_PX)
+        else:
+            cv2.line(truth, (x, y), (x, min(y + length, size - 1)), 255, THIN_STROKE_PX)
 
 
 def synthetic_scene(
@@ -169,29 +206,52 @@ def synthetic_scene(
     noise_sigma: float = 0.0,
     fg_level: int = 60,
     bg_level: int = 200,
+    kind: str = "solid",
     seed: int = 0,
 ):
-    """Blobs of known area on a known background, with controllable degradations.
+    """Foreground of known area on a known background, with known degradations.
 
     Returns ``(image, truth_mask)``. The foreground fraction is *constructed*
-    rather than measured, so the bias of each method against class imbalance can
-    be read straight off the sweep.
+    rather than measured, so each method's bias against class imbalance can be
+    read straight off the sweep.
+
+    ``kind`` selects what the foreground is made of, and it decides the whole
+    result:
+
+    ``"solid"``
+        filled circles. A 31 px window placed inside one contains no background
+        at all, so a local threshold has nothing to compare against and hollows
+        the shape out — which is why the adaptive family scores 0.2-0.4 here at
+        *every* illumination level, including the ones they exist for.
+    ``"thin"``
+        text-like strokes 3 px wide. Every window containing a stroke also
+        contains background, which is the condition local thresholding is built
+        on.
+
+    The project had only ``"solid"`` at first, and concluded that adaptive
+    thresholding simply loses. That conclusion was about the shape of the
+    foreground and not about illumination at all.
     """
     rng = np.random.default_rng(seed)
     img = np.full((size, size), bg_level, np.float32)
     truth = np.zeros((size, size), np.uint8)
 
-    target = fg_fraction * size * size
-    placed = 0.0
-    guard = 0
-    while placed < target and guard < 400:
-        guard += 1
-        r = int(rng.integers(size // 22, size // 7))
-        cx = int(rng.integers(r, size - r))
-        cy = int(rng.integers(r, size - r))
-        before = int((truth > 0).sum())
-        cv2.circle(truth, (cx, cy), r, 255, -1)
-        placed += int((truth > 0).sum()) - before
+    if kind == "thin":
+        _draw_thin_strokes(truth, rng, size, fg_fraction)
+    elif kind == "solid":
+        target = fg_fraction * size * size
+        placed = 0.0
+        guard = 0
+        while placed < target and guard < 400:
+            guard += 1
+            r = int(rng.integers(size // 22, size // 7))
+            cx = int(rng.integers(r, size - r))
+            cy = int(rng.integers(r, size - r))
+            before = int((truth > 0).sum())
+            cv2.circle(truth, (cx, cy), r, 255, -1)
+            placed += int((truth > 0).sum()) - before
+    else:
+        raise ValueError(f"unknown scene kind {kind!r}; choose 'solid' or 'thin'")
 
     img[truth > 0] = fg_level
 

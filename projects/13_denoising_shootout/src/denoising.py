@@ -151,7 +151,28 @@ NOISE_TYPES = (
     ("poisson", 30.0, "Poisson lambda=30"),
 )
 
-IMAGES = ("astronaut", "coffee", "chelsea", "camera", "brick", "moon")
+#: Six photographs spanning a 6x range of DETAIL DENSITY (mean |Laplacian|,
+#: which is exactly the quantity a denoiser destroys). The previous pool was six
+#: scikit-image samples of broadly similar detail, and a filter's whole trade --
+#: how much texture it gives up to remove noise -- is invisible across images
+#: that all have the same amount of texture.
+IMAGES = (
+    "albatross_pair",      # detail  7
+    "lionesses",           # detail  9
+    "elk_water",           # detail 11
+    "deer_water",          # detail 17
+    "rhino_road",          # detail 23
+    "stone_face_leaves",   # detail 45
+)
+
+
+def load_scene(name: str):
+    """Load a scene by name from either image source."""
+    from shared import io
+
+    if name in io.REAL_PHOTOS:
+        return io.real_photo(name)
+    return io.sample(name)
 
 
 # --------------------------------------------------------------------------- #
@@ -167,7 +188,7 @@ def evaluate_methods(kind: str = "gaussian", level: float = 25.0, images=IMAGES,
     noisy_stats = {"psnr": [], "ssim": []}
 
     for i, name in enumerate(images):
-        clean = io.sample(name)
+        clean = load_scene(name)
         noisy = make_noisy(clean, kind, level, seed=i)
         noisy_stats["psnr"].append(psnr(noisy, clean))
         noisy_stats["ssim"].append(ssim(noisy, clean))
@@ -260,7 +281,7 @@ def tune_parameter(images=IMAGES, kind: str = "gaussian", level: float = 25.0):
         for v in values:
             scores = []
             for i, name in enumerate(images):
-                clean = io.sample(name)
+                clean = load_scene(name)
                 noisy = make_noisy(clean, kind, level, seed=i)
                 scores.append(psnr(fns[method](noisy, **{param: v}), clean))
             mean = float(np.mean(scores))
@@ -346,7 +367,7 @@ def default_vs_tuned(images=IMAGES, kind: str = "gaussian", level: float = 25.0)
     for method in TUNED.get(kind, {}):
         default_scores, tuned_scores = [], []
         for i, name in enumerate(images):
-            clean = io.sample(name)
+            clean = load_scene(name)
             noisy = make_noisy(clean, kind, level, seed=i)
             default_scores.append(psnr(METHODS[method](noisy), clean))
             tuned_scores.append(psnr(tuned_call(method, noisy, kind), clean))
@@ -379,7 +400,7 @@ def compare_noise_types_tuned(images=IMAGES):
         for method in list(TUNED.get(kind, {})) + ["Do nothing (control)"]:
             scores = []
             for i, name in enumerate(images):
-                clean = io.sample(name)
+                clean = load_scene(name)
                 noisy = make_noisy(clean, kind, level, seed=i)
                 if method.startswith("Do nothing"):
                     scores.append(psnr(noisy, clean))
@@ -396,8 +417,11 @@ def denoise(img: np.ndarray, method: str = "Non-local means") -> np.ndarray:
 
 #: The six images split in half. Tuning on one half and scoring on the other is
 #: the only way to tell a real parameter choice from a fitted one.
-TRAIN_IMAGES = ("astronaut", "coffee", "chelsea")
-TEST_IMAGES = ("camera", "brick", "moon")
+#: Split so each half spans the detail range, rather than putting all the
+#: smooth images in one half -- otherwise the "transfer" test would be measuring
+#: a detail shift instead of a tuning failure.
+TRAIN_IMAGES = ("albatross_pair", "elk_water", "rhino_road")
+TEST_IMAGES = ("lionesses", "deer_water", "stone_face_leaves")
 
 
 def transfer_check(kind: str = "gaussian", level: float = 25.0):
@@ -423,11 +447,11 @@ def transfer_check(kind: str = "gaussian", level: float = 25.0):
     for method, (param, value) in fitted.items():
         train, test, default = [], [], []
         for i, name in enumerate(TRAIN_IMAGES):
-            clean = io.sample(name)
+            clean = load_scene(name)
             noisy = make_noisy(clean, kind, level, seed=i)
             train.append(psnr(METHODS[method](noisy, **{param: value}), clean))
         for i, name in enumerate(TEST_IMAGES):
-            clean = io.sample(name)
+            clean = load_scene(name)
             noisy = make_noisy(clean, kind, level, seed=i + len(TRAIN_IMAGES))
             test.append(psnr(METHODS[method](noisy, **{param: value}), clean))
             default.append(psnr(METHODS[method](noisy), clean))

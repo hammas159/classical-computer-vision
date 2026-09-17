@@ -130,15 +130,22 @@ def test_a_uniform_region_would_be_invisible_to_a_gradient_energy():
 
 
 def test_the_energy_function_matters_far_less_than_carving_at_all():
-    """The project's first finding, pinned.
+    """The project's first finding, pinned — and rescaled by better data.
 
-    The one-line choice write-ups agonise over is an order of magnitude smaller
-    than the choice they do not discuss.
+    The direction survives: the one-line choice write-ups agonise over is
+    smaller than the choice they do not discuss. **The size of it did not.**
+
+    On the original image set — four scikit-image samples of roughly the same
+    layout — the four energy functions spanned 0.5 points while carving-vs-not
+    spanned 11.6, a ratio of 23x. On six photographs chosen for *shape* the
+    energies span 5.1 points against 16.4, a ratio of **3.2x**. The energy
+    choice matters ten times more than the old images suggested, because the
+    Laplacian does badly on architecture and there was no architecture in the
+    old set.
+
+    The threshold here is 2x rather than 10x, and that is a weakening of the
+    claim, recorded rather than quietly deleted.
     """
-    # the full image set, not the two-image subset the other tests use: the
-    # spread between energies is 0.5 points over four images and 2.6 over two,
-    # so a subset understates the ratio by 5x — which is how this test failed
-    # first time round
     rows = sc.evaluate_energies(reduction=0.20, images=sc.IMAGES)
     carving = [r for r in rows if not r["energy"].startswith("Plain")]
     control = next(r for r in rows if r["energy"].startswith("Plain"))
@@ -146,28 +153,46 @@ def test_the_energy_function_matters_far_less_than_carving_at_all():
     kept = [r["subject_kept"] for r in carving]
     spread = max(kept) - min(kept)
     gap = max(kept) - control["subject_kept"]
-    assert gap > 10.0 * spread
+    assert gap > 2.0 * spread
 
 
-def test_carving_wins_its_own_objective_more_reliably_than_the_perceptual_one():
-    """The project's second finding, pinned.
+def test_carving_wins_both_objectives_on_every_shape():
+    """A finding that REVERSED when the images were chosen properly.
 
-    Retained gradient energy is what seam carving optimises. Region retention is
-    what you actually want. It wins the first on every image and the second on
-    most of them, and that gap is the honest summary of the method.
+    This used to assert that carving wins its own objective (retained gradient
+    energy) on every image and the perceptual one (region retention) on only
+    *most* — 3 of 4 — and that gap was written up as the honest summary of the
+    method.
+
+    It was an artefact of the image set. `coffee`, `rocket`, `chelsea` and
+    `astronaut` are all roughly centre-weighted and similarly proportioned, and
+    one of them happened to have its subject spread wide enough that carving
+    lost. On six photographs chosen for shape, carving wins **both** objectives
+    on **all six**, by +12.2 to +19.8 points.
+
+    The honest summary changes with it: seam carving is not unreliable at
+    protecting a region. It is expensive, and its advantage depends on how much
+    low-energy space the photograph contains — which the shape sweep shows
+    directly.
     """
     rows = sc.per_image(reduction=0.20)
     energy_wins = sum(1 for r in rows if r["carved_energy_kept"] > r["rescale_energy_kept"])
     region_wins = sum(1 for r in rows if r["advantage"] > 0)
     assert energy_wins == len(rows)
-    assert region_wins < len(rows)
+    assert region_wins == len(rows)
 
 
-def test_the_average_hides_an_image_where_carving_loses():
-    """Pins the per-image variance the aggregate conceals."""
+def test_the_advantage_varies_by_a_factor_across_shapes():
+    """What replaced "an image where carving loses".
+
+    There is no longer an image where it loses, but the spread is large and it
+    tracks shape rather than subject: a boat along a sea wall leaves a lot of
+    low-energy water to remove, a stone arch leaves very little.
+    """
     rows = sc.per_image(reduction=0.20)
-    assert min(r["advantage"] for r in rows) < 0
-    assert max(r["advantage"] for r in rows) > 0.1
+    advantages = [r["advantage"] for r in rows]
+    assert min(advantages) > 0
+    assert max(advantages) > 1.5 * min(advantages)
 
 
 def test_carving_costs_orders_of_magnitude_more_than_a_rescale():

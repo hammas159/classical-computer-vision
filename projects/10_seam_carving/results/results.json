@@ -1,6 +1,6 @@
 {
   "project": "10_seam_carving",
-  "generated_utc": "2026-09-15T07:03:46+00:00",
+  "generated_utc": "2026-09-16T23:59:42+00:00",
   "versions": {
     "python": "3.12.14",
     "opencv": "4.14.0",
@@ -9,172 +9,192 @@
   },
   "reduction": 0.2,
   "images": [
-    "coffee",
-    "rocket",
-    "chelsea",
-    "astronaut"
+    "giraffe",
+    "rocky_coast",
+    "stone_arch",
+    "squirrel_rock",
+    "harbour_boat",
+    "gallery_visitors"
   ],
   "energies": [
     {
       "energy": "Gradient |dx|+|dy|",
-      "subject_kept": 0.9158,
-      "aspect_ratio": 0.9344,
-      "energy_kept": 0.9488,
-      "median_ms": 1364.2
+      "subject_kept": 0.9642,
+      "aspect_ratio": 0.9835,
+      "energy_kept": 0.8978,
+      "median_ms": 842.7
     },
     {
       "energy": "Sobel magnitude",
-      "subject_kept": 0.9148,
-      "aspect_ratio": 0.9341,
-      "energy_kept": 0.949,
-      "median_ms": 1308.3
+      "subject_kept": 0.9594,
+      "aspect_ratio": 0.9831,
+      "energy_kept": 0.8981,
+      "median_ms": 738.3
     },
     {
       "energy": "Laplacian",
-      "subject_kept": 0.9199,
-      "aspect_ratio": 0.9375,
-      "energy_kept": 0.9567,
-      "median_ms": 1159.7
+      "subject_kept": 0.9158,
+      "aspect_ratio": 0.9453,
+      "energy_kept": 0.907,
+      "median_ms": 682.0
     },
     {
       "energy": "Local std (entropy-like)",
-      "subject_kept": 0.9187,
-      "aspect_ratio": 0.9328,
-      "energy_kept": 0.9503,
-      "median_ms": 1313.8
+      "subject_kept": 0.9671,
+      "aspect_ratio": 0.9861,
+      "energy_kept": 0.896,
+      "median_ms": 766.7
     },
     {
       "energy": "Plain rescale (control)",
-      "subject_kept": 0.8002,
-      "aspect_ratio": 0.8002,
-      "energy_kept": 0.7938,
+      "subject_kept": 0.7999,
+      "aspect_ratio": 0.7999,
+      "energy_kept": 0.7689,
       "median_ms": 0.4
     }
   ],
   "reduction_sweep": [
     {
       "reduction": 0.05,
-      "carved_subject_kept": 0.9854,
-      "rescale_subject_kept": 0.9499,
-      "carved_aspect": 0.9917,
-      "rescale_aspect": 0.9499,
-      "carved_energy_kept": 0.9897,
-      "rescale_energy_kept": 0.9115
+      "carved_subject_kept": 0.9973,
+      "rescale_subject_kept": 0.947,
+      "carved_aspect": 0.9991,
+      "rescale_aspect": 0.947,
+      "carved_energy_kept": 0.9767,
+      "rescale_energy_kept": 0.8993
     },
     {
       "reduction": 0.1,
-      "carved_subject_kept": 0.966,
-      "rescale_subject_kept": 0.9,
-      "carved_aspect": 0.976,
-      "rescale_aspect": 0.9,
-      "carved_energy_kept": 0.9778,
-      "rescale_energy_kept": 0.8724
+      "carved_subject_kept": 0.9902,
+      "rescale_subject_kept": 0.8976,
+      "carved_aspect": 0.9965,
+      "rescale_aspect": 0.8976,
+      "carved_energy_kept": 0.9525,
+      "rescale_energy_kept": 0.8563
     },
     {
       "reduction": 0.2,
-      "carved_subject_kept": 0.9158,
-      "rescale_subject_kept": 0.8002,
-      "carved_aspect": 0.9344,
-      "rescale_aspect": 0.8002,
-      "carved_energy_kept": 0.9488,
-      "rescale_energy_kept": 0.7938
+      "carved_subject_kept": 0.9642,
+      "rescale_subject_kept": 0.7999,
+      "carved_aspect": 0.9835,
+      "rescale_aspect": 0.7999,
+      "carved_energy_kept": 0.8978,
+      "rescale_energy_kept": 0.7689
     },
     {
       "reduction": 0.3,
-      "carved_subject_kept": 0.864,
-      "rescale_subject_kept": 0.6988,
-      "carved_aspect": 0.8891,
-      "rescale_aspect": 0.6988,
-      "carved_energy_kept": 0.9078,
-      "rescale_energy_kept": 0.7113
+      "carved_subject_kept": 0.9182,
+      "rescale_subject_kept": 0.6979,
+      "carved_aspect": 0.9544,
+      "rescale_aspect": 0.6979,
+      "carved_energy_kept": 0.8341,
+      "rescale_energy_kept": 0.6806
     },
     {
       "reduction": 0.45,
-      "carved_subject_kept": 0.7444,
-      "rescale_subject_kept": 0.5493,
-      "carved_aspect": 0.7916,
-      "rescale_aspect": 0.5493,
-      "carved_energy_kept": 0.8279,
-      "rescale_energy_kept": 0.5859
+      "carved_subject_kept": 0.797,
+      "rescale_subject_kept": 0.5486,
+      "carved_aspect": 0.855,
+      "rescale_aspect": 0.5486,
+      "carved_energy_kept": 0.7231,
+      "rescale_energy_kept": 0.5477
     },
     {
       "reduction": 0.6,
-      "carved_subject_kept": 0.5995,
-      "rescale_subject_kept": 0.4006,
-      "carved_aspect": 0.66,
-      "rescale_aspect": 0.4006,
-      "carved_energy_kept": 0.7165,
-      "rescale_energy_kept": 0.4579
+      "carved_subject_kept": 0.6204,
+      "rescale_subject_kept": 0.3993,
+      "carved_aspect": 0.6853,
+      "rescale_aspect": 0.3993,
+      "carved_energy_kept": 0.5925,
+      "rescale_energy_kept": 0.4127
     },
     {
       "reduction": 0.7,
-      "carved_subject_kept": 0.4831,
-      "rescale_subject_kept": 0.2996,
-      "carved_aspect": 0.5509,
-      "rescale_aspect": 0.2996,
-      "carved_energy_kept": 0.617,
-      "rescale_energy_kept": 0.3715
+      "carved_subject_kept": 0.4947,
+      "rescale_subject_kept": 0.299,
+      "carved_aspect": 0.5651,
+      "rescale_aspect": 0.299,
+      "carved_energy_kept": 0.4909,
+      "rescale_energy_kept": 0.3209
     }
   ],
   "cost": [
     {
       "method": "Seam carving",
-      "subject_kept": 0.9158,
-      "aspect_ratio": 0.9344,
-      "energy_kept": 0.9488,
-      "median_ms": 1194.39
+      "subject_kept": 0.9642,
+      "aspect_ratio": 0.9835,
+      "energy_kept": 0.8978,
+      "median_ms": 729.02
     },
     {
       "method": "Plain rescale",
-      "subject_kept": 0.8002,
-      "aspect_ratio": 0.8002,
-      "energy_kept": 0.7938,
+      "subject_kept": 0.7999,
+      "aspect_ratio": 0.7999,
+      "energy_kept": 0.7689,
       "median_ms": 0.42
     },
     {
       "method": "Difference",
-      "subject_kept": 0.1156,
-      "aspect_ratio": 0.1342,
-      "energy_kept": 0.155,
-      "median_ms": 2844.0
+      "subject_kept": 0.1643,
+      "aspect_ratio": 0.1836,
+      "energy_kept": 0.1289,
+      "median_ms": 1736.0
     }
   ],
   "per_image": [
     {
-      "image": "coffee",
-      "roi_fraction": 0.16,
-      "carved_kept": 0.7896,
-      "rescale_kept": 0.8,
-      "advantage": -0.0104,
-      "carved_energy_kept": 0.9342,
-      "rescale_energy_kept": 0.7795
+      "image": "giraffe",
+      "roi_fraction": 0.1592,
+      "carved_kept": 0.9721,
+      "rescale_kept": 0.7969,
+      "advantage": 0.1753,
+      "carved_energy_kept": 0.9082,
+      "rescale_energy_kept": 0.7779
     },
     {
-      "image": "rocket",
-      "roi_fraction": 0.1602,
+      "image": "rocky_coast",
+      "roi_fraction": 0.1592,
+      "carved_kept": 0.9444,
+      "rescale_kept": 0.8047,
+      "advantage": 0.1397,
+      "carved_energy_kept": 0.8888,
+      "rescale_energy_kept": 0.7559
+    },
+    {
+      "image": "stone_arch",
+      "roi_fraction": 0.1592,
       "carved_kept": 0.9245,
-      "rescale_kept": 0.8008,
-      "advantage": 0.1237,
-      "carved_energy_kept": 0.974,
-      "rescale_energy_kept": 0.7469
+      "rescale_kept": 0.8021,
+      "advantage": 0.1224,
+      "carved_energy_kept": 0.8961,
+      "rescale_energy_kept": 0.7502
     },
     {
-      "image": "chelsea",
-      "roi_fraction": 0.1596,
-      "carved_kept": 1.0,
-      "rescale_kept": 0.8,
-      "advantage": 0.2,
-      "carved_energy_kept": 0.9315,
-      "rescale_energy_kept": 0.8086
+      "image": "squirrel_rock",
+      "roi_fraction": 0.1592,
+      "carved_kept": 0.9779,
+      "rescale_kept": 0.8021,
+      "advantage": 0.1758,
+      "carved_energy_kept": 0.8797,
+      "rescale_energy_kept": 0.7794
     },
     {
-      "image": "astronaut",
-      "roi_fraction": 0.1603,
-      "carved_kept": 0.9492,
-      "rescale_kept": 0.8,
-      "advantage": 0.1492,
-      "carved_energy_kept": 0.9554,
-      "rescale_energy_kept": 0.8401
+      "image": "harbour_boat",
+      "roi_fraction": 0.1592,
+      "carved_kept": 0.9943,
+      "rescale_kept": 0.7969,
+      "advantage": 0.1975,
+      "carved_energy_kept": 0.8971,
+      "rescale_energy_kept": 0.7635
+    },
+    {
+      "image": "gallery_visitors",
+      "roi_fraction": 0.1592,
+      "carved_kept": 0.972,
+      "rescale_kept": 0.7969,
+      "advantage": 0.1751,
+      "carved_energy_kept": 0.9167,
+      "rescale_energy_kept": 0.7865
     }
   ]
 }

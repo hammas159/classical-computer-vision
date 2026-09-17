@@ -20,6 +20,7 @@ import numpy as np  # noqa: E402
 
 from shared import figures, io  # noqa: E402
 from shared.io import to_gray  # noqa: E402
+from shared.metrics import psnr  # noqa: E402
 from shared.report import init_console, markdown_table, write_results, write_tables  # noqa: E402
 
 import denoising as dn  # noqa: E402
@@ -38,6 +39,80 @@ def main() -> None:
     images = dn.IMAGES[: args.images]
     RESULTS.mkdir(parents=True, exist_ok=True)
     IMAGES.mkdir(parents=True, exist_ok=True)
+
+    # ------------------------------------------------------------------ #
+    # the comparison at the top of the README
+    # ------------------------------------------------------------------ #
+    # Four photographs down the rows, every filter across. The candidates are
+    # ordered by DETAIL DENSITY -- mean |Laplacian| -- because that is exactly
+    # the quantity a denoiser destroys, and a pool of equally detailed images
+    # cannot show the trade any of them makes.
+    GALLERY_MIN_GAIN_DB = 2.0
+    detail_pool = [
+        ("albatross pair\nsmooth plumage · detail 7", "albatross_pair", "smooth"),
+        ("bear in grass\nsoft, low contrast · detail 7", "bear_grass", "smooth"),
+        ("bear on a riverbank\nsoft · detail 8", "bear_riverbank", "smooth"),
+        ("lionesses\ndry grass · detail 9", "lionesses", "light texture"),
+        ("elk in water\nripples · detail 11", "elk_water", "light texture"),
+        ("lions on a plain\nopen grass · detail 15", "lions_plain", "light texture"),
+        ("deer in scrub\nwinter branches · detail 17", "deer_water", "medium texture"),
+        ("iguana in surf\nspray and weed · detail 21", "iguana_surf", "medium texture"),
+        ("rhino on gravel\nroad and hide · detail 23", "rhino_road", "medium texture"),
+        ("bear against bark\ntree bark · detail 35", "bear_tree_bark", "heavy texture"),
+        ("carved stone in leaves\nstone and foliage · detail 45", "stone_face_leaves", "heavy texture"),
+    ]
+    method_names = [m for m in dn.METHODS if m != "Do nothing (control)"]
+    all_columns = list(dn.METHODS)
+    survivors: dict[str, dict] = {}
+    for i, (label, name, family) in enumerate(detail_pool):
+        clean = dn.load_scene(name)
+        noisy = dn.make_noisy(clean, "gaussian", 25.0, seed=i)
+        base = psnr(noisy, clean)
+        outs = [dn.METHODS[m](noisy) for m in all_columns]
+        scores = [psnr(o, clean) for o in outs]
+        gain = max(scores) - base
+        flat = label.replace("\n", " · ")
+        if gain < GALLERY_MIN_GAIN_DB:
+            print(f"detail candidate {flat:<48} DROP — best gained {gain:+.1f} dB  [{family}]")
+            continue
+        print(f"detail candidate {flat:<48} keep — noisy {base:.1f} dB, "
+              f"best {max(scores):.1f} dB ({gain:+.1f})  [{family}]")
+        row = {
+            "label": label,
+            "images": [clean, noisy] + outs,
+            "notes": ["clean", f"{base:.1f} dB"] + [f"{s:.1f} dB" for s in scores],
+            "score": gain,
+        }
+        if family not in survivors or row["score"] > survivors[family]["score"]:
+            survivors[family] = row
+
+    # one row per detail band, in order, so the figure spans the axis rather
+    # than showing the four images the filters happen to do best on
+    BAND_ORDER = ["smooth", "light texture", "medium texture", "heavy texture"]
+    chosen = [survivors[b] for b in BAND_ORDER if b in survivors][:4]
+    figures.gallery(
+        ["clean", "noisy (sigma 25)"] + all_columns,
+        [(r["label"], r["images"]) for r in chosen],
+        IMAGES / "compare_filters.png",
+        cell_notes=[r["notes"] for r in chosen],
+        suptitle=(
+            "Four photographs of increasing detail, Gaussian noise at sigma 25, "
+            "every filter across the columns. Cells are PSNR against the clean image."
+        ),
+    )
+    gallery_table = markdown_table(
+        [
+            dict([("Sr", i), ("Photograph", r["label"].replace("\n", " · ")),
+                  ("Noisy", r["notes"][1])]
+                 + list(zip(all_columns, r["notes"][2:])))
+            for i, r in enumerate(chosen, start=1)
+        ],
+        [("Sr", "Sr"), ("Photograph", "Photograph"), ("Noisy", "Noisy")]
+        + [(m, m) for m in all_columns],
+    )
+    print(f"\nfront-on comparison: {len(chosen)} photographs x {len(all_columns)} filters")
+    print("\n--- filters ---\n" + gallery_table)
+
 
     print(f"Scoring {len(dn.METHODS)} filters at default parameters ...")
     default_rows, noisy_stats = dn.evaluate_methods(images=images, runs=3)

@@ -1,0 +1,247 @@
+{
+  "project": "14_edge_detectors",
+  "generated_utc": "2026-09-17T01:48:47+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "tolerance_px": 2,
+  "noise_levels": [
+    0.0,
+    5.0,
+    15.0,
+    30.0,
+    50.0
+  ],
+  "clean": [
+    {
+      "operator": "Roberts",
+      "f1": 0.9998,
+      "precision": 0.9995,
+      "recall": 1.0,
+      "pratt_fom": 0.9381,
+      "best_threshold": 0.06,
+      "median_ms": 2.048
+    },
+    {
+      "operator": "Prewitt",
+      "f1": 0.9999,
+      "precision": 0.9998,
+      "recall": 1.0,
+      "pratt_fom": 0.9546,
+      "best_threshold": 0.1867,
+      "median_ms": 2.339
+    },
+    {
+      "operator": "Sobel",
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "pratt_fom": 0.962,
+      "best_threshold": 0.3333,
+      "median_ms": 2.084
+    },
+    {
+      "operator": "Scharr",
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "pratt_fom": 0.962,
+      "best_threshold": 0.24,
+      "median_ms": 2.288
+    },
+    {
+      "operator": "LoG",
+      "f1": 0.9009,
+      "precision": 0.8196,
+      "recall": 1.0,
+      "pratt_fom": 0.7967,
+      "best_threshold": 0.22,
+      "median_ms": 1.806
+    },
+    {
+      "operator": "Canny (fixed 50/150)",
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "pratt_fom": 0.9816,
+      "best_threshold": null,
+      "median_ms": 0.239
+    },
+    {
+      "operator": "Canny (auto median)",
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "pratt_fom": 0.9816,
+      "best_threshold": null,
+      "median_ms": 1.508
+    }
+  ],
+  "noisy_sigma30": [
+    {
+      "operator": "Roberts",
+      "f1": 0.9183,
+      "precision": 0.9595,
+      "recall": 0.8806,
+      "pratt_fom": 0.6837,
+      "best_threshold": 0.4667,
+      "median_ms": 2.151
+    },
+    {
+      "operator": "Prewitt",
+      "f1": 0.9847,
+      "precision": 0.9849,
+      "recall": 0.9845,
+      "pratt_fom": 0.947,
+      "best_threshold": 0.4067,
+      "median_ms": 2.557
+    },
+    {
+      "operator": "Sobel",
+      "f1": 0.9837,
+      "precision": 0.9917,
+      "recall": 0.9758,
+      "pratt_fom": 0.9564,
+      "best_threshold": 0.4133,
+      "median_ms": 2.35
+    },
+    {
+      "operator": "Scharr",
+      "f1": 0.9804,
+      "precision": 0.9901,
+      "recall": 0.9709,
+      "pratt_fom": 0.9558,
+      "best_threshold": 0.42,
+      "median_ms": 2.129
+    },
+    {
+      "operator": "LoG",
+      "f1": 0.8606,
+      "precision": 0.8421,
+      "recall": 0.8811,
+      "pratt_fom": 0.7779,
+      "best_threshold": 0.34,
+      "median_ms": 1.92
+    },
+    {
+      "operator": "Canny (fixed 50/150)",
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "pratt_fom": 0.9722,
+      "best_threshold": null,
+      "median_ms": 0.296
+    },
+    {
+      "operator": "Canny (auto median)",
+      "f1": 0.1344,
+      "precision": 0.072,
+      "recall": 1.0,
+      "pratt_fom": 0.0935,
+      "best_threshold": null,
+      "median_ms": 2.35
+    }
+  ],
+  "noise_sweep": [
+    {
+      "noise_sigma": 0.0,
+      "Roberts": 0.9998,
+      "Prewitt": 0.9999,
+      "Sobel": 1.0,
+      "Scharr": 1.0,
+      "LoG": 0.9009,
+      "Canny (fixed 50/150)": 1.0,
+      "Canny (auto median)": 1.0
+    },
+    {
+      "noise_sigma": 5.0,
+      "Roberts": 0.9998,
+      "Prewitt": 0.9999,
+      "Sobel": 1.0,
+      "Scharr": 1.0,
+      "LoG": 0.8966,
+      "Canny (fixed 50/150)": 1.0,
+      "Canny (auto median)": 1.0
+    },
+    {
+      "noise_sigma": 15.0,
+      "Roberts": 0.997,
+      "Prewitt": 0.9999,
+      "Sobel": 0.9999,
+      "Scharr": 0.9999,
+      "LoG": 0.8835,
+      "Canny (fixed 50/150)": 1.0,
+      "Canny (auto median)": 0.9039
+    },
+    {
+      "noise_sigma": 30.0,
+      "Roberts": 0.9215,
+      "Prewitt": 0.9852,
+      "Sobel": 0.9848,
+      "Scharr": 0.9813,
+      "LoG": 0.8627,
+      "Canny (fixed 50/150)": 1.0,
+      "Canny (auto median)": 0.1359
+    },
+    {
+      "noise_sigma": 50.0,
+      "Roberts": 0.4336,
+      "Prewitt": 0.8654,
+      "Sobel": 0.865,
+      "Scharr": 0.8343,
+      "LoG": 0.7695,
+      "Canny (fixed 50/150)": 0.5302,
+      "Canny (auto median)": 0.0675
+    }
+  ],
+  "tolerance_sweep": [
+    {
+      "tolerance_px": 0,
+      "Roberts": 0.3457,
+      "Prewitt": 0.7651,
+      "Sobel": 0.7784,
+      "Scharr": 0.7783,
+      "LoG": 0.2458,
+      "Canny (fixed 50/150)": 0.8013
+    },
+    {
+      "tolerance_px": 1,
+      "Roberts": 0.9986,
+      "Prewitt": 0.9994,
+      "Sobel": 0.9994,
+      "Scharr": 0.9994,
+      "LoG": 0.6207,
+      "Canny (fixed 50/150)": 1.0
+    },
+    {
+      "tolerance_px": 2,
+      "Roberts": 0.9998,
+      "Prewitt": 0.9999,
+      "Sobel": 1.0,
+      "Scharr": 1.0,
+      "LoG": 0.9008,
+      "Canny (fixed 50/150)": 1.0
+    },
+    {
+      "tolerance_px": 3,
+      "Roberts": 1.0,
+      "Prewitt": 1.0,
+      "Sobel": 1.0,
+      "Scharr": 1.0,
+      "LoG": 1.0,
+      "Canny (fixed 50/150)": 1.0
+    },
+    {
+      "tolerance_px": 5,
+      "Roberts": 1.0,
+      "Prewitt": 1.0,
+      "Sobel": 1.0,
+      "Scharr": 1.0,
+      "LoG": 1.0,
+      "Canny (fixed 50/150)": 1.0
+    }
+  ]
+}

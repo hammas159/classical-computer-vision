@@ -10,29 +10,67 @@ denoiser.** The noise is generated, so sigma and density are exact and PSNR is
 measured against the true clean image rather than against another algorithm's
 output.
 
-**No neural network, no training, no GPU, no dataset download.**
+**No neural network, no training, no GPU.**
 
-> **The finding, in one sentence.** Three noise models, **three different
-> winners** — bilateral on Gaussian, median on salt-and-pepper, non-local means
-> on Poisson — and the *worst* filter rotates too. Median is the best filter on
-> impulse noise by **6.80 dB** and the worst on Gaussian. A filter is not good or
-> bad; it is matched or mismatched.
+---
 
-> **Tuning transfers for one filter of six.** Every comparison here tunes each
-> filter by grid search, and then checks whether the tuning means anything:
-> fitted on three images, scored on three held-out ones, **bilateral gains
-> 4.13 dB** and everything else gains ≤ 0.20 — while the box filter's fitted
-> parameter *loses* **0.81 dB**. That is overfitting on a six-image search over
-> one free parameter, which is about as small as overfitting gets.
+## Results
 
-> **Sometimes the right answer is not to denoise.** Below about **sigma 10**
-> every filter here scores *worse* than leaving the image alone: their blurring
-> costs more than the noise does. The do-nothing control is in the table to make
-> that visible.
+Four photographs of **increasing detail**, Gaussian noise at sigma 25, every
+filter across the columns. Detail is mean |Laplacian| — the quantity a denoiser
+destroys — and it is the axis the whole comparison turns on.
 
-> **And the best quality costs 1,830×.** Non-local means runs at 578 ms against a
-> Gaussian blur's 0.32 ms — and wins outright on exactly one of the three noise
-> models, by 0.31 dB.
+![Four detail levels, seven filters](docs/images/compare_filters.png)
+
+| Sr | Photograph | Noisy | Box | **Gaussian** | Median | **Bilateral** | Non-local means | Wiener | Do nothing |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | bear in grass · detail 7 | 20.2 | 30.5 | **31.1** | 29.5 | 26.9 | 26.0 | 29.9 | 20.2 |
+| 2 | lionesses · detail 9 | 20.2 | 29.4 | **30.0** | 28.7 | 26.6 | 28.6 | 29.4 | 20.2 |
+| 3 | deer in scrub · detail 17 | 20.2 | 26.0 | 26.7 | 25.7 | 25.9 | 26.3 | **27.4** | 20.2 |
+| 4 | bear against bark · detail 35 | 20.3 | 21.2 | 21.9 | 21.1 | **25.0** | 24.1 | 23.8 | 20.3 |
+
+> **The winner flips with detail.** A Gaussian blur beats bilateral by
+> **4.2 dB** on the smoothest photograph and loses to it by **3.1 dB** on the
+> most detailed one. Same filter, same noise, same sigma — the only thing that
+> changed is how much texture there was to lose.
+>
+> Read the Gaussian column downward: **31.1 → 30.0 → 26.7 → 21.9**. Read
+> bilateral: **26.9 → 26.6 → 25.9 → 25.0**. A blur removes noise and texture
+> together and cannot tell them apart; a bilateral filter refuses to average
+> across an edge, which costs it on smooth images and saves it on detailed ones.
+
+> **Denoising is worth less than half as much on a detailed image.** Best gain
+> over the noisy input: **+10.8 dB** at detail 7, **+4.3 dB** at detail 45. The
+> noise is identical in both. What changed is how much of the image the filter
+> has to destroy to remove it.
+
+All eleven candidates cleared the 2 dB gate, and the gain falls monotonically
+with detail:
+
+```
+detail candidate albatross pair · detail 7            keep — noisy 20.4 dB, best 30.3 dB (+10.0)  [smooth]
+detail candidate bear in grass · detail 7             keep — noisy 20.2 dB, best 31.1 dB (+10.8)  [smooth]
+detail candidate bear on a riverbank · detail 8       keep — noisy 20.2 dB, best 30.3 dB (+10.1)  [smooth]
+detail candidate lionesses · detail 9                 keep — noisy 20.2 dB, best 30.0 dB  (+9.8)  [light texture]
+detail candidate elk in water · detail 11             keep — noisy 20.3 dB, best 29.3 dB  (+9.0)  [light texture]
+detail candidate lions on a plain · detail 15         keep — noisy 20.2 dB, best 28.6 dB  (+8.4)  [light texture]
+detail candidate deer in scrub · detail 17            keep — noisy 20.2 dB, best 27.4 dB  (+7.2)  [medium texture]
+detail candidate iguana in surf · detail 21           keep — noisy 20.5 dB, best 26.2 dB  (+5.7)  [medium texture]
+detail candidate rhino on gravel · detail 23          keep — noisy 20.3 dB, best 26.1 dB  (+5.8)  [medium texture]
+detail candidate bear against bark · detail 35        keep — noisy 20.3 dB, best 25.0 dB  (+4.6)  [heavy texture]
+detail candidate carved stone in leaves · detail 45   keep — noisy 20.6 dB, best 24.9 dB  (+4.3)  [heavy texture]
+```
+
+The four rows are **one per detail band in order**, not the four the filters do
+best on — which would have been four smooth images and no finding at all.
+
+> 🚨 **This finding did not exist in the previous version of the project**, and
+> not because anything was hidden. The benchmark was six scikit-image samples of
+> broadly similar detail, and a trade that only appears *across* detail levels
+> cannot appear in a pool that does not vary on that axis. The filters, the
+> noise and the metrics are unchanged; only the photographs are different.
+
+---
 
 **Jump to:** [What it does](#what-it-does) · 
 [Results](#results) ·

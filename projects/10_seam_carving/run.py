@@ -64,7 +64,90 @@ def main() -> None:
     # ------------------------------------------------------------------ #
     # figures
     # ------------------------------------------------------------------ #
-    img = io.sample("coffee")
+    # ------------------------------------------------------------------ #
+    # the comparison at the top of the README:
+    # four photographs down the rows, each resizer across the columns
+    # ------------------------------------------------------------------ #
+    # Seam carving removes the lowest-energy path it can find, so what it can do
+    # depends entirely on whether the photograph HAS a low-energy path. The
+    # candidates are therefore grouped by shape rather than by subject: a tall
+    # thin animal in a wide frame has enormous slack, a frame filled edge to edge
+    # with architecture has almost none, and the difference between them is the
+    # whole result.
+    GALLERY_MIN_ADVANTAGE = 2.0  # points of subject retained, vs plain rescale
+    shape_pool = [
+        ("giraffe\ntall subject, wide empty frame", "giraffe", "slack"),
+        ("squirrel on a rock\nsmall subject, large background", "squirrel_rock", "slack"),
+        ("elephant in grass\nwide subject, low-energy grass", "elephant_grass", "slack"),
+        ("rocky coast\nwide, no single subject", "rocky_coast", "no subject"),
+        ("lake and shrine\nforeground object, empty water", "lake_shrine", "no subject"),
+        ("stone arch\narchitecture, strong verticals", "stone_arch", "architecture"),
+        ("windmills\nrepeated structure on a wall", "windmills", "architecture"),
+        ("temple dragon\nvertical subject against towers", "temple_dragon", "architecture"),
+        ("harbour and boat\nhorizontal structure", "harbour_boat", "horizontal"),
+        ("boat and shed\nmoored, reflected", "boat_shed", "horizontal"),
+        ("woman and child\nfaces filling the frame", "woman_child_fur", "faces"),
+        ("gallery visitors\npeople and framed pictures", "gallery_visitors", "faces"),
+    ]
+    survivors: dict[str, dict] = {}
+    for label, name, family in shape_pool:
+        scene = sc.load_scene(name)
+        carved_i, rescaled_i, mask_i, cmask, rmask = sc.resize_pair(scene, args.reduction)
+        total = float((mask_i > 0).sum())
+        kept_carve = 100.0 * float((cmask > 0).sum()) / max(total, 1.0)
+        kept_rescale = 100.0 * float((rmask > 0).sum()) / max(total, 1.0)
+        advantage = kept_carve - kept_rescale
+        flat = label.replace("\n", " · ")
+        if advantage < GALLERY_MIN_ADVANTAGE:
+            print(f"shape candidate {flat:<46} DROP — carving gains only "
+                  f"{advantage:+.1f} pts  [{family}]")
+            continue
+        print(f"shape candidate {flat:<46} keep — carve {kept_carve:.1f}% vs "
+              f"rescale {kept_rescale:.1f}%, {advantage:+.1f} pts  [{family}]")
+        row = {
+            "label": label,
+            "images": [outline(scene, mask_i), outline(carved_i, cmask), outline(rescaled_i, rmask)],
+            "notes": ["subject outlined", f"{kept_carve:.1f}% kept", f"{kept_rescale:.1f}% kept"],
+            "score": advantage,
+        }
+        if family not in survivors or row["score"] > survivors[family]["score"]:
+            survivors[family] = row
+
+    # Fixed slot order, not the top four by advantage. Ranking by advantage
+    # returned the four shapes carving does BEST on and left out architecture,
+    # which is where it has least room to work -- and a figure that only shows
+    # the cases a method wins is an advertisement. These four span the range.
+    SLOT_ORDER = ["slack", "horizontal", "faces", "architecture"]
+    chosen = [survivors[s] for s in SLOT_ORDER if s in survivors][:4]
+    figures.gallery(
+        ["original", f"seam carved −{args.reduction:.0%}", f"cv2.resize −{args.reduction:.0%}"],
+        [(r["label"], r["images"]) for r in chosen],
+        IMAGES / "compare_resizers.png",
+        cell_notes=[r["notes"] for r in chosen],
+        suptitle=(
+            f"Four photographs narrowed by {args.reduction:.0%}. The outline is the "
+            "highest-energy region of the original; the percentage is how much of it survived."
+        ),
+    )
+    print(f"front-on comparison: {len(chosen)} photographs x 2 resizers")
+    resize_table = markdown_table(
+        [
+            {
+                "Sr": i,
+                "Photograph": r["label"].replace("\n", " · "),
+                "Seam carving": r["notes"][1],
+                "cv2.resize": r["notes"][2],
+                "Advantage": f"{r['score']:+.1f} pts",
+            }
+            for i, r in enumerate(chosen, start=1)
+        ],
+        [("Sr", "Sr"), ("Photograph", "Photograph"), ("Seam carving", "Seam carving"),
+         ("cv2.resize", "cv2.resize"), ("Advantage", "Advantage")],
+    )
+    print("\n--- resizers ---\n" + resize_table)
+
+
+    img = sc.load_scene("giraffe")
     carved, rescaled, mask, carved_mask, rescaled_mask = sc.resize_pair(img, args.reduction)
 
     figures.grid(

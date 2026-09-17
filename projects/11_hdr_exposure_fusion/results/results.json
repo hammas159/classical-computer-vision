@@ -1,0 +1,154 @@
+{
+  "project": "11_hdr_exposure_fusion",
+  "generated_utc": "2026-09-17T00:27:01+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "lake_shrine",
+    "stone_arch",
+    "harbour_boat",
+    "windmills",
+    "rocky_coast",
+    "temple_dragon"
+  ],
+  "scene_stops": 12.0,
+  "exposure_stops": [
+    -4.0,
+    -2.0,
+    0.0,
+    2.0,
+    4.0
+  ],
+  "single_exposure": {
+    "middle_exposure_psnr": 20.897,
+    "middle_exposure_ssim": 0.8901,
+    "mean_unrecoverable": 0.005007
+  },
+  "methods": [
+    {
+      "method": "Mertens fusion",
+      "psnr_db": 20.922,
+      "psnr_matched_db": 23.948,
+      "ssim": 0.8477,
+      "median_ms": 21.65
+    },
+    {
+      "method": "Debevec + Reinhard",
+      "psnr_db": 14.695,
+      "psnr_matched_db": 14.828,
+      "ssim": 0.6342,
+      "median_ms": 1838.411
+    },
+    {
+      "method": "Debevec + Drago",
+      "psnr_db": 11.51,
+      "psnr_matched_db": 22.283,
+      "ssim": 0.6873,
+      "median_ms": 6.92
+    },
+    {
+      "method": "Debevec + Mantiuk",
+      "psnr_db": 9.887,
+      "psnr_matched_db": 17.625,
+      "ssim": 0.5195,
+      "median_ms": 34.494
+    },
+    {
+      "method": "Mean of frames (control)",
+      "psnr_db": 23.456,
+      "psnr_matched_db": 24.169,
+      "ssim": 0.9282,
+      "median_ms": 9.309
+    },
+    {
+      "method": "Middle exposure only (control)",
+      "psnr_db": 20.897,
+      "psnr_matched_db": 26.2,
+      "ssim": 0.8901,
+      "median_ms": 0.002
+    }
+  ],
+  "bracket_size_sweep": [
+    {
+      "frames": 2,
+      "stops": [
+        -2.0,
+        0.0
+      ],
+      "unrecoverable": 0.068197,
+      "Mertens fusion": 24.103,
+      "Debevec + Reinhard": 18.583,
+      "Debevec + Drago": 18.398,
+      "Debevec + Mantiuk": 16.871
+    },
+    {
+      "frames": 3,
+      "stops": [
+        -2.0,
+        0.0,
+        2.0
+      ],
+      "unrecoverable": 0.043937,
+      "Mertens fusion": 22.386,
+      "Debevec + Reinhard": 17.476,
+      "Debevec + Drago": 14.666,
+      "Debevec + Mantiuk": 13.674
+    },
+    {
+      "frames": 5,
+      "stops": [
+        -4.0,
+        -2.0,
+        0.0,
+        2.0,
+        4.0
+      ],
+      "unrecoverable": 0.005007,
+      "Mertens fusion": 20.922,
+      "Debevec + Reinhard": 14.695,
+      "Debevec + Drago": 11.51,
+      "Debevec + Mantiuk": 9.887
+    }
+  ],
+  "clipping_ceiling": [
+    {
+      "stop_spread": 0.0,
+      "frames": 1,
+      "blown_everywhere": 0.174925,
+      "crushed_everywhere": 0.023982,
+      "unrecoverable": 0.198906
+    },
+    {
+      "stop_spread": 1.0,
+      "frames": 3,
+      "blown_everywhere": 0.066729,
+      "crushed_everywhere": 0.009686,
+      "unrecoverable": 0.076415
+    },
+    {
+      "stop_spread": 2.0,
+      "frames": 3,
+      "blown_everywhere": 0.037123,
+      "crushed_everywhere": 0.006814,
+      "unrecoverable": 0.043937
+    },
+    {
+      "stop_spread": 3.0,
+      "frames": 3,
+      "blown_everywhere": 0.016448,
+      "crushed_everywhere": 0.004444,
+      "unrecoverable": 0.020892
+    },
+    {
+      "stop_spread": 4.0,
+      "frames": 3,
+      "blown_everywhere": 0.004623,
+      "crushed_everywhere": 0.00297,
+      "unrecoverable": 0.007593
+    }
+  ]
+}

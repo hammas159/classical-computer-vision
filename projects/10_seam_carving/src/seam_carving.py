@@ -290,7 +290,37 @@ def energy_of_removed(original: np.ndarray, carved_energy_sum: float, energy_fn)
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("coffee", "rocket", "chelsea", "astronaut")
+#: Six photographs chosen for SHAPE, not subject. Seam carving is judged on
+#: what it has room to remove, so a pool of six images with the same layout
+#: measures one thing six times. These span a tall thin subject in a wide
+#: frame, a wide scene with no single subject, architecture whose verticals a
+#: seam cannot cross without visible damage, and a small subject surrounded by
+#: removable background.
+IMAGES = (
+    "giraffe",
+    "rocky_coast",
+    "stone_arch",
+    "squirrel_rock",
+    "harbour_boat",
+    "gallery_visitors",
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """Load a scene by name from either image source.
+
+    The benchmark moved off scikit-image's bundled samples when it became clear
+    that four photographs of roughly the same shape cannot show how much seam
+    carving depends on the shape of what it is given. Dispatching on the name
+    keeps both sources usable from one call site.
+    """
+    from shared import io
+
+    if name in io.REAL_PHOTOS:
+        return io.real_photo(name)
+    return io.sample(name)
+
+
 REDUCTION_LEVELS = (0.05, 0.10, 0.20, 0.30, 0.45, 0.60, 0.70)
 
 
@@ -332,7 +362,7 @@ def evaluate_energies(reduction: float = 0.25, images=IMAGES, runs: int = 1):
     rows = []
     scenes = []
     for name in images:
-        img = io.sample(name)
+        img = load_scene(name)
         mask, _ = subject_region(img)
         scenes.append((img, mask))
 
@@ -396,7 +426,7 @@ def sweep_reduction(images=IMAGES, levels=REDUCTION_LEVELS, energy_fn=energy_gra
     from shared import io
 
     rows = []
-    scenes = [(io.sample(n), subject_region(io.sample(n))[0]) for n in images]
+    scenes = [(load_scene(n), subject_region(load_scene(n))[0]) for n in images]
     for red in levels:
         carved = {k: [] for k in ("subject_kept", "aspect_ratio", "energy_kept")}
         plain = {k: [] for k in ("subject_kept", "aspect_ratio", "energy_kept")}
@@ -434,7 +464,7 @@ def compare_cost(reduction: float = 0.20, images=IMAGES) -> list[dict]:
     from shared import io
 
     rows = []
-    scenes = [(io.sample(n), subject_region(io.sample(n))[0]) for n in images]
+    scenes = [(load_scene(n), subject_region(load_scene(n))[0]) for n in images]
     for label, fn in (("Seam carving", None), ("Plain rescale", _rescale)):
         acc, ms = {k: [] for k in ("subject_kept", "aspect_ratio", "energy_kept")}, []
         for img, mask in scenes:
@@ -501,7 +531,7 @@ def per_image(reduction: float = 0.20, images=IMAGES, energy_fn=energy_gradient)
 
     rows = []
     for name in images:
-        img = io.sample(name)
+        img = load_scene(name)
         mask, _ = subject_region(img, energy_fn)
         target = int(img.shape[1] * (1.0 - reduction))
         out, out_mask = carve(img, target, energy_fn, track=mask)
