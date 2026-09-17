@@ -134,6 +134,8 @@ def lines(
     invert_x: bool = False,
     dashed: set[str] | None = None,
     vlines: dict[str, float] | None = None,
+    logx: bool = False,
+    logy: bool = False,
 ) -> Path:
     """Write a multi-series line plot — the right figure for a parameter sweep.
 
@@ -143,6 +145,12 @@ def lines(
     ``dashed`` names series to draw as dashed lines, which is how a reference or
     oracle curve should be distinguished from a real method. ``vlines`` draws
     labelled vertical markers, for thresholds worth naming on the axis.
+
+    ``logx``/``logy`` matter whenever a sweep spans decades -- a displacement
+    sweep from 0.5 to 32 px on a linear axis puts six of its seven points in the
+    leftmost fifth of the plot, which hides exactly the region where the methods
+    differ. Non-positive values are dropped from a log axis rather than clipped,
+    since matplotlib would silently discard them anyway.
     """
     dashed = dashed or set()
     fig, ax = plt.subplots(figsize=(7.0, 4.4))
@@ -176,6 +184,10 @@ def lines(
     ax.set_ylabel(ylabel, fontsize=_TITLE_SIZE)
     if title:
         ax.set_title(title, fontsize=_TITLE_SIZE + 1)
+    if logx:
+        ax.set_xscale("log")
+    if logy:
+        ax.set_yscale("log")
     if invert_x:
         ax.invert_xaxis()
     ax.grid(alpha=0.25, linestyle=":")

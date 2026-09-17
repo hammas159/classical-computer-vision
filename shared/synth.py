@@ -1260,3 +1260,359 @@ def _draw_coin(img: np.ndarray, centre, radius_px: float, denom: int, rng) -> No
     patch[:] = to_uint8(
         to_float(patch) * (1 - soft) + to_float(np.clip(face, 0, 255).astype(np.uint8)) * soft
     )
+
+
+# --------------------------------------------------------------------------- #
+# exposure brackets
+# --------------------------------------------------------------------------- #
+#
+# Real bracketed sets exist, but none of them come with the answer: nobody can
+# say what the scene "really" looked like, so a fused result can be admired and
+# not scored. Generating the bracket from one well-exposed photograph gives back
+# the thing every HDR paper is missing -- a reference image.
+#
+# The generator is deliberately lossy in the way a camera is. Each exposure is
+#
+#     raw = (linear_scene * time) + read noise + shot noise
+#     jpeg = encode(clip(raw, 0, 1))
+#
+# so a bright exposure genuinely LOSES its highlights to clipping and a dark one
+# genuinely loses its shadows in noise. That matters: a fusion method cannot
+# recover what no frame recorded, and the ceiling this sets is the finding.
+
+#: Exposure times relative to the reference, in stops. Five frames at two-stop
+#: spacing is the usual bracket a camera offers.
+EXPOSURE_STOPS = (-4.0, -2.0, 0.0, 2.0, 4.0)
+
+#: sRGB transfer, used to move between the encoded image and the linear signal
+#: a sensor actually integrates. Scaling an sRGB-encoded image directly is the
+#: single most common mistake in exposure simulation: it darkens midtones
+#: differently from the way a shorter exposure does, and every method then gets
+#: scored on an artefact of the encoding.
+_SRGB_KNEE = 0.04045
+_SRGB_LINEAR_KNEE = 0.0031308
+
+
+def srgb_to_linear(img: np.ndarray) -> np.ndarray:
+    """Encoded sRGB in [0,1] -> linear light."""
+    f = to_float(img)
+    return np.where(f <= _SRGB_KNEE, f / 12.92, ((f + 0.055) / 1.055) ** 2.4).astype(np.float32)
+
+
+def linear_to_srgb(lin: np.ndarray) -> np.ndarray:
+    """Linear light -> encoded sRGB in [0,1]."""
+    lin = np.clip(lin, 0.0, 1.0)
+    return np.where(
+        lin <= _SRGB_LINEAR_KNEE, lin * 12.92, 1.055 * np.power(lin, 1 / 2.4) - 0.055
+    ).astype(np.float32)
+
+
+def exposure_bracket(
+    img: np.ndarray,
+    stops=EXPOSURE_STOPS,
+    read_noise: float = 2.0,
+    shot_noise: float = 0.012,
+    seed: int | None = 0,
+):
+    """Generate a bracket from one image, keeping the image as ground truth.
+
+    Returns ``(frames, times)``: RGB uint8 exposures and their exposure times
+    relative to the reference, which is what ``cv2.createMergeDebevec`` needs.
+
+    ``read_noise`` is in 0-255 units and is constant; ``shot_noise`` scales with
+    the square root of the signal. Both are there because a bracket without them
+    is trivially invertible — a method could simply divide the bright frame by
+    its exposure time and recover the scene exactly, and the comparison would
+    measure nothing.
+    """
+    rng = _rng(seed)
+    linear = srgb_to_linear(img)
+    frames, times = [], []
+    for stop in stops:
+        gain = float(2.0**stop)
+        raw = linear * gain
+        if shot_noise > 0:
+            raw = raw + rng.normal(0, 1, raw.shape).astype(np.float32) * shot_noise * np.sqrt(
+                np.maximum(raw, 0)
+            )
+        encoded = linear_to_srgb(raw) * 255.0
+        if read_noise > 0:
+            encoded = encoded + rng.normal(0, read_noise, encoded.shape)
+        frames.append(to_uint8(np.clip(encoded, 0, 255) / 255.0))
+        times.append(gain)
+    return frames, np.asarray(times, np.float32)
+
+
+def bracket_loss(frames, stops=EXPOSURE_STOPS) -> dict:
+    """How much of each frame is unusable, and how much the set as a whole lost.
+
+    ``clipped`` counts pixels at 255 (highlight lost) or below the noise floor
+    (shadow lost) in *every* frame. That is the part no fusion method can
+    recover, and it is the ceiling every method in this project is measured
+    against.
+    """
+    stacked = np.stack([to_float(f) for f in frames])
+    blown = (stacked >= 254.0 / 255.0).all(axis=0)
+    crushed = (stacked <= 2.0 / 255.0).all(axis=0)
+    return {
+        "frames": len(frames),
+        "stops": list(stops),
+        "blown_everywhere": round(float(blown.mean()), 6),
+        "crushed_everywhere": round(float(crushed.mean()), 6),
+        "unrecoverable": round(float((blown | crushed).mean()), 6),
+    }
+
+
+#: How many stops a single simulated frame can hold before it saturates.
+#:
+#: This is the whole reason bracketing exists, and it belongs to the SENSOR, not
+#: to the scene. A photograph already spans about 8 stops of linear reflectance;
+#: a sensor that can only record 4 of them at a time must clip highlights or
+#: crush shadows in every single frame, and only a bracket recovers the range.
+#:
+#: An earlier version of this generator instead multiplied the photograph by a
+#: smooth 12-stop illumination field. That was the wrong experiment: the
+#: reference image had no such field, so fusion was being asked to REMOVE the
+#: illumination — an intrinsic-image problem, not an exposure one. Every method
+#: scored badly and the figure showed four columns of identical blotches, which
+#: is a finding about the harness rather than about HDR.
+SENSOR_STOPS = 4.0
+
+#: Dynamic range of the generated scene, in stops. 12 is roughly a lit room
+#: with a sunlit window in it.
+HDR_SCENE_STOPS = 12.0
+
+
+def hdr_scene(img: np.ndarray, stops: float = HDR_SCENE_STOPS, seed: int | None = 0):
+    """A radiance map wider than 8 bits, built from a photograph.
+
+    Returns a linear float array. The photograph supplies the reflectance — real
+    detail, not something invented here — and a smooth low-frequency
+    illumination field supplies the range, the way a window in a dark room does.
+
+    **You cannot make a high-range scene out of a low-range photograph without
+    adding range somewhere**, and this is where. An earlier attempt tried to get
+    it from the sensor instead, by narrowing the usable range of each frame. That
+    does not work: an 8-bit photograph, linearised and re-exposed, fits back into
+    8 bits, so the middle frame clipped 0.4% of the image and a bracket bought
+    nothing.
+    """
+    rng = _rng(seed)
+    h, w = img.shape[:2]
+    reflectance = srgb_to_linear(img)
+
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    yy, xx = yy / max(h - 1, 1), xx / max(w - 1, 1)
+    field = np.zeros((h, w), np.float32)
+    for _ in range(3):
+        fx, fy = rng.uniform(0.6, 1.8, 2)
+        phase = rng.uniform(0, 2 * np.pi, 2)
+        field += np.sin(2 * np.pi * fx * xx + phase[0]) * np.sin(2 * np.pi * fy * yy + phase[1])
+    field = field / (np.abs(field).max() + 1e-6)
+    illumination = np.power(2.0, field * stops / 2.0).astype(np.float32)
+    return reflectance * illumination[..., None]
+
+
+def tonemap_oracle(radiance: np.ndarray, key: float = 0.18) -> np.ndarray:
+    """Render a radiance map to 8 bits, given the *exact* radiance.
+
+    This is the **ceiling**, not a method. It is handed the true radiance that
+    the bracket only samples, and applies a fixed global Reinhard curve
+    ``L / (1 + L)`` after scaling the scene's log-average luminance to ``key``.
+
+    Its existence is what makes the comparison answerable. Scoring a fused
+    result against the original flat photograph asks fusion to remove the
+    illumination as well — an intrinsic-image problem it is not attempting —
+    and every method then fails identically, which says nothing. Scoring against
+    this says: *how close did you get to what you would have produced with
+    perfect information?*
+
+    Deliberately the simplest operator that exists, and deliberately the same
+    one for every method, so the comparison measures recovered radiance rather
+    than anyone's taste in tone curves.
+    """
+    lum = to_gray_float(radiance)
+    log_avg = float(np.exp(np.mean(np.log(np.maximum(lum, 1e-6)))))
+    scaled = radiance * (key / max(log_avg, 1e-6))
+    compressed = scaled / (1.0 + scaled)
+    return to_uint8(linear_to_srgb(compressed))
+
+
+def sensor_read_noise(stops: float = SENSOR_STOPS) -> float:
+    """Read noise, in 0-255 units, that gives a frame ``stops`` of usable range.
+
+    Dynamic range is the ratio of the saturation level to the noise floor, so in
+    an 8-bit frame it is `255 / read_noise`. The white level alone cannot narrow
+    it: moving where the window sits does not change how wide it is. That was
+    the first attempt, and it produced a bracket in which the middle exposure
+    clipped nothing at all.
+    """
+    return float(255.0 / 2.0**stops)
+
+
+def expose(
+    linear: np.ndarray,
+    stop: float,
+    white_level: float | None = None,
+    read_noise: float = 2.0,
+    shot_noise: float = 0.012,
+    seed: int | None = 0,
+) -> np.ndarray:
+    """Photograph a linear radiance map at one exposure, through a real sensor.
+
+    The saturation is the point. A sensor well fills up, and everything above it
+    records as the same white — which is why no amount of post-processing
+    recovers a blown highlight from a single frame, and why a bracket is the
+    only way to hold a scene wider than the sensor.
+    """
+    rng = _rng(seed)
+    white = sensor_white_level() if white_level is None else white_level
+    raw = linear * float(2.0**stop)
+    if shot_noise > 0:
+        raw = raw + rng.normal(0, 1, raw.shape).astype(np.float32) * shot_noise * np.sqrt(
+            np.maximum(raw, 0)
+        )
+    # the sensor saturates at `white`, so normalise by it before encoding
+    encoded = linear_to_srgb(np.clip(raw / white, 0.0, 1.0)) * 255.0
+    if read_noise > 0:
+        encoded = encoded + rng.normal(0, read_noise, encoded.shape)
+    return to_uint8(np.clip(encoded, 0, 255) / 255.0)
+
+
+def hdr_bracket(
+    img: np.ndarray,
+    stops=EXPOSURE_STOPS,
+    scene_stops: float = HDR_SCENE_STOPS,
+    seed: int | None = 0,
+):
+    """A bracket of a scene far wider than one exposure can hold.
+
+    Returns ``(frames, times, reference)``. The reference is
+    :func:`tonemap_oracle` applied to the **true** radiance — the result a
+    method would produce with perfect information, and therefore the ceiling
+    rather than an arbitrary target.
+
+    The bracket is centred so the middle exposure puts the scene's median
+    radiance at mid-grey. Without that the whole set can sit in the clipped
+    region of a bright photograph, and the comparison measures the offset
+    instead of the methods.
+    """
+    radiance = hdr_scene(img, stops=scene_stops, seed=seed)
+    reference = tonemap_oracle(radiance)
+
+    # put the scene's median radiance at mid-grey in the middle frame
+    median_radiance = float(np.median(to_gray_float(radiance)))
+    centre = float(np.log2(0.18 / max(median_radiance, 1e-6)))
+    frames = [
+        expose(radiance, centre + s, white_level=1.0,
+               seed=seed + i if seed is not None else None)
+        for i, s in enumerate(stops)
+    ]
+    times = np.asarray([2.0 ** (centre + s) for s in stops], np.float32)
+    times = times / times[len(times) // 2]
+    return frames, times.astype(np.float32), reference
+
+
+def to_gray_float(linear: np.ndarray) -> np.ndarray:
+    """Luminance of a linear RGB float image (Rec.709 weights)."""
+    return (
+        0.2126 * linear[..., 0] + 0.7152 * linear[..., 1] + 0.0722 * linear[..., 2]
+    ).astype(np.float32)
+
+
+# --------------------------------------------------------------------------- #
+# stereo pairs with exact disparity
+# --------------------------------------------------------------------------- #
+#
+# Middlebury supplies real pairs with measured ground truth, and one of them is
+# used in project 12. One pair is not four samples, and it cannot be varied: you
+# cannot ask "what happens with less texture" of a photograph that already has
+# the texture it has.
+#
+# So pairs are also generated. A layered depth map plus a forward warp gives a
+# right view whose disparity is known to the pixel, and lets the *scene* be
+# varied on the axis that actually matters to a matcher -- how much texture
+# there is to match, and how much of the scene one camera cannot see.
+
+
+def depth_layers(
+    size: tuple[int, int],
+    layers: int = 4,
+    seed: int | None = 0,
+) -> np.ndarray:
+    """A piecewise-constant depth map with a few soft-edged planes.
+
+    Piecewise-constant on purpose. A smooth depth ramp has no occlusions and no
+    disparity discontinuities, which are the two things stereo matching actually
+    struggles with — a matcher that only ever sees gentle gradients looks far
+    better than it is.
+
+    Returns depth in [0, 1], where 0 is nearest.
+    """
+    rng = _rng(seed)
+    w, h = size
+    depth = np.ones((h, w), np.float32)
+    for i in range(layers):
+        level = (i + 1) / (layers + 1)
+        cx, cy = rng.uniform(0.15, 0.85, 2) * (w, h)
+        rx, ry = rng.uniform(0.18, 0.42, 2) * (w, h)
+        yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+        inside = ((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2 <= 1.0
+        depth[inside] = level
+    # a little softening, so edges are not perfectly aliased -- but far less
+    # than would smear the discontinuity away
+    return cv2.GaussianBlur(depth, (0, 0), 1.0)
+
+
+def stereo_pair(
+    img: np.ndarray,
+    max_disparity: int = 48,
+    layers: int = 4,
+    seed: int | None = 0,
+):
+    """Build a rectified stereo pair from one photograph and a depth map.
+
+    Returns ``(left, right, disparity, valid)``:
+
+    * ``left`` is the photograph unchanged,
+    * ``right`` is it warped by the disparity,
+    * ``disparity`` is exact, in pixels, float32,
+    * ``valid`` marks pixels visible in **both** views.
+
+    The warp is a forward mapping with a **nearest-surface** rule: where two
+    source pixels land on the same target column, the nearer one wins, which is
+    what occlusion physically is. Pixels the right camera cannot see at all are
+    filled from their neighbours and excluded from ``valid`` — scoring a matcher
+    on a region that is only in one image measures nothing, and including it is
+    a common way to make a stereo method look worse than it is.
+    """
+    h, w = img.shape[:2]
+    depth = depth_layers((w, h), layers=layers, seed=seed)
+    # disparity is inversely proportional to depth: near things shift more
+    disparity = (max_disparity * (1.0 - depth)).astype(np.float32)
+
+    right = np.zeros_like(img)
+    filled = np.zeros((h, w), bool)
+    best_disp = np.full((h, w), -1.0, np.float32)
+
+    xs = np.arange(w)
+    for y in range(h):
+        d = disparity[y]
+        target = np.round(xs - d).astype(np.int32)
+        keep = (target >= 0) & (target < w)
+        tx, sx, td = target[keep], xs[keep], d[keep]
+        # nearest surface wins the pixel: larger disparity is nearer
+        order = np.argsort(td)
+        tx, sx, td = tx[order], sx[order], td[order]
+        right[y, tx] = img[y, sx]
+        best_disp[y, tx] = td
+        filled[y, tx] = True
+
+    valid = filled.copy()
+    # fill the holes so the right image looks like a photograph rather than a
+    # comb, but leave them out of `valid`
+    holes = (~filled).astype(np.uint8)
+    if holes.any():
+        right = cv2.inpaint(right, holes, 3, cv2.INPAINT_TELEA)
+
+    return img, right, disparity, valid

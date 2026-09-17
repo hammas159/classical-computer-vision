@@ -1,18 +1,30 @@
 # Real photographs
 
-Everything else in this repository is generated, because generated data has
-**exact** ground truth. These four are real photographs, included for a different
-purpose: to show each pipeline working on an image nobody constructed for it.
+259 photographs, one pool per project and **no image shared between two
+projects** — enforced by perceptual hash in `tools/check_image_reuse.py`, not by
+filename.
 
-They are scored differently, and the difference is stated wherever they appear:
+There are three kinds of ground truth in this repository and they are not
+interchangeable. Which one a project has decides what it is allowed to report,
+and that is stated wherever a number appears.
 
-| | Generated scene | Real photograph |
-|---|---|---|
-| Ground truth | exact, by construction | **none** |
-| Reports IoU / PSNR | yes | **no** |
-| Answers | "how accurate is this method" | "does this work on a real image" |
+| | Generated scene | Photograph, **annotated** | Photograph, **no annotation** |
+|---|---|---|---|
+| Truth | exact, by construction | five to seven people drew it | none |
+| Reports a score | yes | yes, against the humans | **no** |
+| Ceiling | 1.0 | **what one annotator scores against the others — about F 0.90** | — |
+| Answers | "how accurate is this method" | "how close is it to a person" | "does this work on a real image" |
 
-A number quoted against a real photo here would be invented, so none is.
+The middle column arrived with BSDS500's human segmentations and is the most
+useful of the three, because its ceiling is measured rather than assumed.
+Projects 24, 28 and 32 use it. Where a photograph has no annotation, no accuracy
+number is quoted — it would be invented.
+
+A fourth case is worth naming because it looks like the second and is not:
+several projects define the truth *by construction* on a real photograph —
+project 22 declares Otsu's binarisation to be the target, then adds noise and
+measures what morphology removes. That is exact and self-consistent, and it is
+not a claim about what the picture contains.
 
 ## Provenance
 
@@ -91,6 +103,148 @@ appears in thousands of public repositories, but it is **not** public domain and
 not equivalent to the OpenCV or Kodak material above. Stated here rather than
 left for someone to discover. If that is a problem for a given use, these twelve
 are the ones to replace.
+
+### BSDS500, the rest of it — 203 photographs
+
+Projects 16 onward each draw **twelve images nobody else uses**, selected on a
+*measured* axis rather than by eye (`tools/select_images.py --axis detail`,
+`--axis texture`, and so on). At twelve per project that needs hundreds of
+distinct photographs, which is why the pool moved wholesale to BSDS500: it has
+500, and — decisively — it ships **five to seven human segmentations per
+image**.
+
+Those annotations are the only real ground truth in this repository. Everywhere
+else the truth is generated (a flow field, a blur kernel) or defined by
+construction (Otsu's binarisation declared to be the target). Projects 24, 28
+and 32 score against what people actually drew, and measure the **human
+ceiling** — one annotator against the others' consensus — which is around
+F 0.90 and not 1.0.
+
+Cached by `tools/fetch_images.py cache --set bsds` and
+`--set bsds_gt`; the `.mat` annotations live outside the repository, in
+`~/.cache/classical-cv-images/`, because 500 photographs are not a dependency of
+this project and the handful each experiment keeps are.
+
+`manifest.json` maps every committed filename back to its BSDS id by perceptual
+hash. That is what `tools/check_image_reuse.py` uses to enforce the rule that no
+photograph reaches two projects — filenames cannot do it, because every image is
+renamed to something descriptive on the way in.
+
+🚨 **The licence caveat above applies to all of these.** BSDS500 is distributed
+by UC Berkeley for research and education and is **not** public domain. It is
+the standard segmentation benchmark and appears in thousands of public
+repositories; that is a reason it is low-risk, not a reason it is permissive. If
+that is a problem for a given use, these are the images to replace.
+
+<details>
+<summary>All 203 names, with their BSDS ids</summary>
+
+| Name | BSDS id | Name | BSDS id |
+|---|---|---|---|
+| `acacia_and_herd` | 253036 | `albatross_pair` | 103029 |
+| `alpine_chalet_snow` | 61086 | `alpine_church` | 126007 |
+| `angelfish_reef` | 306005 | `archer_dancer` | 217013 |
+| `baboon_in_foliage` | 16052 | `barges_and_blocks` | 78098 |
+| `bay_with_boats` | 68077 | `beached_dinghy` | 384022 |
+| `bear_grass` | 100080 | `bear_on_ice` | 100007 |
+| `bear_riverbank` | 100099 | `bear_tree_bark` | 100039 |
+| `bears_on_hillside` | 309004 | `bench_bare_hedge` | 346016 |
+| `bighorn_rock` | 304074 | `blossom_pavilion` | 95006 |
+| `blue_footed_boobies` | 103070 | `boat_shed` | 140088 |
+| `bobcat_rock` | 41085 | `bomber_overcast` | 3096 |
+| `borobudur_stupas` | 217090 | `camel_at_sunset` | 271031 |
+| `carved_figurine` | 71076 | `carved_mask_thatch` | 296058 |
+| `castle_gatehouse` | 17067 | `caterpillar_on_stem` | 35028 |
+| `cheetah_walking` | 134008 | `child_fur_hood` | 14092 |
+| `child_on_water` | 26031 | `child_red_jumper` | 187029 |
+| `climber_on_dome` | 14037 | `clouded_leopard` | 160067 |
+| `clownfish_anemone` | 210088 | `collared_lizard` | 41096 |
+| `conical_hat_worker` | 279005 | `coral_reef` | 101027 |
+| `cougar_and_kitten` | 94095 | `couple_autumn_bank` | 365073 |
+| `covered_wagons` | 216041 | `coyotes_in_haze` | 109053 |
+| `crocodile_bank` | 130026 | `deer_and_fawn` | 317080 |
+| `deer_bare_branches` | 77062 | `deer_in_brush` | 104010 |
+| `deer_water` | 104022 | `desert_arch` | 295087 |
+| `diver_dark_reef` | 45096 | `diver_sea_fans` | 156065 |
+| `eagle_flat_sky` | 135069 | `eagle_in_flight` | 135037 |
+| `egrets_in_thicket` | 311068 | `elder_headscarf` | 260081 |
+| `elder_in_shawl` | 187083 | `elephant_grass` | 107014 |
+| `elephant_herd` | 107072 | `elephant_pair` | 296059 |
+| `elephant_waterhole` | 107045 | `elk_water` | 104055 |
+| `family_by_van` | 102062 | `fighter_jet` | 10081 |
+| `firefighter_debris` | 285079 | `firefighters_map` | 23084 |
+| `fjord_harbour` | 219090 | `flag_and_parade` | 145086 |
+| `florence_duomo` | 24004 | `fox_cubs` | 159008 |
+| `gallery_visitors` | 128035 | `geese_and_goslings` | 43070 |
+| `geisha_costume` | 65084 | `geisha_street` | 145053 |
+| `geologist_rocks` | 89072 | `gilded_stupa` | 76053 |
+| `giraffe` | 130014 | `girl_with_basin` | 23025 |
+| `glass_pyramid` | 223061 | `glass_roof_trees` | 148026 |
+| `glass_tower_tulips` | 86000 | `graffiti_wall` | 292066 |
+| `gulls_on_ledge` | 163096 | `gunner_reenactor` | 243095 |
+| `harbour_boat` | 118015 | `hawk_and_chick` | 268048 |
+| `hawk_in_scrub` | 70011 | `hawk_on_stump` | 70090 |
+| `hazy_ridges` | 55067 | `headland_lighthouse` | 228076 |
+| `held_sunfish` | 185092 | `helicopter_dusk` | 179084 |
+| `hilltop_ruin` | 20008 | `horse_blossom` | 291000 |
+| `hotel_rossiya` | 274007 | `iceberg_cloud` | 176039 |
+| `iceberg_watcher` | 188005 | `iguana_surf` | 103078 |
+| `indian_corn` | 169012 | `lake_shrine` | 120003 |
+| `leopard_in_tree` | 134049 | `lioness_savanna` | 105027 |
+| `lionesses` | 105053 | `lions_plain` | 105019 |
+| `lizard_on_gravel` | 87046 | `lone_palm_beach` | 46076 |
+| `longtail_boats` | 81095 | `man_drying_fish` | 365072 |
+| `man_floral_shirt` | 302022 | `man_fur_hat` | 15062 |
+| `man_green_parka` | 230098 | `man_laying_paving` | 85048 |
+| `man_striped_shirt` | 302008 | `man_yellow_barrels` | 65019 |
+| `man_yellow_turban` | 189029 | `mare_and_foal` | 113009 |
+| `mare_foal_meadow` | 113016 | `mare_foal_meadow_two` | 113044 |
+| `marmot_boulder` | 41069 | `memorial_arch` | 148089 |
+| `moated_chateau` | 102061 | `model_gloves` | 198087 |
+| `model_red_black` | 198023 | `monitor_lizard_grass` | 130034 |
+| `monk_at_table` | 145014 | `moonlit_pines` | 238011 |
+| `morel_mushrooms` | 208078 | `ocelot_on_rock` | 326038 |
+| `ostrich_head` | 66075 | `owl_in_grass` | 8143 |
+| `ox_in_pasture` | 296007 | `palms_at_dusk` | 384089 |
+| `paraglider_peak` | 60079 | `parasol_boat` | 147021 |
+| `parasols_willows` | 65033 | `parthenon_columns` | 67079 |
+| `penguin_dark_shore` | 106025 | `penguin_pebbles` | 106005 |
+| `polar_bear_rail` | 183066 | `polar_bears_snow` | 183055 |
+| `polo_riders` | 361010 | `porcupine_on_branch` | 347031 |
+| `portrait_yellow` | 388006 | `potted_bonsai` | 353013 |
+| `raked_zen_garden` | 86016 | `red_canoes` | 232076 |
+| `regatta_spinnakers` | 172032 | `rhino_road` | 112090 |
+| `rhinos_grass` | 112056 | `rider_and_herd` | 220075 |
+| `roadrunner_rocks` | 196015 | `rocky_coast` | 117025 |
+| `rocky_cove` | 144067 | `sampan_still_water` | 15088 |
+| `scuba_diver_fish` | 156079 | `sea_shell_coral` | 12074 |
+| `shark_shallows` | 86068 | `skiers_woods` | 277053 |
+| `snake_coiled` | 87015 | `snake_on_sand` | 196073 |
+| `snowboarder_pines` | 225017 | `sparkler_family` | 20069 |
+| `sphinx_and_pyramid` | 161045 | `sprinter_start` | 153077 |
+| `squirrel_rock` | 123057 | `station_platform` | 249021 |
+| `statues_stairwell` | 24077 | `steam_train_viaduct` | 182053 |
+| `stone_arch` | 118072 | `stone_archway` | 5096 |
+| `stone_bridge_river` | 231015 | `stone_face_leaves` | 101084 |
+| `stone_wellhead` | 92014 | `surfer_barrel` | 300091 |
+| `temple_dragon` | 120093 | `three_astronauts` | 323016 |
+| `three_owlets` | 42044 | `tiger_in_shade` | 108082 |
+| `tiger_rocks` | 108069 | `tiger_wading` | 108041 |
+| `tortoise_rock` | 103006 | `tower_and_spire` | 277095 |
+| `train_on_viaduct` | 351093 | `tulip_beds` | 140055 |
+| `two_beefeaters` | 376086 | `two_horses_field` | 28075 |
+| `two_rhinos_scrub` | 112082 | `two_women_street` | 23050 |
+| `waterfall_cliff` | 27059 | `whitewashed_chapel` | 118035 |
+| `whitewashed_harbour` | 118020 | `windmills` | 118031 |
+| `wolf_dark_wood` | 42078 | `wolf_on_snowline` | 167062 |
+| `wolf_woods` | 109055 | `woman_and_child` | 189013 |
+| `woman_black_beret` | 181018 | `woman_bundling_straw` | 15004 |
+| `woman_by_tree` | 181091 | `woman_child_fur` | 14085 |
+| `woman_hanbok` | 239007 | `woman_on_steps` | 181021 |
+| `woman_wading` | 81066 | `woman_white_fence` | 388018 |
+| `worker_with_pails` | 271035 |  |  |
+
+</details>
 
 ### Source not recorded
 

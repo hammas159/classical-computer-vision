@@ -260,17 +260,43 @@ def corner_error(pred: np.ndarray, truth: np.ndarray) -> float:
 
 
 def repeatability(
-    kp_a: np.ndarray, kp_b: np.ndarray, H: np.ndarray, threshold: float = 3.0
+    kp_a: np.ndarray,
+    kp_b: np.ndarray,
+    H: np.ndarray,
+    threshold: float = 3.0,
+    shape: tuple[int, int] | None = None,
 ) -> float:
     """Fraction of keypoints in image A that survive into image B under known ``H``.
 
     Only meaningful when the transform between the images is *known* — which is
     why the keypoint projects use a synthetic homography rather than two photos.
+
+    ``shape`` is ``(height, width)`` of image B, and passing it matters more than
+    it looks. Rotating a rectangular frame carries its corners outside the view:
+    at 45 degrees roughly **a third of the image is gone**, and a keypoint that
+    is no longer in the picture cannot be redetected by any detector. Scoring
+    those as misses measures the crop, not the method — every detector's
+    "rotation invariance" curve then falls away for a reason that has nothing to
+    do with invariance.
+
+    With ``shape`` given, keypoints whose projection lands outside image B are
+    excluded from the denominator, which is the definition Schmid et al. use.
+    Left as ``None`` the whole set is scored, which is correct only when the
+    transform keeps everything in frame.
     """
     if len(kp_a) == 0 or len(kp_b) == 0:
         return 0.0
     a = np.asarray(kp_a, np.float32).reshape(-1, 1, 2)
     proj = cv2.perspectiveTransform(a, H.astype(np.float64)).reshape(-1, 2)
+
+    if shape is not None:
+        h, w = shape[:2]
+        inside = ((proj[:, 0] >= 0) & (proj[:, 0] < w)
+                  & (proj[:, 1] >= 0) & (proj[:, 1] < h))
+        proj = proj[inside]
+        if len(proj) == 0:
+            return 0.0
+
     b = np.asarray(kp_b, np.float32).reshape(-1, 2)
     d = np.linalg.norm(proj[:, None, :] - b[None, :, :], axis=2)
     return float((d.min(axis=1) <= threshold).mean())
