@@ -1,0 +1,336 @@
+{
+  "project": "54_defect_detection",
+  "generated_utc": "2026-09-18T09:14:40+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "surfaces": [
+    "surface_fine_weave",
+    "surface_brick_paving",
+    "surface_sand_ripple",
+    "surface_water_ripples",
+    "surface_field_mosaic",
+    "surface_pebbled_render",
+    "surface_brick_wall",
+    "surface_coarse_cloth",
+    "surface_dry_grass",
+    "surface_roof_slates",
+    "surface_straw_thatch",
+    "surface_knitted_fabric"
+  ],
+  "defects": [
+    "scratch",
+    "blob",
+    "hole",
+    "smear"
+  ],
+  "severity": 8.0,
+  "per_surface": [
+    {
+      "surface": "surface_fine_weave",
+      "uniformity": 1.75,
+      "noise_ceiling": 4.45,
+      "best_detection_rate": 0.25,
+      "lowest_false_alarm": 0.0,
+      "worst_false_alarm": 0.02358
+    },
+    {
+      "surface": "surface_brick_paving",
+      "uniformity": 2.07,
+      "noise_ceiling": 4.45,
+      "best_detection_rate": 0.75,
+      "lowest_false_alarm": 0.0,
+      "worst_false_alarm": 0.75649
+    },
+    {
+      "surface": "surface_sand_ripple",
+      "uniformity": 3.67,
+      "noise_ceiling": 11.86,
+      "best_detection_rate": 0.75,
+      "lowest_false_alarm": 0.00407,
+      "worst_false_alarm": 0.04108
+    },
+    {
+      "surface": "surface_water_ripples",
+      "uniformity": 4.37,
+      "noise_ceiling": 5.93,
+      "best_detection_rate": 0.75,
+      "lowest_false_alarm": 0.00087,
+      "worst_false_alarm": 0.08876
+    },
+    {
+      "surface": "surface_field_mosaic",
+      "uniformity": 4.95,
+      "noise_ceiling": 2.97,
+      "best_detection_rate": 0.5,
+      "lowest_false_alarm": 0.00158,
+      "worst_false_alarm": 0.37214
+    },
+    {
+      "surface": "surface_pebbled_render",
+      "uniformity": 8.66,
+      "noise_ceiling": 8.9,
+      "best_detection_rate": 0.5,
+      "lowest_false_alarm": 0.00219,
+      "worst_false_alarm": 0.01286
+    },
+    {
+      "surface": "surface_brick_wall",
+      "uniformity": 10.02,
+      "noise_ceiling": 5.93,
+      "best_detection_rate": 0.5,
+      "lowest_false_alarm": 0.01819,
+      "worst_false_alarm": 0.2649
+    },
+    {
+      "surface": "surface_coarse_cloth",
+      "uniformity": 10.04,
+      "noise_ceiling": 10.38,
+      "best_detection_rate": 1.0,
+      "lowest_false_alarm": 0.0,
+      "worst_false_alarm": 0.02891
+    },
+    {
+      "surface": "surface_dry_grass",
+      "uniformity": 13.72,
+      "noise_ceiling": 37.06,
+      "best_detection_rate": 0.75,
+      "lowest_false_alarm": 0.0,
+      "worst_false_alarm": 0.00683
+    },
+    {
+      "surface": "surface_roof_slates",
+      "uniformity": 14.03,
+      "noise_ceiling": 5.93,
+      "best_detection_rate": 1.0,
+      "lowest_false_alarm": 0.0,
+      "worst_false_alarm": 0.68266
+    },
+    {
+      "surface": "surface_straw_thatch",
+      "uniformity": 19.3,
+      "noise_ceiling": 37.06,
+      "best_detection_rate": 0.75,
+      "lowest_false_alarm": 0.0,
+      "worst_false_alarm": 0.02605
+    },
+    {
+      "surface": "surface_knitted_fabric",
+      "uniformity": 20.24,
+      "noise_ceiling": 5.93,
+      "best_detection_rate": 0.5,
+      "lowest_false_alarm": 0.00193,
+      "worst_false_alarm": 0.10913
+    }
+  ],
+  "overall": [
+    {
+      "detector": "Flag nothing (control)",
+      "iou": 0.0,
+      "detection_rate": 0.0,
+      "false_alarm_share": 0.0,
+      "is_control": true
+    },
+    {
+      "detector": "Flag everything (control)",
+      "iou": 0.0107,
+      "detection_rate": 1.0,
+      "false_alarm_share": 1.0,
+      "is_control": true
+    },
+    {
+      "detector": "Median residual",
+      "iou": 0.048,
+      "detection_rate": 0.3125,
+      "false_alarm_share": 0.14265,
+      "is_control": false
+    },
+    {
+      "detector": "Gaussian residual",
+      "iou": 0.0112,
+      "detection_rate": 0.1667,
+      "false_alarm_share": 0.05356,
+      "is_control": false
+    },
+    {
+      "detector": "Morphological top/black-hat",
+      "iou": 0.0061,
+      "detection_rate": 0.125,
+      "false_alarm_share": 0.07187,
+      "is_control": false
+    },
+    {
+      "detector": "Local standard deviation",
+      "iou": 0.1169,
+      "detection_rate": 0.5,
+      "false_alarm_share": 0.04392,
+      "is_control": false
+    },
+    {
+      "detector": "Fourier notch",
+      "iou": 0.0091,
+      "detection_rate": 0.1667,
+      "false_alarm_share": 0.0663,
+      "is_control": false
+    },
+    {
+      "detector": "Spectral residual",
+      "iou": 0.0365,
+      "detection_rate": 0.3333,
+      "false_alarm_share": 0.03697,
+      "is_control": false
+    }
+  ],
+  "per_defect": [
+    {
+      "defect": "scratch",
+      "Median residual": 0.8333,
+      "Gaussian residual": 0.6667,
+      "Morphological top/black-hat": 0.3333,
+      "Local standard deviation": 0.4167,
+      "Fourier notch": 0.5833,
+      "Spectral residual": 0.9167
+    },
+    {
+      "defect": "blob",
+      "Median residual": 0.25,
+      "Gaussian residual": 0.0,
+      "Morphological top/black-hat": 0.0833,
+      "Local standard deviation": 0.3333,
+      "Fourier notch": 0.0833,
+      "Spectral residual": 0.0
+    },
+    {
+      "defect": "hole",
+      "Median residual": 0.0833,
+      "Gaussian residual": 0.0,
+      "Morphological top/black-hat": 0.0833,
+      "Local standard deviation": 0.6667,
+      "Fourier notch": 0.0,
+      "Spectral residual": 0.4167
+    },
+    {
+      "defect": "smear",
+      "Median residual": 0.0833,
+      "Gaussian residual": 0.0,
+      "Morphological top/black-hat": 0.0,
+      "Local standard deviation": 0.5833,
+      "Fourier notch": 0.0,
+      "Spectral residual": 0.0
+    }
+  ],
+  "arms_disagree": {
+    "by_detection_rate": [
+      "Local standard deviation",
+      "Spectral residual",
+      "Median residual",
+      "Gaussian residual",
+      "Fourier notch",
+      "Morphological top/black-hat"
+    ],
+    "by_false_alarm": [
+      "Spectral residual",
+      "Local standard deviation",
+      "Gaussian residual",
+      "Fourier notch",
+      "Morphological top/black-hat",
+      "Median residual"
+    ],
+    "detection_winner": "Local standard deviation",
+    "detection_winner_alarm_rank": 2,
+    "alarm_winner": "Spectral residual",
+    "rankings_agree": false
+  },
+  "filling": [
+    {
+      "detector": "Median residual",
+      "iou_raw": 0.0495,
+      "iou_filled": 0.0431,
+      "gain": -0.0064
+    },
+    {
+      "detector": "Gaussian residual",
+      "iou_raw": 0.0168,
+      "iou_filled": 0.0154,
+      "gain": -0.0015
+    },
+    {
+      "detector": "Morphological top/black-hat",
+      "iou_raw": 0.0056,
+      "iou_filled": 0.0065,
+      "gain": 0.0009
+    },
+    {
+      "detector": "Local standard deviation",
+      "iou_raw": 0.0382,
+      "iou_filled": 0.0404,
+      "gain": 0.0023
+    },
+    {
+      "detector": "Fourier notch",
+      "iou_raw": 0.0115,
+      "iou_filled": 0.0118,
+      "gain": 0.0003
+    },
+    {
+      "detector": "Spectral residual",
+      "iou_raw": 0.0327,
+      "iou_filled": 0.0321,
+      "gain": -0.0006
+    }
+  ],
+  "severity_sweep": [
+    {
+      "severity": 1,
+      "Median residual": 0.0938,
+      "Gaussian residual": 0.0625,
+      "Morphological top/black-hat": 0.0938,
+      "Local standard deviation": 0.2812,
+      "Fourier notch": 0.0938,
+      "Spectral residual": 0.0938
+    },
+    {
+      "severity": 2,
+      "Median residual": 0.125,
+      "Gaussian residual": 0.0625,
+      "Morphological top/black-hat": 0.0938,
+      "Local standard deviation": 0.2812,
+      "Fourier notch": 0.0938,
+      "Spectral residual": 0.0938
+    },
+    {
+      "severity": 4,
+      "Median residual": 0.1562,
+      "Gaussian residual": 0.0625,
+      "Morphological top/black-hat": 0.0938,
+      "Local standard deviation": 0.375,
+      "Fourier notch": 0.125,
+      "Spectral residual": 0.1875
+    },
+    {
+      "severity": 8,
+      "Median residual": 0.3125,
+      "Gaussian residual": 0.25,
+      "Morphological top/black-hat": 0.1875,
+      "Local standard deviation": 0.4375,
+      "Fourier notch": 0.25,
+      "Spectral residual": 0.3125
+    },
+    {
+      "severity": 16,
+      "Median residual": 0.3125,
+      "Gaussian residual": 0.25,
+      "Morphological top/black-hat": 0.3125,
+      "Local standard deviation": 0.5938,
+      "Fourier notch": 0.2812,
+      "Spectral residual": 0.3438
+    }
+  ],
+  "class_imbalance": {
+    "mean_defect_share": 0.01075,
+    "flag_nothing_pixel_accuracy": 0.98925
+  }
+}

@@ -1,0 +1,559 @@
+{
+  "project": "43_grayscale_to_colour",
+  "generated_utc": "2026-09-18T05:55:59+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "seal_on_grey_ice",
+    "farmland_from_the_air",
+    "wine_bottles_in_a_rack",
+    "llama_at_a_stone_wall",
+    "tree_against_tropical_sky",
+    "otter_on_a_log",
+    "chicks_in_a_nest",
+    "lizard_on_pebbles",
+    "bears_at_the_water",
+    "glacier_cave_mouth",
+    "soldier_on_the_grass",
+    "woman_in_a_red_top"
+  ],
+  "overall": [
+    {
+      "method": "Do nothing (grey, control)",
+      "chroma_error": 18.675,
+      "rgb_psnr_db": 22.24,
+      "colourfulness": 0.28,
+      "is_oracle": false
+    },
+    {
+      "method": "Global mean chroma (control)",
+      "chroma_error": 10.119,
+      "rgb_psnr_db": 26.469,
+      "colourfulness": 12.99,
+      "is_oracle": true
+    },
+    {
+      "method": "Pseudo-colour (viridis)",
+      "chroma_error": 45.288,
+      "rgb_psnr_db": 13.281,
+      "colourfulness": 92.58,
+      "is_oracle": false
+    },
+    {
+      "method": "Welsh transfer (reference)",
+      "chroma_error": 25.274,
+      "rgb_psnr_db": 18.636,
+      "colourfulness": 37.99,
+      "is_oracle": false
+    },
+    {
+      "method": "Levin scribbles (40)",
+      "chroma_error": 5.674,
+      "rgb_psnr_db": 30.676,
+      "colourfulness": 30.66,
+      "is_oracle": true
+    },
+    {
+      "method": "Luminance lookup (oracle)",
+      "chroma_error": 7.49,
+      "rgb_psnr_db": 29.291,
+      "colourfulness": 27.15,
+      "is_oracle": true
+    }
+  ],
+  "per_image": [
+    {
+      "image": "seal_on_grey_ice",
+      "ambiguity": 1.996,
+      "colourfulness": 13.65,
+      "Do nothing (grey, control)": 6.377,
+      "Global mean chroma (control)": 5.284,
+      "Pseudo-colour (viridis)": 28.162,
+      "Welsh transfer (reference)": 44.059,
+      "Levin scribbles (40)": 2.079,
+      "Luminance lookup (oracle)": 1.66
+    },
+    {
+      "image": "farmland_from_the_air",
+      "ambiguity": 4.097,
+      "colourfulness": 42.2,
+      "Do nothing (grey, control)": 44.605,
+      "Global mean chroma (control)": 8.089,
+      "Pseudo-colour (viridis)": 37.886,
+      "Welsh transfer (reference)": 42.118,
+      "Levin scribbles (40)": 5.559,
+      "Luminance lookup (oracle)": 3.569
+    },
+    {
+      "image": "wine_bottles_in_a_rack",
+      "ambiguity": 4.782,
+      "colourfulness": 16.5,
+      "Do nothing (grey, control)": 6.304,
+      "Global mean chroma (control)": 5.994,
+      "Pseudo-colour (viridis)": 53.534,
+      "Welsh transfer (reference)": 12.953,
+      "Levin scribbles (40)": 4.072,
+      "Luminance lookup (oracle)": 4.08
+    },
+    {
+      "image": "llama_at_a_stone_wall",
+      "ambiguity": 5.685,
+      "colourfulness": 19.8,
+      "Do nothing (grey, control)": 8.978,
+      "Global mean chroma (control)": 6.196,
+      "Pseudo-colour (viridis)": 48.528,
+      "Welsh transfer (reference)": 27.063,
+      "Levin scribbles (40)": 3.76,
+      "Luminance lookup (oracle)": 4.977
+    },
+    {
+      "image": "tree_against_tropical_sky",
+      "ambiguity": 6.57,
+      "colourfulness": 80.25,
+      "Do nothing (grey, control)": 23.048,
+      "Global mean chroma (control)": 11.512,
+      "Pseudo-colour (viridis)": 50.249,
+      "Welsh transfer (reference)": 35.235,
+      "Levin scribbles (40)": 5.704,
+      "Luminance lookup (oracle)": 5.412
+    },
+    {
+      "image": "otter_on_a_log",
+      "ambiguity": 7.146,
+      "colourfulness": 26.82,
+      "Do nothing (grey, control)": 16.217,
+      "Global mean chroma (control)": 7.738,
+      "Pseudo-colour (viridis)": 49.112,
+      "Welsh transfer (reference)": 13.279,
+      "Levin scribbles (40)": 5.135,
+      "Luminance lookup (oracle)": 6.298
+    },
+    {
+      "image": "chicks_in_a_nest",
+      "ambiguity": 8.229,
+      "colourfulness": 33.27,
+      "Do nothing (grey, control)": 26.493,
+      "Global mean chroma (control)": 9.278,
+      "Pseudo-colour (viridis)": 55.798,
+      "Welsh transfer (reference)": 19.581,
+      "Levin scribbles (40)": 4.898,
+      "Luminance lookup (oracle)": 7.342
+    },
+    {
+      "image": "lizard_on_pebbles",
+      "ambiguity": 8.979,
+      "colourfulness": 35.36,
+      "Do nothing (grey, control)": 17.638,
+      "Global mean chroma (control)": 8.845,
+      "Pseudo-colour (viridis)": 45.953,
+      "Welsh transfer (reference)": 17.063,
+      "Levin scribbles (40)": 8.097,
+      "Luminance lookup (oracle)": 7.556
+    },
+    {
+      "image": "bears_at_the_water",
+      "ambiguity": 11.186,
+      "colourfulness": 44.89,
+      "Do nothing (grey, control)": 15.541,
+      "Global mean chroma (control)": 11.229,
+      "Pseudo-colour (viridis)": 35.241,
+      "Welsh transfer (reference)": 16.418,
+      "Levin scribbles (40)": 6.128,
+      "Luminance lookup (oracle)": 9.604
+    },
+    {
+      "image": "glacier_cave_mouth",
+      "ambiguity": 12.46,
+      "colourfulness": 41.45,
+      "Do nothing (grey, control)": 16.104,
+      "Global mean chroma (control)": 14.773,
+      "Pseudo-colour (viridis)": 40.391,
+      "Welsh transfer (reference)": 27.082,
+      "Levin scribbles (40)": 5.061,
+      "Luminance lookup (oracle)": 11.074
+    },
+    {
+      "image": "soldier_on_the_grass",
+      "ambiguity": 13.831,
+      "colourfulness": 37.99,
+      "Do nothing (grey, control)": 21.414,
+      "Global mean chroma (control)": 13.779,
+      "Pseudo-colour (viridis)": 41.632,
+      "Welsh transfer (reference)": 25.082,
+      "Levin scribbles (40)": 6.386,
+      "Luminance lookup (oracle)": 12.633
+    },
+    {
+      "image": "woman_in_a_red_top",
+      "ambiguity": 19.555,
+      "colourfulness": 70.81,
+      "Do nothing (grey, control)": 21.383,
+      "Global mean chroma (control)": 18.714,
+      "Pseudo-colour (viridis)": 56.975,
+      "Welsh transfer (reference)": 23.352,
+      "Levin scribbles (40)": 11.211,
+      "Luminance lookup (oracle)": 15.677
+    }
+  ],
+  "metric_comparison": {
+    "by_psnr": [
+      "Levin scribbles (40)",
+      "Luminance lookup (oracle)",
+      "Global mean chroma (control)",
+      "Do nothing (grey, control)",
+      "Welsh transfer (reference)",
+      "Pseudo-colour (viridis)"
+    ],
+    "by_chroma_error": [
+      "Levin scribbles (40)",
+      "Luminance lookup (oracle)",
+      "Global mean chroma (control)",
+      "Do nothing (grey, control)",
+      "Welsh transfer (reference)",
+      "Pseudo-colour (viridis)"
+    ],
+    "rankings_agree": true,
+    "control_rank": 4,
+    "methods_worse_than_doing_nothing": [
+      "Pseudo-colour (viridis)",
+      "Welsh transfer (reference)"
+    ]
+  },
+  "axis_predicts_ceiling": {
+    "pearson_r": 0.99463,
+    "slope": 0.8327,
+    "intercept": 0.2373,
+    "ambiguity_range": [
+      1.996,
+      19.555
+    ],
+    "oracle_error_range": [
+      1.66,
+      15.677
+    ]
+  },
+  "oracle_residual": [
+    {
+      "image": "seal_on_grey_ice",
+      "ambiguity": 1.996,
+      "oracle_chroma_error": 1.66
+    },
+    {
+      "image": "farmland_from_the_air",
+      "ambiguity": 4.097,
+      "oracle_chroma_error": 3.569
+    },
+    {
+      "image": "wine_bottles_in_a_rack",
+      "ambiguity": 4.782,
+      "oracle_chroma_error": 4.08
+    },
+    {
+      "image": "llama_at_a_stone_wall",
+      "ambiguity": 5.685,
+      "oracle_chroma_error": 4.977
+    },
+    {
+      "image": "tree_against_tropical_sky",
+      "ambiguity": 6.57,
+      "oracle_chroma_error": 5.412
+    },
+    {
+      "image": "otter_on_a_log",
+      "ambiguity": 7.146,
+      "oracle_chroma_error": 6.298
+    },
+    {
+      "image": "chicks_in_a_nest",
+      "ambiguity": 8.229,
+      "oracle_chroma_error": 7.342
+    },
+    {
+      "image": "lizard_on_pebbles",
+      "ambiguity": 8.979,
+      "oracle_chroma_error": 7.556
+    },
+    {
+      "image": "bears_at_the_water",
+      "ambiguity": 11.186,
+      "oracle_chroma_error": 9.604
+    },
+    {
+      "image": "glacier_cave_mouth",
+      "ambiguity": 12.46,
+      "oracle_chroma_error": 11.074
+    },
+    {
+      "image": "soldier_on_the_grass",
+      "ambiguity": 13.831,
+      "oracle_chroma_error": 12.633
+    },
+    {
+      "image": "woman_in_a_red_top",
+      "ambiguity": 19.555,
+      "oracle_chroma_error": 15.677
+    }
+  ],
+  "psnr_is_luminance": [
+    {
+      "image": "seal_on_grey_ice",
+      "grey_only_psnr": 31.235,
+      "chroma_only_psnr": 16.626,
+      "grey_only_chroma_error": 6.377,
+      "chroma_only_chroma_error": 0.03
+    },
+    {
+      "image": "farmland_from_the_air",
+      "grey_only_psnr": 15.8,
+      "chroma_only_psnr": 19.623,
+      "grey_only_chroma_error": 44.605,
+      "chroma_only_chroma_error": 0.041
+    },
+    {
+      "image": "wine_bottles_in_a_rack",
+      "grey_only_psnr": 30.484,
+      "chroma_only_psnr": 11.547,
+      "grey_only_chroma_error": 6.304,
+      "chroma_only_chroma_error": 0.047
+    },
+    {
+      "image": "llama_at_a_stone_wall",
+      "grey_only_psnr": 27.22,
+      "chroma_only_psnr": 11.379,
+      "grey_only_chroma_error": 8.978,
+      "chroma_only_chroma_error": 0.044
+    },
+    {
+      "image": "tree_against_tropical_sky",
+      "grey_only_psnr": 14.944,
+      "chroma_only_psnr": 11.042,
+      "grey_only_chroma_error": 23.048,
+      "chroma_only_chroma_error": 0.953
+    },
+    {
+      "image": "otter_on_a_log",
+      "grey_only_psnr": 23.675,
+      "chroma_only_psnr": 16.246,
+      "grey_only_chroma_error": 16.217,
+      "chroma_only_chroma_error": 0.146
+    },
+    {
+      "image": "chicks_in_a_nest",
+      "grey_only_psnr": 19.6,
+      "chroma_only_psnr": 18.334,
+      "grey_only_chroma_error": 26.493,
+      "chroma_only_chroma_error": 0.095
+    },
+    {
+      "image": "lizard_on_pebbles",
+      "grey_only_psnr": 21.275,
+      "chroma_only_psnr": 13.874,
+      "grey_only_chroma_error": 17.638,
+      "chroma_only_chroma_error": 0.028
+    },
+    {
+      "image": "bears_at_the_water",
+      "grey_only_psnr": 22.055,
+      "chroma_only_psnr": 17.193,
+      "grey_only_chroma_error": 15.541,
+      "chroma_only_chroma_error": 0.044
+    },
+    {
+      "image": "glacier_cave_mouth",
+      "grey_only_psnr": 22.378,
+      "chroma_only_psnr": 14.374,
+      "grey_only_chroma_error": 16.104,
+      "chroma_only_chroma_error": 0.086
+    },
+    {
+      "image": "soldier_on_the_grass",
+      "grey_only_psnr": 20.637,
+      "chroma_only_psnr": 15.413,
+      "grey_only_chroma_error": 21.414,
+      "chroma_only_chroma_error": 0.04
+    },
+    {
+      "image": "woman_in_a_red_top",
+      "grey_only_psnr": 17.574,
+      "chroma_only_psnr": 11.824,
+      "grey_only_chroma_error": 21.383,
+      "chroma_only_chroma_error": 0.783
+    }
+  ],
+  "scribble_sweep": [
+    {
+      "scribbles": 1,
+      "chroma_error": 13.703
+    },
+    {
+      "scribbles": 4,
+      "chroma_error": 9.346
+    },
+    {
+      "scribbles": 16,
+      "chroma_error": 7.016
+    },
+    {
+      "scribbles": 40,
+      "chroma_error": 5.674
+    },
+    {
+      "scribbles": 100,
+      "chroma_error": 4.454
+    },
+    {
+      "scribbles": 250,
+      "chroma_error": 3.162
+    }
+  ],
+  "reference_sensitivity": [
+    {
+      "image": "seal_on_grey_ice",
+      "rule_reference": "farmland_from_the_air",
+      "with_rule_reference": 44.059,
+      "best_reference": "wine_bottles_in_a_rack",
+      "best": 10.385,
+      "worst_reference": "farmland_from_the_air",
+      "worst": 44.059,
+      "median": 21.359,
+      "spread": 33.674,
+      "grey_control": 6.377
+    },
+    {
+      "image": "farmland_from_the_air",
+      "rule_reference": "wine_bottles_in_a_rack",
+      "with_rule_reference": 42.118,
+      "best_reference": "tree_against_tropical_sky",
+      "best": 42.053,
+      "worst_reference": "chicks_in_a_nest",
+      "worst": 71.042,
+      "median": 55.231,
+      "spread": 28.99,
+      "grey_control": 44.605
+    },
+    {
+      "image": "wine_bottles_in_a_rack",
+      "rule_reference": "llama_at_a_stone_wall",
+      "with_rule_reference": 12.953,
+      "best_reference": "seal_on_grey_ice",
+      "best": 10.427,
+      "worst_reference": "farmland_from_the_air",
+      "worst": 39.724,
+      "median": 17.748,
+      "spread": 29.297,
+      "grey_control": 6.304
+    },
+    {
+      "image": "llama_at_a_stone_wall",
+      "rule_reference": "tree_against_tropical_sky",
+      "with_rule_reference": 27.063,
+      "best_reference": "otter_on_a_log",
+      "best": 11.425,
+      "worst_reference": "farmland_from_the_air",
+      "worst": 48.14,
+      "median": 14.547,
+      "spread": 36.714,
+      "grey_control": 8.978
+    },
+    {
+      "image": "tree_against_tropical_sky",
+      "rule_reference": "otter_on_a_log",
+      "with_rule_reference": 35.235,
+      "best_reference": "bears_at_the_water",
+      "best": 19.019,
+      "worst_reference": "woman_in_a_red_top",
+      "worst": 45.557,
+      "median": 33.53,
+      "spread": 26.539,
+      "grey_control": 23.048
+    },
+    {
+      "image": "otter_on_a_log",
+      "rule_reference": "chicks_in_a_nest",
+      "with_rule_reference": 13.279,
+      "best_reference": "llama_at_a_stone_wall",
+      "best": 10.187,
+      "worst_reference": "farmland_from_the_air",
+      "worst": 60.132,
+      "median": 16.451,
+      "spread": 49.946,
+      "grey_control": 16.217
+    },
+    {
+      "image": "chicks_in_a_nest",
+      "rule_reference": "lizard_on_pebbles",
+      "with_rule_reference": 19.581,
+      "best_reference": "otter_on_a_log",
+      "best": 13.731,
+      "worst_reference": "farmland_from_the_air",
+      "worst": 70.469,
+      "median": 24.449,
+      "spread": 56.738,
+      "grey_control": 26.493
+    },
+    {
+      "image": "lizard_on_pebbles",
+      "rule_reference": "bears_at_the_water",
+      "with_rule_reference": 17.063,
+      "best_reference": "otter_on_a_log",
+      "best": 10.699,
+      "worst_reference": "farmland_from_the_air",
+      "worst": 57.933,
+      "median": 17.063,
+      "spread": 47.233,
+      "grey_control": 17.638
+    },
+    {
+      "image": "bears_at_the_water",
+      "rule_reference": "glacier_cave_mouth",
+      "with_rule_reference": 16.418,
+      "best_reference": "seal_on_grey_ice",
+      "best": 16.083,
+      "worst_reference": "farmland_from_the_air",
+      "worst": 54.29,
+      "median": 17.742,
+      "spread": 38.207,
+      "grey_control": 15.541
+    },
+    {
+      "image": "glacier_cave_mouth",
+      "rule_reference": "soldier_on_the_grass",
+      "with_rule_reference": 27.082,
+      "best_reference": "wine_bottles_in_a_rack",
+      "best": 14.912,
+      "worst_reference": "farmland_from_the_air",
+      "worst": 48.662,
+      "median": 19.866,
+      "spread": 33.75,
+      "grey_control": 16.104
+    },
+    {
+      "image": "soldier_on_the_grass",
+      "rule_reference": "woman_in_a_red_top",
+      "with_rule_reference": 25.082,
+      "best_reference": "otter_on_a_log",
+      "best": 16.263,
+      "worst_reference": "farmland_from_the_air",
+      "worst": 63.137,
+      "median": 18.905,
+      "spread": 46.874,
+      "grey_control": 21.414
+    },
+    {
+      "image": "woman_in_a_red_top",
+      "rule_reference": "seal_on_grey_ice",
+      "with_rule_reference": 23.352,
+      "best_reference": "llama_at_a_stone_wall",
+      "best": 18.251,
+      "worst_reference": "farmland_from_the_air",
+      "worst": 59.732,
+      "median": 23.251,
+      "spread": 41.482,
+      "grey_control": 21.383
+    }
+  ]
+}
