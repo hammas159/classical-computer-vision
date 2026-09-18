@@ -335,6 +335,39 @@ A twelfth — `101085`, three carved wooden totems — is deliberately in **neit
 arm. Whether a detection on a carved face is a false alarm is a question about
 what the word means, and project 50 reports it separately rather than deciding.
 
+### HGR1 hand gestures — 27 photographs
+
+Not in `assets/real/`. Fetched by `python tools/fetch_assets.py --set hands` into
+`~/.cache/classical-cv-images/assets/hands_hgr1/`, from a GitHub mirror of the
+**HGR1** set (Silesian University of Technology; Grzejszczak, Kawulok &
+Galuszka).
+
+Eight different people, and **the gesture is the folder the dataset put each file
+in** — `3_P` is three fingers, `B_P` is the letter B. That is a real label, and
+project 56 uses only what it says: the five numbered gestures get a finger count
+and the letters deliberately do not, because whether the thumb counts as extended
+in `A` is a judgement rather than an annotation.
+
+They arrive **already cut out against pure black**, which is somebody else's
+segmentation. Project 56 inherits it rather than pretending to a truth of its
+own, and measures its error: the halo between backdrop and hand is 0.67% of the
+frame at the median and 11.3% on the worst photograph, which is named.
+
+That inherited matte is what makes the project possible — compositing a real hand
+onto a real background gives an exactly known mask, and therefore a segmentation
+score that is not an opinion.
+
+### BSDS500 backgrounds for the hand composites — 12 images
+
+Project 56's backgrounds, none used by any other project. Chosen to span a
+measured axis rather than by eye: **how much of each a standard skin-colour rule
+already accepts with no hand on it**, which runs from 0.0% (dolphins in open
+water) to 98.6% (a sunlit sandy wall).
+
+Two contain real human skin and one a bronze human figure. The bronze one turned
+out **not** to be hard, which is reported: being shaped like a person does not
+matter to a colour rule, only being coloured like one.
+
 ### Source not recorded
 
 These 51 were added for projects 02 to 15 before `manifest.json`

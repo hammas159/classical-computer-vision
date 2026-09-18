@@ -1,0 +1,6894 @@
+{
+  "project": "56_hand_gesture",
+  "generated_utc": "2026-09-18T15:22:50+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "hands": 27,
+  "people": [
+    "id01",
+    "id02",
+    "id03",
+    "id04",
+    "id05",
+    "id06",
+    "id07",
+    "id08"
+  ],
+  "backgrounds": {
+    "314016": "dolphins in open water",
+    "119082": "a painted mural and a city street",
+    "268002": "a cormorant on a branch",
+    "247012": "a black dog on grass",
+    "206062": "a polo player on a horse",
+    "33044": "the steps of a Mayan pyramid",
+    "372019": "a bronze human figure on a rock",
+    "81090": "a woman on a beach \u2014 real skin in the background",
+    "188025": "people unloading a plane on snow",
+    "65132": "orange koi carp under water",
+    "372047": "a guard beside a sentry box",
+    "293029": "a man sweeping beside a sunlit sandy wall"
+  },
+  "matte_quality": [
+    {
+      "hand": "4_P__4_P_hgr1_id05_1",
+      "gesture": "4",
+      "halo": 0.11304209183673469
+    },
+    {
+      "hand": "F_P__F_P_hgr1_id03_6",
+      "gesture": "F",
+      "halo": 0.06963488520408163
+    },
+    {
+      "hand": "H_P__H_P_hgr1_id06_2",
+      "gesture": "H",
+      "halo": 0.04607780612244898
+    },
+    {
+      "hand": "U_P__U_P_hgr1_id06_2",
+      "gesture": "U",
+      "halo": 0.020169005102040817
+    },
+    {
+      "hand": "C_P__C_P_hgr1_id07_1",
+      "gesture": "C",
+      "halo": 0.014050542091836735
+    },
+    {
+      "hand": "A_P__A_P_hgr1_id02_8",
+      "gesture": "A",
+      "halo": 0.012934470663265306
+    },
+    {
+      "hand": "1_P__1_P_hgr1_id01_3",
+      "gesture": "1",
+      "halo": 0.011160714285714286
+    },
+    {
+      "hand": "W_P__W_P_hgr1_id03_10",
+      "gesture": "W",
+      "halo": 0.009885204081632654
+    },
+    {
+      "hand": "G_P__G_P_hgr1_id03_4",
+      "gesture": "G",
+      "halo": 0.009247448979591837
+    },
+    {
+      "hand": "T_P__T_P_hgr1_id01_2",
+      "gesture": "T",
+      "halo": 0.008270886479591837
+    },
+    {
+      "hand": "B_P__B_P_hgr1_id01_3",
+      "gesture": "B",
+      "halo": 0.007553411989795918
+    },
+    {
+      "hand": "3_P__3_P_hgr1_id02_2",
+      "gesture": "3",
+      "halo": 0.0071548150510204085
+    },
+    {
+      "hand": "P_P__P_P_hgr1_id01_2",
+      "gesture": "P",
+      "halo": 0.006895727040816327
+    },
+    {
+      "hand": "5_P__5_P_hgr1_id04_2",
+      "gesture": "5",
+      "halo": 0.006716358418367347
+    },
+    {
+      "hand": "2_P__2_P_hgr1_id01_1",
+      "gesture": "2",
+      "halo": 0.0059590242346938774
+    },
+    {
+      "hand": "D_P__D_P_hgr1_id03_3",
+      "gesture": "D",
+      "halo": 0.005699936224489796
+    },
+    {
+      "hand": "O_P__O_P_hgr1_id01_2",
+      "gesture": "O",
+      "halo": 0.005620216836734694
+    },
+    {
+      "hand": "N_P__N_P_hgr1_id01_1",
+      "gesture": "N",
+      "halo": 0.005321269132653061
+    },
+    {
+      "hand": "R_P__R_P_hgr1_id01_1",
+      "gesture": "R",
+      "halo": 0.005301339285714286
+    },
+    {
+      "hand": "Z_P__Z_P_hgr1_id02_4",
+      "gesture": "Z",
+      "halo": 0.005022321428571429
+    },
+    {
+      "hand": "E_P__E_P_hgr1_id03_9",
+      "gesture": "E",
+      "halo": 0.004922672193877551
+    },
+    {
+      "hand": "S_P__S_P_hgr1_id08_3",
+      "gesture": "S",
+      "halo": 0.004723373724489796
+    },
+    {
+      "hand": "I_P__I_P_hgr1_id01_2",
+      "gesture": "I",
+      "halo": 0.004065688775510204
+    },
+    {
+      "hand": "L_P__L_P_hgr1_id01_1",
+      "gesture": "L",
+      "halo": 0.003926179846938775
+    },
+    {
+      "hand": "M_P__M_P_hgr1_id01_1",
+      "gesture": "M",
+      "halo": 0.0032286352040816328
+    },
+    {
+      "hand": "K_P__K_P_hgr1_id01_3",
+      "gesture": "K",
+      "halo": 0.003168845663265306
+    },
+    {
+      "hand": "Y_P__Y_P_hgr1_id08_2",
+      "gesture": "Y",
+      "halo": 0.002311862244897959
+    }
+  ],
+  "finger_rule_ceiling": {
+    "sweeps": [
+      {
+        "rule": "convexity defects + 1",
+        "parameter": 0.01,
+        "correct": 1,
+        "of": 27,
+        "detail": [
+          {
+            "hand": "1_P__1_P_hgr1_id01_3",
+            "want": 1,
+            "got": 4
+          },
+          {
+            "hand": "2_P__2_P_hgr1_id01_1",
+            "want": 2,
+            "got": 5
+          },
+          {
+            "hand": "3_P__3_P_hgr1_id02_2",
+            "want": 3,
+            "got": 5
+          },
+          {
+            "hand": "4_P__4_P_hgr1_id05_1",
+            "want": 4,
+            "got": 5
+          },
+          {
+            "hand": "5_P__5_P_hgr1_id04_2",
+            "want": 5,
+            "got": 5
+          },
+          {
+            "hand": "A_P__A_P_hgr1_id02_8",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "B_P__B_P_hgr1_id01_3",
+            "want": null,
+            "got": 5
+          },
+          {
+            "hand": "C_P__C_P_hgr1_id07_1",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "D_P__D_P_hgr1_id03_3",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "E_P__E_P_hgr1_id03_9",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "F_P__F_P_hgr1_id03_6",
+            "want": null,
+            "got": 5
+          },
+          {
+            "hand": "G_P__G_P_hgr1_id03_4",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "H_P__H_P_hgr1_id06_2",
+            "want": null,
+            "got": 5
+          },
+          {
+            "hand": "I_P__I_P_hgr1_id01_2",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "K_P__K_P_hgr1_id01_3",
+            "want": null,
+            "got": 5
+          },
+          {
+            "hand": "L_P__L_P_hgr1_id01_1",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "M_P__M_P_hgr1_id01_1",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "N_P__N_P_hgr1_id01_1",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "O_P__O_P_hgr1_id01_2",
+            "want": null,
+            "got": 5
+          },
+          {
+            "hand": "P_P__P_P_hgr1_id01_2",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "R_P__R_P_hgr1_id01_1",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "S_P__S_P_hgr1_id08_3",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "T_P__T_P_hgr1_id01_2",
+            "want": null,
+            "got": 5
+          },
+          {
+            "hand": "U_P__U_P_hgr1_id06_2",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "W_P__W_P_hgr1_id03_10",
+            "want": null,
+            "got": 5
+          },
+          {
+            "hand": "Y_P__Y_P_hgr1_id08_2",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "Z_P__Z_P_hgr1_id02_4",
+            "want": null,
+            "got": 4
+          }
+        ]
+      },
+      {
+        "rule": "convexity defects + 1",
+        "parameter": 0.02,
+        "correct": 0,
+        "of": 27,
+        "detail": [
+          {
+            "hand": "1_P__1_P_hgr1_id01_3",
+            "want": 1,
+            "got": 4
+          },
+          {
+            "hand": "2_P__2_P_hgr1_id01_1",
+            "want": 2,
+            "got": 4
+          },
+          {
+            "hand": "3_P__3_P_hgr1_id02_2",
+            "want": 3,
+            "got": 5
+          },
+          {
+            "hand": "4_P__4_P_hgr1_id05_1",
+            "want": 4,
+            "got": 5
+          },
+          {
+            "hand": "5_P__5_P_hgr1_id04_2",
+            "want": 5,
+            "got": 4
+          },
+          {
+            "hand": "A_P__A_P_hgr1_id02_8",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "B_P__B_P_hgr1_id01_3",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "C_P__C_P_hgr1_id07_1",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "D_P__D_P_hgr1_id03_3",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "E_P__E_P_hgr1_id03_9",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "F_P__F_P_hgr1_id03_6",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "G_P__G_P_hgr1_id03_4",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "H_P__H_P_hgr1_id06_2",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "I_P__I_P_hgr1_id01_2",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "K_P__K_P_hgr1_id01_3",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "L_P__L_P_hgr1_id01_1",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "M_P__M_P_hgr1_id01_1",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "N_P__N_P_hgr1_id01_1",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "O_P__O_P_hgr1_id01_2",
+            "want": null,
+            "got": 5
+          },
+          {
+            "hand": "P_P__P_P_hgr1_id01_2",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "R_P__R_P_hgr1_id01_1",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "S_P__S_P_hgr1_id08_3",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "T_P__T_P_hgr1_id01_2",
+            "want": null,
+            "got": 5
+          },
+          {
+            "hand": "U_P__U_P_hgr1_id06_2",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "W_P__W_P_hgr1_id03_10",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "Y_P__Y_P_hgr1_id08_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "Z_P__Z_P_hgr1_id02_4",
+            "want": null,
+            "got": 2
+          }
+        ]
+      },
+      {
+        "rule": "convexity defects + 1",
+        "parameter": 0.04,
+        "correct": 1,
+        "of": 27,
+        "detail": [
+          {
+            "hand": "1_P__1_P_hgr1_id01_3",
+            "want": 1,
+            "got": 3
+          },
+          {
+            "hand": "2_P__2_P_hgr1_id01_1",
+            "want": 2,
+            "got": 3
+          },
+          {
+            "hand": "3_P__3_P_hgr1_id02_2",
+            "want": 3,
+            "got": 3
+          },
+          {
+            "hand": "4_P__4_P_hgr1_id05_1",
+            "want": 4,
+            "got": 3
+          },
+          {
+            "hand": "5_P__5_P_hgr1_id04_2",
+            "want": 5,
+            "got": 4
+          },
+          {
+            "hand": "A_P__A_P_hgr1_id02_8",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "B_P__B_P_hgr1_id01_3",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "C_P__C_P_hgr1_id07_1",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "D_P__D_P_hgr1_id03_3",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "E_P__E_P_hgr1_id03_9",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "F_P__F_P_hgr1_id03_6",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "G_P__G_P_hgr1_id03_4",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "H_P__H_P_hgr1_id06_2",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "I_P__I_P_hgr1_id01_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "K_P__K_P_hgr1_id01_3",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "L_P__L_P_hgr1_id01_1",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "M_P__M_P_hgr1_id01_1",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "N_P__N_P_hgr1_id01_1",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "O_P__O_P_hgr1_id01_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "P_P__P_P_hgr1_id01_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "R_P__R_P_hgr1_id01_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "S_P__S_P_hgr1_id08_3",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "T_P__T_P_hgr1_id01_2",
+            "want": null,
+            "got": 4
+          },
+          {
+            "hand": "U_P__U_P_hgr1_id06_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "W_P__W_P_hgr1_id03_10",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "Y_P__Y_P_hgr1_id08_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "Z_P__Z_P_hgr1_id02_4",
+            "want": null,
+            "got": 2
+          }
+        ]
+      },
+      {
+        "rule": "convexity defects + 1",
+        "parameter": 0.08,
+        "correct": 1,
+        "of": 27,
+        "detail": [
+          {
+            "hand": "1_P__1_P_hgr1_id01_3",
+            "want": 1,
+            "got": 1
+          },
+          {
+            "hand": "2_P__2_P_hgr1_id01_1",
+            "want": 2,
+            "got": 1
+          },
+          {
+            "hand": "3_P__3_P_hgr1_id02_2",
+            "want": 3,
+            "got": 1
+          },
+          {
+            "hand": "4_P__4_P_hgr1_id05_1",
+            "want": 4,
+            "got": 2
+          },
+          {
+            "hand": "5_P__5_P_hgr1_id04_2",
+            "want": 5,
+            "got": 1
+          },
+          {
+            "hand": "A_P__A_P_hgr1_id02_8",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "B_P__B_P_hgr1_id01_3",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "C_P__C_P_hgr1_id07_1",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "D_P__D_P_hgr1_id03_3",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "E_P__E_P_hgr1_id03_9",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "F_P__F_P_hgr1_id03_6",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "G_P__G_P_hgr1_id03_4",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "H_P__H_P_hgr1_id06_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "I_P__I_P_hgr1_id01_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "K_P__K_P_hgr1_id01_3",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "L_P__L_P_hgr1_id01_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "M_P__M_P_hgr1_id01_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "N_P__N_P_hgr1_id01_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "O_P__O_P_hgr1_id01_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "P_P__P_P_hgr1_id01_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "R_P__R_P_hgr1_id01_1",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "S_P__S_P_hgr1_id08_3",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "T_P__T_P_hgr1_id01_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "U_P__U_P_hgr1_id06_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "W_P__W_P_hgr1_id03_10",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "Y_P__Y_P_hgr1_id08_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "Z_P__Z_P_hgr1_id02_4",
+            "want": null,
+            "got": 1
+          }
+        ]
+      },
+      {
+        "rule": "palm-circle crossings",
+        "parameter": 1.6,
+        "correct": 2,
+        "of": 27,
+        "detail": [
+          {
+            "hand": "1_P__1_P_hgr1_id01_3",
+            "want": 1,
+            "got": 1
+          },
+          {
+            "hand": "2_P__2_P_hgr1_id01_1",
+            "want": 2,
+            "got": 0
+          },
+          {
+            "hand": "3_P__3_P_hgr1_id02_2",
+            "want": 3,
+            "got": 3
+          },
+          {
+            "hand": "4_P__4_P_hgr1_id05_1",
+            "want": 4,
+            "got": 1
+          },
+          {
+            "hand": "5_P__5_P_hgr1_id04_2",
+            "want": 5,
+            "got": 4
+          },
+          {
+            "hand": "A_P__A_P_hgr1_id02_8",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "B_P__B_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "C_P__C_P_hgr1_id07_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "D_P__D_P_hgr1_id03_3",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "E_P__E_P_hgr1_id03_9",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "F_P__F_P_hgr1_id03_6",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "G_P__G_P_hgr1_id03_4",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "H_P__H_P_hgr1_id06_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "I_P__I_P_hgr1_id01_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "K_P__K_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "L_P__L_P_hgr1_id01_1",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "M_P__M_P_hgr1_id01_1",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "N_P__N_P_hgr1_id01_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "O_P__O_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "P_P__P_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "R_P__R_P_hgr1_id01_1",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "S_P__S_P_hgr1_id08_3",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "T_P__T_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "U_P__U_P_hgr1_id06_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "W_P__W_P_hgr1_id03_10",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "Y_P__Y_P_hgr1_id08_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "Z_P__Z_P_hgr1_id02_4",
+            "want": null,
+            "got": 2
+          }
+        ]
+      },
+      {
+        "rule": "palm-circle crossings",
+        "parameter": 1.8,
+        "correct": 3,
+        "of": 27,
+        "detail": [
+          {
+            "hand": "1_P__1_P_hgr1_id01_3",
+            "want": 1,
+            "got": 1
+          },
+          {
+            "hand": "2_P__2_P_hgr1_id01_1",
+            "want": 2,
+            "got": 0
+          },
+          {
+            "hand": "3_P__3_P_hgr1_id02_2",
+            "want": 3,
+            "got": 3
+          },
+          {
+            "hand": "4_P__4_P_hgr1_id05_1",
+            "want": 4,
+            "got": 1
+          },
+          {
+            "hand": "5_P__5_P_hgr1_id04_2",
+            "want": 5,
+            "got": 5
+          },
+          {
+            "hand": "A_P__A_P_hgr1_id02_8",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "B_P__B_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "C_P__C_P_hgr1_id07_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "D_P__D_P_hgr1_id03_3",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "E_P__E_P_hgr1_id03_9",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "F_P__F_P_hgr1_id03_6",
+            "want": null,
+            "got": 6
+          },
+          {
+            "hand": "G_P__G_P_hgr1_id03_4",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "H_P__H_P_hgr1_id06_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "I_P__I_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "K_P__K_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "L_P__L_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "M_P__M_P_hgr1_id01_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "N_P__N_P_hgr1_id01_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "O_P__O_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "P_P__P_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "R_P__R_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "S_P__S_P_hgr1_id08_3",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "T_P__T_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "U_P__U_P_hgr1_id06_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "W_P__W_P_hgr1_id03_10",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "Y_P__Y_P_hgr1_id08_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "Z_P__Z_P_hgr1_id02_4",
+            "want": null,
+            "got": 0
+          }
+        ]
+      },
+      {
+        "rule": "palm-circle crossings",
+        "parameter": 2.0,
+        "correct": 2,
+        "of": 27,
+        "detail": [
+          {
+            "hand": "1_P__1_P_hgr1_id01_3",
+            "want": 1,
+            "got": 1
+          },
+          {
+            "hand": "2_P__2_P_hgr1_id01_1",
+            "want": 2,
+            "got": 0
+          },
+          {
+            "hand": "3_P__3_P_hgr1_id02_2",
+            "want": 3,
+            "got": 3
+          },
+          {
+            "hand": "4_P__4_P_hgr1_id05_1",
+            "want": 4,
+            "got": 1
+          },
+          {
+            "hand": "5_P__5_P_hgr1_id04_2",
+            "want": 5,
+            "got": 4
+          },
+          {
+            "hand": "A_P__A_P_hgr1_id02_8",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "B_P__B_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "C_P__C_P_hgr1_id07_1",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "D_P__D_P_hgr1_id03_3",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "E_P__E_P_hgr1_id03_9",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "F_P__F_P_hgr1_id03_6",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "G_P__G_P_hgr1_id03_4",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "H_P__H_P_hgr1_id06_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "I_P__I_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "K_P__K_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "L_P__L_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "M_P__M_P_hgr1_id01_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "N_P__N_P_hgr1_id01_1",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "O_P__O_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "P_P__P_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "R_P__R_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "S_P__S_P_hgr1_id08_3",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "T_P__T_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "U_P__U_P_hgr1_id06_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "W_P__W_P_hgr1_id03_10",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "Y_P__Y_P_hgr1_id08_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "Z_P__Z_P_hgr1_id02_4",
+            "want": null,
+            "got": 0
+          }
+        ]
+      },
+      {
+        "rule": "palm-circle crossings",
+        "parameter": 2.2,
+        "correct": 1,
+        "of": 27,
+        "detail": [
+          {
+            "hand": "1_P__1_P_hgr1_id01_3",
+            "want": 1,
+            "got": 0
+          },
+          {
+            "hand": "2_P__2_P_hgr1_id01_1",
+            "want": 2,
+            "got": 1
+          },
+          {
+            "hand": "3_P__3_P_hgr1_id02_2",
+            "want": 3,
+            "got": 3
+          },
+          {
+            "hand": "4_P__4_P_hgr1_id05_1",
+            "want": 4,
+            "got": 1
+          },
+          {
+            "hand": "5_P__5_P_hgr1_id04_2",
+            "want": 5,
+            "got": 3
+          },
+          {
+            "hand": "A_P__A_P_hgr1_id02_8",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "B_P__B_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "C_P__C_P_hgr1_id07_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "D_P__D_P_hgr1_id03_3",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "E_P__E_P_hgr1_id03_9",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "F_P__F_P_hgr1_id03_6",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "G_P__G_P_hgr1_id03_4",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "H_P__H_P_hgr1_id06_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "I_P__I_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "K_P__K_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "L_P__L_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "M_P__M_P_hgr1_id01_1",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "N_P__N_P_hgr1_id01_1",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "O_P__O_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "P_P__P_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "R_P__R_P_hgr1_id01_1",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "S_P__S_P_hgr1_id08_3",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "T_P__T_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "U_P__U_P_hgr1_id06_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "W_P__W_P_hgr1_id03_10",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "Y_P__Y_P_hgr1_id08_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "Z_P__Z_P_hgr1_id02_4",
+            "want": null,
+            "got": 0
+          }
+        ]
+      },
+      {
+        "rule": "palm-circle crossings",
+        "parameter": 2.6,
+        "correct": 1,
+        "of": 27,
+        "detail": [
+          {
+            "hand": "1_P__1_P_hgr1_id01_3",
+            "want": 1,
+            "got": 0
+          },
+          {
+            "hand": "2_P__2_P_hgr1_id01_1",
+            "want": 2,
+            "got": 1
+          },
+          {
+            "hand": "3_P__3_P_hgr1_id02_2",
+            "want": 3,
+            "got": 3
+          },
+          {
+            "hand": "4_P__4_P_hgr1_id05_1",
+            "want": 4,
+            "got": 1
+          },
+          {
+            "hand": "5_P__5_P_hgr1_id04_2",
+            "want": 5,
+            "got": 0
+          },
+          {
+            "hand": "A_P__A_P_hgr1_id02_8",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "B_P__B_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "C_P__C_P_hgr1_id07_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "D_P__D_P_hgr1_id03_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "E_P__E_P_hgr1_id03_9",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "F_P__F_P_hgr1_id03_6",
+            "want": null,
+            "got": 3
+          },
+          {
+            "hand": "G_P__G_P_hgr1_id03_4",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "H_P__H_P_hgr1_id06_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "I_P__I_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "K_P__K_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "L_P__L_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "M_P__M_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "N_P__N_P_hgr1_id01_1",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "O_P__O_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "P_P__P_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "R_P__R_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "S_P__S_P_hgr1_id08_3",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "T_P__T_P_hgr1_id01_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "U_P__U_P_hgr1_id06_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "W_P__W_P_hgr1_id03_10",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "Y_P__Y_P_hgr1_id08_2",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "Z_P__Z_P_hgr1_id02_4",
+            "want": null,
+            "got": 0
+          }
+        ]
+      },
+      {
+        "rule": "palm-circle crossings",
+        "parameter": 3.0,
+        "correct": 0,
+        "of": 27,
+        "detail": [
+          {
+            "hand": "1_P__1_P_hgr1_id01_3",
+            "want": 1,
+            "got": 0
+          },
+          {
+            "hand": "2_P__2_P_hgr1_id01_1",
+            "want": 2,
+            "got": 0
+          },
+          {
+            "hand": "3_P__3_P_hgr1_id02_2",
+            "want": 3,
+            "got": 0
+          },
+          {
+            "hand": "4_P__4_P_hgr1_id05_1",
+            "want": 4,
+            "got": 1
+          },
+          {
+            "hand": "5_P__5_P_hgr1_id04_2",
+            "want": 5,
+            "got": 0
+          },
+          {
+            "hand": "A_P__A_P_hgr1_id02_8",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "B_P__B_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "C_P__C_P_hgr1_id07_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "D_P__D_P_hgr1_id03_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "E_P__E_P_hgr1_id03_9",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "F_P__F_P_hgr1_id03_6",
+            "want": null,
+            "got": 2
+          },
+          {
+            "hand": "G_P__G_P_hgr1_id03_4",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "H_P__H_P_hgr1_id06_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "I_P__I_P_hgr1_id01_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "K_P__K_P_hgr1_id01_3",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "L_P__L_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "M_P__M_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "N_P__N_P_hgr1_id01_1",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "O_P__O_P_hgr1_id01_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "P_P__P_P_hgr1_id01_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "R_P__R_P_hgr1_id01_1",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "S_P__S_P_hgr1_id08_3",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "T_P__T_P_hgr1_id01_2",
+            "want": null,
+            "got": 1
+          },
+          {
+            "hand": "U_P__U_P_hgr1_id06_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "W_P__W_P_hgr1_id03_10",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "Y_P__Y_P_hgr1_id08_2",
+            "want": null,
+            "got": 0
+          },
+          {
+            "hand": "Z_P__Z_P_hgr1_id02_4",
+            "want": null,
+            "got": 0
+          }
+        ]
+      }
+    ],
+    "best_rule": "palm-circle crossings",
+    "best_parameter": 1.8,
+    "best_correct": 3,
+    "of": 27
+  },
+  "results": [
+    {
+      "segmenter": "Oracle mask (control)",
+      "frames": 27,
+      "mean_iou": 1.0,
+      "median_iou": 1.0,
+      "found": 27,
+      "median_feature_gap": 0.0,
+      "defects_match": 27,
+      "finger_correct": 3,
+      "finger_frames": 5
+    },
+    {
+      "segmenter": "Whole frame (control)",
+      "frames": 27,
+      "mean_iou": 0.10250701216433304,
+      "median_iou": 0.08549815091871167,
+      "found": 0,
+      "median_feature_gap": 0.7581742751119849,
+      "defects_match": 0,
+      "finger_correct": 0,
+      "finger_frames": 5
+    },
+    {
+      "segmenter": "Centre ellipse (control)",
+      "frames": 27,
+      "mean_iou": 0.44140833960978865,
+      "median_iou": 0.41943285095760036,
+      "found": 9,
+      "median_feature_gap": 0.48933228209366725,
+      "defects_match": 0,
+      "finger_correct": 0,
+      "finger_frames": 5
+    },
+    {
+      "segmenter": "Nothing (control)",
+      "frames": 27,
+      "mean_iou": 0.0,
+      "median_iou": 0.0,
+      "found": 0,
+      "median_feature_gap": 1.22249934935668,
+      "defects_match": 0,
+      "finger_correct": 0,
+      "finger_frames": 5
+    },
+    {
+      "segmenter": "YCrCb skin",
+      "frames": 27,
+      "mean_iou": 0.4768303942364377,
+      "median_iou": 0.4155328798185941,
+      "found": 13,
+      "median_feature_gap": 0.3395840362494879,
+      "defects_match": 5,
+      "finger_correct": 1,
+      "finger_frames": 5
+    },
+    {
+      "segmenter": "HSV skin",
+      "frames": 27,
+      "mean_iou": 0.5536175962938166,
+      "median_iou": 0.522508038585209,
+      "found": 15,
+      "median_feature_gap": 0.19231684335276406,
+      "defects_match": 8,
+      "finger_correct": 3,
+      "finger_frames": 5
+    },
+    {
+      "segmenter": "Lab skin",
+      "frames": 27,
+      "mean_iou": 0.747468848702191,
+      "median_iou": 0.8652849740932642,
+      "found": 23,
+      "median_feature_gap": 0.06006008623812995,
+      "defects_match": 12,
+      "finger_correct": 2,
+      "finger_frames": 5
+    },
+    {
+      "segmenter": "YCrCb and HSV",
+      "frames": 27,
+      "mean_iou": 0.5863408726482723,
+      "median_iou": 0.5374514095318982,
+      "found": 16,
+      "median_feature_gap": 0.21166897355891878,
+      "defects_match": 10,
+      "finger_correct": 2,
+      "finger_frames": 5
+    },
+    {
+      "segmenter": "Adaptive Cr",
+      "frames": 27,
+      "mean_iou": 0.1038947778220124,
+      "median_iou": 0.08977032644994207,
+      "found": 0,
+      "median_feature_gap": 0.7567951730903761,
+      "defects_match": 0,
+      "finger_correct": 0,
+      "finger_frames": 5
+    },
+    {
+      "segmenter": "Otsu on grey",
+      "frames": 27,
+      "mean_iou": 0.13530694598850468,
+      "median_iou": 0.09632276548184995,
+      "found": 0,
+      "median_feature_gap": 0.46088217057725345,
+      "defects_match": 11,
+      "finger_correct": 0,
+      "finger_frames": 5
+    },
+    {
+      "segmenter": "GrabCut from a box",
+      "frames": 27,
+      "mean_iou": 0.6651592731978978,
+      "median_iou": 0.6695253821978373,
+      "found": 20,
+      "median_feature_gap": 0.185887679096637,
+      "defects_match": 9,
+      "finger_correct": 2,
+      "finger_frames": 5
+    }
+  ],
+  "per_image": {
+    "Oracle mask (control)": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 0.0,
+        "solidity": 0.7669515841614063,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 0.0,
+        "solidity": 0.7435827664399093,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 1.0,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 3,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 0.0,
+        "solidity": 0.6148720544633726,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 1.0,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 0.0,
+        "solidity": 0.5558070694758837,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 5,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 0.0,
+        "solidity": 0.6737626692313383,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 1.0,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.8298999986052804,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 1.0,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.8552407009315354,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 1.0,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.6243850394167506,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 1.0,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.7852870973797839,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 1.0,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.6903378523778781,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.6551680211969122,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.7072892938496583,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.6945969884853853,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 1.0,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.7786697830394796,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.8440619688592806,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.664833993947918,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 1.0,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.7840948726892222,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 1.0,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.7224371200912673,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 1.0,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.7660533690751797,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 1.0,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.8863829944820946,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.8358402743753062,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 1.0,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.7628499385789099,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 1.0,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.758527192706696,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.7170818505338078,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 1.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 3,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.8554423894026494,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 1.0,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.7061822475045616,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 1.0,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0,
+        "solidity": 0.8310527528219305,
+        "true_solidity": 0.8310527528219305
+      }
+    ],
+    "Whole frame (control)": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.08398261669289707,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 0.5713074423716422,
+        "solidity": 1.0,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.05467581168515748,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 0.6217012873182202,
+        "solidity": 1.0,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.1965207479226171,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 0.824433110518784,
+        "solidity": 1.0,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.08549815091871167,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 0.95736878139686,
+        "solidity": 1.0,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.12069870013795247,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 0.7581742751119849,
+        "solidity": 1.0,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.19525780273443824,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.4586797304206725,
+        "solidity": 1.0,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.21517347685571986,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.38952371069370606,
+        "solidity": 1.0,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.07036223858653765,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.6699942159962803,
+        "solidity": 1.0,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.09678693790843323,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.8880374364370701,
+        "solidity": 1.0,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.06407341921360613,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.7758044120300478,
+        "solidity": 1.0,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.1685805143749069,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.7573685553633039,
+        "solidity": 1.0,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.07632722585993613,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.7431604221051613,
+        "solidity": 1.0,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.03963704898284338,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.2308105605356885,
+        "solidity": 1.0,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.05093231261455561,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.9295895444401627,
+        "solidity": 1.0,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.1421558150530113,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.41432666436116317,
+        "solidity": 1.0,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.05203334175296792,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.989837550547175,
+        "solidity": 1.0,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.05232479064254765,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.8849313821369057,
+        "solidity": 1.0,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.13370379725519912,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.6470557720388463,
+        "solidity": 1.0,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.14442263974974257,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.46154788455941637,
+        "solidity": 1.0,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.15720753103930674,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.27754751046850074,
+        "solidity": 1.0,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.1123438319700002,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.8611895420595088,
+        "solidity": 1.0,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.038134468041010096,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 1.1231483713902044,
+        "solidity": 1.0,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.19044565773537736,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.4996193979540873,
+        "solidity": 1.0,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.03135990051877902,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.1843001848618835,
+        "solidity": 1.0,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.09096443675882929,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 1.0209847489854342,
+        "solidity": 1.0,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.044183651660287176,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 1.17287539555362,
+        "solidity": 1.0,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.05990246177162065,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.46521926398766583,
+        "solidity": 1.0,
+        "true_solidity": 0.8310527528219305
+      }
+    ],
+    "Centre ellipse (control)": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.3707396595518823,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 0.6483499591069991,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.338934981374873,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 0.7705512007046184,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.37257607112746227,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 1,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 0.8894573375290216,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.41943285095760036,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 0.5868297430426967,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.5383625128733265,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 0.48933228209366725,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.5922719971443869,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.5204426511168428,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.5402448979591836,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.4698230005574161,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.35672120755913,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.5099934029467366,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.49073494917904614,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.3306594216370922,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.3640936829952169,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.48992520574619663,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.42437083801781544,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.7713095019166392,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.4269277845777234,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.4542024934918548,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.2530032918643923,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.5507240898066559,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.3194391332058636,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.32425532604467255,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.6614741780595975,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.24589811047322685,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.31338072603373573,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.4681967194659084,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.3483979473026004,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.342342393052232,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.49009984768996445,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.6724700478717656,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.6245821182160893,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.363806022397661,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.6585688431017681,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.3406925106867682,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.6410266790818185,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.19394975721012478,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.25342701957065267,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.47468511902963867,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.6623417522201928,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.5104769945229518,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.20880589934882918,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.4982188077750529,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.5652429796536068,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 0.30549055584667933,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.2941354031910306,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.5031778293197269,
+        "solidity": 0.9937624534349823,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.38868791760650295,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.336917545238994,
+        "solidity": 0.9910658677490711,
+        "true_solidity": 0.8310527528219305
+      }
+    ],
+    "Nothing (control)": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 1.6174091015740417,
+        "solidity": 0.0,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 1.6727752070786224,
+        "solidity": 0.0,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 1.2819889079072915,
+        "solidity": 0.0,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 1.1261744371514064,
+        "solidity": 0.0,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 1.327670894546227,
+        "solidity": 0.0,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.30886212714692,
+        "solidity": 0.0,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.335443341285238,
+        "solidity": 0.0,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.9333016837554465,
+        "solidity": 0.0,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 1.22249934935668,
+        "solidity": 0.0,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 1.318233513248934,
+        "solidity": 0.0,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 1.1883857836184506,
+        "solidity": 0.0,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 1.3408352808399953,
+        "solidity": 0.0,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.9637056562107185,
+        "solidity": 0.0,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.1899964112655437,
+        "solidity": 0.0,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.1774494018361412,
+        "solidity": 0.0,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.0941363395619772,
+        "solidity": 0.0,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 1.224652315623767,
+        "solidity": 0.0,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 1.2248529754168473,
+        "solidity": 0.0,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.138862403151765,
+        "solidity": 0.0,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.3404916911298326,
+        "solidity": 0.0,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.3021427712455862,
+        "solidity": 0.0,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 1.03885504191973,
+        "solidity": 0.0,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.2148809478885398,
+        "solidity": 0.0,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.023369671260813,
+        "solidity": 0.0,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 1.23087653256193,
+        "solidity": 0.0,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.9960442238902585,
+        "solidity": 0.0,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.0,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.159846155085735,
+        "solidity": 0.0,
+        "true_solidity": 0.8310527528219305
+      }
+    ],
+    "YCrCb skin": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.9588502735609155,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 0.01548028486103674,
+        "solidity": 0.7696870267541646,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.9013208165047484,
+        "defects": 4,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 0.333838925115462,
+        "solidity": 0.6344082094730307,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.8305588421429161,
+        "defects": 6,
+        "true_defects": 4,
+        "fingers": 5,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 0.12179809734217642,
+        "solidity": 0.5557639545517957,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.5122336227308603,
+        "defects": 2,
+        "true_defects": 4,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 0.7427862316840633,
+        "solidity": 0.47149939201197266,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.5271771558460009,
+        "defects": 5,
+        "true_defects": 3,
+        "fingers": 6,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 0.36603373784605736,
+        "solidity": 0.6334735391700056,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.526213456182452,
+        "defects": 3,
+        "true_defects": 1,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.21042987554789125,
+        "solidity": 0.6886560654575601,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.5253721405811576,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.11343793386305728,
+        "solidity": 0.7586938922371144,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.15970577418168444,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 5,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.2526599362318272,
+        "solidity": 0.6194609913466962,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.1916922247744684,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.9829011523080042,
+        "solidity": 0.7295435394517453,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.09708166049885641,
+        "defects": 2,
+        "true_defects": 1,
+        "fingers": 4,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.5451609325051162,
+        "solidity": 0.7385381819139689,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.21846856298733455,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 9,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.5228628972664341,
+        "solidity": 0.8263134309751717,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.07677974604374198,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.7431604221051613,
+        "solidity": 1.0,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.9541024834957561,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.04851615465497905,
+        "solidity": 0.7310596979141692,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.9336630080810517,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.040255494254599025,
+        "solidity": 0.7493406179351921,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9173195181534832,
+        "defects": 4,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.6826507677631274,
+        "solidity": 0.5514387071344107,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 4,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.5906120791091213,
+        "solidity": 0.7277253841588076,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.2950831711526457,
+        "defects": 5,
+        "true_defects": 2,
+        "fingers": 8,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.6671261756940358,
+        "solidity": 0.5037580794090489,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.4155328798185941,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.13790988196911105,
+        "solidity": 0.657001438304826,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.3769389690442322,
+        "defects": 3,
+        "true_defects": 4,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.21492710418389588,
+        "solidity": 0.8000093879713265,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.3223195683530103,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 4,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.30275268142572304,
+        "solidity": 0.667559621627219,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.22369592423910098,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 5,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.0626038930971435,
+        "solidity": 0.7266880020080321,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.058721348135132974,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 4,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.9877537461975051,
+        "solidity": 0.7301319706029555,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.2402897342195407,
+        "defects": 2,
+        "true_defects": 4,
+        "fingers": 5,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.3395840362494879,
+        "solidity": 0.8977388737832674,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.03162489218786754,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.1843001848618835,
+        "solidity": 1.0,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.9715956558061821,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 0.051537360261702525,
+        "solidity": 0.8863909822050535,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.8865871246886062,
+        "defects": 2,
+        "true_defects": 1,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.04419187537010789,
+        "solidity": 0.6762713437268003,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.7214920909734792,
+        "defects": 5,
+        "true_defects": 1,
+        "fingers": 4,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.1524492729281586,
+        "solidity": 0.4252300207988155,
+        "true_solidity": 0.8310527528219305
+      }
+    ],
+    "HSV skin": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.9237471087124133,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 0.0227078101387185,
+        "solidity": 0.763047507560238,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.9507848459813525,
+        "defects": 4,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 0.007767116837440891,
+        "solidity": 0.7372595025809479,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9756884965081039,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 3,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 0.011251282009171441,
+        "solidity": 0.607229368526562,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.0,
+        "defects": 5,
+        "true_defects": 4,
+        "fingers": 4,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 0.6160480495799787,
+        "solidity": 0.8880756633914845,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.8864299610894941,
+        "defects": 4,
+        "true_defects": 3,
+        "fingers": 6,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 0.06321474283758556,
+        "solidity": 0.6890927093647402,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.5038689510274499,
+        "defects": 3,
+        "true_defects": 1,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.19231684335276406,
+        "solidity": 0.7104498311625663,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.5259994565130517,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0765595373210909,
+        "solidity": 0.7981237170099698,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.30747058124331395,
+        "defects": 4,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.23672711298842397,
+        "solidity": 0.4833589939134063,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.46604686224009045,
+        "defects": 5,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 1.3364770314503478,
+        "solidity": 0.5754587961337301,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.17797098318752924,
+        "defects": 4,
+        "true_defects": 1,
+        "fingers": 3,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.38502415524704797,
+        "solidity": 0.7273372384073491,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.3882611837351376,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 5,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.2962974984242611,
+        "solidity": 0.5004684538432644,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.0891319860923432,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.7176713974098244,
+        "solidity": 0.9765278430144565,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.7183852140077821,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.18170968017506026,
+        "solidity": 0.7991441318401166,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.9565544009014649,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.03183395504413375,
+        "solidity": 0.7469474516782837,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9791809029201403,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.00452317739873745,
+        "solidity": 0.845306073553488,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.0,
+        "defects": 5,
+        "true_defects": 3,
+        "fingers": 4,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.6639570643706229,
+        "solidity": 0.8880756633914845,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.839215268152255,
+        "defects": 4,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.22460584078623363,
+        "solidity": 0.5927488199256804,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.3975743867722185,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.13024021491734644,
+        "solidity": 0.6968231337530953,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.38211044853513093,
+        "defects": 3,
+        "true_defects": 4,
+        "fingers": 4,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.1724692680319882,
+        "solidity": 0.7757659158397914,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.522508038585209,
+        "defects": 5,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.39017011580378885,
+        "solidity": 0.6537676663219579,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.5414331778480418,
+        "defects": 5,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.443427302210827,
+        "solidity": 0.6050162536741089,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.10875385816816036,
+        "defects": 4,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.8546147567616166,
+        "solidity": 0.7118094083038733,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.408076409860243,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.306730283894144,
+        "solidity": 0.48872125562720525,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.034108073483009226,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 3,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.1695917201871269,
+        "solidity": 0.974590313657951,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.9620773788776578,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 0.04385069724239927,
+        "solidity": 0.8814472425884603,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.9380229754644731,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.03362137151181289,
+        "solidity": 0.7280561232944815,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9642741500269832,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.015153140015680636,
+        "solidity": 0.831255946717412,
+        "true_solidity": 0.8310527528219305
+      }
+    ],
+    "Lab skin": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.8964293977018586,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 0.02000923744800628,
+        "solidity": 0.7539858795452286,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.9245684558997399,
+        "defects": 4,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 0.020137370310665568,
+        "solidity": 0.7260358984151232,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9442559219846474,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 3,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 0.028774472917704273,
+        "solidity": 0.6004462862607587,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.7742571365992553,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 0.025414685122442094,
+        "solidity": 0.5757039894970929,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.8600450385702649,
+        "defects": 4,
+        "true_defects": 3,
+        "fingers": 7,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 0.06499469881012748,
+        "solidity": 0.6927367420910019,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.957150437781905,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.015246129984887526,
+        "solidity": 0.8214666782016898,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.9519745146360522,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.06006008623812995,
+        "solidity": 0.8376060383407922,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.4074149625172115,
+        "defects": 4,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.2740828300743095,
+        "solidity": 0.5101722436244388,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.7802121648275494,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.17939320632665495,
+        "solidity": 0.6900255557904041,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.8832819362676385,
+        "defects": 3,
+        "true_defects": 1,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.09806150774996962,
+        "solidity": 0.6440760131859609,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.5613348247576435,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 3,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.3125259892168581,
+        "solidity": 0.7256521852440645,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.09763642395090397,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 6,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.6037098495264097,
+        "solidity": 0.8694429134122897,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.8652849740932642,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0385120167831935,
+        "solidity": 0.6681491835567698,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.9224922118380062,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.053450832579210364,
+        "solidity": 0.7265408929276965,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9504350599061546,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.019911846318831673,
+        "solidity": 0.8350238845411119,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.0,
+        "defects": 5,
+        "true_defects": 3,
+        "fingers": 6,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.5978748413723154,
+        "solidity": 0.7104343655796108,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.8361606654262888,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 4,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.07276732025915485,
+        "solidity": 0.78099636787588,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.9396551724137931,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.013030327313499844,
+        "solidity": 0.7148324640726427,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.9369441837601108,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.017966058013623845,
+        "solidity": 0.7564450104612026,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.7049590262713907,
+        "defects": 4,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.3885285746982563,
+        "solidity": 0.6559330602643335,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.8160746391952962,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.15113615529541924,
+        "solidity": 0.7837881027525868,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.8137694145758662,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.09062834989234102,
+        "solidity": 0.7288085182321099,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.5957654994378981,
+        "defects": 3,
+        "true_defects": 4,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.22332256346186757,
+        "solidity": 0.7874467581637482,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.03745136600856469,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 6,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.109710168829273,
+        "solidity": 0.8498964872894458,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.9583391486392184,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 0.04849392968634534,
+        "solidity": 0.882522962296872,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.8807274777950092,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.02105868315481933,
+        "solidity": 0.7169195533924992,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.885038860103627,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.01915671852678587,
+        "solidity": 0.8266281051489955,
+        "true_solidity": 0.8310527528219305
+      }
+    ],
+    "YCrCb and HSV": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.9235929067077872,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 0.022752204680890533,
+        "solidity": 0.7629499561018437,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.9504307801251033,
+        "defects": 4,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 0.00741323430473259,
+        "solidity": 0.7376009768927296,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9756226116747925,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 3,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 0.011292190996525986,
+        "solidity": 0.6071939441399112,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.7663217720781114,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 0.1457500247061352,
+        "solidity": 0.5516795865633075,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.8863813229571984,
+        "defects": 4,
+        "true_defects": 3,
+        "fingers": 6,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 0.06320563782765583,
+        "solidity": 0.6890579672381747,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.526357156892517,
+        "defects": 3,
+        "true_defects": 1,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.22146232521643383,
+        "solidity": 0.6799909486211937,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.5374514095318982,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.07685021408807223,
+        "solidity": 0.7957710592348429,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.31273804485823103,
+        "defects": 4,
+        "true_defects": 2,
+        "fingers": 5,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.24066535774892872,
+        "solidity": 0.4825814279866674,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.46639844093795185,
+        "defects": 5,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 1.336576748712356,
+        "solidity": 0.5750060063945,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.1971760764214347,
+        "defects": 4,
+        "true_defects": 1,
+        "fingers": 4,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.3256718679056905,
+        "solidity": 0.6916918239409173,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.38873999046319285,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 5,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.29756655560999484,
+        "solidity": 0.4979944994451952,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.0891319860923432,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.7176713974098244,
+        "solidity": 0.9765278430144565,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.7183852140077821,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.18170968017506026,
+        "solidity": 0.7991441318401166,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.9564291974458495,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.03178149667451609,
+        "solidity": 0.7469962917181706,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9785886747756366,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.004245538322210998,
+        "solidity": 0.8447869664177614,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.0,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 4,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.5763350345121737,
+        "solidity": 0.6698653826591163,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.839215268152255,
+        "defects": 4,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.22460584078623363,
+        "solidity": 0.5927488199256804,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.4200462065266719,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.13637440519588556,
+        "solidity": 0.6572666305660849,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.39422545013294313,
+        "defects": 3,
+        "true_defects": 4,
+        "fingers": 4,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.21166897355891878,
+        "solidity": 0.7777867582676635,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.5286485040353146,
+        "defects": 5,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.394223984552588,
+        "solidity": 0.6540174831033905,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.5471775724591824,
+        "defects": 5,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.4448199655207383,
+        "solidity": 0.6014201160314887,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.1213057635273866,
+        "defects": 4,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.8037704575076308,
+        "solidity": 0.6452262833512792,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.40846456692913385,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.30918914565574673,
+        "solidity": 0.4867084977317366,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.034108073483009226,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 3,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.1695917201871269,
+        "solidity": 0.974590313657951,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.9620773788776578,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 0.04385069724239927,
+        "solidity": 0.8814472425884603,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.9380229754644731,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.03362137151181289,
+        "solidity": 0.7280561232944815,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9641662169454938,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.015181426250603019,
+        "solidity": 0.832118874124875,
+        "true_solidity": 0.8310527528219305
+      }
+    ],
+    "Adaptive Cr": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.08405983238628993,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 0.5713074423716422,
+        "solidity": 1.0,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.05511471619741766,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 0.6210260594791576,
+        "solidity": 0.9994856770833334,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.19858634117608562,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 0.824433110518784,
+        "solidity": 1.0,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.08977032644994207,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 0.9552072582574572,
+        "solidity": 0.9980013020833334,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.11984726199774365,
+        "defects": 1,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 0.7522345468788163,
+        "solidity": 0.994521484375,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.19525780273443824,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.4586797304206725,
+        "solidity": 1.0,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.21760460059210354,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.3891279558808802,
+        "solidity": 0.9996809895833333,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.07173065815069812,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.6693417234340856,
+        "solidity": 0.9995182291666667,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.09947971834176043,
+        "defects": 1,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.8827977891413724,
+        "solidity": 0.993173828125,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.0642089891286711,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.7758044120300478,
+        "solidity": 1.0,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.17253124479253457,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.7567951730903761,
+        "solidity": 0.99955078125,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.07654452783762848,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.7431604221051613,
+        "solidity": 1.0,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.03968562757762042,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.2308105605356885,
+        "solidity": 1.0,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.05127653190351324,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.9292209939015346,
+        "solidity": 0.9994856770833334,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.14269646850782752,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.41432666436116317,
+        "solidity": 1.0,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.05465436846941901,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.9880631248685618,
+        "solidity": 0.9980013020833334,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.05408200265911014,
+        "defects": 1,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.8806093249039723,
+        "solidity": 0.994521484375,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.13383044253525692,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.6470557720388463,
+        "solidity": 1.0,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.14639094042343673,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.461118370581689,
+        "solidity": 0.9996809895833333,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.15969178938502637,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.2769135804825241,
+        "solidity": 0.9995182291666667,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.11545219775831314,
+        "defects": 1,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.8576839485690595,
+        "solidity": 0.993173828125,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.03823269590521721,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 1.1231483713902044,
+        "solidity": 1.0,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.1969973557401914,
+        "defects": 0,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.49902009579257844,
+        "solidity": 0.99955078125,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.0313965088907871,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.1843001848618835,
+        "solidity": 1.0,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.09147561714915226,
+        "defects": 0,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 1.0209847489854342,
+        "solidity": 1.0,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.044484438271484184,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 1.1725430352756376,
+        "solidity": 0.9994856770833334,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.060075996232665387,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.46521926398766583,
+        "solidity": 1.0,
+        "true_solidity": 0.8310527528219305
+      }
+    ],
+    "Otsu on grey": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.1550965079593575,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 7,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 0.2004368085111626,
+        "solidity": 0.6752569767352194,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.08861385000804431,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 5,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 0.16640031981869166,
+        "solidity": 0.677311260212277,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.009894693526364028,
+        "defects": 5,
+        "true_defects": 4,
+        "fingers": 5,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 0.1930670967122159,
+        "solidity": 0.6546818380497159,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.19306390423891767,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 2,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 0.8611674120950699,
+        "solidity": 0.6523855177080984,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.15728424801005447,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 3,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 0.5650160658564908,
+        "solidity": 0.8615777045090002,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.23459470395530344,
+        "defects": 0,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.32317077280009565,
+        "solidity": 0.9833048872737779,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.372284261489429,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 4,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.15620697895672317,
+        "solidity": 0.742043036792306,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.07514400983797545,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.2413930221799639,
+        "solidity": 0.6953143503543843,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.02557471593184653,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 1.094941749072634,
+        "solidity": 0.7137648253018485,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.04333898624458263,
+        "defects": 3,
+        "true_defects": 1,
+        "fingers": 5,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.36512912334257,
+        "solidity": 0.8247267378233842,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.372080383322606,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.3424254041865271,
+        "solidity": 0.688890828593181,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.015882835679565683,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.7837482577379106,
+        "solidity": 0.7779811471897763,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.09632276548184995,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 5,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.5037936809723085,
+        "solidity": 0.6746543925421967,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.0638776479099315,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 6,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.7912713110583866,
+        "solidity": 0.6750055720796538,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.36480733783902397,
+        "defects": 4,
+        "true_defects": 3,
+        "fingers": 7,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.41931493139097537,
+        "solidity": 0.5781677385291163,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.12080261379770438,
+        "defects": 5,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.9977614178166749,
+        "solidity": 0.67722150657429,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.06639348750616023,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 4,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.7441716212837179,
+        "solidity": 0.8438415332233076,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.16115534738485557,
+        "defects": 0,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.5131177084066455,
+        "solidity": 0.9834029787185503,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.2443744791184369,
+        "defects": 3,
+        "true_defects": 4,
+        "fingers": 4,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.1339508341927055,
+        "solidity": 0.7197175048280521,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.12800937658388242,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.2325387590865165,
+        "solidity": 0.6844901638474998,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.12811198724195977,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.086906398989772,
+        "solidity": 0.779905305958704,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.03271523031120725,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 5,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.7477651554971884,
+        "solidity": 0.8311290701332306,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.3555682976554536,
+        "defects": 2,
+        "true_defects": 4,
+        "fingers": 4,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.1876700971050825,
+        "solidity": 0.6710463336279943,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.07219565328386406,
+        "defects": 4,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 1.2336351342020262,
+        "solidity": 0.7306845765176505,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.06270344762040535,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 1.0116252775365098,
+        "solidity": 0.6382092494554935,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.0,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 1,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.46088217057725345,
+        "solidity": 0.9345278176264504,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.013396769750845123,
+        "defects": 4,
+        "true_defects": 1,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.4035115717205935,
+        "solidity": 0.6123092744766482,
+        "true_solidity": 0.8310527528219305
+      }
+    ],
+    "GrabCut from a box": [
+      {
+        "hand": "1_P__1_P_hgr1_id01_3",
+        "gesture": "1",
+        "person": "id01",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.6892450879007239,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 1,
+        "want_fingers": 1,
+        "feature_gap": 0.24700980315485607,
+        "solidity": 0.8906341497020427,
+        "true_solidity": 0.7669515841614063
+      },
+      {
+        "hand": "2_P__2_P_hgr1_id01_1",
+        "gesture": "2",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.32209477937875014,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": 2,
+        "feature_gap": 0.7285996958085295,
+        "solidity": 0.867015140591204,
+        "true_solidity": 0.7435827664399093
+      },
+      {
+        "hand": "3_P__3_P_hgr1_id02_2",
+        "gesture": "3",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.7580999805988489,
+        "defects": 3,
+        "true_defects": 4,
+        "fingers": 3,
+        "true_fingers": 3,
+        "want_fingers": 3,
+        "feature_gap": 0.15349812997681198,
+        "solidity": 0.6333593897409634,
+        "true_solidity": 0.6148720544633726
+      },
+      {
+        "hand": "4_P__4_P_hgr1_id05_1",
+        "gesture": "4",
+        "person": "id05",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.6695253821978373,
+        "defects": 2,
+        "true_defects": 4,
+        "fingers": 4,
+        "true_fingers": 1,
+        "want_fingers": 4,
+        "feature_gap": 0.4056503492267383,
+        "solidity": 0.8634307963916903,
+        "true_solidity": 0.5558070694758837
+      },
+      {
+        "hand": "5_P__5_P_hgr1_id04_2",
+        "gesture": "5",
+        "person": "id04",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.6963333333333334,
+        "defects": 5,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 5,
+        "want_fingers": 5,
+        "feature_gap": 0.26390330809700885,
+        "solidity": 0.7944864449285178,
+        "true_solidity": 0.6737626692313383
+      },
+      {
+        "hand": "A_P__A_P_hgr1_id02_8",
+        "gesture": "A",
+        "person": "id02",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.9979133545310016,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.0010898974422263313,
+        "solidity": 0.8308155835460518,
+        "true_solidity": 0.8298999986052804
+      },
+      {
+        "hand": "B_P__B_P_hgr1_id01_3",
+        "gesture": "B",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.8357144669728729,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.07084022637686058,
+        "solidity": 0.8453750273343538,
+        "true_solidity": 0.8552407009315354
+      },
+      {
+        "hand": "C_P__C_P_hgr1_id07_1",
+        "gesture": "C",
+        "person": "id07",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.2979009466319111,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 2,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.44495677786657767,
+        "solidity": 0.8778811790948121,
+        "true_solidity": 0.6243850394167506
+      },
+      {
+        "hand": "D_P__D_P_hgr1_id03_3",
+        "gesture": "D",
+        "person": "id03",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.7302137184885147,
+        "defects": 4,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.185887679096637,
+        "solidity": 0.8795919932510162,
+        "true_solidity": 0.7852870973797839
+      },
+      {
+        "hand": "E_P__E_P_hgr1_id03_9",
+        "gesture": "E",
+        "person": "id03",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.9798610411841708,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 1,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.04007720084037017,
+        "solidity": 0.7146557549365568,
+        "true_solidity": 0.6903378523778781
+      },
+      {
+        "hand": "F_P__F_P_hgr1_id03_6",
+        "gesture": "F",
+        "person": "id03",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.5366712006390743,
+        "defects": 1,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 1,
+        "want_fingers": null,
+        "feature_gap": 0.47357562943951015,
+        "solidity": 0.8749866677009299,
+        "true_solidity": 0.6551680211969122
+      },
+      {
+        "hand": "G_P__G_P_hgr1_id03_4",
+        "gesture": "G",
+        "person": "id03",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.43111422020131357,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.35397729549970847,
+        "solidity": 0.9177970347553395,
+        "true_solidity": 0.7072892938496583
+      },
+      {
+        "hand": "H_P__H_P_hgr1_id06_2",
+        "gesture": "H",
+        "person": "id06",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.3884722928317234,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.4725511658238567,
+        "solidity": 0.5762111215834119,
+        "true_solidity": 0.6945969884853853
+      },
+      {
+        "hand": "I_P__I_P_hgr1_id01_2",
+        "gesture": "I",
+        "person": "id01",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.3162281950148416,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.21415338077690516,
+        "solidity": 0.8782442206779181,
+        "true_solidity": 0.7786697830394796
+      },
+      {
+        "hand": "K_P__K_P_hgr1_id01_3",
+        "gesture": "K",
+        "person": "id01",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9949563794983642,
+        "defects": 3,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.001467792929216709,
+        "solidity": 0.8426315789473684,
+        "true_solidity": 0.8440619688592806
+      },
+      {
+        "hand": "L_P__L_P_hgr1_id01_1",
+        "gesture": "L",
+        "person": "id01",
+        "background": "247012",
+        "skin_likeness": 0.09352918698713092,
+        "iou": 0.5280026764804282,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.2173319009206243,
+        "solidity": 0.7457365933840148,
+        "true_solidity": 0.664833993947918
+      },
+      {
+        "hand": "M_P__M_P_hgr1_id01_1",
+        "gesture": "M",
+        "person": "id01",
+        "background": "206062",
+        "skin_likeness": 0.1667152414815966,
+        "iou": 0.6186818251651559,
+        "defects": 4,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.10808324208373206,
+        "solidity": 0.7778049750634887,
+        "true_solidity": 0.7840948726892222
+      },
+      {
+        "hand": "N_P__N_P_hgr1_id01_1",
+        "gesture": "N",
+        "person": "id01",
+        "background": "33044",
+        "skin_likeness": 0.2430036074895888,
+        "iou": 0.962872120425143,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 3,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.04134873793543149,
+        "solidity": 0.7251944724077972,
+        "true_solidity": 0.7224371200912673
+      },
+      {
+        "hand": "O_P__O_P_hgr1_id01_2",
+        "gesture": "O",
+        "person": "id01",
+        "background": "372019",
+        "skin_likeness": 0.3339939508163807,
+        "iou": 0.6089953046486724,
+        "defects": 4,
+        "true_defects": 4,
+        "fingers": 1,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.08164921919482938,
+        "solidity": 0.8088549135624034,
+        "true_solidity": 0.7660533690751797
+      },
+      {
+        "hand": "P_P__P_P_hgr1_id01_2",
+        "gesture": "P",
+        "person": "id01",
+        "background": "81090",
+        "skin_likeness": 0.44127304874968426,
+        "iou": 0.5573762871022476,
+        "defects": 3,
+        "true_defects": 2,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.14238665615785234,
+        "solidity": 0.8421241371066551,
+        "true_solidity": 0.8863829944820946
+      },
+      {
+        "hand": "R_P__R_P_hgr1_id01_1",
+        "gesture": "R",
+        "person": "id01",
+        "background": "188025",
+        "skin_likeness": 0.4977687968342174,
+        "iou": 0.8803445093817287,
+        "defects": 1,
+        "true_defects": 3,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.10119425495166968,
+        "solidity": 0.9196051456568436,
+        "true_solidity": 0.8358402743753062
+      },
+      {
+        "hand": "S_P__S_P_hgr1_id08_3",
+        "gesture": "S",
+        "person": "id08",
+        "background": "65132",
+        "skin_likeness": 0.6303586116670229,
+        "iou": 0.9506293934935426,
+        "defects": 2,
+        "true_defects": 2,
+        "fingers": 1,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.013827493480395968,
+        "solidity": 0.774607797709671,
+        "true_solidity": 0.7628499385789099
+      },
+      {
+        "hand": "T_P__T_P_hgr1_id01_2",
+        "gesture": "T",
+        "person": "id01",
+        "background": "372047",
+        "skin_likeness": 0.7505650870136852,
+        "iou": 0.5663734426621024,
+        "defects": 3,
+        "true_defects": 4,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.33436413983553576,
+        "solidity": 0.9142359517945933,
+        "true_solidity": 0.758527192706696
+      },
+      {
+        "hand": "U_P__U_P_hgr1_id06_2",
+        "gesture": "U",
+        "person": "id06",
+        "background": "293029",
+        "skin_likeness": 0.9855635650028174,
+        "iou": 0.3915981437759505,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.3800473812532066,
+        "solidity": 0.8765454611765564,
+        "true_solidity": 0.7170818505338078
+      },
+      {
+        "hand": "W_P__W_P_hgr1_id03_10",
+        "gesture": "W",
+        "person": "id03",
+        "background": "314016",
+        "skin_likeness": 0.0,
+        "iou": 0.9753550543024228,
+        "defects": 2,
+        "true_defects": 3,
+        "fingers": 2,
+        "true_fingers": 3,
+        "want_fingers": null,
+        "feature_gap": 0.04448237064344038,
+        "solidity": 0.8829536527886881,
+        "true_solidity": 0.8554423894026494
+      },
+      {
+        "hand": "Y_P__Y_P_hgr1_id08_2",
+        "gesture": "Y",
+        "person": "id08",
+        "background": "119082",
+        "skin_likeness": 0.01738978374492393,
+        "iou": 0.2941074971961004,
+        "defects": 1,
+        "true_defects": 1,
+        "fingers": 1,
+        "true_fingers": 2,
+        "want_fingers": null,
+        "feature_gap": 0.32769433610934806,
+        "solidity": 0.863468494914869,
+        "true_solidity": 0.7061822475045616
+      },
+      {
+        "hand": "Z_P__Z_P_hgr1_id02_4",
+        "gesture": "Z",
+        "person": "id02",
+        "background": "268002",
+        "skin_likeness": 0.06902157369447089,
+        "iou": 0.9806197423064636,
+        "defects": 2,
+        "true_defects": 1,
+        "fingers": 0,
+        "true_fingers": 0,
+        "want_fingers": null,
+        "feature_gap": 0.03555703324295158,
+        "solidity": 0.8026408450704225,
+        "true_solidity": 0.8310527528219305
+      }
+    ]
+  },
+  "stage_split": {
+    "ceiling_defects_match": 27,
+    "ceiling_finger_correct": 3,
+    "finger_frames": 5,
+    "best_real": "Lab skin",
+    "best_real_iou": 0.747468848702191,
+    "best_real_defects_match": 12,
+    "best_real_finger_correct": 2,
+    "frames": 27
+  },
+  "background_effect": [
+    {
+      "background": "314016",
+      "what": "dolphins in open water",
+      "skin_likeness": 0.0,
+      "mean_iou": 0.914548279360543,
+      "median_iou": 0.9386010171740252,
+      "worst_iou": 0.6672131147540984,
+      "best_iou": 0.9679098005203816,
+      "total_failures": 0,
+      "recovered": 27,
+      "of": 27
+    },
+    {
+      "background": "119082",
+      "what": "a painted mural and a city street",
+      "skin_likeness": 0.01738978374492393,
+      "mean_iou": 0.9068540763943308,
+      "median_iou": 0.9245684558997399,
+      "worst_iou": 0.6672131147540984,
+      "best_iou": 0.9679098005203816,
+      "total_failures": 0,
+      "recovered": 27,
+      "of": 27
+    },
+    {
+      "background": "268002",
+      "what": "a cormorant on a branch",
+      "skin_likeness": 0.06902157369447089,
+      "mean_iou": 0.9152475798047655,
+      "median_iou": 0.9437119113573407,
+      "worst_iou": 0.6660229885057471,
+      "best_iou": 0.9712837334128522,
+      "total_failures": 0,
+      "recovered": 27,
+      "of": 27
+    },
+    {
+      "background": "247012",
+      "what": "a black dog on grass",
+      "skin_likeness": 0.09352918698713092,
+      "mean_iou": 0.36280328588061694,
+      "median_iou": 0.0,
+      "worst_iou": 0.0,
+      "best_iou": 0.9538578961976131,
+      "total_failures": 15,
+      "recovered": 12,
+      "of": 27
+    },
+    {
+      "background": "206062",
+      "what": "a polo player on a horse",
+      "skin_likeness": 0.1667152414815966,
+      "mean_iou": 0.7770692118133448,
+      "median_iou": 0.8015424557116677,
+      "worst_iou": 0.4992867332382311,
+      "best_iou": 0.9096709620918304,
+      "total_failures": 0,
+      "recovered": 26,
+      "of": 27
+    },
+    {
+      "background": "33044",
+      "what": "the steps of a Mayan pyramid",
+      "skin_likeness": 0.2430036074895888,
+      "mean_iou": 0.9152475798047655,
+      "median_iou": 0.9437119113573407,
+      "worst_iou": 0.6660229885057471,
+      "best_iou": 0.9712837334128522,
+      "total_failures": 0,
+      "recovered": 27,
+      "of": 27
+    },
+    {
+      "background": "372019",
+      "what": "a bronze human figure on a rock",
+      "skin_likeness": 0.3339939508163807,
+      "mean_iou": 0.9135083207336311,
+      "median_iou": 0.9396551724137931,
+      "worst_iou": 0.6660229885057471,
+      "best_iou": 0.9640188814905124,
+      "total_failures": 0,
+      "recovered": 27,
+      "of": 27
+    },
+    {
+      "background": "81090",
+      "what": "a woman on a beach \u2014 real skin in the background",
+      "skin_likeness": 0.44127304874968426,
+      "mean_iou": 0.6704516303354401,
+      "median_iou": 0.6721362109571059,
+      "worst_iou": 0.4074149625172115,
+      "best_iou": 0.8694774510253704,
+      "total_failures": 0,
+      "recovered": 24,
+      "of": 27
+    },
+    {
+      "background": "188025",
+      "what": "people unloading a plane on snow",
+      "skin_likeness": 0.4977687968342174,
+      "mean_iou": 0.5014239874997074,
+      "median_iou": 0.7013272860668311,
+      "worst_iou": 0.0,
+      "best_iou": 0.8899082568807339,
+      "total_failures": 9,
+      "recovered": 18,
+      "of": 27
+    },
+    {
+      "background": "65132",
+      "what": "orange koi carp under water",
+      "skin_likeness": 0.6303586116670229,
+      "mean_iou": 0.7181611891747214,
+      "median_iou": 0.7646135054964229,
+      "worst_iou": 0.0,
+      "best_iou": 0.9361371988566762,
+      "total_failures": 1,
+      "recovered": 24,
+      "of": 27
+    },
+    {
+      "background": "372047",
+      "what": "a guard beside a sentry box",
+      "skin_likeness": 0.7505650870136852,
+      "mean_iou": 0.5037892587439768,
+      "median_iou": 0.5031279797204586,
+      "worst_iou": 0.04899807478510806,
+      "best_iou": 0.7537540484836589,
+      "total_failures": 1,
+      "recovered": 15,
+      "of": 27
+    },
+    {
+      "background": "293029",
+      "what": "a man sweeping beside a sunlit sandy wall",
+      "skin_likeness": 0.9855635650028174,
+      "mean_iou": 0.08383515602917628,
+      "median_iou": 0.08088483759570768,
+      "worst_iou": 0.03176354848368194,
+      "best_iou": 0.14802491802227227,
+      "total_failures": 5,
+      "recovered": 0,
+      "of": 27
+    }
+  ],
+  "hand_effect": [
+    {
+      "hand": "1_P__1_P_hgr1_id01_3",
+      "gesture": "1",
+      "person": "id01",
+      "mean_iou": 0.7794272752785583,
+      "worst_iou": 0.10350658305151525
+    },
+    {
+      "hand": "2_P__2_P_hgr1_id01_1",
+      "gesture": "2",
+      "person": "id01",
+      "mean_iou": 0.6729451928611215,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "3_P__3_P_hgr1_id02_2",
+      "gesture": "3",
+      "person": "id02",
+      "mean_iou": 0.7592206752248393,
+      "worst_iou": 0.10829597869161307
+    },
+    {
+      "hand": "4_P__4_P_hgr1_id05_1",
+      "gesture": "4",
+      "person": "id05",
+      "mean_iou": 0.663426075854873,
+      "worst_iou": 0.09412750056373417
+    },
+    {
+      "hand": "5_P__5_P_hgr1_id04_2",
+      "gesture": "5",
+      "person": "id04",
+      "mean_iou": 0.8221028654521209,
+      "worst_iou": 0.14802491802227227
+    },
+    {
+      "hand": "A_P__A_P_hgr1_id02_8",
+      "gesture": "A",
+      "person": "id02",
+      "mean_iou": 0.7526378100289444,
+      "worst_iou": 0.10778266773554963
+    },
+    {
+      "hand": "B_P__B_P_hgr1_id01_3",
+      "gesture": "B",
+      "person": "id01",
+      "mean_iou": 0.8006364057835268,
+      "worst_iou": 0.11932548789817211
+    },
+    {
+      "hand": "C_P__C_P_hgr1_id07_1",
+      "gesture": "C",
+      "person": "id07",
+      "mean_iou": 0.40410464578178845,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "D_P__D_P_hgr1_id03_3",
+      "gesture": "D",
+      "person": "id03",
+      "mean_iou": 0.7881176803181708,
+      "worst_iou": 0.12204148658916185
+    },
+    {
+      "hand": "E_P__E_P_hgr1_id03_9",
+      "gesture": "E",
+      "person": "id03",
+      "mean_iou": 0.6421313403028791,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "F_P__F_P_hgr1_id03_6",
+      "gesture": "F",
+      "person": "id03",
+      "mean_iou": 0.732141277995499,
+      "worst_iou": 0.09191080089133569
+    },
+    {
+      "hand": "G_P__G_P_hgr1_id03_4",
+      "gesture": "G",
+      "person": "id03",
+      "mean_iou": 0.8269797865855176,
+      "worst_iou": 0.09763642395090397
+    },
+    {
+      "hand": "H_P__H_P_hgr1_id06_2",
+      "gesture": "H",
+      "person": "id06",
+      "mean_iou": 0.46283590328407415,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "I_P__I_P_hgr1_id01_2",
+      "gesture": "I",
+      "person": "id01",
+      "mean_iou": 0.6291211614377386,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "K_P__K_P_hgr1_id01_3",
+      "gesture": "K",
+      "person": "id01",
+      "mean_iou": 0.696176901083116,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "L_P__L_P_hgr1_id01_1",
+      "gesture": "L",
+      "person": "id01",
+      "mean_iou": 0.608490071738675,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "M_P__M_P_hgr1_id01_1",
+      "gesture": "M",
+      "person": "id01",
+      "mean_iou": 0.6738945287909383,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "N_P__N_P_hgr1_id01_1",
+      "gesture": "N",
+      "person": "id01",
+      "mean_iou": 0.682229193581,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "O_P__O_P_hgr1_id01_2",
+      "gesture": "O",
+      "person": "id01",
+      "mean_iou": 0.6897449767843318,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "P_P__P_P_hgr1_id01_2",
+      "gesture": "P",
+      "person": "id01",
+      "mean_iou": 0.7008257687695053,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "R_P__R_P_hgr1_id01_1",
+      "gesture": "R",
+      "person": "id01",
+      "mean_iou": 0.828986410363071,
+      "worst_iou": 0.13799411118153446
+    },
+    {
+      "hand": "S_P__S_P_hgr1_id08_3",
+      "gesture": "S",
+      "person": "id08",
+      "mean_iou": 0.5914932704695227,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "T_P__T_P_hgr1_id01_2",
+      "gesture": "T",
+      "person": "id01",
+      "mean_iou": 0.780699835097136,
+      "worst_iou": 0.10456224059609791
+    },
+    {
+      "hand": "U_P__U_P_hgr1_id06_2",
+      "gesture": "U",
+      "person": "id06",
+      "mean_iou": 0.5431960508504068,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "W_P__W_P_hgr1_id03_10",
+      "gesture": "W",
+      "person": "id03",
+      "mean_iou": 0.8067644042565489,
+      "worst_iou": 0.11409779344561953
+    },
+    {
+      "hand": "Y_P__Y_P_hgr1_id08_2",
+      "gesture": "Y",
+      "person": "id08",
+      "mean_iou": 0.5885439689746512,
+      "worst_iou": 0.0
+    },
+    {
+      "hand": "Z_P__Z_P_hgr1_id02_4",
+      "gesture": "Z",
+      "person": "id02",
+      "mean_iou": 0.4847405230952387,
+      "worst_iou": 0.0
+    }
+  ],
+  "which_matters_more": {
+    "segmenter": "Lab skin",
+    "background_spread": 0.8314124237755892,
+    "hand_spread": 0.4248817645812825,
+    "background_std": 0.2584531828441608,
+    "hand_std": 0.11338473323338627,
+    "skin_likeness_r": -0.698839975835598
+  },
+  "size_contest": {
+    "background": "247012",
+    "what": "a black dog on grass",
+    "area_vs_iou_r": 0.8323546325202617,
+    "total_failures": 15,
+    "of": 27,
+    "mean_area_when_failed": 0.04957092246811872,
+    "mean_area_when_not": 0.09144586714680174,
+    "mean_iou": 0.36280328588061694,
+    "median_iou": 0.0
+  },
+  "grid_segmenter": "Lab skin",
+  "shown": [
+    [
+      "5_P__5_P_hgr1_id04_2",
+      "314016"
+    ],
+    [
+      "3_P__3_P_hgr1_id02_2",
+      "81090"
+    ],
+    [
+      "B_P__B_P_hgr1_id01_3",
+      "372019"
+    ],
+    [
+      "1_P__1_P_hgr1_id01_3",
+      "293029"
+    ]
+  ]
+}

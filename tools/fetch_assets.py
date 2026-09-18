@@ -42,6 +42,10 @@ PLATES = "https://raw.githubusercontent.com/openalpr/benchmarks/master/endtoend/
 #: The opencv repository itself, for data files that are not in the wheel.
 OPENCV_REPO = "https://raw.githubusercontent.com/opencv/opencv/4.x/"
 
+#: The HGR1 hand-gesture subset, for project 56.
+HGR1 = ("https://raw.githubusercontent.com/"
+        "lds217/Hand-Gesture-Recognition-using-small-HGR1-dataset/main/")
+
 USER_AGENT = "Mozilla/5.0 (classical-computer-vision asset fetch)"
 RETRIES = 5
 TIMEOUT = 240
@@ -132,6 +136,41 @@ SETS: dict[str, dict[str, str]] = {
             "lbpcascade_frontalface.xml",
             "lbpcascade_frontalface_improved.xml",
             "lbpcascade_profileface.xml")
+    },
+    # 27 photographs of hands from the HGR1 gesture set -- eight people, the
+    # gesture named in the folder the dataset put each file in. They arrive cut
+    # out against pure black, which is somebody else's segmentation and is
+    # inherited rather than invented: it gives project 56 an **exact** matte, and
+    # therefore an exact truth once each hand is composited onto a real
+    # background.
+    "hands": {
+        "1_P__1_P_hgr1_id01_3.jpg": HGR1 + "label/test/1_P/1_P_hgr1_id01_3.jpg",
+        "2_P__2_P_hgr1_id01_1.jpg": HGR1 + "label/test/2_P/2_P_hgr1_id01_1.jpg",
+        "3_P__3_P_hgr1_id02_2.jpg": HGR1 + "label/test/3_P/3_P_hgr1_id02_2.jpg",
+        "4_P__4_P_hgr1_id05_1.jpg": HGR1 + "label/test/4_P/4_P_hgr1_id05_1.jpg",
+        "5_P__5_P_hgr1_id04_2.jpg": HGR1 + "label/test/5_P/5_P_hgr1_id04_2.jpg",
+        "A_P__A_P_hgr1_id02_8.jpg": HGR1 + "label/test/A_P/A_P_hgr1_id02_8.jpg",
+        "B_P__B_P_hgr1_id01_3.jpg": HGR1 + "label/test/B_P/B_P_hgr1_id01_3.jpg",
+        "C_P__C_P_hgr1_id07_1.jpg": HGR1 + "label/test/C_P/C_P_hgr1_id07_1.jpg",
+        "D_P__D_P_hgr1_id03_3.jpg": HGR1 + "label/test/D_P/D_P_hgr1_id03_3.jpg",
+        "E_P__E_P_hgr1_id03_9.jpg": HGR1 + "label/test/E_P/E_P_hgr1_id03_9.jpg",
+        "F_P__F_P_hgr1_id03_6.jpg": HGR1 + "label/test/F_P/F_P_hgr1_id03_6.jpg",
+        "G_P__G_P_hgr1_id03_4.jpg": HGR1 + "label/test/G_P/G_P_hgr1_id03_4.jpg",
+        "H_P__H_P_hgr1_id06_2.jpg": HGR1 + "label/test/H_P/H_P_hgr1_id06_2.jpg",
+        "I_P__I_P_hgr1_id01_2.jpg": HGR1 + "label/test/I_P/I_P_hgr1_id01_2.jpg",
+        "K_P__K_P_hgr1_id01_3.jpg": HGR1 + "label/test/K_P/K_P_hgr1_id01_3.jpg",
+        "L_P__L_P_hgr1_id01_1.jpg": HGR1 + "label/test/L_P/L_P_hgr1_id01_1.jpg",
+        "M_P__M_P_hgr1_id01_1.jpg": HGR1 + "label/test/M_P/M_P_hgr1_id01_1.jpg",
+        "N_P__N_P_hgr1_id01_1.jpg": HGR1 + "label/test/N_P/N_P_hgr1_id01_1.jpg",
+        "O_P__O_P_hgr1_id01_2.jpg": HGR1 + "label/test/O_P/O_P_hgr1_id01_2.jpg",
+        "P_P__P_P_hgr1_id01_2.jpg": HGR1 + "label/test/P_P/P_P_hgr1_id01_2.jpg",
+        "R_P__R_P_hgr1_id01_1.jpg": HGR1 + "label/test/R_P/R_P_hgr1_id01_1.jpg",
+        "S_P__S_P_hgr1_id08_3.jpg": HGR1 + "label/test/S_P/S_P_hgr1_id08_3.jpg",
+        "T_P__T_P_hgr1_id01_2.jpg": HGR1 + "label/test/T_P/T_P_hgr1_id01_2.jpg",
+        "U_P__U_P_hgr1_id06_2.jpg": HGR1 + "label/test/U_P/U_P_hgr1_id06_2.jpg",
+        "W_P__W_P_hgr1_id03_10.jpg": HGR1 + "label/test/W_P/W_P_hgr1_id03_10.jpg",
+        "Y_P__Y_P_hgr1_id08_2.jpg": HGR1 + "label/test/Y_P/Y_P_hgr1_id08_2.jpg",
+        "Z_P__Z_P_hgr1_id02_4.jpg": HGR1 + "label/test/Z_P/Z_P_hgr1_id02_4.jpg",
     },
     # Eleven group photographs used by OpenCV's own cascade tests: several
     # faces per frame, at different scales, some in profile, one a painting.

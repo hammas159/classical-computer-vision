@@ -150,20 +150,18 @@ the unbuilt ones out would make the plan look smaller than it is.
 | [53](projects/53_barcode_qr/) | [**Barcode / QR detection**](projects/53_barcode_qr/) | gradient+morphology, variance, QR finder | **The synthetic background was hiding a useless localiser** — 1.000 on generated clutter, **0.021** on twelve real photographs, a 48× difference from changing nothing but the background. And **found is not decoded**: at 6.7 px per module the code is located 1.000 and decoded 0.000 | ✅ |
 | [54](projects/54_defect_detection/) | [**Industrial defect detection**](projects/54_defect_detection/) | 6 residual/texture/spectral detectors · 4 defect kinds · clean-surface arm | **The detectors are complementary, not competing.** A **smear** — a local loss of texture at unchanged brightness — is found by the local standard deviation (0.58) and by **4 of the other 5 exactly never**. And on twelve surfaces with **nothing wrong with them** they mark **3.7% to 14.3%**; on brick paving one marks **76%**. Pixel accuracy is unusable: a defect covers 1.07%, so flagging nothing is right 98.9% of the time | ✅ |
 | 55 | **Motion-triggered security alert** | background subtraction + blob tracking | *needs a surveillance clip* | ❌ |
-| 56 | **Hand gesture recognition** | skin colour + contours + convexity defects | *needs webcam footage* | ❌ |
+| [56](projects/56_hand_gesture/) | [**Hand gesture recognition**](projects/56_hand_gesture/) | 7 segmenters (YCrCb/HSV/Lab skin, adaptive, Otsu, GrabCut) · oracle-mask, ellipse, whole-frame and nothing controls | **Settle the second stage first: it does not work.** Given a *perfect* mask, two classical finger rules over ten settings manage **3 of 5**. Then the first stage: over **324 composites** the spread across backgrounds is **0.831 IoU** against **0.425** across hands — the background moves the answer **2.0×** further than which hand it is, and how skin-coloured it is predicts the score at **r = −0.70** before anything runs. An ellipse drawn without reading the image scores 0.441 and beats **2 of the 7** | ✅ |
 | [57](projects/57_pedestrian_detection/) | [**Pedestrian detection**](projects/57_pedestrian_detection/) | HOG + linear SVM, real footage vs drawn silhouettes | **Drawn silhouettes are not a benchmark.** HOG's SVM margin is **0.51** on drawings against **1.59** on real people, and recall on the composited scenes never exceeds 1 in 12 at any setting — so the project was rebuilt on real footage, checked against motion evidence that shares no information with it | ✅ |
 | [58](projects/58_red_eye_removal/) | [**Red-eye removal**](projects/58_red_eye_removal/) | colour, +shape, +face, +eye constraints + empty-truth control | **Pupil PSNR rates the naive detector within 0.124 dB of the best while it marks 217× more of the frame.** On six photographs with *no red-eye at all*, colour-only marks 86,294 px and the face constraint 98. And zeroing the red channel scores **below doing nothing** on half the portraits | ✅ |
 
-**58 projects spanning 14 algorithm families. 55 built, 3 not started.**
+**58 projects spanning 14 algorithm families. 56 built, 2 not started.**
 
-**The three that remain all need moving pictures**, and none of them can be
-faked from a still without the project becoming a different project:
+**The two that remain:**
 
 | # | Project | What is actually missing |
 |---:|---|---|
-| **48** | Chroma key / green screen | footage shot against a green screen. A synthetic green background would make the spill-suppression half of the project meaningless, because spill is what a real screen bounces onto a real subject |
+| **48** | Chroma key / green screen | a photograph shot against a real green screen. The subject could be composited onto green synthetically — that is how matting benchmarks are built — but then the spill model would be this repository's own, and spill is half the problem |
 | **55** | Motion-triggered security alert | a surveillance clip with something to trigger on. `vtest.avi` is already carrying projects 29, 30 and 57, and a fourth project on the same 795 frames would be measuring the clip rather than the method |
-| **56** | Hand gesture recognition | video of a hand. Skin-colour segmentation and convexity defects are a per-frame method, but the interesting failure is temporal — the moment a gesture is mid-transition |
 
 Two projects changed shape when the data was finally found, and both say so in
 their own README rather than quietly:
@@ -177,6 +175,10 @@ their own README rather than quietly:
 * **06** is built on fourteen dashcam **stills** from two cameras rather than a
   road clip, which turned out to be the better experiment: the two resolutions
   are what expose a region of interest written in pixels.
+* **56** was listed as needing webcam footage. It does not: skin segmentation and
+  convexity defects are per-frame methods. It is built on 27 real hand
+  photographs composited onto 12 real backgrounds, which gives an exactly known
+  mask. What it cannot measure is anything temporal, and it says so.
 
 Where data was obtainable the project was built; where it was not, the row stays
 ❌ rather than being filled with something generated. Projects 08, 52 and 57 each
