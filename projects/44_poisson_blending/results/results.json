@@ -1,0 +1,249 @@
+{
+  "project": "44_poisson_blending",
+  "generated_utc": "2026-09-17T20:37:04+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "bird_in_a_meadow",
+    "tent_on_the_ice",
+    "wallaby_in_scrub",
+    "stone_viaduct",
+    "zebra_in_grass",
+    "carved_boat_houses",
+    "soldier_and_child",
+    "ploughing_with_oxen",
+    "skier_mid_air",
+    "spear_fisher",
+    "bobcat_and_daisies",
+    "snowshoes_on_snow"
+  ],
+  "pairs": [
+    [
+      "bird_in_a_meadow",
+      "snowshoes_on_snow"
+    ],
+    [
+      "tent_on_the_ice",
+      "bobcat_and_daisies"
+    ],
+    [
+      "wallaby_in_scrub",
+      "spear_fisher"
+    ],
+    [
+      "stone_viaduct",
+      "skier_mid_air"
+    ],
+    [
+      "zebra_in_grass",
+      "ploughing_with_oxen"
+    ],
+    [
+      "carved_boat_houses",
+      "soldier_and_child"
+    ]
+  ],
+  "tone": {
+    "bird_in_a_meadow": 82.0,
+    "tent_on_the_ice": 152.0,
+    "wallaby_in_scrub": 153.0,
+    "stone_viaduct": 177.0,
+    "zebra_in_grass": 181.0,
+    "carved_boat_houses": 202.0,
+    "soldier_and_child": 211.0,
+    "ploughing_with_oxen": 218.0,
+    "skier_mid_air": 225.0,
+    "spear_fisher": 233.0,
+    "bobcat_and_daisies": 240.0,
+    "snowshoes_on_snow": 250.0
+  },
+  "brightness_offset": 0.25,
+  "region_size": 120,
+  "methods": [
+    {
+      "method": "Copy-paste (control)",
+      "seam_visibility": 2.8046,
+      "gradient_fidelity": 0.8266,
+      "pixel_difference": 0.0,
+      "median_ms": 0.37
+    },
+    {
+      "method": "Alpha feather",
+      "seam_visibility": 1.0544,
+      "gradient_fidelity": 0.9299,
+      "pixel_difference": 4.45,
+      "median_ms": 3.25
+    },
+    {
+      "method": "Poisson (OpenCV)",
+      "seam_visibility": 1.1403,
+      "gradient_fidelity": 0.7822,
+      "pixel_difference": 51.04,
+      "median_ms": 4.31
+    },
+    {
+      "method": "Poisson (mixed gradients)",
+      "seam_visibility": 0.85,
+      "gradient_fidelity": 0.4694,
+      "pixel_difference": 56.52,
+      "median_ms": 4.17
+    },
+    {
+      "method": "Poisson (Jacobi, from scratch)",
+      "seam_visibility": 1.1337,
+      "gradient_fidelity": 0.8792,
+      "pixel_difference": 22.62,
+      "median_ms": 162.26
+    }
+  ],
+  "offset_sweep": [
+    {
+      "brightness_offset": 0.0,
+      "Copy-paste (control)": 2.5703,
+      "Alpha feather": 1.0353,
+      "Poisson (OpenCV)": 1.0752,
+      "Poisson (mixed gradients)": 0.8032,
+      "Poisson (Jacobi, from scratch)": 1.0866
+    },
+    {
+      "brightness_offset": 0.1,
+      "Copy-paste (control)": 2.2686,
+      "Alpha feather": 1.0169,
+      "Poisson (OpenCV)": 1.0882,
+      "Poisson (mixed gradients)": 0.8141,
+      "Poisson (Jacobi, from scratch)": 1.11
+    },
+    {
+      "brightness_offset": 0.25,
+      "Copy-paste (control)": 2.8046,
+      "Alpha feather": 1.0544,
+      "Poisson (OpenCV)": 1.1403,
+      "Poisson (mixed gradients)": 0.85,
+      "Poisson (Jacobi, from scratch)": 1.1337
+    },
+    {
+      "brightness_offset": 0.5,
+      "Copy-paste (control)": 5.9604,
+      "Alpha feather": 1.3417,
+      "Poisson (OpenCV)": 1.3813,
+      "Poisson (mixed gradients)": 0.9295,
+      "Poisson (Jacobi, from scratch)": 1.2501
+    }
+  ],
+  "size_sweep": [
+    {
+      "region_size": 60,
+      "Copy-paste (control) seam": 2.95,
+      "Copy-paste (control) ms": 0.13,
+      "Alpha feather seam": 0.9155,
+      "Alpha feather ms": 2.79,
+      "Poisson (OpenCV) seam": 1.0338,
+      "Poisson (OpenCV) ms": 1.04,
+      "Poisson (mixed gradients) seam": 0.866,
+      "Poisson (mixed gradients) ms": 0.94,
+      "Poisson (Jacobi, from scratch) seam": 0.997,
+      "Poisson (Jacobi, from scratch) ms": 50.4
+    },
+    {
+      "region_size": 100,
+      "Copy-paste (control) seam": 2.7578,
+      "Copy-paste (control) ms": 0.25,
+      "Alpha feather seam": 1.0039,
+      "Alpha feather ms": 2.89,
+      "Poisson (OpenCV) seam": 1.0847,
+      "Poisson (OpenCV) ms": 3.19,
+      "Poisson (mixed gradients) seam": 0.8241,
+      "Poisson (mixed gradients) ms": 3.06,
+      "Poisson (Jacobi, from scratch) seam": 1.0924,
+      "Poisson (Jacobi, from scratch) ms": 111.49
+    },
+    {
+      "region_size": 150,
+      "Copy-paste (control) seam": 2.9961,
+      "Copy-paste (control) ms": 0.49,
+      "Alpha feather seam": 1.0869,
+      "Alpha feather ms": 3.68,
+      "Poisson (OpenCV) seam": 1.2081,
+      "Poisson (OpenCV) ms": 9.28,
+      "Poisson (mixed gradients) seam": 0.862,
+      "Poisson (mixed gradients) ms": 9.17,
+      "Poisson (Jacobi, from scratch) seam": 1.1675,
+      "Poisson (Jacobi, from scratch) ms": 235.6
+    },
+    {
+      "region_size": 200,
+      "Copy-paste (control) seam": 3.196,
+      "Copy-paste (control) ms": 1.04,
+      "Alpha feather seam": 1.0522,
+      "Alpha feather ms": 4.37,
+      "Poisson (OpenCV) seam": 1.0864,
+      "Poisson (OpenCV) ms": 12.57,
+      "Poisson (mixed gradients) seam": 0.7408,
+      "Poisson (mixed gradients) ms": 12.56,
+      "Poisson (Jacobi, from scratch) seam": 1.0589,
+      "Poisson (Jacobi, from scratch) ms": 414.83
+    }
+  ],
+  "metric_disagreement": {
+    "rank_by_seam_visibility": [
+      "Poisson (mixed gradients)",
+      "Alpha feather",
+      "Poisson (Jacobi, from scratch)",
+      "Poisson (OpenCV)",
+      "Copy-paste (control)"
+    ],
+    "rank_by_gradient_fidelity": [
+      "Alpha feather",
+      "Poisson (Jacobi, from scratch)",
+      "Copy-paste (control)",
+      "Poisson (OpenCV)",
+      "Poisson (mixed gradients)"
+    ],
+    "rank_by_pixel_fidelity": [
+      "Copy-paste (control)",
+      "Alpha feather",
+      "Poisson (Jacobi, from scratch)",
+      "Poisson (OpenCV)",
+      "Poisson (mixed gradients)"
+    ],
+    "best_by_seam": "Poisson (mixed gradients)",
+    "best_by_pixel": "Copy-paste (control)",
+    "rankings_agree": false
+  },
+  "convergence": [
+    {
+      "iterations": 10,
+      "seam_visibility": 1.2252,
+      "median_ms": 7.57
+    },
+    {
+      "iterations": 50,
+      "seam_visibility": 1.1443,
+      "median_ms": 23.88
+    },
+    {
+      "iterations": 100,
+      "seam_visibility": 1.1342,
+      "median_ms": 44.1
+    },
+    {
+      "iterations": 200,
+      "seam_visibility": 1.1315,
+      "median_ms": 82.69
+    },
+    {
+      "iterations": 400,
+      "seam_visibility": 1.1337,
+      "median_ms": 155.47
+    },
+    {
+      "iterations": 800,
+      "seam_visibility": 1.1393,
+      "median_ms": 317.2
+    }
+  ]
+}

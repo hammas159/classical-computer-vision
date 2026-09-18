@@ -1,0 +1,605 @@
+{
+  "project": "47_colour_space_robustness",
+  "generated_utc": "2026-09-18T03:48:19+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "lobsters_and_wine",
+    "stacked_timber",
+    "anteater_at_sunset",
+    "kabuki_pair",
+    "tomato_stall",
+    "kalmar_castle",
+    "yellow_trousers",
+    "woman_in_blue_dress",
+    "red_robed_figures",
+    "red_sports_car",
+    "westminster_pair",
+    "green_field_worker"
+  ],
+  "segments": {
+    "lobsters_and_wine": [
+      0,
+      7
+    ],
+    "stacked_timber": [
+      4,
+      1
+    ],
+    "anteater_at_sunset": [
+      0,
+      2
+    ],
+    "kabuki_pair": [
+      2,
+      29
+    ],
+    "tomato_stall": [
+      0,
+      18
+    ],
+    "kalmar_castle": [
+      3,
+      30
+    ],
+    "yellow_trousers": [
+      4,
+      23
+    ],
+    "woman_in_blue_dress": [
+      1,
+      1
+    ],
+    "red_robed_figures": [
+      2,
+      6
+    ],
+    "red_sports_car": [
+      3,
+      2
+    ],
+    "westminster_pair": [
+      5,
+      6
+    ],
+    "green_field_worker": [
+      3,
+      10
+    ]
+  },
+  "tolerance": {
+    "RGB": 60.0,
+    "HSV": 60.0,
+    "Lab": 25.0,
+    "YCrCb": 25.0,
+    "Normalised RGB": 25.0
+  },
+  "tolerance_sweep": [
+    {
+      "tolerance": 15.0,
+      "RGB": 0.1962,
+      "HSV": 0.3375,
+      "Lab": 0.7613,
+      "YCrCb": 0.7479,
+      "Normalised RGB": 0.4991
+    },
+    {
+      "tolerance": 25.0,
+      "RGB": 0.3781,
+      "HSV": 0.4431,
+      "Lab": 0.7839,
+      "YCrCb": 0.7901,
+      "Normalised RGB": 0.5952
+    },
+    {
+      "tolerance": 35.0,
+      "RGB": 0.5145,
+      "HSV": 0.4435,
+      "Lab": 0.653,
+      "YCrCb": 0.6873,
+      "Normalised RGB": 0.5839
+    },
+    {
+      "tolerance": 45.0,
+      "RGB": 0.6039,
+      "HSV": 0.4572,
+      "Lab": 0.5035,
+      "YCrCb": 0.5814,
+      "Normalised RGB": 0.5232
+    },
+    {
+      "tolerance": 60.0,
+      "RGB": 0.6463,
+      "HSV": 0.4872,
+      "Lab": 0.2352,
+      "YCrCb": 0.3391,
+      "Normalised RGB": 0.4873
+    },
+    {
+      "tolerance": 80.0,
+      "RGB": 0.6131,
+      "HSV": 0.4234,
+      "Lab": 0.1781,
+      "YCrCb": 0.205,
+      "Normalised RGB": 0.4124
+    }
+  ],
+  "photographs": [
+    {
+      "space": "RGB",
+      "tolerance": 60.0,
+      "undegraded_iou": 0.6463,
+      "Brightness x0.6": 0.219,
+      "Brightness x1.3": 0.3587,
+      "Warm cast": 0.4476,
+      "Cool cast": 0.5389,
+      "Gamma 2.0": 0.2432,
+      "worst_case": 0.219,
+      "mean_loss": 0.2848
+    },
+    {
+      "space": "HSV",
+      "tolerance": 60.0,
+      "undegraded_iou": 0.4872,
+      "Brightness x0.6": 0.4873,
+      "Brightness x1.3": 0.493,
+      "Warm cast": 0.3088,
+      "Cool cast": 0.5017,
+      "Gamma 2.0": 0.2915,
+      "worst_case": 0.2915,
+      "mean_loss": 0.0707
+    },
+    {
+      "space": "Lab",
+      "tolerance": 25.0,
+      "undegraded_iou": 0.7839,
+      "Brightness x0.6": 0.6781,
+      "Brightness x1.3": 0.6257,
+      "Warm cast": 0.579,
+      "Cool cast": 0.5704,
+      "Gamma 2.0": 0.643,
+      "worst_case": 0.5704,
+      "mean_loss": 0.1647
+    },
+    {
+      "space": "YCrCb",
+      "tolerance": 25.0,
+      "undegraded_iou": 0.7901,
+      "Brightness x0.6": 0.5299,
+      "Brightness x1.3": 0.5937,
+      "Warm cast": 0.4861,
+      "Cool cast": 0.4528,
+      "Gamma 2.0": 0.5834,
+      "worst_case": 0.4528,
+      "mean_loss": 0.2609
+    },
+    {
+      "space": "Normalised RGB",
+      "tolerance": 25.0,
+      "undegraded_iou": 0.5952,
+      "Brightness x0.6": 0.5949,
+      "Brightness x1.3": 0.5778,
+      "Warm cast": 0.3689,
+      "Cool cast": 0.34,
+      "Gamma 2.0": 0.2017,
+      "worst_case": 0.2017,
+      "mean_loss": 0.1785
+    }
+  ],
+  "per_image": [
+    {
+      "image": "lobsters_and_wine",
+      "chroma_distance": 63.3,
+      "RGB clean": 0.7398,
+      "RGB warm": 0.2845,
+      "HSV clean": 0.6515,
+      "HSV warm": 0.2366,
+      "Lab clean": 0.869,
+      "Lab warm": 0.4619,
+      "YCrCb clean": 0.7829,
+      "YCrCb warm": 0.3358,
+      "Normalised RGB clean": 0.7932,
+      "Normalised RGB warm": 0.4464
+    },
+    {
+      "image": "stacked_timber",
+      "chroma_distance": 62.4,
+      "RGB clean": 0.9824,
+      "RGB warm": 0.9786,
+      "HSV clean": 0.9781,
+      "HSV warm": 0.9189,
+      "Lab clean": 0.9216,
+      "Lab warm": 0.9789,
+      "YCrCb clean": 0.9291,
+      "YCrCb warm": 0.977,
+      "Normalised RGB clean": 0.9493,
+      "Normalised RGB warm": 0.5136
+    },
+    {
+      "image": "anteater_at_sunset",
+      "chroma_distance": 59.0,
+      "RGB clean": 0.8558,
+      "RGB warm": 0.6947,
+      "HSV clean": 0.2174,
+      "HSV warm": 0.119,
+      "Lab clean": 0.8394,
+      "Lab warm": 0.6681,
+      "YCrCb clean": 0.9147,
+      "YCrCb warm": 0.7506,
+      "Normalised RGB clean": 0.327,
+      "Normalised RGB warm": 0.1509
+    },
+    {
+      "image": "kabuki_pair",
+      "chroma_distance": 54.6,
+      "RGB clean": 0.8457,
+      "RGB warm": 0.7395,
+      "HSV clean": 0.4,
+      "HSV warm": 0.2284,
+      "Lab clean": 0.9286,
+      "Lab warm": 0.7188,
+      "YCrCb clean": 0.9284,
+      "YCrCb warm": 0.8134,
+      "Normalised RGB clean": 0.5428,
+      "Normalised RGB warm": 0.4466
+    },
+    {
+      "image": "tomato_stall",
+      "chroma_distance": 54.3,
+      "RGB clean": 0.7435,
+      "RGB warm": 0.4603,
+      "HSV clean": 0.3573,
+      "HSV warm": 0.2589,
+      "Lab clean": 0.9213,
+      "Lab warm": 0.6476,
+      "YCrCb clean": 0.8836,
+      "YCrCb warm": 0.3721,
+      "Normalised RGB clean": 0.5656,
+      "Normalised RGB warm": 0.4395
+    },
+    {
+      "image": "kalmar_castle",
+      "chroma_distance": 53.2,
+      "RGB clean": 0.7482,
+      "RGB warm": 0.665,
+      "HSV clean": 0.5365,
+      "HSV warm": 0.4115,
+      "Lab clean": 0.6916,
+      "Lab warm": 0.7991,
+      "YCrCb clean": 0.713,
+      "YCrCb warm": 0.8006,
+      "Normalised RGB clean": 0.9403,
+      "Normalised RGB warm": 0.7244
+    },
+    {
+      "image": "yellow_trousers",
+      "chroma_distance": 47.9,
+      "RGB clean": 0.5401,
+      "RGB warm": 0.1167,
+      "HSV clean": 0.3877,
+      "HSV warm": 0.1318,
+      "Lab clean": 0.8037,
+      "Lab warm": 0.5243,
+      "YCrCb clean": 0.7965,
+      "YCrCb warm": 0.1619,
+      "Normalised RGB clean": 0.6363,
+      "Normalised RGB warm": 0.1339
+    },
+    {
+      "image": "woman_in_blue_dress",
+      "chroma_distance": 46.7,
+      "RGB clean": 0.7688,
+      "RGB warm": 0.5434,
+      "HSV clean": 0.8475,
+      "HSV warm": 0.2744,
+      "Lab clean": 0.8278,
+      "Lab warm": 0.4904,
+      "YCrCb clean": 0.8529,
+      "YCrCb warm": 0.4009,
+      "Normalised RGB clean": 0.8656,
+      "Normalised RGB warm": 0.3476
+    },
+    {
+      "image": "red_robed_figures",
+      "chroma_distance": 46.5,
+      "RGB clean": 0.5622,
+      "RGB warm": 0.4038,
+      "HSV clean": 0.316,
+      "HSV warm": 0.1245,
+      "Lab clean": 0.5786,
+      "Lab warm": 0.3808,
+      "YCrCb clean": 0.5809,
+      "YCrCb warm": 0.268,
+      "Normalised RGB clean": 0.6294,
+      "Normalised RGB warm": 0.4607
+    },
+    {
+      "image": "red_sports_car",
+      "chroma_distance": 45.8,
+      "RGB clean": 0.2975,
+      "RGB warm": 0.1316,
+      "HSV clean": 0.3576,
+      "HSV warm": 0.288,
+      "Lab clean": 0.8573,
+      "Lab warm": 0.5762,
+      "YCrCb clean": 0.8642,
+      "YCrCb warm": 0.3593,
+      "Normalised RGB clean": 0.153,
+      "Normalised RGB warm": 0.2291
+    },
+    {
+      "image": "westminster_pair",
+      "chroma_distance": 43.3,
+      "RGB clean": 0.2645,
+      "RGB warm": 0.0564,
+      "HSV clean": 0.2505,
+      "HSV warm": 0.1491,
+      "Lab clean": 0.3033,
+      "Lab warm": 0.1062,
+      "YCrCb clean": 0.3908,
+      "YCrCb warm": 0.075,
+      "Normalised RGB clean": 0.3923,
+      "Normalised RGB warm": 0.179
+    },
+    {
+      "image": "green_field_worker",
+      "chroma_distance": 39.9,
+      "RGB clean": 0.4067,
+      "RGB warm": 0.2969,
+      "HSV clean": 0.546,
+      "HSV warm": 0.5651,
+      "Lab clean": 0.8641,
+      "Lab warm": 0.5959,
+      "YCrCb clean": 0.844,
+      "YCrCb warm": 0.5187,
+      "Normalised RGB clean": 0.3476,
+      "Normalised RGB warm": 0.3552
+    }
+  ],
+  "synthetic": [
+    {
+      "space": "RGB",
+      "Brightness scale worst": 0.0,
+      "Brightness scale mean": 0.2,
+      "Colour cast worst": 0.0,
+      "Colour cast mean": 0.4,
+      "Gamma worst": 0.0,
+      "Gamma mean": 0.2
+    },
+    {
+      "space": "HSV",
+      "Brightness scale worst": 0.8727,
+      "Brightness scale mean": 0.8727,
+      "Colour cast worst": 0.0,
+      "Colour cast mean": 0.4691,
+      "Gamma worst": 0.0,
+      "Gamma mean": 0.3331
+    },
+    {
+      "space": "Lab",
+      "Brightness scale worst": 0.0,
+      "Brightness scale mean": 0.7722,
+      "Colour cast worst": 0.0,
+      "Colour cast mean": 0.6785,
+      "Gamma worst": 0.8202,
+      "Gamma mean": 0.9353
+    },
+    {
+      "space": "YCrCb",
+      "Brightness scale worst": 0.0,
+      "Brightness scale mean": 0.5634,
+      "Colour cast worst": 0.0,
+      "Colour cast mean": 0.5262,
+      "Gamma worst": 0.8755,
+      "Gamma mean": 0.9334
+    },
+    {
+      "space": "Normalised RGB",
+      "Brightness scale worst": 0.9995,
+      "Brightness scale mean": 0.9995,
+      "Colour cast worst": 0.0,
+      "Colour cast mean": 0.5849,
+      "Gamma worst": 0.0,
+      "Gamma mean": 0.1999
+    }
+  ],
+  "brightness_stability": [
+    {
+      "level": 1.0,
+      "RGB": 0.0,
+      "HSV": 0.0,
+      "Lab": 0.0,
+      "YCrCb": 0.0,
+      "Normalised RGB": 0.0
+    },
+    {
+      "level": 0.8,
+      "RGB": 25.458,
+      "HSV": 0.062,
+      "Lab": 5.562,
+      "YCrCb": 7.125,
+      "Normalised RGB": 0.0
+    },
+    {
+      "level": 0.6,
+      "RGB": 50.917,
+      "HSV": 0.062,
+      "Lab": 11.25,
+      "YCrCb": 14.188,
+      "Normalised RGB": 0.0
+    },
+    {
+      "level": 0.4,
+      "RGB": 76.375,
+      "HSV": 0.062,
+      "Lab": 17.562,
+      "YCrCb": 21.188,
+      "Normalised RGB": 0.0
+    },
+    {
+      "level": 1.3,
+      "RGB": 30.417,
+      "HSV": 0.938,
+      "Lab": 7.562,
+      "YCrCb": 9.375,
+      "Normalised RGB": 0.875
+    }
+  ],
+  "cast_stability": [
+    {
+      "level": 0.0,
+      "RGB": 0.0,
+      "HSV": 0.0,
+      "Lab": 0.0,
+      "YCrCb": 0.0,
+      "Normalised RGB": 0.0
+    },
+    {
+      "level": 0.1,
+      "RGB": 8.417,
+      "HSV": 12.312,
+      "Lab": 6.188,
+      "YCrCb": 7.938,
+      "Normalised RGB": 5.333
+    },
+    {
+      "level": 0.2,
+      "RGB": 15.583,
+      "HSV": 21.062,
+      "Lab": 11.375,
+      "YCrCb": 14.625,
+      "Normalised RGB": 10.292
+    },
+    {
+      "level": 0.35,
+      "RGB": 24.125,
+      "HSV": 31.312,
+      "Lab": 17.812,
+      "YCrCb": 22.312,
+      "Normalised RGB": 17.0
+    },
+    {
+      "level": 0.5,
+      "RGB": 31.458,
+      "HSV": 42.688,
+      "Lab": 23.562,
+      "YCrCb": 28.875,
+      "Normalised RGB": 24.208
+    }
+  ],
+  "white_balance_rescue": [
+    {
+      "cast_level": 0.0,
+      "RGB raw": 1.0,
+      "RGB balanced": 0.3333,
+      "HSV raw": 0.8727,
+      "HSV balanced": 0.5962,
+      "Lab raw": 0.9705,
+      "Lab balanced": 1.0,
+      "YCrCb raw": 0.9329,
+      "YCrCb balanced": 0.6667,
+      "Normalised RGB raw": 0.9995,
+      "Normalised RGB balanced": 0.6667
+    },
+    {
+      "cast_level": 0.1,
+      "RGB raw": 1.0,
+      "RGB balanced": 0.6667,
+      "HSV raw": 0.7375,
+      "HSV balanced": 0.9296,
+      "Lab raw": 0.82,
+      "Lab balanced": 1.0,
+      "YCrCb raw": 0.8766,
+      "YCrCb balanced": 0.6667,
+      "Normalised RGB raw": 0.9995,
+      "Normalised RGB balanced": 0.6667
+    },
+    {
+      "cast_level": 0.2,
+      "RGB raw": 0.0,
+      "RGB balanced": 0.6667,
+      "HSV raw": 0.7352,
+      "HSV balanced": 0.9744,
+      "Lab raw": 0.82,
+      "Lab balanced": 1.0,
+      "YCrCb raw": 0.8213,
+      "YCrCb balanced": 0.6667,
+      "Normalised RGB raw": 0.9254,
+      "Normalised RGB balanced": 0.6667
+    },
+    {
+      "cast_level": 0.35,
+      "RGB raw": 0.0,
+      "RGB balanced": 0.3333,
+      "HSV raw": 0.0,
+      "HSV balanced": 0.6662,
+      "Lab raw": 0.7822,
+      "Lab balanced": 1.0,
+      "YCrCb raw": 0.0,
+      "YCrCb balanced": 0.6667,
+      "Normalised RGB raw": 0.0,
+      "Normalised RGB balanced": 0.6667
+    },
+    {
+      "cast_level": 0.5,
+      "RGB raw": 0.0,
+      "RGB balanced": 0.0,
+      "HSV raw": 0.0,
+      "HSV balanced": 0.6411,
+      "Lab raw": 0.0,
+      "Lab balanced": 0.6667,
+      "YCrCb raw": 0.0,
+      "YCrCb balanced": 0.6667,
+      "Normalised RGB raw": 0.0,
+      "Normalised RGB balanced": 0.6662
+    }
+  ],
+  "hue_range": [
+    {
+      "colour": "red",
+      "true_degrees": 0,
+      "opencv_hue": 0,
+      "naive_degrees_reading": 0,
+      "correct_degrees": 0
+    },
+    {
+      "colour": "yellow",
+      "true_degrees": 60,
+      "opencv_hue": 30,
+      "naive_degrees_reading": 30,
+      "correct_degrees": 60
+    },
+    {
+      "colour": "green",
+      "true_degrees": 120,
+      "opencv_hue": 60,
+      "naive_degrees_reading": 60,
+      "correct_degrees": 120
+    },
+    {
+      "colour": "cyan",
+      "true_degrees": 180,
+      "opencv_hue": 90,
+      "naive_degrees_reading": 90,
+      "correct_degrees": 180
+    },
+    {
+      "colour": "blue",
+      "true_degrees": 240,
+      "opencv_hue": 120,
+      "naive_degrees_reading": 120,
+      "correct_degrees": 240
+    },
+    {
+      "colour": "magenta",
+      "true_degrees": 300,
+      "opencv_hue": 150,
+      "naive_degrees_reading": 150,
+      "correct_degrees": 300
+    }
+  ]
+}

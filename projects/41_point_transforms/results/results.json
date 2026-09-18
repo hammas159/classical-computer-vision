@@ -1,0 +1,382 @@
+{
+  "project": "41_point_transforms",
+  "generated_utc": "2026-09-17T19:56:08+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "firewalkers_at_night",
+    "young_monks_crowding",
+    "golden_pavilion",
+    "clapboard_houses",
+    "three_girls_by_hay",
+    "market_fruit_stall",
+    "bighorn_ram",
+    "chipmunk_on_granite",
+    "horses_in_a_meadow",
+    "woman_by_a_wall",
+    "monk_under_a_tree",
+    "aircrew_on_tarmac"
+  ],
+  "brightness": {
+    "firewalkers_at_night": 46.8,
+    "young_monks_crowding": 74.3,
+    "golden_pavilion": 85.0,
+    "clapboard_houses": 93.1,
+    "three_girls_by_hay": 100.2,
+    "market_fruit_stall": 102.3,
+    "bighorn_ram": 112.6,
+    "chipmunk_on_granite": 119.1,
+    "horses_in_a_meadow": 126.1,
+    "woman_by_a_wall": 133.5,
+    "monk_under_a_tree": 149.3,
+    "aircrew_on_tarmac": 188.7
+  },
+  "table_properties": [
+    {
+      "transform": "Identity (control)",
+      "levels_surviving": 256,
+      "levels_lost": 0,
+      "invertible": true,
+      "max_collapse_run": 1,
+      "max_output_gap": 1
+    },
+    {
+      "transform": "Negative",
+      "levels_surviving": 256,
+      "levels_lost": 0,
+      "invertible": true,
+      "max_collapse_run": 1,
+      "max_output_gap": 1
+    },
+    {
+      "transform": "Gamma 0.5 (brighten)",
+      "levels_surviving": 192,
+      "levels_lost": 64,
+      "invertible": false,
+      "max_collapse_run": 2,
+      "max_output_gap": 16
+    },
+    {
+      "transform": "Gamma 2.2 (darken)",
+      "levels_surviving": 184,
+      "levels_lost": 72,
+      "invertible": false,
+      "max_collapse_run": 15,
+      "max_output_gap": 3
+    },
+    {
+      "transform": "Log",
+      "levels_surviving": 125,
+      "levels_lost": 131,
+      "invertible": false,
+      "max_collapse_run": 6,
+      "max_output_gap": 32
+    },
+    {
+      "transform": "Inverse log",
+      "levels_surviving": 125,
+      "levels_lost": 131,
+      "invertible": false,
+      "max_collapse_run": 24,
+      "max_output_gap": 6
+    },
+    {
+      "transform": "Piecewise linear",
+      "levels_surviving": 176,
+      "levels_lost": 80,
+      "invertible": false,
+      "max_collapse_run": 3,
+      "max_output_gap": 2
+    },
+    {
+      "transform": "Contrast stretch",
+      "levels_surviving": 191,
+      "levels_lost": 65,
+      "invertible": false,
+      "max_collapse_run": 36,
+      "max_output_gap": 2
+    },
+    {
+      "transform": "Posterise (6 levels)",
+      "levels_surviving": 6,
+      "levels_lost": 250,
+      "invertible": false,
+      "max_collapse_run": 51,
+      "max_output_gap": 51
+    },
+    {
+      "transform": "Threshold 127",
+      "levels_surviving": 2,
+      "levels_lost": 254,
+      "invertible": false,
+      "max_collapse_run": 128,
+      "max_output_gap": 255
+    }
+  ],
+  "lut_versus_arithmetic": [
+    {
+      "transform": "Identity (control)",
+      "identical": true,
+      "lut_ms": 0.0475,
+      "arithmetic_ms": 0.0992,
+      "speedup": 2.1
+    },
+    {
+      "transform": "Negative",
+      "identical": true,
+      "lut_ms": 0.0476,
+      "arithmetic_ms": 0.7328,
+      "speedup": 15.4
+    },
+    {
+      "transform": "Gamma 0.5 (brighten)",
+      "identical": true,
+      "lut_ms": 0.0486,
+      "arithmetic_ms": 2.0941,
+      "speedup": 43.0
+    },
+    {
+      "transform": "Gamma 2.2 (darken)",
+      "identical": true,
+      "lut_ms": 0.0486,
+      "arithmetic_ms": 2.0218,
+      "speedup": 41.6
+    }
+  ],
+  "on_images": [
+    {
+      "transform": "Identity (control)",
+      "levels_surviving": 256,
+      "entropy_bits": 7.1734,
+      "rms_contrast": 0.1973,
+      "psnr_vs_original": Infinity,
+      "median_ms": 0.0467
+    },
+    {
+      "transform": "Negative",
+      "levels_surviving": 256,
+      "entropy_bits": 7.1734,
+      "rms_contrast": 0.1973,
+      "psnr_vs_original": 6.276,
+      "median_ms": 0.0522
+    },
+    {
+      "transform": "Gamma 0.5 (brighten)",
+      "levels_surviving": 192,
+      "entropy_bits": 6.7585,
+      "rms_contrast": 0.1581,
+      "psnr_vs_original": 13.931,
+      "median_ms": 0.0487
+    },
+    {
+      "transform": "Gamma 2.2 (darken)",
+      "levels_surviving": 184,
+      "entropy_bits": 6.3792,
+      "rms_contrast": 0.1911,
+      "psnr_vs_original": 13.313,
+      "median_ms": 0.0488
+    },
+    {
+      "transform": "Log",
+      "levels_surviving": 125,
+      "entropy_bits": 6.0405,
+      "rms_contrast": 0.1012,
+      "psnr_vs_original": 8.108,
+      "median_ms": 0.0486
+    },
+    {
+      "transform": "Inverse log",
+      "levels_surviving": 125,
+      "entropy_bits": 5.0505,
+      "rms_contrast": 0.1362,
+      "psnr_vs_original": 9.332,
+      "median_ms": 0.0477
+    },
+    {
+      "transform": "Piecewise linear",
+      "levels_surviving": 176,
+      "entropy_bits": 6.6401,
+      "rms_contrast": 0.2621,
+      "psnr_vs_original": 20.571,
+      "median_ms": 0.0476
+    },
+    {
+      "transform": "Contrast stretch",
+      "levels_surviving": 191,
+      "entropy_bits": 6.5194,
+      "rms_contrast": 0.2503,
+      "psnr_vs_original": 23.259,
+      "median_ms": 0.0476
+    },
+    {
+      "transform": "Posterise (6 levels)",
+      "levels_surviving": 6,
+      "entropy_bits": 1.8479,
+      "rms_contrast": 0.206,
+      "psnr_vs_original": 24.632,
+      "median_ms": 0.0466
+    },
+    {
+      "transform": "Threshold 127",
+      "levels_surviving": 2,
+      "entropy_bits": 0.7857,
+      "rms_contrast": 0.4183,
+      "psnr_vs_original": 10.318,
+      "median_ms": 0.0466
+    }
+  ],
+  "gamma_sweep": [
+    {
+      "gamma": 0.3,
+      "levels_surviving": 149,
+      "max_collapse_run": 4,
+      "max_output_gap": 48,
+      "entropy_bits": 6.3611,
+      "mean_brightness": 0.7485
+    },
+    {
+      "gamma": 0.5,
+      "levels_surviving": 192,
+      "max_collapse_run": 2,
+      "max_output_gap": 16,
+      "entropy_bits": 6.7585,
+      "mean_brightness": 0.63
+    },
+    {
+      "gamma": 0.7,
+      "levels_surviving": 223,
+      "max_collapse_run": 2,
+      "max_output_gap": 5,
+      "entropy_bits": 6.9756,
+      "mean_brightness": 0.5382
+    },
+    {
+      "gamma": 1.0,
+      "levels_surviving": 256,
+      "max_collapse_run": 1,
+      "max_output_gap": 1,
+      "entropy_bits": 7.1734,
+      "mean_brightness": 0.435
+    },
+    {
+      "gamma": 1.5,
+      "levels_surviving": 218,
+      "max_collapse_run": 5,
+      "max_output_gap": 2,
+      "entropy_bits": 6.8828,
+      "mean_brightness": 0.3209
+    },
+    {
+      "gamma": 2.2,
+      "levels_surviving": 184,
+      "max_collapse_run": 15,
+      "max_output_gap": 3,
+      "entropy_bits": 6.3792,
+      "mean_brightness": 0.2275
+    },
+    {
+      "gamma": 3.0,
+      "levels_surviving": 158,
+      "max_collapse_run": 32,
+      "max_output_gap": 3,
+      "entropy_bits": 5.7842,
+      "mean_brightness": 0.1666
+    }
+  ],
+  "posterise_sweep": [
+    {
+      "requested_levels": 2,
+      "actual_levels": 2,
+      "entropy_bits": 0.7857,
+      "psnr_db": 10.318
+    },
+    {
+      "requested_levels": 4,
+      "actual_levels": 4,
+      "entropy_bits": 1.3655,
+      "psnr_db": 20.242
+    },
+    {
+      "requested_levels": 8,
+      "actual_levels": 8,
+      "entropy_bits": 2.2458,
+      "psnr_db": 27.625
+    },
+    {
+      "requested_levels": 16,
+      "actual_levels": 16,
+      "entropy_bits": 3.2181,
+      "psnr_db": 34.132
+    },
+    {
+      "requested_levels": 32,
+      "actual_levels": 32,
+      "entropy_bits": 4.2139,
+      "psnr_db": 40.569
+    },
+    {
+      "requested_levels": 64,
+      "actual_levels": 64,
+      "entropy_bits": 5.2137,
+      "psnr_db": 46.162
+    },
+    {
+      "requested_levels": 128,
+      "actual_levels": 128,
+      "entropy_bits": 6.18,
+      "psnr_db": 51.18
+    },
+    {
+      "requested_levels": 256,
+      "actual_levels": 256,
+      "entropy_bits": 7.1734,
+      "psnr_db": Infinity
+    }
+  ],
+  "bit_planes": [
+    {
+      "top_planes_kept": 1,
+      "psnr_db": 11.232,
+      "entropy_bits": 0.7857
+    },
+    {
+      "top_planes_kept": 2,
+      "psnr_db": 16.889,
+      "entropy_bits": 1.5524
+    },
+    {
+      "top_planes_kept": 3,
+      "psnr_db": 22.811,
+      "entropy_bits": 2.4182
+    },
+    {
+      "top_planes_kept": 4,
+      "psnr_db": 29.176,
+      "entropy_bits": 3.3092
+    },
+    {
+      "top_planes_kept": 5,
+      "psnr_db": 35.755,
+      "entropy_bits": 4.243
+    },
+    {
+      "top_planes_kept": 6,
+      "psnr_db": 42.615,
+      "entropy_bits": 5.2107
+    },
+    {
+      "top_planes_kept": 7,
+      "psnr_db": 51.196,
+      "entropy_bits": 6.18
+    },
+    {
+      "top_planes_kept": 8,
+      "psnr_db": Infinity,
+      "entropy_bits": 7.1734
+    }
+  ]
+}

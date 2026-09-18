@@ -1,0 +1,412 @@
+{
+  "project": "33_texture",
+  "generated_utc": "2026-09-17T18:44:52+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "textures": [
+    "tree_bark_ridged",
+    "herringbone_weave",
+    "wood_grain",
+    "brick_paving",
+    "packed_cobbles",
+    "thatch_fibres",
+    "coarse_stucco",
+    "dry_straw",
+    "sand_ripples",
+    "stipple_plaster",
+    "perforated_metal",
+    "crushed_gravel"
+  ],
+  "patch": 32,
+  "per_class": 12,
+  "chance": 0.0833,
+  "clean": [
+    {
+      "descriptor": "GLCM (Haralick)",
+      "accuracy": 0.9528,
+      "accuracy_sd": 0.0246,
+      "accuracy_min": 0.9097,
+      "accuracy_max": 0.9792,
+      "separability": 6.0572,
+      "dimensions": 72,
+      "median_ms": 1.241,
+      "seeds": 5
+    },
+    {
+      "descriptor": "LBP (uniform)",
+      "accuracy": 0.7014,
+      "accuracy_sd": 0.0337,
+      "accuracy_min": 0.6528,
+      "accuracy_max": 0.7431,
+      "separability": 1.6392,
+      "dimensions": 26,
+      "median_ms": 0.639,
+      "seeds": 5
+    },
+    {
+      "descriptor": "Gabor bank",
+      "accuracy": 0.9097,
+      "accuracy_sd": 0.0211,
+      "accuracy_min": 0.8958,
+      "accuracy_max": 0.9514,
+      "separability": 5.8339,
+      "dimensions": 48,
+      "median_ms": 2.675,
+      "seeds": 5
+    },
+    {
+      "descriptor": "Laws energy",
+      "accuracy": 0.9514,
+      "accuracy_sd": 0.0252,
+      "accuracy_min": 0.9097,
+      "accuracy_max": 0.9792,
+      "separability": 17.5252,
+      "dimensions": 30,
+      "median_ms": 0.994,
+      "seeds": 5
+    },
+    {
+      "descriptor": "Raw histogram (control)",
+      "accuracy": 0.7639,
+      "accuracy_sd": 0.0403,
+      "accuracy_min": 0.7083,
+      "accuracy_max": 0.8056,
+      "separability": 2.2561,
+      "dimensions": 32,
+      "median_ms": 0.112,
+      "seeds": 5
+    }
+  ],
+  "patch_size_sweep": [
+    {
+      "patch": 24,
+      "GLCM (Haralick)": 0.8972,
+      "LBP (uniform)": 0.557,
+      "Gabor bank": 0.8361,
+      "Laws energy": 0.925,
+      "Raw histogram (control)": 0.7347
+    },
+    {
+      "patch": 32,
+      "GLCM (Haralick)": 0.9528,
+      "LBP (uniform)": 0.7014,
+      "Gabor bank": 0.9097,
+      "Laws energy": 0.9514,
+      "Raw histogram (control)": 0.7639
+    },
+    {
+      "patch": 48,
+      "GLCM (Haralick)": 0.9958,
+      "LBP (uniform)": 0.9,
+      "Gabor bank": 0.9639,
+      "Laws energy": 0.9917,
+      "Raw histogram (control)": 0.8375
+    },
+    {
+      "patch": 64,
+      "GLCM (Haralick)": 0.9972,
+      "LBP (uniform)": 0.9847,
+      "Gabor bank": 0.9833,
+      "Laws energy": 0.9945,
+      "Raw histogram (control)": 0.9
+    },
+    {
+      "patch": 96,
+      "GLCM (Haralick)": 1.0,
+      "LBP (uniform)": 1.0,
+      "Gabor bank": 0.9972,
+      "Laws energy": 1.0,
+      "Raw histogram (control)": 0.9431
+    }
+  ],
+  "invariance": [
+    {
+      "descriptor": "GLCM (Haralick)",
+      "clean_accuracy": 0.9528,
+      "clean_sd": 0.0246,
+      "illumination_accuracy": 0.0861,
+      "illumination_sd": 0.0056,
+      "illumination_drop": 0.8667,
+      "gamma_accuracy": 0.6819,
+      "gamma_sd": 0.0183,
+      "gamma_drop": 0.2709,
+      "noise_accuracy": 0.1625,
+      "noise_sd": 0.0121,
+      "noise_drop": 0.7903,
+      "rotation45_accuracy": 0.4986,
+      "rotation45_sd": 0.0427,
+      "rotation45_drop": 0.4542,
+      "rotation_accuracy": 0.6153,
+      "rotation_sd": 0.0179,
+      "rotation_drop": 0.3375,
+      "seeds": 5
+    },
+    {
+      "descriptor": "LBP (uniform)",
+      "clean_accuracy": 0.7014,
+      "clean_sd": 0.0337,
+      "illumination_accuracy": 0.6403,
+      "illumination_sd": 0.0422,
+      "illumination_drop": 0.0611,
+      "gamma_accuracy": 0.5736,
+      "gamma_sd": 0.0293,
+      "gamma_drop": 0.1278,
+      "noise_accuracy": 0.0861,
+      "noise_sd": 0.0034,
+      "noise_drop": 0.6153,
+      "rotation45_accuracy": 0.543,
+      "rotation45_sd": 0.0369,
+      "rotation45_drop": 0.1584,
+      "rotation_accuracy": 0.7028,
+      "rotation_sd": 0.0355,
+      "rotation_drop": -0.0014,
+      "seeds": 5
+    },
+    {
+      "descriptor": "Gabor bank",
+      "clean_accuracy": 0.9097,
+      "clean_sd": 0.0211,
+      "illumination_accuracy": 0.0903,
+      "illumination_sd": 0.0139,
+      "illumination_drop": 0.8194,
+      "gamma_accuracy": 0.2958,
+      "gamma_sd": 0.0345,
+      "gamma_drop": 0.6139,
+      "noise_accuracy": 0.6111,
+      "noise_sd": 0.0346,
+      "noise_drop": 0.2986,
+      "rotation45_accuracy": 0.5528,
+      "rotation45_sd": 0.0209,
+      "rotation45_drop": 0.3569,
+      "rotation_accuracy": 0.5958,
+      "rotation_sd": 0.0509,
+      "rotation_drop": 0.3139,
+      "seeds": 5
+    },
+    {
+      "descriptor": "Laws energy",
+      "clean_accuracy": 0.9514,
+      "clean_sd": 0.0252,
+      "illumination_accuracy": 0.0833,
+      "illumination_sd": 0.0,
+      "illumination_drop": 0.8681,
+      "gamma_accuracy": 0.6764,
+      "gamma_sd": 0.0447,
+      "gamma_drop": 0.275,
+      "noise_accuracy": 0.1097,
+      "noise_sd": 0.0342,
+      "noise_drop": 0.8417,
+      "rotation45_accuracy": 0.5208,
+      "rotation45_sd": 0.0307,
+      "rotation45_drop": 0.4306,
+      "rotation_accuracy": 0.9514,
+      "rotation_sd": 0.0252,
+      "rotation_drop": 0.0,
+      "seeds": 5
+    },
+    {
+      "descriptor": "Raw histogram (control)",
+      "clean_accuracy": 0.7639,
+      "clean_sd": 0.0403,
+      "illumination_accuracy": 0.0847,
+      "illumination_sd": 0.012,
+      "illumination_drop": 0.6792,
+      "gamma_accuracy": 0.125,
+      "gamma_sd": 0.0267,
+      "gamma_drop": 0.6389,
+      "noise_accuracy": 0.2097,
+      "noise_sd": 0.0194,
+      "noise_drop": 0.5542,
+      "rotation45_accuracy": 0.7278,
+      "rotation45_sd": 0.0382,
+      "rotation45_drop": 0.0361,
+      "rotation_accuracy": 0.7639,
+      "rotation_sd": 0.0403,
+      "rotation_drop": 0.0,
+      "seeds": 5
+    }
+  ],
+  "illumination_sweep": [
+    {
+      "illumination": 0.0,
+      "GLCM (Haralick)": 0.9528,
+      "LBP (uniform)": 0.7014,
+      "Gabor bank": 0.9097,
+      "Laws energy": 0.9514,
+      "Raw histogram (control)": 0.7639
+    },
+    {
+      "illumination": 0.2,
+      "GLCM (Haralick)": 0.8139,
+      "LBP (uniform)": 0.7042,
+      "Gabor bank": 0.3334,
+      "Laws energy": 0.6958,
+      "Raw histogram (control)": 0.1875
+    },
+    {
+      "illumination": 0.4,
+      "GLCM (Haralick)": 0.4319,
+      "LBP (uniform)": 0.7125,
+      "Gabor bank": 0.207,
+      "Laws energy": 0.1556,
+      "Raw histogram (control)": 0.1375
+    },
+    {
+      "illumination": 0.6,
+      "GLCM (Haralick)": 0.1222,
+      "LBP (uniform)": 0.7056,
+      "Gabor bank": 0.1375,
+      "Laws energy": 0.0778,
+      "Raw histogram (control)": 0.1014
+    },
+    {
+      "illumination": 0.8,
+      "GLCM (Haralick)": 0.0861,
+      "LBP (uniform)": 0.6403,
+      "Gabor bank": 0.0903,
+      "Laws energy": 0.0833,
+      "Raw histogram (control)": 0.0847
+    }
+  ],
+  "gamma_sweep": [
+    {
+      "gamma": 0.0,
+      "GLCM (Haralick)": 0.9528,
+      "LBP (uniform)": 0.7014,
+      "Gabor bank": 0.9097,
+      "Laws energy": 0.9514,
+      "Raw histogram (control)": 0.7639
+    },
+    {
+      "gamma": 0.5,
+      "GLCM (Haralick)": 0.8973,
+      "LBP (uniform)": 0.7167,
+      "Gabor bank": 0.5944,
+      "Laws energy": 0.9111,
+      "Raw histogram (control)": 0.3556
+    },
+    {
+      "gamma": 1.0,
+      "GLCM (Haralick)": 0.7875,
+      "LBP (uniform)": 0.6764,
+      "Gabor bank": 0.4375,
+      "Laws energy": 0.7958,
+      "Raw histogram (control)": 0.2014
+    },
+    {
+      "gamma": 1.5,
+      "GLCM (Haralick)": 0.725,
+      "LBP (uniform)": 0.6236,
+      "Gabor bank": 0.3639,
+      "Laws energy": 0.7194,
+      "Raw histogram (control)": 0.1431
+    },
+    {
+      "gamma": 2.0,
+      "GLCM (Haralick)": 0.6819,
+      "LBP (uniform)": 0.5736,
+      "Gabor bank": 0.2958,
+      "Laws energy": 0.6764,
+      "Raw histogram (control)": 0.125
+    }
+  ],
+  "noise_sweep": [
+    {
+      "noise": 0.0,
+      "GLCM (Haralick)": 0.9528,
+      "LBP (uniform)": 0.7014,
+      "Gabor bank": 0.9097,
+      "Laws energy": 0.9514,
+      "Raw histogram (control)": 0.7639
+    },
+    {
+      "noise": 5.0,
+      "GLCM (Haralick)": 0.8806,
+      "LBP (uniform)": 0.5778,
+      "Gabor bank": 0.9111,
+      "Laws energy": 0.6445,
+      "Raw histogram (control)": 0.7431
+    },
+    {
+      "noise": 15.0,
+      "GLCM (Haralick)": 0.4806,
+      "LBP (uniform)": 0.3014,
+      "Gabor bank": 0.8958,
+      "Laws energy": 0.2861,
+      "Raw histogram (control)": 0.5875
+    },
+    {
+      "noise": 30.0,
+      "GLCM (Haralick)": 0.2875,
+      "LBP (uniform)": 0.1736,
+      "Gabor bank": 0.8139,
+      "Laws energy": 0.1222,
+      "Raw histogram (control)": 0.3472
+    },
+    {
+      "noise": 50.0,
+      "GLCM (Haralick)": 0.1625,
+      "LBP (uniform)": 0.0861,
+      "Gabor bank": 0.6111,
+      "Laws energy": 0.1097,
+      "Raw histogram (control)": 0.2097
+    }
+  ],
+  "rotation_sweep": [
+    {
+      "rotation": 0.0,
+      "GLCM (Haralick)": 0.9528,
+      "LBP (uniform)": 0.7014,
+      "Gabor bank": 0.9097,
+      "Laws energy": 0.9514,
+      "Raw histogram (control)": 0.7639
+    },
+    {
+      "rotation": 15.0,
+      "GLCM (Haralick)": 0.8208,
+      "LBP (uniform)": 0.6181,
+      "Gabor bank": 0.8194,
+      "Laws energy": 0.4736,
+      "Raw histogram (control)": 0.7306
+    },
+    {
+      "rotation": 30.0,
+      "GLCM (Haralick)": 0.6222,
+      "LBP (uniform)": 0.5347,
+      "Gabor bank": 0.5917,
+      "Laws energy": 0.4861,
+      "Raw histogram (control)": 0.75
+    },
+    {
+      "rotation": 45.0,
+      "GLCM (Haralick)": 0.4986,
+      "LBP (uniform)": 0.543,
+      "Gabor bank": 0.5528,
+      "Laws energy": 0.5208,
+      "Raw histogram (control)": 0.7278
+    },
+    {
+      "rotation": 90.0,
+      "GLCM (Haralick)": 0.6153,
+      "LBP (uniform)": 0.7028,
+      "Gabor bank": 0.5958,
+      "Laws energy": 0.9514,
+      "Raw histogram (control)": 0.7639
+    }
+  ],
+  "figure_condition": {
+    "degradation": "illumination",
+    "strength": 0.6,
+    "accuracy": {
+      "GLCM (Haralick)": 0.1181,
+      "LBP (uniform)": 0.6806,
+      "Gabor bank": 0.2014,
+      "Laws energy": 0.0833,
+      "Raw histogram (control)": 0.1111
+    }
+  }
+}

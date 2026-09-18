@@ -113,10 +113,10 @@ def make_case(
     image rather than the template is the realistic direction: the template is
     what you stored, the scene is what the camera gave you today.
     """
-    from shared import io, synth
+    from shared import synth
 
     rng = np.random.default_rng(seed)
-    base = io.sample(image)
+    base = load_scene(image)
     h, w = base.shape[:2]
 
     x = int(rng.integers(size, w - 2 * size))
@@ -150,9 +150,67 @@ def localisation_error(found, truth) -> float:
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "chelsea", "brick")
-GAINS = (1.0, 0.9, 0.75, 0.5, 1.25)
-OFFSETS = (0.0, 0.05, 0.1, 0.2, -0.1)
+#: Twelve photographs selected by `tools/select_images.py --axis entropy`, which
+#: is the axis that decides whether template matching has a chance. A template
+#: cut from a flat region is ambiguous no matter which scoring function reads it,
+#: and one cut from a busy region is not — so a pool at one end of this axis
+#: would measure the pictures rather than the methods.
+#:
+#: The spread is 5.2 to 7.9 bits. Two of the twelve are in the pool for a
+#: specific reason rather than for their entropy: `cricket_on_the_green` has
+#: eleven near-identical white figures on a plain field, and
+#: `boy_with_a_fish_trap` is most of a frame of woven lattice. Both create
+#: genuine repeated structure, which is the failure mode a single best-peak
+#: search cannot report.
+IMAGES = (
+    "hippo_in_green_water",    # entropy 5.2 - the flattest scene here
+    "porcupine_on_a_branch",   #         6.7
+    "leopard_in_bare_tree",    #         6.9
+    "cricket_on_the_green",    #         7.1 - eleven near-identical figures
+    "weaver_at_her_loom",      #         7.2
+    "bugling_elk",             #         7.3
+    "elephants_and_grooms",    #         7.4
+    "boy_in_a_wide_hat",       #         7.4
+    "boy_with_a_fish_trap",    #         7.5 - a repetitive woven lattice
+    "two_at_a_railing",        #         7.6
+    "street_piper",            #         7.7
+    "monks_at_a_noticeboard",  #         7.9 - a grid of near-identical notices
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """One of the project's photographs.
+
+    Named so that `run.py`, the tests and `infer.py` all read the same pixels —
+    the template is cropped from these, so a different loader would move the
+    ground truth.
+    """
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def entropy(img: np.ndarray) -> float:
+    """Shannon entropy of the grey histogram, in bits.
+
+    The axis the pool was selected on, recomputed here so the README's numbers
+    come from the project rather than from the selection tool.
+    """
+    hist = np.bincount(to_gray(img).ravel(), minlength=256).astype(np.float64)
+    p = hist / max(hist.sum(), 1)
+    p = p[p > 0]
+    return float(-(p * np.log2(p)).sum())
+#: Brightness *scale*. Pushed to a tenth rather than the usual gentle 0.9, because
+#: NCC's scale invariance is exact and nothing below 10x shows it: at gain 0.1 NCC
+#: still localises every template and SSD-normalised localises none.
+GAINS = (1.0, 0.5, 0.3, 0.1, 2.0, 3.0)
+
+#: Brightness *offset*, and the negative half is the half that matters. NCC is
+#: not offset invariant, but a *positive* offset hides that — it clips at white
+#: and destroys the structure for every method equally, so NCC and ZNCC fail
+#: together. Darkening clips only in the shadows, and there NCC falls to 0.458
+#: while ZNCC holds 1.000.
+OFFSETS = (0.0, -0.1, -0.2, -0.3, -0.4, 0.2, 0.4)
 NOISE_LEVELS = (0.0, 5.0, 15.0, 30.0, 50.0)
 SCALES = (1.0, 0.9, 0.8, 1.1, 1.25)
 ROTATIONS = (0.0, 2.0, 5.0, 10.0, 20.0)

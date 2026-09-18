@@ -145,7 +145,53 @@ def angular_error(estimate: np.ndarray, truth: np.ndarray) -> float:
 # scenes, including the ones designed to break each assumption
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "chelsea", "rocket", "immunohistochemistry")
+#: Twelve photographs ordered by **how far the scene's own mean already sits from
+#: the grey axis**, in degrees. That is not one of `tools/select_images.py`'s
+#: stock axes, and it is the right one here: it is precisely grey-world's error
+#: on an uncast image, so it predicts where the method must fail before any cast
+#: is applied. Selecting on generic chroma would not — a picture can be vividly
+#: coloured and still average to grey.
+#:
+#: The spread is 0.6 to 29.4 degrees. Snow scenes at one end, where grey-world's
+#: assumption is nearly exactly true; two red chrysanthemums filling the frame at
+#: the other, where it cannot be.
+IMAGES = (
+    "mushers_and_husky",      # 0.6 deg from grey - the assumption nearly holds
+    "gentoo_on_shingle",      # 1.9
+    "beach_baseball",         # 3.1
+    "desert_dune_ripples",    # 4.1
+    "louvre_pyramid",         # 5.6
+    "cyclists_on_a_lane",     # 7.0
+    "tiger_in_the_shade",     # 8.3
+    "swallowtail_on_phlox",   # 9.3
+    "leopard_in_dry_grass",   # 10.8
+    "lakeside_verandah",      # 13.1
+    "spotted_cat_on_a_log",   # 16.0
+    "red_chrysanthemums",     # 29.4 - the assumption cannot hold
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """One of the project's photographs.
+
+    Named so that `run.py`, the tests and `infer.py` all read the same pixels —
+    the cast is applied to these, so the ground truth depends on them.
+    """
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def grey_deviation(img: np.ndarray) -> float:
+    """Angle in degrees between the scene's mean colour and the grey axis.
+
+    Grey-world assumes this is zero. It is the method's error on an image with
+    no cast at all, so it is both the selection axis for the pool and a
+    prediction of where grey-world will fail — reported next to its actual error
+    so the two can be compared.
+    """
+    mean = to_float(img).reshape(-1, 3).mean(axis=0).astype(np.float64)
+    return angular_error(mean, np.ones(3))
 CASTS = {
     "tungsten (warm)": (1.35, 1.0, 0.65),
     "daylight (neutral)": (1.02, 1.0, 0.98),
@@ -157,9 +203,9 @@ P_VALUES = (1.0, 2.0, 4.0, 6.0, 10.0, 20.0, 50.0)
 
 def make_case(image: str, gains=(1.25, 1.0, 0.75), noise_sigma: float = 0.0, seed: int = 0):
     """Apply a known colour cast. Returns ``(cast_image, clean, true_illuminant)``."""
-    from shared import io, synth
+    from shared import synth
 
-    clean = io.sample(image)
+    clean = load_scene(image)
     cast = synth.colour_cast(clean, gains=tuple(float(g) for g in gains))
     if noise_sigma > 0:
         cast = synth.gaussian_noise(cast, sigma=noise_sigma, seed=seed)
@@ -188,20 +234,39 @@ def dominant_colour_scene(size: int = 384, fraction: float = 0.7, seed: int = 0)
     return to_uint8(img)
 
 
-def blown_highlight_scene(size: int = 384, seed: int = 0):
-    """A scene with one saturated highlight — white-patch's failure case.
+#: The cast used to build the blown-highlight scene. Any cast works; this one is
+#: named so the README can quote its true angle.
+HIGHLIGHT_CAST = (1.35, 1.0, 0.65)
 
-    A clipped specular highlight is not white, it is *clipped*, and its channel
-    ratios carry no information about the illuminant. A method that trusts the
-    brightest pixel trusts exactly that.
+
+def blown_highlight_scene(size: int = 384, seed: int = 0, cast=HIGHLIGHT_CAST):
+    """A scene under a warm light with one **clipped** specular highlight.
+
+    Returns ``(image, true_illuminant)``.
+
+    The order of operations is the entire point, and the first version of this
+    got it backwards. Painting a white circle and *then* applying the cast makes
+    the highlight carry the illuminant perfectly — white-patch reads it and
+    scores **0.0 degrees**, its best result anywhere in the project. That is not
+    white-patch's failure case, it is its ideal case with extra steps.
+
+    A blown highlight is clipped at the sensor, which happens **after** the light
+    has been multiplied in. So the cast goes on first and the highlight is
+    painted over it at pure white: its channel ratios are 1:1:1 and carry no
+    information about the light at all. A method that trusts the brightest pixel
+    now trusts exactly that, and reports "the light is white" under a warm one.
     """
+    from shared import synth
+
     rng = np.random.default_rng(seed)
     img = np.zeros((size, size, 3), np.float32)
     for _ in range(40):
         x, y = int(rng.integers(0, size - 50)), int(rng.integers(0, size - 50))
         cv2.rectangle(img, (x, y), (x + 48, y + 48), rng.random(3).tolist(), -1)
-    cv2.circle(img, (size // 2, size // 2), 14, (1.0, 1.0, 1.0), -1)
-    return to_uint8(img)
+
+    lit = synth.colour_cast(to_uint8(img), gains=tuple(float(g) for g in cast))
+    cv2.circle(lit, (size // 2, size // 2), 14, (255, 255, 255), -1)
+    return lit, normalise_illuminant(np.asarray(cast, np.float64))
 
 
 # --------------------------------------------------------------------------- #
@@ -279,19 +344,27 @@ def sweep_minkowski_p(images=IMAGES, ps=P_VALUES, cast: str = "tungsten (warm)")
 def assumption_failure_tests(seeds=(0, 1, 2)):
     """Trigger each method's designed failure mode deliberately.
 
-    Both scenes are lit **neutrally** — there is no colour cast at all, so the
-    correct answer is "the light is white" and any angular error is the method
-    hallucinating an illuminant from the scene's own content.
+    The two scenes are not lit the same way and cannot be. Grey-world's failure
+    needs a **neutral** light and a dominated scene, so that any error is the
+    method hallucinating a cast out of the content. White-patch's failure needs a
+    **real** cast and a clipped highlight, so that the brightest pixel is the one
+    thing in the frame that has lost the illuminant. Each scene therefore carries
+    its own ground truth.
     """
     neutral = normalise_illuminant(np.ones(3))
     rows = []
     for scene_name, builder in (
-        ("Dominant colour (breaks grey-world)", dominant_colour_scene),
-        ("Blown highlight (breaks white-patch)", blown_highlight_scene),
+        ("Dominant colour, neutral light (breaks grey-world)",
+         lambda seed: (dominant_colour_scene(seed=seed), neutral)),
+        ("Clipped highlight, warm light (breaks white-patch)",
+         lambda seed: blown_highlight_scene(seed=seed)),
     ):
         row: dict[str, float | str] = {"scene": scene_name}
         for name, fn in ESTIMATORS.items():
-            errors = [angular_error(fn(builder(seed=s)), neutral) for s in seeds]
+            errors = []
+            for s in seeds:
+                image, truth = builder(s)
+                errors.append(angular_error(fn(image), truth))
             row[name] = round(float(np.mean(errors)), 3)
         rows.append(row)
     return rows

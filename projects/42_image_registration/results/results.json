@@ -1,0 +1,383 @@
+{
+  "project": "42_image_registration",
+  "generated_utc": "2026-09-17T20:14:23+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "elk_in_long_grass",
+    "yacht_and_bridge",
+    "sled_dogs_on_ice",
+    "husky_puppies",
+    "giraffe_head_on",
+    "long_jetty",
+    "biwa_player",
+    "marmot_on_rock",
+    "cannon_on_cobbles",
+    "layered_sandstone",
+    "stone_guardian",
+    "snake_on_needles"
+  ],
+  "texture": {
+    "elk_in_long_grass": 11.34,
+    "yacht_and_bridge": 11.83,
+    "sled_dogs_on_ice": 13.52,
+    "husky_puppies": 16.51,
+    "giraffe_head_on": 17.11,
+    "long_jetty": 17.65,
+    "biwa_player": 18.03,
+    "marmot_on_rock": 18.41,
+    "cannon_on_cobbles": 24.05,
+    "layered_sandstone": 24.42,
+    "stone_guardian": 27.06,
+    "snake_on_needles": 31.26
+  },
+  "shift": [
+    7.0,
+    4.0
+  ],
+  "methods": [
+    {
+      "method": "Phase correlation",
+      "mean_error_px": 0.0028,
+      "median_error_px": 0.0017,
+      "success_rate": 1.0,
+      "median_ms": 3.9
+    },
+    {
+      "method": "Phase corr. (no window)",
+      "mean_error_px": 0.0125,
+      "median_error_px": 0.0123,
+      "success_rate": 1.0,
+      "median_ms": 3.43
+    },
+    {
+      "method": "ECC",
+      "mean_error_px": 0.0117,
+      "median_error_px": 0.0111,
+      "success_rate": 1.0,
+      "median_ms": 18.68
+    },
+    {
+      "method": "Mutual information",
+      "mean_error_px": 0.0,
+      "median_error_px": 0.0,
+      "success_rate": 1.0,
+      "median_ms": 1661.52
+    }
+  ],
+  "modality": [
+    {
+      "modality": "same",
+      "Phase correlation": 0.0028,
+      "Phase corr. (no window)": 0.0125,
+      "ECC": 0.0117,
+      "Mutual information": 0.0
+    },
+    {
+      "modality": "gamma",
+      "Phase correlation": 0.0422,
+      "Phase corr. (no window)": 0.0381,
+      "ECC": 0.0344,
+      "Mutual information": 0.0
+    },
+    {
+      "modality": "inverted",
+      "Phase correlation": 151.241,
+      "Phase corr. (no window)": 0.0612,
+      "ECC": NaN,
+      "Mutual information": 0.0
+    },
+    {
+      "modality": "synthetic_mri",
+      "Phase correlation": 19.5018,
+      "Phase corr. (no window)": 38.9063,
+      "ECC": 32.7036,
+      "Mutual information": 0.0
+    }
+  ],
+  "windowing_ordinary": [
+    {
+      "shift_px": 0.0,
+      "with_hanning_px": 0.0,
+      "without_hanning_px": 0.0
+    },
+    {
+      "shift_px": 1.0,
+      "with_hanning_px": 0.1708,
+      "without_hanning_px": 0.1102
+    },
+    {
+      "shift_px": 2.5,
+      "with_hanning_px": 0.4345,
+      "without_hanning_px": 0.4108
+    },
+    {
+      "shift_px": 5.0,
+      "with_hanning_px": 0.0021,
+      "without_hanning_px": 0.0255
+    },
+    {
+      "shift_px": 10.0,
+      "with_hanning_px": 0.0039,
+      "without_hanning_px": 0.0127
+    },
+    {
+      "shift_px": 20.0,
+      "with_hanning_px": 0.0061,
+      "without_hanning_px": 0.0146
+    },
+    {
+      "shift_px": 40.0,
+      "with_hanning_px": 0.0107,
+      "without_hanning_px": 0.0233
+    }
+  ],
+  "windowing_crop_pairs": [
+    {
+      "image": "elk_in_long_grass",
+      "with_hanning_px": 0.7015,
+      "without_hanning_px": 0.7001
+    },
+    {
+      "image": "yacht_and_bridge",
+      "with_hanning_px": 0.7018,
+      "without_hanning_px": 0.6076
+    },
+    {
+      "image": "sled_dogs_on_ice",
+      "with_hanning_px": 0.703,
+      "without_hanning_px": 0.6754
+    },
+    {
+      "image": "husky_puppies",
+      "with_hanning_px": 0.7072,
+      "without_hanning_px": 0.6937
+    },
+    {
+      "image": "giraffe_head_on",
+      "with_hanning_px": 0.7024,
+      "without_hanning_px": 0.6368
+    },
+    {
+      "image": "long_jetty",
+      "with_hanning_px": 0.7036,
+      "without_hanning_px": 0.7037
+    },
+    {
+      "image": "biwa_player",
+      "with_hanning_px": 0.6932,
+      "without_hanning_px": 0.6876
+    },
+    {
+      "image": "marmot_on_rock",
+      "with_hanning_px": 0.7058,
+      "without_hanning_px": 0.6945
+    },
+    {
+      "image": "cannon_on_cobbles",
+      "with_hanning_px": 0.7172,
+      "without_hanning_px": 0.6629
+    },
+    {
+      "image": "layered_sandstone",
+      "with_hanning_px": 0.71,
+      "without_hanning_px": 0.6917
+    },
+    {
+      "image": "stone_guardian",
+      "with_hanning_px": 0.7075,
+      "without_hanning_px": 0.6943
+    },
+    {
+      "image": "snake_on_needles",
+      "with_hanning_px": 0.6961,
+      "without_hanning_px": 0.7114
+    }
+  ],
+  "inversion_per_image": [
+    {
+      "image": "elk_in_long_grass",
+      "with_hanning_px": 124.0443,
+      "without_hanning_px": 0.1235
+    },
+    {
+      "image": "yacht_and_bridge",
+      "with_hanning_px": 211.0488,
+      "without_hanning_px": 0.0122
+    },
+    {
+      "image": "sled_dogs_on_ice",
+      "with_hanning_px": 30.4457,
+      "without_hanning_px": 0.0531
+    },
+    {
+      "image": "husky_puppies",
+      "with_hanning_px": 173.8916,
+      "without_hanning_px": 0.0523
+    },
+    {
+      "image": "giraffe_head_on",
+      "with_hanning_px": 208.4352,
+      "without_hanning_px": 0.0853
+    },
+    {
+      "image": "long_jetty",
+      "with_hanning_px": 635.4242,
+      "without_hanning_px": 0.0464
+    },
+    {
+      "image": "biwa_player",
+      "with_hanning_px": 156.081,
+      "without_hanning_px": 0.0837
+    },
+    {
+      "image": "marmot_on_rock",
+      "with_hanning_px": 0.0084,
+      "without_hanning_px": 0.0798
+    },
+    {
+      "image": "cannon_on_cobbles",
+      "with_hanning_px": 123.9565,
+      "without_hanning_px": 0.0452
+    },
+    {
+      "image": "layered_sandstone",
+      "with_hanning_px": 3.8972,
+      "without_hanning_px": 0.0523
+    },
+    {
+      "image": "stone_guardian",
+      "with_hanning_px": 147.644,
+      "without_hanning_px": 0.0531
+    },
+    {
+      "image": "snake_on_needles",
+      "with_hanning_px": 0.015,
+      "without_hanning_px": 0.0476
+    }
+  ],
+  "noise": [
+    {
+      "noise_sigma": 0.0,
+      "Phase correlation": 0.0028,
+      "Phase corr. (no window)": 0.0125,
+      "ECC": 0.0117,
+      "Mutual information": 0.0
+    },
+    {
+      "noise_sigma": 5.0,
+      "Phase correlation": 0.0082,
+      "Phase corr. (no window)": 0.0133,
+      "ECC": 0.0101,
+      "Mutual information": 0.0
+    },
+    {
+      "noise_sigma": 15.0,
+      "Phase correlation": 0.0166,
+      "Phase corr. (no window)": 0.0213,
+      "ECC": 0.0107,
+      "Mutual information": 0.0
+    },
+    {
+      "noise_sigma": 30.0,
+      "Phase correlation": 0.0227,
+      "Phase corr. (no window)": 0.0262,
+      "ECC": 0.0139,
+      "Mutual information": 0.0
+    },
+    {
+      "noise_sigma": 50.0,
+      "Phase correlation": 0.0295,
+      "Phase corr. (no window)": 0.0342,
+      "ECC": 0.0132,
+      "Mutual information": 0.0
+    }
+  ],
+  "shift_sweep": [
+    {
+      "shift_px": 0.0,
+      "Phase correlation": 0.0,
+      "Phase corr. (no window)": 0.0,
+      "ECC": 0.0,
+      "Mutual information": 0.0
+    },
+    {
+      "shift_px": 1.0,
+      "Phase correlation": 0.1708,
+      "Phase corr. (no window)": 0.1102,
+      "ECC": 0.0218,
+      "Mutual information": 0.4
+    },
+    {
+      "shift_px": 2.5,
+      "Phase correlation": 0.4345,
+      "Phase corr. (no window)": 0.4108,
+      "ECC": 0.0127,
+      "Mutual information": 0.7071
+    },
+    {
+      "shift_px": 5.0,
+      "Phase correlation": 0.0021,
+      "Phase corr. (no window)": 0.0255,
+      "ECC": 0.0115,
+      "Mutual information": 0.0
+    },
+    {
+      "shift_px": 10.0,
+      "Phase correlation": 0.0039,
+      "Phase corr. (no window)": 0.0127,
+      "ECC": 0.0095,
+      "Mutual information": 0.0
+    },
+    {
+      "shift_px": 20.0,
+      "Phase correlation": 0.0061,
+      "Phase corr. (no window)": 0.0146,
+      "ECC": 0.0136,
+      "Mutual information": 0.0
+    },
+    {
+      "shift_px": 40.0,
+      "Phase correlation": 0.0107,
+      "Phase corr. (no window)": 0.0233,
+      "ECC": 3.2968,
+      "Mutual information": 16.0078
+    }
+  ],
+  "rotation": [
+    {
+      "rotation_deg": 0.0,
+      "ecc_angle_error_deg": 0.0,
+      "phase_translation_error_px": 0.0,
+      "phase_can_represent_rotation": false
+    },
+    {
+      "rotation_deg": 1.0,
+      "ecc_angle_error_deg": 0.0004,
+      "phase_translation_error_px": 0.6176,
+      "phase_can_represent_rotation": false
+    },
+    {
+      "rotation_deg": 3.0,
+      "ecc_angle_error_deg": 0.0007,
+      "phase_translation_error_px": 3.9762,
+      "phase_can_represent_rotation": false
+    },
+    {
+      "rotation_deg": 7.0,
+      "ecc_angle_error_deg": 0.0003,
+      "phase_translation_error_px": 21.8504,
+      "phase_can_represent_rotation": false
+    },
+    {
+      "rotation_deg": 15.0,
+      "ecc_angle_error_deg": 0.0003,
+      "phase_translation_error_px": 29.4118,
+      "phase_can_represent_rotation": false
+    }
+  ]
+}

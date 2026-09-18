@@ -41,6 +41,22 @@ EPS = 1e-9
 # --------------------------------------------------------------------------- #
 
 
+def _to_level(values: np.ndarray) -> np.ndarray:
+    """Clip to [0, 255] and round **half up**, exactly as `shared.io.to_uint8` does.
+
+    This is the one line that makes the project's central claim true. A plain
+    ``.astype(np.uint8)`` truncates, and the arithmetic path rounds, so a gamma
+    table built by truncation disagreed with the same gamma written as numpy
+    maths on **136 of 256 input levels** — every one of them by exactly one.
+
+    Nothing looks wrong when that happens. The image is a level darker in half
+    its tones, which is invisible, and a LUT that is "the same function" is
+    silently a different one. Truncation also biases every curve downward by half
+    a level on average, so a brightening gamma systematically under-brightens.
+    """
+    return (np.clip(values, 0.0, 255.0) + 0.5).astype(np.uint8)
+
+
 def lut_identity() -> np.ndarray:
     return np.arange(256, dtype=np.uint8)
 
@@ -58,11 +74,18 @@ def lut_power(gamma: float = 0.5, c: float = 1.0) -> np.ndarray:
     """Power-law (gamma) curve: ``c * (v/255)^gamma * 255``.
 
     ``gamma < 1`` expands the shadows and compresses the highlights; ``gamma > 1``
-    does the reverse. The expansion is where the levels get duplicated, and it is
-    why brightening a dark image produces banding.
+    does the reverse.
+
+    The usual line is that brightening duplicates levels and that is why it
+    bands. Measured, it is the other way round: gamma 0.5 has a maximum collapse
+    run of **2** and a maximum output gap of **16**, while gamma 2.2 has a run of
+    **15** and a gap of **3**. Brightening bands because it *spreads* adjacent
+    shadow levels apart, leaving holes in the output histogram — not because it
+    merges them. Darkening merges them, which loses detail without banding.
+    See `max_run_length` and `max_output_gap`.
     """
     v = np.arange(256, dtype=np.float64) / 255.0
-    return np.clip(c * np.power(v, gamma) * 255.0, 0, 255).astype(np.uint8)
+    return _to_level(c * np.power(v, gamma) * 255.0)
 
 
 def lut_log(c: float | None = None) -> np.ndarray:
@@ -74,14 +97,14 @@ def lut_log(c: float | None = None) -> np.ndarray:
     """
     v = np.arange(256, dtype=np.float64)
     scale = c if c is not None else 255.0 / np.log(256.0)
-    return np.clip(scale * np.log1p(v), 0, 255).astype(np.uint8)
+    return _to_level(scale * np.log1p(v))
 
 
 def lut_inverse_log(c: float | None = None) -> np.ndarray:
     """The inverse of the log curve — expands where log compressed."""
     v = np.arange(256, dtype=np.float64)
     scale = c if c is not None else 255.0 / np.log(256.0)
-    return np.clip(np.expm1(v / scale), 0, 255).astype(np.uint8)
+    return _to_level(np.expm1(v / scale))
 
 
 def lut_piecewise_linear(points=((0, 0), (70, 30), (180, 220), (255, 255))) -> np.ndarray:
@@ -93,7 +116,7 @@ def lut_piecewise_linear(points=((0, 0), (70, 30), (180, 220), (255, 255))) -> n
     """
     xs = np.array([p[0] for p in points], np.float64)
     ys = np.array([p[1] for p in points], np.float64)
-    return np.clip(np.interp(np.arange(256), xs, ys), 0, 255).astype(np.uint8)
+    return _to_level(np.interp(np.arange(256), xs, ys))
 
 
 def lut_threshold(value: int = 127) -> np.ndarray:
@@ -110,7 +133,7 @@ def lut_posterise(levels: int = 6) -> np.ndarray:
     """
     v = np.arange(256, dtype=np.float64)
     step = 255.0 / max(levels - 1, 1)
-    return np.clip(np.round(v / step) * step, 0, 255).astype(np.uint8)
+    return _to_level(np.round(v / step) * step)
 
 
 def lut_contrast_stretch(low: int = 30, high: int = 220) -> np.ndarray:
@@ -121,7 +144,7 @@ def lut_contrast_stretch(low: int = 30, high: int = 220) -> np.ndarray:
     """
     v = np.arange(256, dtype=np.float64)
     out = (v - low) * 255.0 / max(high - low, 1)
-    return np.clip(out, 0, 255).astype(np.uint8)
+    return _to_level(out)
 
 
 LUTS: dict[str, Callable[[], np.ndarray]] = {
@@ -178,10 +201,16 @@ def bit_plane(img: np.ndarray, bit: int) -> np.ndarray:
 
 
 def reconstruct_from_planes(img: np.ndarray, planes: int = 4) -> np.ndarray:
-    """Rebuild using only the top ``planes`` bits."""
+    """Rebuild using only the top ``planes`` bits.
+
+    The mask has to be taken modulo 256 before it becomes a uint8: ``0xFF << 4``
+    is 4080, and ``np.uint8(4080)`` raises rather than wrapping on modern numpy.
+    """
     gray = to_gray(img)
-    mask = np.uint8(0xFF << (8 - planes))
-    return cv2.bitwise_and(gray, mask)
+    mask = np.uint8((0xFF << (8 - planes)) & 0xFF)
+    # numpy's `&`, not cv2.bitwise_and: OpenCV wants an array or a 4-tuple scalar
+    # for its second argument and rejects a bare numpy scalar.
+    return gray & mask
 
 
 # --------------------------------------------------------------------------- #
@@ -205,8 +234,12 @@ def is_invertible(lut: np.ndarray) -> bool:
 def max_run_length(lut: np.ndarray) -> int:
     """Longest run of input levels collapsed onto a single output.
 
-    Where banding will appear, and how wide the band will be — again derived from
-    the table rather than observed in an image.
+    This is **detail loss**: many distinct inputs becoming one output, which
+    happens wherever the curve is flat. Derived from the table rather than
+    observed in an image.
+
+    It is not the same thing as banding, and conflating the two is easy — see
+    `max_output_gap`.
     """
     best = run = 1
     for i in range(1, len(lut)):
@@ -215,11 +248,68 @@ def max_run_length(lut: np.ndarray) -> int:
     return best
 
 
+def max_output_gap(lut: np.ndarray) -> int:
+    """Largest jump between the outputs of two **adjacent** input levels.
+
+    This is **banding**, and it is a different failure from `max_run_length`.
+
+    * A flat part of the curve maps many inputs to one output: detail is lost,
+      and the result is smooth.
+    * A steep part maps adjacent inputs far apart: no detail is lost at all, but
+      the output histogram has holes in it, and a smooth gradient in the input
+      becomes visible steps.
+
+    The two are produced by opposite halves of the same curve, so a single
+    "information loss" number cannot tell them apart. Gamma 0.5 has a maximum run
+    of 2 and a maximum gap of 16; gamma 2.2 has a run of 21 and a gap of 1. The
+    usual claim that *brightening* causes banding is about gaps, and the usual
+    measure of loss counts runs.
+    """
+    return int(np.max(np.abs(np.diff(lut.astype(np.int16)))))
+
+
 # --------------------------------------------------------------------------- #
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "camera", "moon", "chelsea", "retina")
+#: Twelve photographs selected by `tools/select_images.py --axis brightness`,
+#: which is where a point transform's effect lives: the same gamma brightens a
+#: dark frame and washes out a bright one, and a pool at one end of this axis
+#: would report the pictures rather than the curves.
+#:
+#: The spread is 47 to 189 mean grey. `firewalkers_at_night` is flame against
+#: near-black, where a brightening curve has the most to reveal and the most
+#: quantisation to reveal it with; `aircrew_on_tarmac` is bright concrete, where
+#: the same curve has nothing left to lift.
+IMAGES = (
+    "firewalkers_at_night",   # mean  47 - the darkest here
+    "young_monks_crowding",   #       74
+    "golden_pavilion",        #       85
+    "clapboard_houses",       #       93
+    "three_girls_by_hay",     #      100
+    "market_fruit_stall",     #      102
+    "bighorn_ram",            #      113
+    "chipmunk_on_granite",    #      119
+    "horses_in_a_meadow",     #      126
+    "woman_by_a_wall",        #      134
+    "monk_under_a_tree",      #      149
+    "aircrew_on_tarmac",      #      189 - the brightest here
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """One of the project's photographs.
+
+    Named so that `run.py`, the tests and `infer.py` all read the same pixels.
+    """
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def mean_brightness(img: np.ndarray) -> float:
+    """The axis the pool was selected on, recomputed here."""
+    return float(to_gray(img).mean())
 GAMMAS = (0.3, 0.5, 0.7, 1.0, 1.5, 2.2, 3.0)
 POSTERISE_LEVELS = (2, 4, 8, 16, 32, 64, 128, 256)
 
@@ -236,6 +326,7 @@ def table_properties():
                 "levels_lost": 256 - levels_surviving(lut),
                 "invertible": is_invertible(lut),
                 "max_collapse_run": max_run_length(lut),
+                "max_output_gap": max_output_gap(lut),
             }
         )
     return rows
@@ -243,14 +334,12 @@ def table_properties():
 
 def evaluate_on_images(images=IMAGES, runs: int = 5):
     """Measured effect on real images, beside the predicted loss."""
-    from shared import io
-
     rows = []
     for name, builder in LUTS.items():
         lut = builder()
         ents, contrasts, psnrs, ms = [], [], [], []
         for image in images:
-            img = to_gray(io.sample(image))
+            img = to_gray(load_scene(image))
             out, timing = timeit(lambda a=img, t=lut: apply_lut(a, t), runs=runs, warmup=1)
             ents.append(entropy(out))
             contrasts.append(rms_contrast(out))
@@ -276,14 +365,12 @@ def lut_versus_arithmetic(images=IMAGES, runs: int = 7):
     equivalent ever disagree, one of them has a rounding bug — and since this is
     integer output, "close enough" is not a defence.
     """
-    from shared import io
-
     rows = []
     for name in ("Identity (control)", "Negative", "Gamma 0.5 (brighten)", "Gamma 2.2 (darken)"):
         lut = LUTS[name]()
         identical, lut_ms, arith_ms = True, [], []
         for image in images:
-            img = to_gray(io.sample(image))
+            img = to_gray(load_scene(image))
             a, t1 = timeit(lambda x=img, l=lut: apply_lut(x, l), runs=runs, warmup=2)
             b, t2 = timeit(lambda x=img, n=name: apply_arithmetic(x, n), runs=runs, warmup=2)
             identical &= bool(np.array_equal(a, b))
@@ -310,14 +397,12 @@ def sweep_gamma(images=IMAGES, gammas=GAMMAS):
     it is because the image never used the levels that got collapsed — which is
     itself worth seeing.
     """
-    from shared import io
-
     rows = []
     for g in gammas:
         lut = lut_power(g)
         ents, brights = [], []
         for image in images:
-            img = to_gray(io.sample(image))
+            img = to_gray(load_scene(image))
             out = apply_lut(img, lut)
             ents.append(entropy(out))
             brights.append(float(np.mean(out)) / 255.0)
@@ -326,6 +411,7 @@ def sweep_gamma(images=IMAGES, gammas=GAMMAS):
                 "gamma": g,
                 "levels_surviving": levels_surviving(lut),
                 "max_collapse_run": max_run_length(lut),
+                "max_output_gap": max_output_gap(lut),
                 "entropy_bits": round(float(np.mean(ents)), 4),
                 "mean_brightness": round(float(np.mean(brights)), 4),
             }
@@ -335,14 +421,12 @@ def sweep_gamma(images=IMAGES, gammas=GAMMAS):
 
 def sweep_posterise(images=IMAGES, levels=POSTERISE_LEVELS):
     """Quantisation from 256 levels down to 2, with entropy tracking the loss."""
-    from shared import io
-
     rows = []
     for n in levels:
         lut = lut_posterise(n)
         ents, psnrs = [], []
         for image in images:
-            img = to_gray(io.sample(image))
+            img = to_gray(load_scene(image))
             out = apply_lut(img, lut)
             ents.append(entropy(out))
             psnrs.append(psnr(out, img))
@@ -364,13 +448,11 @@ def bit_plane_contribution(images=IMAGES):
     bits carry almost everything, and the bottom two are close to noise — the
     empirical basis for every bit-depth reduction scheme.
     """
-    from shared import io
-
     rows = []
     for planes in range(1, 9):
         psnrs, ents = [], []
         for image in images:
-            img = to_gray(io.sample(image))
+            img = to_gray(load_scene(image))
             out = reconstruct_from_planes(img, planes)
             psnrs.append(psnr(out, img))
             ents.append(entropy(out))

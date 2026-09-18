@@ -1,0 +1,265 @@
+{
+  "project": "45_wavelet_denoising",
+  "generated_utc": "2026-09-18T03:45:13+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "packhorse_bridge",
+    "black_panther",
+    "lone_tree_on_a_hill",
+    "church_spire",
+    "warthogs_drinking",
+    "wallaby_and_joey",
+    "warbler_at_the_nest",
+    "four_children_on_a_wall",
+    "cormorants_nesting",
+    "woman_among_roses",
+    "taj_mahal_reflected",
+    "hawk_on_a_branch"
+  ],
+  "sparsity": {
+    "packhorse_bridge": 0.6878,
+    "black_panther": 0.7876,
+    "lone_tree_on_a_hill": 0.804,
+    "church_spire": 0.8315,
+    "warthogs_drinking": 0.8546,
+    "wallaby_and_joey": 0.8746,
+    "warbler_at_the_nest": 0.8907,
+    "four_children_on_a_wall": 0.9047,
+    "cormorants_nesting": 0.9215,
+    "woman_among_roses": 0.9232,
+    "taj_mahal_reflected": 0.9468,
+    "hawk_on_a_branch": 0.9894
+  },
+  "noise_sigma": 25.0,
+  "premise": [
+    {
+      "signal": "packhorse_bridge",
+      "top10pct_energy": 0.6878
+    },
+    {
+      "signal": "black_panther",
+      "top10pct_energy": 0.7876
+    },
+    {
+      "signal": "lone_tree_on_a_hill",
+      "top10pct_energy": 0.804
+    },
+    {
+      "signal": "church_spire",
+      "top10pct_energy": 0.8315
+    },
+    {
+      "signal": "warthogs_drinking",
+      "top10pct_energy": 0.8546
+    },
+    {
+      "signal": "wallaby_and_joey",
+      "top10pct_energy": 0.8746
+    },
+    {
+      "signal": "warbler_at_the_nest",
+      "top10pct_energy": 0.8907
+    },
+    {
+      "signal": "four_children_on_a_wall",
+      "top10pct_energy": 0.9047
+    },
+    {
+      "signal": "cormorants_nesting",
+      "top10pct_energy": 0.9215
+    },
+    {
+      "signal": "woman_among_roses",
+      "top10pct_energy": 0.9232
+    },
+    {
+      "signal": "taj_mahal_reflected",
+      "top10pct_energy": 0.9468
+    },
+    {
+      "signal": "hawk_on_a_branch",
+      "top10pct_energy": 0.9894
+    },
+    {
+      "signal": "white noise",
+      "top10pct_energy": 0.4388
+    }
+  ],
+  "methods": [
+    {
+      "method": "Do nothing (control)",
+      "psnr_db": 20.572,
+      "ssim": 0.4235,
+      "median_ms": 0.035
+    },
+    {
+      "method": "Gaussian (spatial)",
+      "psnr_db": 26.136,
+      "ssim": 0.6695,
+      "median_ms": 2.056
+    },
+    {
+      "method": "Bilateral (spatial)",
+      "psnr_db": 27.671,
+      "ssim": 0.732,
+      "median_ms": 4.788
+    },
+    {
+      "method": "Non-local means (spatial)",
+      "psnr_db": 25.624,
+      "ssim": 0.682,
+      "median_ms": 603.924
+    },
+    {
+      "method": "Wavelet VisuShrink hard",
+      "psnr_db": 23.74,
+      "ssim": 0.5799,
+      "median_ms": 17.111
+    },
+    {
+      "method": "Wavelet VisuShrink soft",
+      "psnr_db": 22.765,
+      "ssim": 0.5223,
+      "median_ms": 19.067
+    },
+    {
+      "method": "Wavelet BayesShrink hard",
+      "psnr_db": 23.533,
+      "ssim": 0.5413,
+      "median_ms": 17.375
+    },
+    {
+      "method": "Wavelet BayesShrink soft",
+      "psnr_db": 25.575,
+      "ssim": 0.6576,
+      "median_ms": 19.689
+    }
+  ],
+  "noise_sweep": [
+    {
+      "noise_sigma": 5.0,
+      "noisy_input": 34.241,
+      "Do nothing (control)": 34.241,
+      "Gaussian (spatial)": 33.61,
+      "Bilateral (spatial)": 36.611,
+      "Non-local means (spatial)": 33.855,
+      "Wavelet VisuShrink hard": 29.351,
+      "Wavelet VisuShrink soft": 26.783,
+      "Wavelet BayesShrink hard": 34.109,
+      "Wavelet BayesShrink soft": 34.7
+    },
+    {
+      "noise_sigma": 10.0,
+      "noisy_input": 28.314,
+      "Do nothing (control)": 28.314,
+      "Gaussian (spatial)": 30.11,
+      "Bilateral (spatial)": 33.15,
+      "Non-local means (spatial)": 30.589,
+      "Wavelet VisuShrink hard": 26.889,
+      "Wavelet VisuShrink soft": 24.993,
+      "Wavelet BayesShrink hard": 28.942,
+      "Wavelet BayesShrink soft": 30.379
+    },
+    {
+      "noise_sigma": 20.0,
+      "noisy_input": 22.434,
+      "Do nothing (control)": 22.434,
+      "Gaussian (spatial)": 27.07,
+      "Bilateral (spatial)": 29.068,
+      "Non-local means (spatial)": 26.8,
+      "Wavelet VisuShrink hard": 24.464,
+      "Wavelet VisuShrink soft": 23.271,
+      "Wavelet BayesShrink hard": 24.616,
+      "Wavelet BayesShrink soft": 26.647
+    },
+    {
+      "noise_sigma": 35.0,
+      "noisy_input": 17.828,
+      "Do nothing (control)": 17.828,
+      "Gaussian (spatial)": 24.725,
+      "Bilateral (spatial)": 25.549,
+      "Non-local means (spatial)": 24.081,
+      "Wavelet VisuShrink hard": 22.712,
+      "Wavelet VisuShrink soft": 22.032,
+      "Wavelet BayesShrink hard": 22.102,
+      "Wavelet BayesShrink soft": 24.039
+    },
+    {
+      "noise_sigma": 50.0,
+      "noisy_input": 15.053,
+      "Do nothing (control)": 15.053,
+      "Gaussian (spatial)": 23.156,
+      "Bilateral (spatial)": 23.239,
+      "Non-local means (spatial)": 22.571,
+      "Wavelet VisuShrink hard": 21.622,
+      "Wavelet VisuShrink soft": 21.201,
+      "Wavelet BayesShrink hard": 20.789,
+      "Wavelet BayesShrink soft": 22.513
+    }
+  ],
+  "levels_sweep": [
+    {
+      "levels": 1,
+      "psnr_db": 24.248,
+      "ssim": 0.5647
+    },
+    {
+      "levels": 2,
+      "psnr_db": 25.407,
+      "ssim": 0.6426
+    },
+    {
+      "levels": 3,
+      "psnr_db": 25.575,
+      "ssim": 0.6576
+    },
+    {
+      "levels": 4,
+      "psnr_db": 25.587,
+      "ssim": 0.6586
+    },
+    {
+      "levels": 5,
+      "psnr_db": 25.586,
+      "ssim": 0.6585
+    }
+  ],
+  "sigma_estimation": [
+    {
+      "true_sigma": 5.0,
+      "estimated_sigma": 5.992,
+      "relative_error": 0.1984
+    },
+    {
+      "true_sigma": 10.0,
+      "estimated_sigma": 8.772,
+      "relative_error": -0.1228
+    },
+    {
+      "true_sigma": 20.0,
+      "estimated_sigma": 14.517,
+      "relative_error": -0.2742
+    },
+    {
+      "true_sigma": 35.0,
+      "estimated_sigma": 22.856,
+      "relative_error": -0.347
+    },
+    {
+      "true_sigma": 50.0,
+      "estimated_sigma": 30.64,
+      "relative_error": -0.3872
+    }
+  ],
+  "oracle_threshold": {
+    "best_threshold": 0.1275,
+    "best_psnr_db": 25.191
+  },
+  "nlm_h_per_sigma": 0.85,
+  "bilateral_sigma_per_estimate": 4.5
+}

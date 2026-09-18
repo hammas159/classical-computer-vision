@@ -126,8 +126,19 @@ def blend_poisson_jacobi(target: np.ndarray, source: np.ndarray, mask: np.ndarra
     )
 
     interior = cv2.erode(region_mask.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool)
+
+    # The boundary ring keeps the TARGET's values. That single line is the whole
+    # of Poisson blending: gradients from the source inside, values from the
+    # destination on the edge.
+    #
+    # Seeding the boundary from the source instead — `f[region_mask] = patch[...]`
+    # — makes `f = source` an exact fixed point of the iteration, because the
+    # solution of `lap f = lap g` with `f = g` on the boundary *is* g. The solver
+    # then converged in zero steps to the copy-paste answer and reported a seam
+    # visibility of 2.80, identical to the control, with nothing to indicate it
+    # had not run.
     f = sub.copy()
-    f[region_mask] = patch[region_mask]  # start from the pasted values
+    f[interior] = patch[interior]  # a starting guess, interior only
 
     for _ in range(iterations):
         neighbour_sum = (
@@ -137,7 +148,7 @@ def blend_poisson_jacobi(target: np.ndarray, source: np.ndarray, mask: np.ndarra
         updated = (neighbour_sum - lap_source) / 4.0
         f[interior] = updated[interior]
 
-    sub[region_mask] = np.clip(f[region_mask], 0.0, 1.0)
+    sub[interior] = np.clip(f[interior], 0.0, 1.0)
     out[y : y + h, x : x + w] = sub
     return to_uint8(out)
 
@@ -179,7 +190,12 @@ def seam_visibility(result: np.ndarray, mask: np.ndarray, centre, target: np.nda
 
     1.0 means the boundary is indistinguishable from its surroundings.
     """
-    x, y, w, h = _placement(target, result, mask, centre)
+    # The mask, not the result: `_placement` reads its second argument's shape as
+    # the size of the pasted patch, and `result` is the whole composite. Passing
+    # it gave w, h of the full frame and the mask assignment below raised a
+    # broadcast error — loudly, which is the good case. The quiet version of this
+    # mistake would have placed the seam somewhere else entirely.
+    x, y, w, h = _placement(target, mask, mask, centre)
     full = np.zeros(result.shape[:2], np.uint8)
     full[y : y + h, x : x + w] = (mask[:h, :w] > 0).astype(np.uint8) * 255
 
@@ -241,12 +257,60 @@ def pixel_fidelity(result: np.ndarray, source: np.ndarray, mask: np.ndarray,
 # the test cases
 # --------------------------------------------------------------------------- #
 
-PAIRS = (
-    ("coffee", "astronaut"),
-    ("rocket", "chelsea"),
-    ("brick", "coffee"),
-    ("grass", "astronaut"),
+#: Twelve photographs selected by `tools/select_images.py --axis tone`, which
+#: measures how wide a range of greys a scene occupies (this module recomputes it
+#: as the 1st-to-99th percentile spread, which orders the pool identically but on
+#: a 0-255 scale). Tone is the axis here:
+#: the seam a blend has to hide is exactly the tonal discontinuity between the
+#: two images, so a pool clustered at one tone would have almost no seam to
+#: remove.
+IMAGES = (
+    "bird_in_a_meadow",      # tone  82 - the narrowest range here
+    "tent_on_the_ice",       #      152
+    "wallaby_in_scrub",      #      153
+    "stone_viaduct",         #      177
+    "zebra_in_grass",        #      181
+    "carved_boat_houses",    #      202
+    "soldier_and_child",     #      211
+    "ploughing_with_oxen",   #      218
+    "skier_mid_air",         #      225
+    "spear_fisher",          #      233
+    "bobcat_and_daisies",    #      240
+    "snowshoes_on_snow",     #      250 - the widest
 )
+
+#: Six (target, source) pairs built from those twelve, each image used exactly
+#: once. Paired deliberately across the tone range rather than at random: the
+#: quantity that decides how hard a blend is, is the *difference* between the two
+#: images, and pairing like with like would give the seam nothing to be made of.
+PAIRS = (
+    ("bird_in_a_meadow", "snowshoes_on_snow"),      # tone 82 into 250 - the extreme
+    ("tent_on_the_ice", "bobcat_and_daisies"),      # cold blue into warm yellow
+    ("wallaby_in_scrub", "spear_fisher"),
+    ("stone_viaduct", "skier_mid_air"),
+    ("zebra_in_grass", "ploughing_with_oxen"),
+    ("carved_boat_houses", "soldier_and_child"),
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """One of the project's photographs.
+
+    Named so that `run.py`, the tests and `infer.py` all read the same pixels.
+    """
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def tonal_range(img: np.ndarray) -> float:
+    """The 1st-to-99th percentile spread of the greyscale, in levels.
+
+    The axis the pool was selected on, recomputed here so the README's numbers
+    come from the project rather than from the selection tool.
+    """
+    g = to_gray(img)
+    return float(np.percentile(g, 99) - np.percentile(g, 1))
 OFFSETS = (0.0, 0.1, 0.25, 0.5)
 REGION_SIZES = (60, 100, 150, 200)
 
@@ -259,11 +323,9 @@ def make_case(target_name: str, source_name: str, size: int = 120,
     is what creates the seam. Controlling it directly is what lets the sweep find
     where each method stops coping.
     """
-    from shared import io
-
     rng = np.random.default_rng(seed)
-    target = io.sample(target_name)
-    source_full = io.sample(source_name)
+    target = load_scene(target_name)
+    source_full = load_scene(source_name)
 
     sh, sw = source_full.shape[:2]
     sx = int(rng.integers(0, max(sw - size, 1)))

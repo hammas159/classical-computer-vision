@@ -193,13 +193,27 @@ def decode_barcode(img: np.ndarray) -> str:
         detector = cv2.BarcodeDetector()
     if detector is None:
         return ""
+    # The arity of detectAndDecode changed between OpenCV versions: 4.5 returns
+    # (ok, decoded_info, decoded_type, points) and 4.14 returns
+    # (decoded_info, decoded_type, points) with no boolean at all. Unpacking a
+    # fixed number raises ValueError on the other one, which took the whole
+    # experiment down rather than reporting an empty decode.
     try:
-        ok, decoded, _, _ = detector.detectAndDecode(to_gray(img))
+        result = detector.detectAndDecode(to_gray(img))
     except cv2.error:
         return ""
-    if not ok or not decoded:
+
+    if len(result) == 4:
+        ok, decoded = result[0], result[1]
+        if not ok:
+            return ""
+    else:
+        decoded = result[0]
+
+    if decoded is None or len(decoded) == 0:
         return ""
-    return decoded[0] if isinstance(decoded, (list, tuple)) else str(decoded)
+    first = decoded[0] if isinstance(decoded, (list, tuple, np.ndarray)) else decoded
+    return str(first) if first else ""
 
 
 def barcode_decoder_available() -> bool:
@@ -218,6 +232,55 @@ def barcode_decoder_available() -> bool:
 # scenes and degradations
 # --------------------------------------------------------------------------- #
 
+#: Twelve photographs ranked by **how much they already look like a barcode** to
+#: the localiser's own cue: strong horizontal gradient, weak vertical, closed up
+#: with a wide rectangular kernel. That is the axis that decides how hard
+#: localisation is, and no stock axis in `tools/select_images.py` measures it.
+#:
+#: The spread is 9% to 77% of the frame responding. A bomber against open sky is
+#: the control; zebras, saguaro ribs and coiled rope are genuine false positives
+#: — repeating vertical structure is what a 1-D barcode *is*.
+IMAGES = (
+    "bomber_over_cloud",      # barcode-like  9.4% - the control
+    "turquoise_lake",         #              18.9%
+    "polar_bears_playing",    #              22.2%
+    "zebra_herd",             #              26.1% - actual vertical stripes
+    "canoe_on_the_lake",      #              29.7%
+    "cougar_among_birches",   #              30.4%
+    "trocadero_statue",       #              33.0%
+    "skiff_in_weed",          #              33.9%
+    "saguaro_blossom",        #              41.2% - dense vertical ribbing
+    "coiled_rope",            #              43.4% - strong repeating stripes
+    "giraffes_drinking",      #              50.0%
+    "buffalo_in_the_river",   #              76.7% - the busiest here
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """One of the project's background photographs."""
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def barcode_like_share(img: np.ndarray) -> float:
+    """Percentage of the frame that responds to the localiser's own cue.
+
+    Horizontal gradient minus vertical, blurred, closed with a wide rectangle,
+    Otsu-thresholded — which is `locate_gradient_morphology` up to the contour
+    step. It is the axis the pool is ordered by and it predicts false positives
+    before any code is placed.
+    """
+    g = to_gray(img)
+    gx = cv2.Sobel(g, cv2.CV_32F, 1, 0, -1)
+    gy = cv2.Sobel(g, cv2.CV_32F, 0, 1, -1)
+    resp = cv2.convertScaleAbs(cv2.subtract(np.abs(gx), np.abs(gy)))
+    resp = cv2.morphologyEx(cv2.GaussianBlur(resp, (9, 9), 0), cv2.MORPH_CLOSE,
+                            cv2.getStructuringElement(cv2.MORPH_RECT, (21, 7)))
+    _, th = cv2.threshold(resp, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    return float((th > 0).mean() * 100.0)
+
+
 PAYLOADS = ("HELLO123", "ABC789", "CLASSICAL", "VISION42")
 BLUR_LEVELS = (0.0, 1.0, 2.0, 3.5, 5.0, 8.0)
 ROTATIONS = (0.0, 5.0, 15.0, 30.0, 45.0, 90.0)
@@ -227,18 +290,33 @@ PERSPECTIVES = (0.0, 0.05, 0.12, 0.2, 0.3)
 
 
 def place_on_background(code: np.ndarray, canvas: int = 480, seed: int = 0,
-                        rotation: float = 0.0, scale: float = 1.0, perspective: float = 0.0):
+                        rotation: float = 0.0, scale: float = 1.0,
+                        perspective: float = 0.0, background: str | None = None):
     """Put a code onto a cluttered background under a known transform.
 
     Returns ``(image, true_corners)``. The clutter is what makes localisation a
     real problem — on a blank background every method scores 100%.
+
+    ``background`` names one of `IMAGES` and uses that photograph instead of the
+    generated rectangles. That is the harder and more honest test: the generated
+    clutter has no repeating vertical structure, and a barcode localiser looks
+    for exactly that, so a photograph of zebras or coiled rope produces false
+    positives that random rectangles never will.
     """
     rng = np.random.default_rng(seed)
-    bg = rng.integers(60, 200, (canvas, canvas), dtype=np.uint8)
-    bg = cv2.GaussianBlur(bg, (0, 0), 3.0)
-    for _ in range(10):
-        x, y = int(rng.integers(0, canvas - 60)), int(rng.integers(0, canvas - 60))
-        cv2.rectangle(bg, (x, y), (x + 55, y + 45), int(rng.integers(0, 255)), -1)
+    if background is None:
+        bg = rng.integers(60, 200, (canvas, canvas), dtype=np.uint8)
+        bg = cv2.GaussianBlur(bg, (0, 0), 3.0)
+        for _ in range(10):
+            x, y = int(rng.integers(0, canvas - 60)), int(rng.integers(0, canvas - 60))
+            cv2.rectangle(bg, (x, y), (x + 55, y + 45), int(rng.integers(0, 255)), -1)
+    else:
+        photo = to_gray(load_scene(background))
+        h0, w0 = photo.shape[:2]
+        side = min(h0, w0)
+        crop = photo[(h0 - side) // 2:(h0 - side) // 2 + side,
+                     (w0 - side) // 2:(w0 - side) // 2 + side]
+        bg = cv2.resize(crop, (canvas, canvas), interpolation=cv2.INTER_AREA)
 
     h, w = code.shape[:2]
     nh, nw = max(8, int(h * scale)), max(8, int(w * scale))
@@ -418,6 +496,75 @@ def sweep_noise(payloads=PAYLOADS, levels=NOISE_LEVELS):
                 "decode_rate": extra["decode_rate"],
             }
         )
+    return rows
+
+
+def evaluate_on_photographs(images=None, payloads=PAYLOADS, blur: float = 0.0,
+                            rotation: float = 0.0, scale: float = 1.0):
+    """Locate and decode a QR code placed on each real photograph.
+
+    The generated background has no repeating vertical structure, so a barcode
+    localiser never sees a false positive on it. A photograph of zebras does. The
+    per-image column is the point: localisation difficulty tracks the background,
+    and decoding does not care about it at all.
+    """
+    rows = []
+    images = IMAGES if images is None else images
+    for name in images:
+        share = barcode_like_share(load_scene(name))
+        found = {"Gradient + morphology": [], "Local variance": [], "QRCodeDetector": []}
+        decoded = []
+        for i, payload in enumerate(payloads):
+            code = make_qr(payload)
+            img, truth = place_on_background(code, seed=i, rotation=rotation,
+                                             scale=scale, background=name)
+            if blur:
+                img = degrade(img, blur=blur, seed=i)
+            for label, fn in (("Gradient + morphology", locate_gradient_morphology),
+                              ("Local variance", locate_variance),
+                              ("QRCodeDetector", locate_qr_detector)):
+                corners = fn(img)
+                found[label].append(
+                    localisation_iou(corners, truth, img.shape) >= FOUND_IOU)
+            decoded.append(decode_qr(img) == payload)
+
+        row: dict[str, float | str] = {"image": name, "barcode_like": round(share, 1)}
+        for label, hits in found.items():
+            row[label] = round(float(np.mean(hits)), 4)
+        row["decoded"] = round(float(np.mean(decoded)), 4)
+        rows.append(row)
+    return rows
+
+
+def photo_versus_generated_background(payloads=PAYLOADS):
+    """Does a real background make localisation harder than generated clutter?
+
+    The honest check on the synthetic arm. If the generated rectangles are as hard
+    as a photograph, the whole project could stay synthetic; if they are not, the
+    synthetic numbers are optimistic and should be labelled so.
+    """
+    rows = []
+    for label, backgrounds in (("Generated clutter", [None]),
+                               ("Photographs", list(IMAGES))):
+        found = {"Gradient + morphology": [], "Local variance": [], "QRCodeDetector": []}
+        decoded = []
+        for background in backgrounds:
+            for i, payload in enumerate(payloads):
+                code = make_qr(payload)
+                img, truth = place_on_background(code, seed=i, background=background)
+                for name, fn in (("Gradient + morphology", locate_gradient_morphology),
+                                 ("Local variance", locate_variance),
+                                 ("QRCodeDetector", locate_qr_detector)):
+                    corners = fn(img)
+                    found[name].append(
+                        localisation_iou(corners, truth, img.shape) >= FOUND_IOU)
+                decoded.append(decode_qr(img) == payload)
+
+        row: dict[str, float | str] = {"background": label}
+        for name, hits in found.items():
+            row[name] = round(float(np.mean(hits)), 4)
+        row["decoded"] = round(float(np.mean(decoded)), 4)
+        rows.append(row)
     return rows
 
 

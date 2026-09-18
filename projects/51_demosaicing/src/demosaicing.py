@@ -317,7 +317,54 @@ def colour_fringing(pred: np.ndarray, truth: np.ndarray, mask: np.ndarray) -> fl
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "chelsea", "rocket", "brick")
+#: Twelve photographs ranked by **this project's own failure condition**: the
+#: share of pixels that are both an edge and saturated, which is exactly where
+#: demosaicing error is claimed to concentrate. No stock axis in
+#: `tools/select_images.py` measures it, and nothing else predicts where the
+#: methods will separate.
+#:
+#: The spread is 0.0% to 70.8%. The sea stacks are grey surf with no saturated
+#: edge anywhere — the control, on which every method should agree — and the
+#: flounder is saturated texture across the whole frame.
+IMAGES = (
+    "sea_stacks",           # saturated edges  0.0% - the control
+    "kangaroo_resting",     #                  0.3%
+    "laden_donkey",         #                  1.5%
+    "two_in_headscarves",   #                  2.7%
+    "bison_in_snow",        #                  4.5%
+    "mono_lake_tufa",       #                  6.9%
+    "drying_racks",         #                  9.3%
+    "diver_and_coral",      #                 14.2%
+    "lynx_on_birch",        #                 16.5%
+    "villa_on_the_lake",    #                 23.1%
+    "sandstone_ladder",     #                 28.5%
+    "flounder_on_gravel",   #                 70.8% - saturated texture everywhere
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """One of the project's photographs, used as the ground truth.
+
+    The mosaic is made from this, so the "before" image is exactly what the
+    algorithm is trying to recover.
+    """
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def saturated_edge_share(img: np.ndarray, chroma_threshold: float = 40.0) -> float:
+    """Percentage of pixels that are both an edge and saturated.
+
+    The project's claim in one number, and the axis the pool is ordered by:
+    demosaicing has to guess two thirds of the colour at every pixel, and the
+    guess is hardest where neighbouring photosites of the same colour see
+    genuinely different scene content *and* the colours are far from grey.
+    """
+    edges = edge_mask(img) > 0
+    f = img.astype(np.float32)
+    chroma = np.sqrt(((f - f.mean(axis=2, keepdims=True)) ** 2).sum(axis=2))
+    return float((edges & (chroma > chroma_threshold)).mean() * 100.0)
 NOISE_LEVELS = (0.0, 2.0, 5.0, 10.0, 20.0)
 
 
@@ -327,12 +374,12 @@ def evaluate_methods(images=IMAGES, pattern: str = "RGGB", noise_sigma: float = 
     The two columns are the finding: they should rank the methods differently and
     the gap between them should be several dB.
     """
-    from shared import io, synth
+    from shared import synth
 
     acc = {n: {"psnr": [], "edge_psnr": [], "fringe": [], "ssim": [], "ms": []} for n in METHODS}
 
     for i, name in enumerate(images):
-        truth = io.sample(name)
+        truth = load_scene(name)
         raw = mosaic(truth, pattern)
         if noise_sigma > 0:
             raw = synth.gaussian_noise(raw, sigma=noise_sigma, seed=i)
@@ -369,13 +416,12 @@ def compare_patterns(images=IMAGES, patterns=PATTERNS, method: str = "Malvar (cr
     the scores differ materially, something is indexing the pattern wrongly, so
     this doubles as a correctness check.
     """
-    from shared import io
 
     rows = []
     for pattern in patterns:
         scores = []
         for name in images:
-            truth = io.sample(name)
+            truth = load_scene(name)
             raw = mosaic(truth, pattern)
             scores.append(psnr(METHODS[method](raw, pattern), truth))
         rows.append({"pattern": pattern, "psnr_db": round(float(np.mean(scores)), 3)})
@@ -407,13 +453,12 @@ def green_density_argument(images=IMAGES):
     it has twice the samples — which is the justification for the whole Bayer
     layout.
     """
-    from shared import io
 
     rows = []
     for method, fn in METHODS.items():
         per_channel = {c: [] for c in "RGB"}
         for name in images:
-            truth = io.sample(name)
+            truth = load_scene(name)
             raw = mosaic(truth, "RGGB")
             out = fn(raw, "RGGB")
             for i, c in enumerate("RGB"):
@@ -434,7 +479,7 @@ def green_density_argument(images=IMAGES):
 
 def isp_ablation(images=IMAGES):
     """Turn each ISP stage off and measure its contribution."""
-    from shared import io, synth
+    from shared import synth
 
     configs = {
         "Full ISP": {},
@@ -447,7 +492,7 @@ def isp_ablation(images=IMAGES):
     for label, kwargs in configs.items():
         scores = []
         for i, name in enumerate(images):
-            truth = io.sample(name)
+            truth = load_scene(name)
             raw = synth.gaussian_noise(mosaic(truth), sigma=5.0, seed=i)
             out = isp_pipeline(raw, **kwargs)
             scores.append(psnr(out, truth))

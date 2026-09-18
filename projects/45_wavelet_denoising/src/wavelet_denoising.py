@@ -240,16 +240,67 @@ def denoise_wavelet(
     return to_uint8(np.clip(stacked, 0.0, 1.0))
 
 
-def denoise_gaussian(img: np.ndarray, sigma: float = 1.5) -> np.ndarray:
-    """Spatial Gaussian — the baseline from the same family of assumptions."""
+def estimate_noise(img: np.ndarray) -> float:
+    """Noise sigma in 0-255 levels, from the MAD of the finest diagonal subband.
+
+    The same estimate BayesShrink uses. Every method in this project is given it,
+    because a comparison in which one family adapts to the noise and the others
+    run on fixed constants is a comparison of tuning effort.
+    """
+    ll, coeffs = decompose(to_float(to_gray(img)), levels=1)
+    return float(estimate_sigma_mad(coeffs[0][2]) * 255.0)
+
+
+#: Measured optima, from `sweep_spatial_parameters`. Both were badly mistuned in
+#: the first version of this project and both handicaps favoured the wavelets:
+#: NLM ran at h=10 where 16 was best at sigma 25 (a 1.6 dB penalty) and the
+#: Gaussian at 1.5 where 0.8 was best (0.9 dB).
+#:
+#: NLM's optimum is a near-constant fraction of the **true** noise — 0.60, 0.64
+#: and 0.60 at sigma 10, 25 and 50 — which is worth stating because the advice
+#: usually quoted is h ~ sigma. It is not; it is about 0.6 sigma.
+#:
+#: Against the MAD *estimate* the same optima are 0.62, 0.89 and 0.96, and the
+#: drift is not NLM's: `estimate_noise` under-reads by more the noisier the image
+#: gets (see `sigma_estimation_accuracy`). Every method here is tuned against the
+#: estimate, because that is all a real denoiser has, so this constant is a
+#: compromise across the range rather than any one level's optimum.
+NLM_H_PER_SIGMA = 0.85
+
+#: The Gaussian's optimum grows roughly with the square root of the noise (0.6,
+#: 0.8, 1.4 at sigma 10, 25, 50), which this constant times sqrt(estimate)
+#: reproduces to within a fifth of a level.
+GAUSSIAN_SIGMA_PER_ROOT = 0.20
+
+#: The bilateral filter's range width wants to be several times the noise —
+#: 3.1, 4.5 and 5.1 times the estimate at sigma 10, 25 and 50. Too narrow and it
+#: treats noise as edges and preserves it; the first version of this project used
+#: a fixed 50, which is right at one noise level out of three.
+BILATERAL_SIGMA_PER_ESTIMATE = 4.5
+
+
+def denoise_gaussian(img: np.ndarray, sigma: float | None = None) -> np.ndarray:
+    """Spatial Gaussian — the baseline from the same family of assumptions.
+
+    With ``sigma=None`` the width is set from the image's own noise estimate, so
+    it adapts exactly as BayesShrink does.
+    """
+    if sigma is None:
+        sigma = max(0.3, GAUSSIAN_SIGMA_PER_ROOT * np.sqrt(estimate_noise(img)))
     return cv2.GaussianBlur(img, (0, 0), sigma, borderType=cv2.BORDER_REFLECT)
 
 
-def denoise_bilateral(img: np.ndarray) -> np.ndarray:
-    return cv2.bilateralFilter(img, 9, 50, 9)
+def denoise_bilateral(img: np.ndarray, colour_sigma: float | None = None) -> np.ndarray:
+    """Bilateral — an edge-preserving average, range width set from the noise."""
+    if colour_sigma is None:
+        colour_sigma = max(10.0, BILATERAL_SIGMA_PER_ESTIMATE * estimate_noise(img))
+    return cv2.bilateralFilter(img, 9, float(colour_sigma), 9)
 
 
-def denoise_nlm(img: np.ndarray, h: float = 10.0) -> np.ndarray:
+def denoise_nlm(img: np.ndarray, h: float | None = None) -> np.ndarray:
+    if h is None:
+        h = max(3.0, NLM_H_PER_SIGMA * estimate_noise(img))
+    h = float(h)
     if img.ndim == 3:
         return cv2.fastNlMeansDenoisingColored(img, None, h, h, 7, 21)
     return cv2.fastNlMeansDenoising(img, None, h, 7, 21)
@@ -289,18 +340,17 @@ def sparsity(coeffs: np.ndarray, fraction: float = 0.1) -> float:
     return float(np.sum(flat[:k] ** 2) / max(total, EPS))
 
 
-def test_sparsity_premise(images=("astronaut", "camera", "coffee", "brick"), levels: int = 3):
+def test_sparsity_premise(images=None, levels: int = 3):
     """Compare the sparsity of real images with that of pure noise.
 
     If the gap is not large, wavelet denoising has no basis and everything else
     in this project is measuring something else.
     """
-    from shared import io
-
+    images = IMAGES if images is None else images
     rng = np.random.default_rng(0)
     rows = []
     for name in images:
-        gray = to_float(to_gray(io.sample(name)))
+        gray = to_float(to_gray(load_scene(name)))
         _, coeffs = decompose(gray, levels=levels)
         detail = np.concatenate([np.concatenate([c.ravel() for c in band]) for band in coeffs])
         rows.append({"signal": name, "top10pct_energy": round(sparsity(detail), 4)})
@@ -316,20 +366,66 @@ def test_sparsity_premise(images=("astronaut", "camera", "coffee", "brick"), lev
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "camera", "chelsea", "brick", "moon")
+#: Twelve photographs ranked by **this project's own premise**: the share of
+#: wavelet energy carried by the largest 10% of coefficients, which is what
+#: `sparsity()` measures. No stock axis in `tools/select_images.py` measures it,
+#: and nothing else predicts how well wavelet denoising can work — the method
+#: exists because signal is sparse in this basis and noise is not, so a pool that
+#: did not span sparsity would not test the claim.
+#:
+#: The spread is 0.688 to 0.989. The packhorse bridge is a frame of dense
+#: woodland, where almost nothing is sparse; the hawk is a bird on a bare branch
+#: against plain sky, where 10% of the coefficients carry 99.3% of the energy.
+IMAGES = (
+    "packhorse_bridge",         # sparsity 0.688 - dense woodland, the hard case
+    "black_panther",            #          0.788
+    "lone_tree_on_a_hill",      #          0.804
+    "church_spire",             #          0.832
+    "warthogs_drinking",        #          0.855
+    "wallaby_and_joey",         #          0.875
+    "warbler_at_the_nest",      #          0.891
+    "four_children_on_a_wall",  #          0.905
+    "cormorants_nesting",       #          0.922
+    "woman_among_roses",        #          0.923
+    "taj_mahal_reflected",      #          0.947
+    "hawk_on_a_branch",         #          0.989 - a bird on plain sky
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """One of the project's photographs, used as the clean truth.
+
+    Named so that `run.py`, the tests and `infer.py` all read the same pixels —
+    noise is added to these, so the ground truth depends on them.
+    """
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def image_sparsity(img: np.ndarray, levels: int = 3, fraction: float = 0.1) -> float:
+    """The share of detail-coefficient energy in the largest `fraction` of them.
+
+    The axis the pool is ordered by, and the project's premise in one number.
+    Recomputed here so the README's figures come from the project rather than
+    from a selection script.
+    """
+    ll, coeffs = decompose(to_float(to_gray(img)), levels=levels)
+    flat = np.concatenate([c.ravel() for level in coeffs for c in level])
+    return sparsity(flat, fraction=fraction)
 NOISE_LEVELS = (5.0, 10.0, 20.0, 35.0, 50.0)
 LEVEL_COUNTS = (1, 2, 3, 4, 5)
 
 
 def evaluate_methods(noise_sigma: float = 25.0, images=IMAGES, runs: int = 3):
     """Score every method, wavelet and spatial, on the same noisy images."""
-    from shared import io, synth
+    from shared import synth
 
     acc = {n: {"psnr": [], "ssim": [], "ms": []} for n in METHODS}
     noisy_stats = []
 
     for i, name in enumerate(images):
-        clean = io.sample(name)
+        clean = load_scene(name)
         noisy = synth.gaussian_noise(clean, sigma=noise_sigma, seed=i)
         noisy_stats.append(psnr(noisy, clean))
         for method, fn in METHODS.items():
@@ -360,13 +456,13 @@ def oracle_threshold(noise_sigma: float = 25.0, images=IMAGES, shrink: str = "So
     sit well below this, the gap is the cost of choosing a threshold without
     knowing the answer — which is the honest way to judge a selection rule.
     """
-    from shared import io, synth
+    from shared import synth
 
     best_t, best_psnr = None, -np.inf
     for t in candidates:
         scores = []
         for i, name in enumerate(images):
-            clean = io.sample(name)
+            clean = load_scene(name)
             noisy = synth.gaussian_noise(clean, sigma=noise_sigma, seed=i)
             out = denoise_wavelet(noisy, shrink=shrink, fixed_threshold=float(t))
             scores.append(psnr(out, clean))
@@ -394,13 +490,13 @@ def sweep_levels(counts=LEVEL_COUNTS, noise_sigma: float = 25.0, images=IMAGES):
     Each level halves the resolution, so beyond three or four the subbands are too
     small for a reliable sigma estimate and performance should fall off.
     """
-    from shared import io, synth
+    from shared import synth
 
     rows = []
     for n in counts:
         p, s = [], []
         for i, name in enumerate(images):
-            clean = io.sample(name)
+            clean = load_scene(name)
             noisy = synth.gaussian_noise(clean, sigma=noise_sigma, seed=i)
             out = denoise_wavelet(noisy, levels=n)
             p.append(psnr(out, clean))
@@ -421,13 +517,13 @@ def sigma_estimation_accuracy(levels=NOISE_LEVELS, images=IMAGES):
     Everything downstream depends on it, so a systematic bias here would
     propagate into every threshold.
     """
-    from shared import io, synth
+    from shared import synth
 
     rows = []
     for sigma in levels:
         estimates = []
         for i, name in enumerate(images):
-            clean = io.sample(name)
+            clean = load_scene(name)
             noisy = synth.gaussian_noise(clean, sigma=sigma, seed=i)
             _, coeffs = decompose(to_float(to_gray(noisy)))
             estimates.append(estimate_sigma_mad(coeffs[0][2]) * 255.0)

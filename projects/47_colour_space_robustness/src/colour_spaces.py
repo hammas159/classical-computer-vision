@@ -231,6 +231,67 @@ def threshold_in_space(img: np.ndarray, space: str, reference: np.ndarray,
 # experiments
 # --------------------------------------------------------------------------- #
 
+#: Twelve photographs, each with a **human-traced region whose colour is distinct
+#: from its surroundings** — the thing a colour threshold is written to find.
+#: Selected by the Lab chroma distance between the region's mean and the rest of
+#: the frame, which is the axis that decides whether any colour space has
+#: something to separate; none of `tools/select_images.py`'s stock axes measures
+#: it, because it is a property of a region rather than of a picture.
+#:
+#: Each entry is ``(annotator, region label)`` — which person's segmentation and
+#: which region of it — so the target is reproducible and attributable.
+SEGMENTS: dict[str, tuple[int, int]] = {
+    "lobsters_and_wine": (0, 7),      # chroma distance 63.6 - red on grey quay
+    "stacked_timber": (4, 1),         #                  63.1 - orange timber
+    "anteater_at_sunset": (0, 2),     #                  59.2
+    "kabuki_pair": (2, 29),           #                  55.3 - a yellow kimono
+    "tomato_stall": (0, 18),          #                  54.6 - a crate of tomatoes
+    "kalmar_castle": (3, 30),         #                  53.5
+    "yellow_trousers": (4, 23),       #                  48.1
+    "woman_in_blue_dress": (1, 1),    #                  46.8
+    "red_robed_figures": (2, 6),      #                  46.8
+    "red_sports_car": (3, 2),         #                  46.1
+    "westminster_pair": (5, 6),       #                  43.9
+    "green_field_worker": (3, 10),    #                  40.2 - the least distinct here
+}
+
+IMAGES = tuple(SEGMENTS)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """One of the project's photographs, RGB."""
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def load_target(name: str) -> np.ndarray:
+    """The human-traced region a colour threshold is supposed to find.
+
+    One person's segmentation, one region of it, named in `SEGMENTS`. Not the
+    largest region — on a photograph that is usually the sky.
+    """
+    from shared import bsds
+
+    annotator, label = SEGMENTS[name]
+    segmentation = bsds.load_annotations(name)[annotator]["segmentation"]
+    return ((segmentation == label).astype(np.uint8)) * 255
+
+
+def chroma_distance(img: np.ndarray, mask: np.ndarray) -> float:
+    """Lab a/b distance between the masked region's mean colour and the rest.
+
+    The selection axis, recomputed here. It is the honest predictor of whether a
+    colour threshold can work at all: a region whose chroma matches its surround
+    cannot be separated by colour in any space.
+    """
+    lab = cv2.cvtColor(img, cv2.COLOR_RGB2LAB).astype(np.float32)
+    inside = mask > 0
+    if not inside.any() or inside.all():
+        return 0.0
+    return float(np.linalg.norm(lab[inside][:, 1:].mean(0) - lab[~inside][:, 1:].mean(0)))
+
+
 BRIGHTNESS_LEVELS = (1.0, 0.8, 0.6, 0.4, 1.3)
 CAST_LEVELS = (0.0, 0.1, 0.2, 0.35, 0.5)
 GAMMA_LEVELS = (1.0, 1.4, 2.0, 0.7, 0.5)
@@ -336,6 +397,125 @@ def white_balance_rescue(levels=CAST_LEVELS, seeds=(0, 1, 2), tolerance: float =
                 )
             row[f"{space} raw"] = round(float(np.mean(raw)), 4)
             row[f"{space} balanced"] = round(float(np.mean(corrected)), 4)
+        rows.append(row)
+    return rows
+
+
+#: Tolerance used on the photographs, **per space**. A single shared value would
+#: decide the comparison on its own: `sweep_photo_tolerance` finds Lab and YCrCb
+#: peaking at 25 and RGB and HSV at 60, so any one number hands the result to
+#: whichever space it happens to suit.
+#:
+#: They differ because the spaces do not share units. Lab's a/b run about
+#: +-100 around a neutral axis while RGB spans 0-255 in three correlated
+#: channels, so "distance 25" is a far wider net in one than the other. Every
+#: space is therefore given its own best value and compared at its own best.
+PHOTO_TOLERANCE = {
+    "RGB": 60.0,
+    "HSV": 60.0,
+    "Lab": 25.0,
+    "YCrCb": 25.0,
+    "Normalised RGB": 25.0,
+}
+
+PHOTO_DEGRADATIONS = {
+    "Brightness x0.6": lambda img: degrade_brightness(img, 0.6),
+    "Brightness x1.3": lambda img: degrade_brightness(img, 1.3),
+    "Warm cast": lambda img: degrade_colour_cast(img, (1.25, 1.0, 0.75)),
+    "Cool cast": lambda img: degrade_colour_cast(img, (0.78, 1.0, 1.28)),
+    "Gamma 2.0": lambda img: degrade_gamma(img, 2.0),
+}
+
+
+def photo_robustness(images=None, tolerance=None, degradations=None):
+    """The practical question, asked of human-traced regions in real photographs.
+
+    A colour threshold is tuned on the original — its target colour is the mean
+    of the traced region — and then applied **unchanged** to a degraded copy. The
+    score is IoU against the person's own mask, so the undegraded column is the
+    ceiling each space can reach at all and every other column is what a change
+    of light costs it.
+
+    This is the arm the project was missing. Flat synthetic patches make every
+    space look better than it is: a real region has shadow, highlight and
+    texture in it, and the spaces separate differently once it does.
+    """
+    from shared.metrics import iou
+
+    images = IMAGES if images is None else images
+    degradations = PHOTO_DEGRADATIONS if degradations is None else degradations
+    tolerance = PHOTO_TOLERANCE if tolerance is None else tolerance
+
+    rows = []
+    for space in SPACES:
+        tol = tolerance[space] if isinstance(tolerance, dict) else float(tolerance)
+        acc: dict[str, list[float]] = {"none": []}
+        for name in images:
+            clean = load_scene(name)
+            truth = load_target(name)
+            acc["none"].append(iou(threshold_in_space(clean, space, clean, truth,
+                                                      tol), truth))
+            for label, fn in degradations.items():
+                degraded = fn(clean)
+                found = threshold_in_space(degraded, space, clean, truth, tol)
+                acc.setdefault(label, []).append(iou(found, truth))
+
+        row: dict[str, float | str] = {"space": space, "tolerance": tol}
+        row["undegraded_iou"] = round(float(np.mean(acc["none"])), 4)
+        for label in degradations:
+            row[label] = round(float(np.mean(acc[label])), 4)
+        row["worst_case"] = round(min(row[label] for label in degradations), 4)
+        row["mean_loss"] = round(row["undegraded_iou"]
+                                 - float(np.mean([row[label] for label in degradations])), 4)
+        rows.append(row)
+    return rows
+
+
+def photo_robustness_per_image(images=None, tolerance=None):
+    """Per-photograph IoU under each degradation, for the front figure."""
+    from shared.metrics import iou
+
+    images = IMAGES if images is None else images
+    tolerance = PHOTO_TOLERANCE if tolerance is None else tolerance
+    rows = []
+    for name in images:
+        clean = load_scene(name)
+        truth = load_target(name)
+        row: dict[str, float | str] = {
+            "image": name,
+            "chroma_distance": round(chroma_distance(clean, truth), 1),
+        }
+        for space in SPACES:
+            tol = tolerance[space] if isinstance(tolerance, dict) else float(tolerance)
+            row[f"{space} clean"] = round(
+                iou(threshold_in_space(clean, space, clean, truth, tol), truth), 4)
+            warm = degrade_colour_cast(clean, (1.25, 1.0, 0.75))
+            row[f"{space} warm"] = round(
+                iou(threshold_in_space(warm, space, clean, truth, tol), truth), 4)
+        rows.append(row)
+    return rows
+
+
+def sweep_photo_tolerance(tolerances=(15.0, 25.0, 35.0, 45.0, 60.0, 80.0), images=None):
+    """Which tolerance to use on photographs, chosen rather than assumed.
+
+    Too tight and a textured region is missed entirely; too loose and everything
+    is selected. Reported so the operating point is a measured choice.
+    """
+    from shared.metrics import iou
+
+    images = IMAGES if images is None else images
+    rows = []
+    for tol in tolerances:
+        row: dict[str, float] = {"tolerance": tol}
+        for space in SPACES:
+            scores = []
+            for name in images:
+                clean = load_scene(name)
+                truth = load_target(name)
+                scores.append(iou(threshold_in_space(clean, space, clean, truth, tol),
+                                  truth))
+            row[space] = round(float(np.mean(scores)), 4)
         rows.append(row)
     return rows
 

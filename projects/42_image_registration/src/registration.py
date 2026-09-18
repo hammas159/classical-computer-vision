@@ -18,9 +18,11 @@ zero linear correlation.
 The transform is applied here, so the true alignment is known exactly and error
 is reported in **pixels** and **degrees** rather than as a success rate.
 
-🚨 Phase correlation requires a **Hanning window**. Without it the image border
-behaves as a huge step edge whose spectrum swamps the correlation peak — the
-single most common reason an implementation silently returns nonsense.
+The received wisdom about the Hanning window did not survive being measured, and
+what replaced it is more interesting. See `register_phase_correlation` and
+`windowing_effect`: on these pairs the window is worth 0.008 px, and on *inverted*
+images it is the thing that breaks the method — windowed phase correlation is 30
+to 635 px out where the unwindowed version is under 0.13.
 """
 
 from __future__ import annotations
@@ -46,10 +48,18 @@ def register_phase_correlation(reference: np.ndarray, moving: np.ndarray):
 
     A shift in space is a linear phase ramp in frequency, so the inverse
     transform of the normalised cross-power spectrum is a delta at the shift.
-    Because only *phase* is used, it is immune to overall brightness scaling —
-    but not to intensity inversion, which flips the phase by pi everywhere.
+    Because only *phase* is used, it is immune to overall brightness scaling.
 
     Translation only. It cannot express rotation or scale at all.
+
+    **The Hanning window is not free.** The textbook reason for it is that the
+    image border acts as a step edge whose spectrum swamps the peak. Measured on
+    these pairs it is worth 0.008 px — and on an *inverted* image it is what
+    destroys the method. Multiplying by a window is multiplication by a shape:
+    ``(255 - I) * w`` is ``255*w - I*w``, so the window's own smooth profile is
+    added to the spectrum at 255 times the amplitude of anything in the picture.
+    Without the window, inversion is only a sign and phase correlation recovers
+    the shift to 0.05 px. See `register_phase_correlation_unwindowed`.
     """
     a = to_float(to_gray(reference))
     b = to_float(to_gray(moving))
@@ -59,10 +69,12 @@ def register_phase_correlation(reference: np.ndarray, moving: np.ndarray):
 
 
 def register_phase_correlation_unwindowed(reference: np.ndarray, moving: np.ndarray):
-    """The same thing without the Hanning window — included to be beaten.
+    """The same thing without the Hanning window — and it is not the worse one.
 
-    Demonstrates the border-effect failure as a measurement rather than a
-    footnote.
+    Included to demonstrate the border-effect failure as a measurement rather
+    than a footnote. The measurement came out the other way: this variant is
+    within 0.008 px of the windowed one on ordinary pairs and beats it by three
+    orders of magnitude on inverted ones.
     """
     a = to_float(to_gray(reference))
     b = to_float(to_gray(moving))
@@ -78,7 +90,8 @@ def register_ecc(reference: np.ndarray, moving: np.ndarray,
     converges to sub-pixel precision. The correlation coefficient is invariant to
     brightness and contrast changes, which makes it robust to exposure
     differences — but it is still a *linear* similarity, so an inverted image
-    gives it a perfect *negative* correlation that it treats as a terrible match.
+    gives it a perfect *negative* correlation that it treats as a terrible match
+    and it fails to converge at all.
 
     Unlike phase correlation it can estimate rotation and affine warps.
     """
@@ -167,14 +180,64 @@ def extract_shift(method: str, result) -> tuple[float, float]:
     warp = result
     if warp is None:
         return (float("nan"), float("nan"))
-    return (float(-warp[0, 2]), float(-warp[1, 2]))
+    # **Not negated.** With `templateImage=reference` and `inputImage=moving`,
+    # the translation ECC returns is the moving image's own offset, which is the
+    # quantity every other method here reports. Negating it produced an error of
+    # exactly twice the true shift — 16.12 px for a (7, 4) displacement — which
+    # reads as "ECC cannot align identical images" rather than as a sign error.
+    return (float(warp[0, 2]), float(warp[1, 2]))
 
 
 # --------------------------------------------------------------------------- #
 # the test cases
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "camera", "brick", "chelsea")
+#: Twelve photographs selected by `tools/select_images.py --axis texture`, then
+#: ordered by this module's own `texture_energy` — mean local standard deviation
+#: in a 9x9 window. The two measure texture differently and do not agree on the
+#: ordering, so the numbers quoted here are the ones `texture_energy` returns,
+#: which is what the README and `infer.py` report.
+#:
+#: Texture is what registration consumes: a flat region has no features to align,
+#: and every method returns the same answer whatever the true shift. The spread
+#: is 11.3 to 31.3, a factor of 2.8.
+IMAGES = (
+    "elk_in_long_grass",    # texture 11.3 - an animal against soft grass
+    "yacht_and_bridge",     #         11.8 - mostly flat water and sky
+    "sled_dogs_on_ice",     #         13.5
+    "husky_puppies",        #         16.5
+    "giraffe_head_on",      #         17.1
+    "long_jetty",           #         17.7
+    "biwa_player",          #         18.0
+    "marmot_on_rock",       #         18.4
+    "cannon_on_cobbles",    #         24.1
+    "layered_sandstone",    #         24.4
+    "stone_guardian",       #         27.1
+    "snake_on_needles",     #         31.3 - a frame of pine litter
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """One of the project's photographs, used as the reference.
+
+    Named so that `run.py`, the tests and `infer.py` all read the same pixels —
+    the moving image is generated from these, so the truth depends on them.
+    """
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def texture_energy(img: np.ndarray) -> float:
+    """Mean local standard deviation in a 9x9 window — the selection axis.
+
+    Recomputed here so the README's numbers come from the project, and so
+    `infer.py` can say in advance whether a pair has enough structure to align.
+    """
+    g = to_float(to_gray(img))
+    mean = cv2.blur(g, (9, 9))
+    sq = cv2.blur(g * g, (9, 9))
+    return float(np.sqrt(np.maximum(sq - mean * mean, 0.0)).mean() * 255.0)
 SHIFTS = (0.0, 1.0, 2.5, 5.0, 10.0, 20.0, 40.0)
 ROTATIONS = (0.0, 1.0, 3.0, 7.0, 15.0)
 NOISE_LEVELS = (0.0, 5.0, 15.0, 30.0, 50.0)
@@ -196,9 +259,9 @@ def make_pair(
     * ``synthetic_mri`` — a non-monotonic remap, the closest stand-in here for a
       genuinely different imaging modality
     """
-    from shared import io, synth
+    from shared import synth
 
-    reference = io.sample(image)
+    reference = load_scene(image)
     h, w = reference.shape[:2]
 
     m = cv2.getRotationMatrix2D((w / 2, h / 2), rotation, 1.0)
@@ -253,16 +316,31 @@ def evaluate_methods(images=IMAGES, dx: float = 7.0, dy: float = 4.0,
             acc[name]["hit"].append(bool(np.isfinite(err) and err <= SUCCESS_PX))
             acc[name]["ms"].append(timing.median_ms)
 
-    return [
-        {
+    def summarise(errors):
+        """NaN means "did not converge", and a column of them is a real answer.
+
+        ECC returns nothing at all on inverted intensities, so `nanmean` over an
+        all-NaN column is the correct call *and* emits a RuntimeWarning. Handling
+        the empty case explicitly keeps NaN as the reported value — which is what
+        the tables should show — without the warning noise.
+        """
+        finite = [e for e in errors if np.isfinite(e)]
+        if not finite:
+            return float("nan"), float("nan")
+        return float(np.mean(finite)), float(np.median(finite))
+
+    rows = []
+    for n, a in acc.items():
+        mean_err, median_err = summarise(a["err"])
+        rows.append({
             "method": n,
-            "mean_error_px": round(float(np.nanmean(a["err"])), 4),
-            "median_error_px": round(float(np.nanmedian(a["err"])), 4),
+            "mean_error_px": round(mean_err, 4) if np.isfinite(mean_err) else float("nan"),
+            "median_error_px": (round(median_err, 4) if np.isfinite(median_err)
+                                else float("nan")),
             "success_rate": round(float(np.mean(a["hit"])), 4),
             "median_ms": round(float(np.median(a["ms"])), 2),
-        }
-        for n, a in acc.items()
-    ]
+        })
+    return rows
 
 
 def sweep_shift(images=IMAGES, shifts=SHIFTS):
@@ -332,6 +410,68 @@ def windowing_effect(images=IMAGES, shifts=SHIFTS):
                 "without_hanning_px": round(float(np.nanmean(without)), 4),
             }
         )
+    return rows
+
+
+def crop_pair(image: str, dx: int = 17, dy: int = 11, margin: int = 40):
+    """Two overlapping crops of one photograph — a border discontinuity for real.
+
+    `make_pair` warps the whole frame with a reflecting border, so the two images
+    agree everywhere including the edges. That is the easy case for a Fourier
+    method and it is *not* where the Hanning window is supposed to earn its
+    keep. Two crops taken from different places genuinely show different content
+    at their borders, which is the situation the window exists for.
+    """
+    full = load_scene(image)
+    h, w = full.shape[:2]
+    reference = full[margin:h - margin, margin:w - margin]
+    moving = full[margin - dy:h - margin - dy, margin - dx:w - margin - dx]
+    return reference, moving, (float(dx), float(dy))
+
+
+def windowing_on_crop_pairs(images=IMAGES, dx: int = 17, dy: int = 11):
+    """Does the Hanning window pay where the border really is discontinuous?
+
+    This is the honest test of the textbook advice, and the answer here is no:
+    both variants land within a pixel and the unwindowed one is marginally
+    better. The window is not useless in general — it is useless on pairs where
+    the two images are the same size and the shift is small relative to the
+    frame, which is most practical registration.
+    """
+    rows = []
+    for name in images:
+        reference, moving, truth = crop_pair(name, dx=dx, dy=dy)
+        row = {"image": name}
+        for label, fn in (("with_hanning_px", register_phase_correlation),
+                          ("without_hanning_px", register_phase_correlation_unwindowed)):
+            (ex, ey), _ = fn(reference, moving)
+            row[label] = round(float(np.hypot(ex - truth[0], ey - truth[1])), 4)
+        rows.append(row)
+    return rows
+
+
+def inversion_per_image(images=IMAGES, dx: float = 7.0, dy: float = 4.0):
+    """Phase correlation on inverted intensities, windowed and not.
+
+    The project's sharpest result. Windowed, nine of the twelve are 30 to 635
+    pixels out and three come through unharmed — and there is no telling which
+    from the picture, which is worse than failing consistently. Unwindowed, all
+    twelve are under 0.13 px.
+
+    The window turns a sign flip into a large structured artefact, because
+    ``(255 - I) * w`` is ``255*w - I*w``: the window's own smooth profile enters
+    the spectrum at 255 times the amplitude of anything in the photograph. Which
+    peak then wins depends on the picture, hence the three survivors.
+    """
+    rows = []
+    for name in images:
+        reference, moving, truth = make_pair(name, dx=dx, dy=dy, modality="inverted")
+        row = {"image": name}
+        for label, fn in (("with_hanning_px", register_phase_correlation),
+                          ("without_hanning_px", register_phase_correlation_unwindowed)):
+            (ex, ey), _ = fn(reference, moving)
+            row[label] = round(float(np.hypot(ex - truth[0], ey - truth[1])), 4)
+        rows.append(row)
     return rows
 
 

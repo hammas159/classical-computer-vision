@@ -104,6 +104,15 @@ def register_ecc(reference: np.ndarray, frame: np.ndarray, scale: int = 1):
     Optimises a similarity measure invariant to brightness and contrast, so it
     tolerates exposure differences between frames that a plain correlation would
     not.
+
+    **The sign is not negated, and getting that wrong is silent.** With
+    ``templateImage=reference`` and ``inputImage=frame``, the translation that
+    comes back is the one that takes the reference *to* the frame — which is the
+    frame's own offset, the quantity wanted here. Negating it returns a
+    displacement of exactly the right size in exactly the wrong direction, and
+    the only symptom is a registration error roughly twice the true offset: this
+    project reported ECC as 11x worse than phase correlation until the sign was
+    checked against known offsets rather than against intuition.
     """
     a = to_float(to_gray(reference))
     b = to_float(to_gray(frame))
@@ -115,7 +124,7 @@ def register_ecc(reference: np.ndarray, frame: np.ndarray, scale: int = 1):
         )
     except cv2.error:
         return 0.0, 0.0
-    return float(-warp[0, 2]) * scale, float(-warp[1, 2]) * scale
+    return float(warp[0, 2]) * scale, float(warp[1, 2]) * scale
 
 
 REGISTRATION: dict[str, Callable] = {
@@ -251,16 +260,59 @@ METHODS: dict[str, Callable] = {
 # experiments
 # --------------------------------------------------------------------------- #
 
-IMAGES = ("astronaut", "coffee", "camera", "brick", "chelsea")
+#: Twelve photographs selected by `tools/select_images.py --axis detail`, then
+#: ordered by this module's own `detail()` — Laplacian variance of the greyscale
+#: image. The two do not agree in scale (the selector measures its own way), so
+#: the numbers quoted here are the ones `detail()` returns, which is what the
+#: README and `infer.py` report.
+#:
+#: Detail is the axis that decides whether super-resolution has anything to
+#: recover: a smooth scene has no high-frequency content for extra samples to
+#: reveal, so a pool at one end of this axis would report the pictures rather
+#: than the methods. The spread is 194 to 6048, a factor of 31.
+IMAGES = (
+    "ladybird_on_a_leaf",     # detail  194 - a beetle on a smooth leaf, the control
+    "pintail_at_dusk",        #         266 - a duck on still water
+    "carved_stone_relief",    #         665
+    "swallow_tailed_gulls",   #         673
+    "toadstool_in_moss",      #        1150
+    "three_schoolchildren",   #        1497
+    "skier_on_a_slope",       #        2112
+    "deer_in_bare_woods",     #        2181
+    "otters_on_gravel",       #        2726
+    "two_at_a_wagon",         #        2754
+    "foxes_under_a_ledge",    #        4129
+    "mayan_stone_carving",    #        6048 - dense carved relief
+)
+
+
+def load_scene(name: str) -> np.ndarray:
+    """One of the project's photographs, used as the high-resolution truth.
+
+    Named so that `run.py`, the tests and `infer.py` all read the same pixels —
+    the low-resolution frames are generated from these, so the ground truth
+    depends on them.
+    """
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def detail(img: np.ndarray) -> float:
+    """Laplacian variance — the axis the pool was selected on.
+
+    Recomputed here so the README's numbers come from the project rather than
+    from the selection tool, and so `infer.py` can say in advance whether a
+    photograph has anything for extra frames to recover.
+    """
+    return float(cv2.Laplacian(to_gray(img), cv2.CV_64F).var())
 FRAME_COUNTS = (1, 2, 4, 8, 16, 32)
 REGISTRATION_ERRORS = (0.0, 0.1, 0.25, 0.5, 1.0, 2.0)
 SCALES = (2, 3, 4)
 
 
 def _prepare(image: str, scale: int):
-    from shared import io
-
-    hr = io.sample(image)
+    hr = load_scene(image)
     h = (hr.shape[0] // scale) * scale
     w = (hr.shape[1] // scale) * scale
     return hr[:h, :w]

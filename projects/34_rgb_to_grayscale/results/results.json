@@ -1,0 +1,536 @@
+{
+  "project": "34_rgb_to_grayscale",
+  "generated_utc": "2026-09-17T18:55:00+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "penguin_on_pebbles",
+    "teotihuacan_pyramids",
+    "helicopter_and_pilot",
+    "leopard_along_branch",
+    "milking_the_cow",
+    "black_bear_wading",
+    "ducks_in_reeds",
+    "fox_and_daisies",
+    "beached_boats",
+    "damselfly_on_leaf",
+    "runners_on_track",
+    "roller_coaster_loop"
+  ],
+  "photographs": [
+    {
+      "method": "Average (R+G+B)/3",
+      "mean_diff_vs_bt601": 5.95,
+      "contrast_retained": 0.9982,
+      "colour_edge_recall": 1.0,
+      "worst_image_recall": 0.9996,
+      "median_ms": 3.811
+    },
+    {
+      "method": "BT.601 (OpenCV default)",
+      "mean_diff_vs_bt601": 0.0,
+      "contrast_retained": 0.9972,
+      "colour_edge_recall": 0.9999,
+      "worst_image_recall": 0.9994,
+      "median_ms": 1.498
+    },
+    {
+      "method": "BT.709 (HDTV)",
+      "mean_diff_vs_bt601": 2.182,
+      "contrast_retained": 0.9966,
+      "colour_edge_recall": 0.9999,
+      "worst_image_recall": 0.9991,
+      "median_ms": 1.564
+    },
+    {
+      "method": "Linear-light BT.709",
+      "mean_diff_vs_bt601": 3.092,
+      "contrast_retained": 0.9963,
+      "colour_edge_recall": 0.9999,
+      "worst_image_recall": 0.9989,
+      "median_ms": 12.358
+    },
+    {
+      "method": "Value (max channel)",
+      "mean_diff_vs_bt601": 15.86,
+      "contrast_retained": 0.9875,
+      "colour_edge_recall": 0.9998,
+      "worst_image_recall": 0.9978,
+      "median_ms": 6.22
+    },
+    {
+      "method": "Contrast-preserving",
+      "mean_diff_vs_bt601": 5.529,
+      "contrast_retained": 0.9983,
+      "colour_edge_recall": 1.0,
+      "worst_image_recall": 0.9998,
+      "median_ms": 207.293
+    }
+  ],
+  "luma_retention": [
+    {
+      "image": "penguin_on_pebbles",
+      "chroma": 5.8,
+      "strong_edges": 4633,
+      "worst_retained": 0.9776,
+      "median_retained": 0.9969,
+      "minimum_retained": 0.9613
+    },
+    {
+      "image": "teotihuacan_pyramids",
+      "chroma": 17.1,
+      "strong_edges": 4633,
+      "worst_retained": 0.97,
+      "median_retained": 1.0027,
+      "minimum_retained": 0.9412
+    },
+    {
+      "image": "helicopter_and_pilot",
+      "chroma": 14.7,
+      "strong_edges": 4633,
+      "worst_retained": 0.9855,
+      "median_retained": 1.0082,
+      "minimum_retained": 0.9725
+    },
+    {
+      "image": "leopard_along_branch",
+      "chroma": 22.7,
+      "strong_edges": 4633,
+      "worst_retained": 0.967,
+      "median_retained": 0.9897,
+      "minimum_retained": 0.9504
+    },
+    {
+      "image": "milking_the_cow",
+      "chroma": 18.2,
+      "strong_edges": 4633,
+      "worst_retained": 0.9778,
+      "median_retained": 1.0019,
+      "minimum_retained": 0.9556
+    },
+    {
+      "image": "black_bear_wading",
+      "chroma": 29.7,
+      "strong_edges": 4633,
+      "worst_retained": 0.9767,
+      "median_retained": 1.0103,
+      "minimum_retained": 0.957
+    },
+    {
+      "image": "ducks_in_reeds",
+      "chroma": 26.9,
+      "strong_edges": 4633,
+      "worst_retained": 0.9772,
+      "median_retained": 1.0308,
+      "minimum_retained": 0.9244
+    },
+    {
+      "image": "fox_and_daisies",
+      "chroma": 30.9,
+      "strong_edges": 4633,
+      "worst_retained": 0.9678,
+      "median_retained": 1.0119,
+      "minimum_retained": 0.8874
+    },
+    {
+      "image": "beached_boats",
+      "chroma": 24.2,
+      "strong_edges": 4633,
+      "worst_retained": 0.9506,
+      "median_retained": 1.0044,
+      "minimum_retained": 0.8826
+    },
+    {
+      "image": "damselfly_on_leaf",
+      "chroma": 64.5,
+      "strong_edges": 4633,
+      "worst_retained": 0.7877,
+      "median_retained": 1.0542,
+      "minimum_retained": 0.4495
+    },
+    {
+      "image": "runners_on_track",
+      "chroma": 44.2,
+      "strong_edges": 4633,
+      "worst_retained": 0.9207,
+      "median_retained": 1.0071,
+      "minimum_retained": 0.8535
+    },
+    {
+      "image": "roller_coaster_loop",
+      "chroma": 80.3,
+      "strong_edges": 4633,
+      "worst_retained": 0.9225,
+      "median_retained": 0.9925,
+      "minimum_retained": 0.8537
+    }
+  ],
+  "blind_spot_matrix": [
+    {
+      "built_against": "Average (R+G+B)/3",
+      "Average (R+G+B)/3": 0.461,
+      "BT.601 (OpenCV default)": 33.177,
+      "BT.709 (HDTV)": 21.198,
+      "Linear-light BT.709": 22.354,
+      "Value (max channel)": 37.857,
+      "Contrast-preserving": 193.207
+    },
+    {
+      "built_against": "BT.601 (OpenCV default)",
+      "Average (R+G+B)/3": 20.214,
+      "BT.601 (OpenCV default)": 0.116,
+      "BT.709 (HDTV)": 18.702,
+      "Linear-light BT.709": 9.488,
+      "Value (max channel)": 37.857,
+      "Contrast-preserving": 158.581
+    },
+    {
+      "built_against": "BT.709 (HDTV)",
+      "Average (R+G+B)/3": 12.977,
+      "BT.601 (OpenCV default)": 14.17,
+      "BT.709 (HDTV)": 0.388,
+      "Linear-light BT.709": 7.678,
+      "Value (max channel)": 37.857,
+      "Contrast-preserving": 205.901
+    }
+  ],
+  "isoluminance_sweep": [
+    {
+      "luma_offset": 0.0,
+      "Average (R+G+B)/3": 0.0,
+      "Average (R+G+B)/3__separation": 20.214,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 0.0,
+      "BT.601 (OpenCV default)__separation": 0.116,
+      "BT.601 (OpenCV default)__otsu_iou": 0.219,
+      "BT.709 (HDTV)": 0.0,
+      "BT.709 (HDTV)__separation": 18.702,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 0.0,
+      "Linear-light BT.709__separation": 9.488,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 37.857,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 158.581,
+      "Contrast-preserving__otsu_iou": 1.0
+    },
+    {
+      "luma_offset": 1.0,
+      "Average (R+G+B)/3": 0.0,
+      "Average (R+G+B)/3__separation": 18.667,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 0.0,
+      "BT.601 (OpenCV default)__separation": 1.217,
+      "BT.601 (OpenCV default)__otsu_iou": 0.3604,
+      "BT.709 (HDTV)": 0.0,
+      "BT.709 (HDTV)__separation": 21.092,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 0.0,
+      "Linear-light BT.709__separation": 12.204,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 32.824,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 164.512,
+      "Contrast-preserving__otsu_iou": 1.0
+    },
+    {
+      "luma_offset": 2.0,
+      "Average (R+G+B)/3": 0.0,
+      "Average (R+G+B)/3__separation": 20.349,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 0.0,
+      "BT.601 (OpenCV default)__separation": 1.754,
+      "BT.601 (OpenCV default)__otsu_iou": 0.6971,
+      "BT.709 (HDTV)": 0.0,
+      "BT.709 (HDTV)__separation": 21.494,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 0.0,
+      "Linear-light BT.709__separation": 13.149,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 37.857,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 168.319,
+      "Contrast-preserving__otsu_iou": 1.0
+    },
+    {
+      "luma_offset": 4.0,
+      "Average (R+G+B)/3": 0.0,
+      "Average (R+G+B)/3__separation": 20.475,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 0.0,
+      "BT.601 (OpenCV default)__separation": 4.443,
+      "BT.601 (OpenCV default)__otsu_iou": 0.989,
+      "BT.709 (HDTV)": 1.0,
+      "BT.709 (HDTV)__separation": 24.978,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 0.0,
+      "Linear-light BT.709__separation": 15.976,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 32.824,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 166.1,
+      "Contrast-preserving__otsu_iou": 1.0
+    },
+    {
+      "luma_offset": 8.0,
+      "Average (R+G+B)/3": 0.6639,
+      "Average (R+G+B)/3__separation": 23.95,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 0.0,
+      "BT.601 (OpenCV default)__separation": 8.158,
+      "BT.601 (OpenCV default)__otsu_iou": 1.0,
+      "BT.709 (HDTV)": 1.0,
+      "BT.709 (HDTV)__separation": 29.251,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 0.0,
+      "Linear-light BT.709__separation": 20.796,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 37.857,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 160.293,
+      "Contrast-preserving__otsu_iou": 1.0
+    },
+    {
+      "luma_offset": 12.0,
+      "Average (R+G+B)/3": 1.0,
+      "Average (R+G+B)/3__separation": 25.77,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 0.0,
+      "BT.601 (OpenCV default)__separation": 12.294,
+      "BT.601 (OpenCV default)__otsu_iou": 1.0,
+      "BT.709 (HDTV)": 1.0,
+      "BT.709 (HDTV)__separation": 33.804,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 0.6639,
+      "Linear-light BT.709__separation": 23.865,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 32.824,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 169.054,
+      "Contrast-preserving__otsu_iou": 1.0
+    },
+    {
+      "luma_offset": 16.0,
+      "Average (R+G+B)/3": 1.0,
+      "Average (R+G+B)/3__separation": 29.257,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 0.0,
+      "BT.601 (OpenCV default)__separation": 16.062,
+      "BT.601 (OpenCV default)__otsu_iou": 1.0,
+      "BT.709 (HDTV)": 1.0,
+      "BT.709 (HDTV)__separation": 38.074,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 1.0,
+      "Linear-light BT.709__separation": 28.702,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 37.857,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 164.239,
+      "Contrast-preserving__otsu_iou": 1.0
+    },
+    {
+      "luma_offset": 20.0,
+      "Average (R+G+B)/3": 1.0,
+      "Average (R+G+B)/3__separation": 29.518,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 0.0,
+      "BT.601 (OpenCV default)__separation": 20.369,
+      "BT.601 (OpenCV default)__otsu_iou": 1.0,
+      "BT.709 (HDTV)": 1.0,
+      "BT.709 (HDTV)__separation": 44.337,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 1.0,
+      "Linear-light BT.709__separation": 35.853,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 32.824,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 165.115,
+      "Contrast-preserving__otsu_iou": 1.0
+    },
+    {
+      "luma_offset": 24.0,
+      "Average (R+G+B)/3": 1.0,
+      "Average (R+G+B)/3__separation": 32.991,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 0.6639,
+      "BT.601 (OpenCV default)__separation": 24.115,
+      "BT.601 (OpenCV default)__otsu_iou": 1.0,
+      "BT.709 (HDTV)": 1.0,
+      "BT.709 (HDTV)__separation": 48.58,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 1.0,
+      "Linear-light BT.709__separation": 40.555,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 37.857,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 170.329,
+      "Contrast-preserving__otsu_iou": 1.0
+    },
+    {
+      "luma_offset": 28.0,
+      "Average (R+G+B)/3": 1.0,
+      "Average (R+G+B)/3__separation": 34.813,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 1.0,
+      "BT.601 (OpenCV default)__separation": 28.188,
+      "BT.601 (OpenCV default)__otsu_iou": 1.0,
+      "BT.709 (HDTV)": 1.0,
+      "BT.709 (HDTV)__separation": 53.166,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 1.0,
+      "Linear-light BT.709__separation": 44.125,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 32.824,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 169.056,
+      "Contrast-preserving__otsu_iou": 1.0
+    },
+    {
+      "luma_offset": 32.0,
+      "Average (R+G+B)/3": 1.0,
+      "Average (R+G+B)/3__separation": 38.3,
+      "Average (R+G+B)/3__otsu_iou": 1.0,
+      "BT.601 (OpenCV default)": 1.0,
+      "BT.601 (OpenCV default)__separation": 31.974,
+      "BT.601 (OpenCV default)__otsu_iou": 1.0,
+      "BT.709 (HDTV)": 1.0,
+      "BT.709 (HDTV)__separation": 57.411,
+      "BT.709 (HDTV)__otsu_iou": 1.0,
+      "Linear-light BT.709": 1.0,
+      "Linear-light BT.709__separation": 49.026,
+      "Linear-light BT.709__otsu_iou": 1.0,
+      "Value (max channel)": 1.0,
+      "Value (max channel)__separation": 37.857,
+      "Value (max channel)__otsu_iou": 1.0,
+      "Contrast-preserving": 1.0,
+      "Contrast-preserving__separation": 169.331,
+      "Contrast-preserving__otsu_iou": 1.0
+    }
+  ],
+  "isoluminant_scene": [
+    {
+      "method": "Average (R+G+B)/3",
+      "region_separation": 20.214,
+      "contrast_retained": 0.9853
+    },
+    {
+      "method": "BT.601 (OpenCV default)",
+      "region_separation": 0.116,
+      "contrast_retained": 0.0125
+    },
+    {
+      "method": "BT.709 (HDTV)",
+      "region_separation": 18.702,
+      "contrast_retained": 0.9718
+    },
+    {
+      "method": "Linear-light BT.709",
+      "region_separation": 9.488,
+      "contrast_retained": 0.9237
+    },
+    {
+      "method": "Value (max channel)",
+      "region_separation": 37.857,
+      "contrast_retained": 0.9901
+    },
+    {
+      "method": "Contrast-preserving",
+      "region_separation": 158.581,
+      "contrast_retained": 0.9997
+    }
+  ],
+  "downstream": [
+    {
+      "method": "Average (R+G+B)/3",
+      "canny_edge_recall": 0.0,
+      "otsu_iou": 1.0
+    },
+    {
+      "method": "BT.601 (OpenCV default)",
+      "canny_edge_recall": 0.0,
+      "otsu_iou": 0.219
+    },
+    {
+      "method": "BT.709 (HDTV)",
+      "canny_edge_recall": 0.0,
+      "otsu_iou": 1.0
+    },
+    {
+      "method": "Linear-light BT.709",
+      "canny_edge_recall": 0.0,
+      "otsu_iou": 1.0
+    },
+    {
+      "method": "Value (max channel)",
+      "canny_edge_recall": 1.0,
+      "otsu_iou": 1.0
+    },
+    {
+      "method": "Contrast-preserving",
+      "canny_edge_recall": 1.0,
+      "otsu_iou": 1.0
+    }
+  ],
+  "weight_sensitivity": [
+    {
+      "green_weight": 0.0,
+      "mean_diff_vs_bt601": 10.348
+    },
+    {
+      "green_weight": 0.125,
+      "mean_diff_vs_bt601": 8.668
+    },
+    {
+      "green_weight": 0.25,
+      "mean_diff_vs_bt601": 6.973
+    },
+    {
+      "green_weight": 0.375,
+      "mean_diff_vs_bt601": 5.416
+    },
+    {
+      "green_weight": 0.5,
+      "mean_diff_vs_bt601": 4.057
+    },
+    {
+      "green_weight": 0.625,
+      "mean_diff_vs_bt601": 3.147
+    },
+    {
+      "green_weight": 0.75,
+      "mean_diff_vs_bt601": 3.779
+    },
+    {
+      "green_weight": 0.875,
+      "mean_diff_vs_bt601": 5.347
+    },
+    {
+      "green_weight": 1.0,
+      "mean_diff_vs_bt601": 7.185
+    }
+  ]
+}

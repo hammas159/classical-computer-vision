@@ -1,0 +1,592 @@
+{
+  "project": "36_shape_descriptors",
+  "generated_utc": "2026-09-17T19:08:22+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "greek_amphora",
+    "collie_standing",
+    "flatfish_on_sand",
+    "man_in_a_fez",
+    "made_up_face",
+    "roman_amphitheatre",
+    "green_mountain_ridge",
+    "basket_of_grain",
+    "buttressed_trunk",
+    "brain_coral",
+    "lizard_on_a_leaf",
+    "spotted_fish_head"
+  ],
+  "silhouettes": {
+    "greek_amphora": [
+      3,
+      2
+    ],
+    "collie_standing": [
+      2,
+      4
+    ],
+    "flatfish_on_sand": [
+      0,
+      2
+    ],
+    "man_in_a_fez": [
+      0,
+      3
+    ],
+    "made_up_face": [
+      0,
+      30
+    ],
+    "roman_amphitheatre": [
+      1,
+      7
+    ],
+    "green_mountain_ridge": [
+      5,
+      5
+    ],
+    "basket_of_grain": [
+      2,
+      2
+    ],
+    "buttressed_trunk": [
+      3,
+      9
+    ],
+    "brain_coral": [
+      3,
+      5
+    ],
+    "lizard_on_a_leaf": [
+      5,
+      4
+    ],
+    "spotted_fish_head": [
+      1,
+      4
+    ]
+  },
+  "chance": 0.0833,
+  "generated_invariance": {
+    "rotation": [
+      {
+        "descriptor": "Hu moments (log)",
+        "mean_relative_change": 0.15019,
+        "max_relative_change": 1.34027
+      },
+      {
+        "descriptor": "Hu moments (textbook log)",
+        "mean_relative_change": 5.05861,
+        "max_relative_change": 39.08003
+      },
+      {
+        "descriptor": "Fourier descriptors",
+        "mean_relative_change": 0.22276,
+        "max_relative_change": 1.50169
+      },
+      {
+        "descriptor": "Chain code histogram",
+        "mean_relative_change": 0.48128,
+        "max_relative_change": 1.41421
+      },
+      {
+        "descriptor": "Simple geometry",
+        "mean_relative_change": 0.09346,
+        "max_relative_change": 0.55036
+      }
+    ],
+    "scale": [
+      {
+        "descriptor": "Hu moments (log)",
+        "mean_relative_change": 0.23703,
+        "max_relative_change": 0.92747
+      },
+      {
+        "descriptor": "Hu moments (textbook log)",
+        "mean_relative_change": 3.3268,
+        "max_relative_change": 34.48195
+      },
+      {
+        "descriptor": "Fourier descriptors",
+        "mean_relative_change": 1.63923,
+        "max_relative_change": 19.98924
+      },
+      {
+        "descriptor": "Chain code histogram",
+        "mean_relative_change": 0.00931,
+        "max_relative_change": 0.04229
+      },
+      {
+        "descriptor": "Simple geometry",
+        "mean_relative_change": 0.00669,
+        "max_relative_change": 0.01886
+      }
+    ],
+    "translation": [
+      {
+        "descriptor": "Hu moments (log)",
+        "mean_relative_change": 0.0,
+        "max_relative_change": 0.0
+      },
+      {
+        "descriptor": "Hu moments (textbook log)",
+        "mean_relative_change": 0.0,
+        "max_relative_change": 0.0
+      },
+      {
+        "descriptor": "Fourier descriptors",
+        "mean_relative_change": 0.0,
+        "max_relative_change": 0.0
+      },
+      {
+        "descriptor": "Chain code histogram",
+        "mean_relative_change": 0.0,
+        "max_relative_change": 0.0
+      },
+      {
+        "descriptor": "Simple geometry",
+        "mean_relative_change": 0.0,
+        "max_relative_change": 0.0
+      }
+    ]
+  },
+  "real_invariance": {
+    "rotation": [
+      {
+        "descriptor": "Hu moments (log)",
+        "mean_relative_change": 0.00103,
+        "max_relative_change": 0.01119
+      },
+      {
+        "descriptor": "Hu moments (textbook log)",
+        "mean_relative_change": 0.00099,
+        "max_relative_change": 0.01119
+      },
+      {
+        "descriptor": "Fourier descriptors",
+        "mean_relative_change": 0.05646,
+        "max_relative_change": 0.45376
+      },
+      {
+        "descriptor": "Chain code histogram",
+        "mean_relative_change": 0.54455,
+        "max_relative_change": 1.08726
+      },
+      {
+        "descriptor": "Simple geometry",
+        "mean_relative_change": 0.24621,
+        "max_relative_change": 0.87114
+      }
+    ],
+    "scale": [
+      {
+        "descriptor": "Hu moments (log)",
+        "mean_relative_change": 0.00486,
+        "max_relative_change": 0.03081
+      },
+      {
+        "descriptor": "Hu moments (textbook log)",
+        "mean_relative_change": 0.00481,
+        "max_relative_change": 0.03028
+      },
+      {
+        "descriptor": "Fourier descriptors",
+        "mean_relative_change": 0.0279,
+        "max_relative_change": 0.12607
+      },
+      {
+        "descriptor": "Chain code histogram",
+        "mean_relative_change": 0.07451,
+        "max_relative_change": 0.24081
+      },
+      {
+        "descriptor": "Simple geometry",
+        "mean_relative_change": 0.01032,
+        "max_relative_change": 0.04263
+      }
+    ],
+    "translation": [
+      {
+        "descriptor": "Hu moments (log)",
+        "mean_relative_change": 0.0,
+        "max_relative_change": 0.0
+      },
+      {
+        "descriptor": "Hu moments (textbook log)",
+        "mean_relative_change": 0.0,
+        "max_relative_change": 0.0
+      },
+      {
+        "descriptor": "Fourier descriptors",
+        "mean_relative_change": 0.0,
+        "max_relative_change": 0.0
+      },
+      {
+        "descriptor": "Chain code histogram",
+        "mean_relative_change": 0.0,
+        "max_relative_change": 0.0
+      },
+      {
+        "descriptor": "Simple geometry",
+        "mean_relative_change": 0.0,
+        "max_relative_change": 0.0
+      }
+    ]
+  },
+  "annotator_variation": [
+    {
+      "descriptor": "Hu moments (log)",
+      "mean_relative_change": 0.75313,
+      "max_relative_change": 2.21879,
+      "images_with_two_or_more_tracings": 12,
+      "pairs": 44
+    },
+    {
+      "descriptor": "Hu moments (textbook log)",
+      "mean_relative_change": 0.75253,
+      "max_relative_change": 2.20246,
+      "images_with_two_or_more_tracings": 12,
+      "pairs": 44
+    },
+    {
+      "descriptor": "Fourier descriptors",
+      "mean_relative_change": 0.57813,
+      "max_relative_change": 6.74613,
+      "images_with_two_or_more_tracings": 12,
+      "pairs": 44
+    },
+    {
+      "descriptor": "Chain code histogram",
+      "mean_relative_change": 0.17302,
+      "max_relative_change": 0.50615,
+      "images_with_two_or_more_tracings": 12,
+      "pairs": 44
+    },
+    {
+      "descriptor": "Simple geometry",
+      "mean_relative_change": 0.10817,
+      "max_relative_change": 0.31384,
+      "images_with_two_or_more_tracings": 12,
+      "pairs": 44
+    }
+  ],
+  "cross_annotator_upright": [
+    {
+      "descriptor": "Hu moments (log)",
+      "accuracy": 0.5455,
+      "probes": 44,
+      "classes": 12
+    },
+    {
+      "descriptor": "Hu moments (textbook log)",
+      "accuracy": 0.5455,
+      "probes": 44,
+      "classes": 12
+    },
+    {
+      "descriptor": "Fourier descriptors",
+      "accuracy": 0.3864,
+      "probes": 44,
+      "classes": 12
+    },
+    {
+      "descriptor": "Chain code histogram",
+      "accuracy": 0.75,
+      "probes": 44,
+      "classes": 12
+    },
+    {
+      "descriptor": "Simple geometry",
+      "accuracy": 0.5,
+      "probes": 44,
+      "classes": 12
+    }
+  ],
+  "cross_annotator_turned": [
+    {
+      "descriptor": "Hu moments (log)",
+      "accuracy": 0.5227,
+      "probes": 44,
+      "classes": 12
+    },
+    {
+      "descriptor": "Hu moments (textbook log)",
+      "accuracy": 0.5227,
+      "probes": 44,
+      "classes": 12
+    },
+    {
+      "descriptor": "Fourier descriptors",
+      "accuracy": 0.3409,
+      "probes": 44,
+      "classes": 12
+    },
+    {
+      "descriptor": "Chain code histogram",
+      "accuracy": 0.1136,
+      "probes": 44,
+      "classes": 12
+    },
+    {
+      "descriptor": "Simple geometry",
+      "accuracy": 0.2273,
+      "probes": 44,
+      "classes": 12
+    }
+  ],
+  "shape_classification": [
+    {
+      "descriptor": "Hu moments (log)",
+      "accuracy": 0.9792,
+      "dimensions": 7,
+      "median_ms": 0.1663
+    },
+    {
+      "descriptor": "Hu moments (textbook log)",
+      "accuracy": 0.875,
+      "dimensions": 7,
+      "median_ms": 0.1633
+    },
+    {
+      "descriptor": "Fourier descriptors",
+      "accuracy": 1.0,
+      "dimensions": 20,
+      "median_ms": 0.1216
+    },
+    {
+      "descriptor": "Chain code histogram",
+      "accuracy": 0.7917,
+      "dimensions": 8,
+      "median_ms": 0.1759
+    },
+    {
+      "descriptor": "Simple geometry",
+      "accuracy": 1.0,
+      "dimensions": 4,
+      "median_ms": 0.0661
+    }
+  ],
+  "discretisation": [
+    {
+      "raster_size": 64,
+      "Hu moments (log)": 0.23625,
+      "Hu moments (textbook log)": 6.26139,
+      "Fourier descriptors": 0.26199,
+      "Chain code histogram": 0.55106,
+      "Simple geometry": 0.12415
+    },
+    {
+      "raster_size": 96,
+      "Hu moments (log)": 0.04201,
+      "Hu moments (textbook log)": 0.45694,
+      "Fourier descriptors": 0.46719,
+      "Chain code histogram": 0.53763,
+      "Simple geometry": 0.12737
+    },
+    {
+      "raster_size": 128,
+      "Hu moments (log)": 0.39102,
+      "Hu moments (textbook log)": 6.81341,
+      "Fourier descriptors": 2.26862,
+      "Chain code histogram": 0.60131,
+      "Simple geometry": 0.12819
+    },
+    {
+      "raster_size": 192,
+      "Hu moments (log)": 0.18585,
+      "Hu moments (textbook log)": 6.06807,
+      "Fourier descriptors": 0.26615,
+      "Chain code histogram": 0.54349,
+      "Simple geometry": 0.1299
+    },
+    {
+      "raster_size": 256,
+      "Hu moments (log)": 0.34118,
+      "Hu moments (textbook log)": 12.64285,
+      "Fourier descriptors": 0.29529,
+      "Chain code histogram": 0.56727,
+      "Simple geometry": 0.12829
+    }
+  ],
+  "reflection_generated": [
+    {
+      "shape": "circle",
+      "hu7_sign_flipped": false,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.0,
+      "geometry_change": 0.0
+    },
+    {
+      "shape": "square",
+      "hu7_sign_flipped": false,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.0,
+      "geometry_change": 0.0
+    },
+    {
+      "shape": "triangle",
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00141,
+      "geometry_change": 0.0
+    },
+    {
+      "shape": "star",
+      "hu7_sign_flipped": false,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.0247,
+      "geometry_change": 0.0
+    },
+    {
+      "shape": "cross",
+      "hu7_sign_flipped": false,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.0,
+      "geometry_change": 0.0
+    },
+    {
+      "shape": "ellipse",
+      "hu7_sign_flipped": false,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00092,
+      "geometry_change": 0.0
+    }
+  ],
+  "reflection_real": [
+    {
+      "image": "greek_amphora",
+      "mirror_symmetry_iou": 0.9628,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.0,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "collie_standing",
+      "mirror_symmetry_iou": 0.5474,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00205,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "flatfish_on_sand",
+      "mirror_symmetry_iou": 0.6553,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00257,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "man_in_a_fez",
+      "mirror_symmetry_iou": 0.8961,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00737,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "made_up_face",
+      "mirror_symmetry_iou": 0.5622,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00204,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "roman_amphitheatre",
+      "mirror_symmetry_iou": 0.5304,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00053,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "green_mountain_ridge",
+      "mirror_symmetry_iou": 0.7629,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00742,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "basket_of_grain",
+      "mirror_symmetry_iou": 0.8935,
+      "hu7_sign_flipped": false,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00264,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "buttressed_trunk",
+      "mirror_symmetry_iou": 0.5293,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00077,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "brain_coral",
+      "mirror_symmetry_iou": 0.7516,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00969,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "lizard_on_a_leaf",
+      "mirror_symmetry_iou": 0.5205,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00117,
+      "geometry_change": 0.0
+    },
+    {
+      "image": "spotted_fish_head",
+      "mirror_symmetry_iou": 0.6281,
+      "hu7_sign_flipped": true,
+      "other_hu_flipped": 0,
+      "fourier_change": 0.00328,
+      "geometry_change": 0.0
+    }
+  ],
+  "boundary_noise": [
+    {
+      "boundary_noise": 0.0,
+      "Hu moments (log)": 0.0,
+      "Hu moments (textbook log)": 0.0,
+      "Fourier descriptors": 0.0,
+      "Chain code histogram": 0.0,
+      "Simple geometry": 0.0
+    },
+    {
+      "boundary_noise": 0.01,
+      "Hu moments (log)": 0.24593,
+      "Hu moments (textbook log)": 17.59037,
+      "Fourier descriptors": 0.41228,
+      "Chain code histogram": 0.03346,
+      "Simple geometry": 0.01325
+    },
+    {
+      "boundary_noise": 0.03,
+      "Hu moments (log)": 0.40726,
+      "Hu moments (textbook log)": 17.35118,
+      "Fourier descriptors": 0.26865,
+      "Chain code histogram": 0.12789,
+      "Simple geometry": 0.04587
+    },
+    {
+      "boundary_noise": 0.08,
+      "Hu moments (log)": 0.28363,
+      "Hu moments (textbook log)": 16.84591,
+      "Fourier descriptors": 0.5242,
+      "Chain code histogram": 0.29747,
+      "Simple geometry": 0.11016
+    }
+  ]
+}

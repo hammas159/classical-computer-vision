@@ -1,0 +1,211 @@
+{
+  "project": "40_multiframe_super_resolution",
+  "generated_utc": "2026-09-17T19:34:51+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "ladybird_on_a_leaf",
+    "pintail_at_dusk",
+    "carved_stone_relief",
+    "swallow_tailed_gulls",
+    "toadstool_in_moss",
+    "three_schoolchildren",
+    "skier_on_a_slope",
+    "deer_in_bare_woods",
+    "otters_on_gravel",
+    "two_at_a_wagon",
+    "foxes_under_a_ledge",
+    "mayan_stone_carving"
+  ],
+  "detail": {
+    "ladybird_on_a_leaf": 193.9,
+    "pintail_at_dusk": 266.8,
+    "carved_stone_relief": 665.9,
+    "swallow_tailed_gulls": 674.8,
+    "toadstool_in_moss": 1150.5,
+    "three_schoolchildren": 1493.3,
+    "skier_on_a_slope": 2110.8,
+    "deer_in_bare_woods": 2184.6,
+    "otters_on_gravel": 2728.2,
+    "two_at_a_wagon": 2757.9,
+    "foxes_under_a_ledge": 4131.7,
+    "mayan_stone_carving": 6056.7
+  },
+  "scale": 3,
+  "frames": 8,
+  "methods": [
+    {
+      "method": "Single frame (bicubic)",
+      "psnr_db": 24.488,
+      "ssim": 0.6366,
+      "median_ms": 0.39,
+      "gain_over_single_db": 0.0
+    },
+    {
+      "method": "Naive average",
+      "psnr_db": 23.97,
+      "ssim": 0.5926,
+      "median_ms": 16.98,
+      "gain_over_single_db": -0.518
+    },
+    {
+      "method": "Shift-and-add",
+      "psnr_db": 25.47,
+      "ssim": 0.6838,
+      "median_ms": 50.09,
+      "gain_over_single_db": 0.982
+    },
+    {
+      "method": "Iterative back-projection",
+      "psnr_db": 26.743,
+      "ssim": 0.7634,
+      "median_ms": 849.52,
+      "gain_over_single_db": 2.255
+    }
+  ],
+  "frame_count": [
+    {
+      "frames": 1,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 24.488,
+      "Shift-and-add": 24.64,
+      "Iterative back-projection": 25.17
+    },
+    {
+      "frames": 2,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.906,
+      "Shift-and-add": 24.813,
+      "Iterative back-projection": 25.9
+    },
+    {
+      "frames": 4,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.838,
+      "Shift-and-add": 25.065,
+      "Iterative back-projection": 26.367
+    },
+    {
+      "frames": 8,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.97,
+      "Shift-and-add": 25.47,
+      "Iterative back-projection": 26.743
+    },
+    {
+      "frames": 16,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.814,
+      "Shift-and-add": 25.851,
+      "Iterative back-projection": 27.083
+    },
+    {
+      "frames": 32,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.928,
+      "Shift-and-add": 26.052,
+      "Iterative back-projection": 27.283
+    }
+  ],
+  "subpixel_vs_integer": [
+    {
+      "offsets": "Sub-pixel offsets",
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.97,
+      "Shift-and-add": 25.47,
+      "Iterative back-projection": 26.743
+    },
+    {
+      "offsets": "Integer-pixel offsets",
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 22.101,
+      "Shift-and-add": 24.652,
+      "Iterative back-projection": 25.937
+    }
+  ],
+  "registration": [
+    {
+      "method": "Phase correlation",
+      "mean_offset_error_px": 0.4095,
+      "median_offset_error_px": 0.407
+    },
+    {
+      "method": "ECC",
+      "mean_offset_error_px": 0.0646,
+      "median_offset_error_px": 0.0637
+    }
+  ],
+  "registration_error": [
+    {
+      "registration_error_px": 0.0,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.97,
+      "Shift-and-add": 25.47,
+      "Iterative back-projection": 26.743
+    },
+    {
+      "registration_error_px": 0.1,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.97,
+      "Shift-and-add": 25.489,
+      "Iterative back-projection": 26.741
+    },
+    {
+      "registration_error_px": 0.25,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.97,
+      "Shift-and-add": 25.455,
+      "Iterative back-projection": 26.74
+    },
+    {
+      "registration_error_px": 0.5,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.97,
+      "Shift-and-add": 25.313,
+      "Iterative back-projection": 26.578
+    },
+    {
+      "registration_error_px": 1.0,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.97,
+      "Shift-and-add": 25.058,
+      "Iterative back-projection": 25.999
+    },
+    {
+      "registration_error_px": 2.0,
+      "Single frame (bicubic)": 24.488,
+      "Naive average": 23.97,
+      "Shift-and-add": 24.041,
+      "Iterative back-projection": 24.08
+    }
+  ],
+  "scale_sweep": [
+    {
+      "scale": 2,
+      "single_frame_db": 26.609,
+      "best_method": "Iterative back-projection",
+      "best_db": 30.073,
+      "gain_db": 3.464
+    },
+    {
+      "scale": 3,
+      "single_frame_db": 24.488,
+      "best_method": "Iterative back-projection",
+      "best_db": 27.083,
+      "gain_db": 2.595
+    },
+    {
+      "scale": 4,
+      "single_frame_db": 23.335,
+      "best_method": "Iterative back-projection",
+      "best_db": 25.499,
+      "gain_db": 2.164
+    }
+  ],
+  "single_frame_ibp_db": 25.17,
+  "bicubic_db": 24.488
+}

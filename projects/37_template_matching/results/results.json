@@ -1,0 +1,412 @@
+{
+  "project": "37_template_matching",
+  "generated_utc": "2026-09-17T19:13:19+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "hippo_in_green_water",
+    "porcupine_on_a_branch",
+    "leopard_in_bare_tree",
+    "cricket_on_the_green",
+    "weaver_at_her_loom",
+    "bugling_elk",
+    "elephants_and_grooms",
+    "boy_in_a_wide_hat",
+    "boy_with_a_fish_trap",
+    "two_at_a_railing",
+    "street_piper",
+    "monks_at_a_noticeboard"
+  ],
+  "entropy": {
+    "hippo_in_green_water": 5.289,
+    "porcupine_on_a_branch": 6.717,
+    "leopard_in_bare_tree": 7.005,
+    "cricket_on_the_green": 7.101,
+    "weaver_at_her_loom": 7.185,
+    "bugling_elk": 7.283,
+    "elephants_and_grooms": 7.375,
+    "boy_in_a_wide_hat": 7.448,
+    "boy_with_a_fish_trap": 7.521,
+    "two_at_a_railing": 7.614,
+    "street_piper": 7.697,
+    "monks_at_a_noticeboard": 7.896
+  },
+  "clean": [
+    {
+      "method": "SSD (SQDIFF)",
+      "mean_error_px": 0.0,
+      "median_error_px": 0.0,
+      "success_rate": 1.0,
+      "median_ms": 5.471
+    },
+    {
+      "method": "SSD normalised",
+      "mean_error_px": 0.0,
+      "median_error_px": 0.0,
+      "success_rate": 1.0,
+      "median_ms": 5.854
+    },
+    {
+      "method": "Cross-correlation",
+      "mean_error_px": 160.013,
+      "median_error_px": 151.881,
+      "success_rate": 0.1111,
+      "median_ms": 2.001
+    },
+    {
+      "method": "NCC (CCORR_NORMED)",
+      "mean_error_px": 0.0,
+      "median_error_px": 0.0,
+      "success_rate": 1.0,
+      "median_ms": 2.666
+    },
+    {
+      "method": "ZNCC (CCOEFF_NORMED)",
+      "mean_error_px": 0.0,
+      "median_error_px": 0.0,
+      "success_rate": 1.0,
+      "median_ms": 3.907
+    }
+  ],
+  "formula_invariance": [
+    {
+      "gain": 1.0,
+      "offset": 0.0,
+      "SSD (SQDIFF)": 0.0,
+      "SSD normalised": 0.0,
+      "Cross-correlation": 23067916.0,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 0.999999
+    },
+    {
+      "gain": 0.6,
+      "offset": 0.0,
+      "SSD (SQDIFF)": 3690770.0,
+      "SSD normalised": 0.266654,
+      "Cross-correlation": 13840977.0,
+      "NCC (CCORR_NORMED)": 0.999995,
+      "ZNCC (CCOEFF_NORMED)": 0.999978
+    },
+    {
+      "gain": 1.0,
+      "offset": 0.2,
+      "SSD (SQDIFF)": 2302866.0,
+      "SSD normalised": 0.079277,
+      "Cross-correlation": 28672040.0,
+      "NCC (CCORR_NORMED)": 0.987048,
+      "ZNCC (CCOEFF_NORMED)": 0.989722
+    },
+    {
+      "gain": 0.6,
+      "offset": 0.2,
+      "SSD (SQDIFF)": 871694.0,
+      "SSD normalised": 0.04143,
+      "Cross-correlation": 20693490.0,
+      "NCC (CCORR_NORMED)": 0.983521,
+      "ZNCC (CCOEFF_NORMED)": 0.999978
+    }
+  ],
+  "gain_sweep": [
+    {
+      "gain": 1.0,
+      "SSD (SQDIFF)": 1.0,
+      "SSD normalised": 1.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "gain": 0.5,
+      "SSD (SQDIFF)": 0.4583,
+      "SSD normalised": 0.2083,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "gain": 0.3,
+      "SSD (SQDIFF)": 0.2083,
+      "SSD normalised": 0.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "gain": 0.1,
+      "SSD (SQDIFF)": 0.125,
+      "SSD normalised": 0.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "gain": 2.0,
+      "SSD (SQDIFF)": 0.3333,
+      "SSD normalised": 0.4583,
+      "Cross-correlation": 0.0833,
+      "NCC (CCORR_NORMED)": 0.9583,
+      "ZNCC (CCOEFF_NORMED)": 0.9583
+    },
+    {
+      "gain": 3.0,
+      "SSD (SQDIFF)": 0.0417,
+      "SSD normalised": 0.125,
+      "Cross-correlation": 0.0,
+      "NCC (CCORR_NORMED)": 0.875,
+      "ZNCC (CCOEFF_NORMED)": 0.9583
+    }
+  ],
+  "offset_sweep": [
+    {
+      "offset": 0.0,
+      "SSD (SQDIFF)": 1.0,
+      "SSD normalised": 1.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "offset": -0.1,
+      "SSD (SQDIFF)": 0.8333,
+      "SSD normalised": 0.7917,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "offset": -0.2,
+      "SSD (SQDIFF)": 0.6667,
+      "SSD normalised": 0.4583,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 0.875,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "offset": -0.3,
+      "SSD (SQDIFF)": 0.5,
+      "SSD normalised": 0.2083,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 0.6667,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "offset": -0.4,
+      "SSD (SQDIFF)": 0.25,
+      "SSD normalised": 0.1667,
+      "Cross-correlation": 0.1667,
+      "NCC (CCORR_NORMED)": 0.4583,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "offset": 0.2,
+      "SSD (SQDIFF)": 0.5,
+      "SSD normalised": 0.6667,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "offset": 0.4,
+      "SSD (SQDIFF)": 0.0833,
+      "SSD normalised": 0.1667,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 0.9583,
+      "ZNCC (CCOEFF_NORMED)": 0.9583
+    }
+  ],
+  "noise_sweep": [
+    {
+      "noise_sigma": 0.0,
+      "SSD (SQDIFF)": 1.0,
+      "SSD normalised": 1.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "noise_sigma": 5.0,
+      "SSD (SQDIFF)": 1.0,
+      "SSD normalised": 1.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "noise_sigma": 15.0,
+      "SSD (SQDIFF)": 1.0,
+      "SSD normalised": 1.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "noise_sigma": 30.0,
+      "SSD (SQDIFF)": 1.0,
+      "SSD normalised": 1.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 0.9583,
+      "ZNCC (CCOEFF_NORMED)": 0.9583
+    },
+    {
+      "noise_sigma": 50.0,
+      "SSD (SQDIFF)": 0.9583,
+      "SSD normalised": 0.9583,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 0.875,
+      "ZNCC (CCOEFF_NORMED)": 0.875
+    }
+  ],
+  "scale_sweep": [
+    {
+      "scale": 1.0,
+      "SSD (SQDIFF)": 1.0,
+      "SSD normalised": 1.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "scale": 0.9,
+      "SSD (SQDIFF)": 0.7083,
+      "SSD normalised": 0.7083,
+      "Cross-correlation": 0.0833,
+      "NCC (CCORR_NORMED)": 0.7083,
+      "ZNCC (CCOEFF_NORMED)": 0.6667
+    },
+    {
+      "scale": 0.8,
+      "SSD (SQDIFF)": 0.1667,
+      "SSD normalised": 0.1667,
+      "Cross-correlation": 0.0417,
+      "NCC (CCORR_NORMED)": 0.1667,
+      "ZNCC (CCOEFF_NORMED)": 0.2083
+    },
+    {
+      "scale": 1.1,
+      "SSD (SQDIFF)": 0.5417,
+      "SSD normalised": 0.5417,
+      "Cross-correlation": 0.0833,
+      "NCC (CCORR_NORMED)": 0.5417,
+      "ZNCC (CCOEFF_NORMED)": 0.5
+    },
+    {
+      "scale": 1.25,
+      "SSD (SQDIFF)": 0.0833,
+      "SSD normalised": 0.0833,
+      "Cross-correlation": 0.0,
+      "NCC (CCORR_NORMED)": 0.0833,
+      "ZNCC (CCOEFF_NORMED)": 0.0833
+    }
+  ],
+  "rotation_sweep": [
+    {
+      "rotation_deg": 0.0,
+      "SSD (SQDIFF)": 1.0,
+      "SSD normalised": 1.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "rotation_deg": 2.0,
+      "SSD (SQDIFF)": 1.0,
+      "SSD normalised": 1.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "rotation_deg": 5.0,
+      "SSD (SQDIFF)": 1.0,
+      "SSD normalised": 1.0,
+      "Cross-correlation": 0.125,
+      "NCC (CCORR_NORMED)": 1.0,
+      "ZNCC (CCOEFF_NORMED)": 1.0
+    },
+    {
+      "rotation_deg": 10.0,
+      "SSD (SQDIFF)": 0.75,
+      "SSD normalised": 0.7917,
+      "Cross-correlation": 0.0417,
+      "NCC (CCORR_NORMED)": 0.7083,
+      "ZNCC (CCOEFF_NORMED)": 0.7917
+    },
+    {
+      "rotation_deg": 20.0,
+      "SSD (SQDIFF)": 0.125,
+      "SSD normalised": 0.125,
+      "Cross-correlation": 0.0,
+      "NCC (CCORR_NORMED)": 0.0417,
+      "ZNCC (CCOEFF_NORMED)": 0.0833
+    }
+  ],
+  "multiscale": [
+    {
+      "true_scale": 1.0,
+      "single_scale_success": 1.0,
+      "multi_scale_success": 1.0,
+      "scale_estimate_error": 0.0,
+      "single_ms": 4.24,
+      "multi_ms": 90.9
+    },
+    {
+      "true_scale": 0.9,
+      "single_scale_success": 0.6667,
+      "multi_scale_success": 1.0,
+      "scale_estimate_error": 0.0021,
+      "single_ms": 4.07,
+      "multi_ms": 86.83
+    },
+    {
+      "true_scale": 0.8,
+      "single_scale_success": 0.2083,
+      "multi_scale_success": 1.0,
+      "scale_estimate_error": 0.0,
+      "single_ms": 4.27,
+      "multi_ms": 92.85
+    },
+    {
+      "true_scale": 1.1,
+      "single_scale_success": 0.5,
+      "multi_scale_success": 1.0,
+      "scale_estimate_error": 0.0,
+      "single_ms": 4.2,
+      "multi_ms": 89.45
+    },
+    {
+      "true_scale": 1.25,
+      "single_scale_success": 0.0833,
+      "multi_scale_success": 1.0,
+      "scale_estimate_error": 0.0,
+      "single_ms": 4.63,
+      "multi_ms": 99.69
+    }
+  ],
+  "response_sharpness": [
+    {
+      "method": "SSD (SQDIFF)",
+      "peak_to_mean": 1.6824
+    },
+    {
+      "method": "SSD normalised",
+      "peak_to_mean": 2.8511
+    },
+    {
+      "method": "Cross-correlation",
+      "peak_to_mean": 1.7026
+    },
+    {
+      "method": "NCC (CCORR_NORMED)",
+      "peak_to_mean": 1.2158
+    },
+    {
+      "method": "ZNCC (CCOEFF_NORMED)",
+      "peak_to_mean": 433.9427
+    }
+  ],
+  "success_px": 5.0
+}

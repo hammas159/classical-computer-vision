@@ -1,0 +1,284 @@
+{
+  "project": "39_white_balance",
+  "generated_utc": "2026-09-17T19:19:04+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "mushers_and_husky",
+    "gentoo_on_shingle",
+    "beach_baseball",
+    "desert_dune_ripples",
+    "louvre_pyramid",
+    "cyclists_on_a_lane",
+    "tiger_in_the_shade",
+    "swallowtail_on_phlox",
+    "leopard_in_dry_grass",
+    "lakeside_verandah",
+    "spotted_cat_on_a_log",
+    "red_chrysanthemums"
+  ],
+  "grey_deviation": {
+    "mushers_and_husky": 0.62,
+    "gentoo_on_shingle": 1.95,
+    "beach_baseball": 3.13,
+    "desert_dune_ripples": 4.14,
+    "louvre_pyramid": 5.58,
+    "cyclists_on_a_lane": 6.94,
+    "tiger_in_the_shade": 8.27,
+    "swallowtail_on_phlox": 9.32,
+    "leopard_in_dry_grass": 10.81,
+    "lakeside_verandah": 13.03,
+    "spotted_cat_on_a_log": 16.04,
+    "red_chrysanthemums": 29.2
+  },
+  "casts": {
+    "tungsten (warm)": [
+      1.35,
+      1.0,
+      0.65
+    ],
+    "daylight (neutral)": [
+      1.02,
+      1.0,
+      0.98
+    ],
+    "shade (cool)": [
+      0.75,
+      1.0,
+      1.3
+    ],
+    "strong green": [
+      0.8,
+      1.35,
+      0.8
+    ]
+  },
+  "tungsten": [
+    {
+      "method": "Do nothing (control)",
+      "angular_error_deg": 15.949,
+      "psnr_db": 18.863,
+      "ssim": 0.9203,
+      "median_ms": 0.005
+    },
+    {
+      "method": "Grey-world",
+      "angular_error_deg": 6.977,
+      "psnr_db": 23.939,
+      "ssim": 0.9403,
+      "median_ms": 2.525
+    },
+    {
+      "method": "White-patch (99th pct)",
+      "angular_error_deg": 6.212,
+      "psnr_db": 26.895,
+      "ssim": 0.9699,
+      "median_ms": 4.165
+    },
+    {
+      "method": "White-patch (true max)",
+      "angular_error_deg": 7.884,
+      "psnr_db": 25.358,
+      "ssim": 0.9709,
+      "median_ms": 2.734
+    },
+    {
+      "method": "Shades-of-grey (p=6)",
+      "angular_error_deg": 4.426,
+      "psnr_db": 27.588,
+      "ssim": 0.9707,
+      "median_ms": 12.908
+    },
+    {
+      "method": "Grey-edge (p=6)",
+      "angular_error_deg": 5.062,
+      "psnr_db": 28.539,
+      "ssim": 0.9764,
+      "median_ms": 21.455
+    }
+  ],
+  "cast_comparison": [
+    {
+      "cast": "tungsten (warm)",
+      "Do nothing (control)": 15.949,
+      "Grey-world": 6.977,
+      "White-patch (99th pct)": 6.212,
+      "White-patch (true max)": 7.884,
+      "Shades-of-grey (p=6)": 4.426,
+      "Grey-edge (p=6)": 5.062
+    },
+    {
+      "cast": "daylight (neutral)",
+      "Do nothing (control)": 0.936,
+      "Grey-world": 8.973,
+      "White-patch (99th pct)": 4.703,
+      "White-patch (true max)": 1.343,
+      "Shades-of-grey (p=6)": 4.956,
+      "Grey-edge (p=6)": 2.712
+    },
+    {
+      "cast": "shade (cool)",
+      "Do nothing (control)": 12.471,
+      "Grey-world": 10.366,
+      "White-patch (99th pct)": 7.58,
+      "White-patch (true max)": 7.03,
+      "Shades-of-grey (p=6)": 6.272,
+      "Grey-edge (p=6)": 4.614
+    },
+    {
+      "cast": "strong green",
+      "Do nothing (control)": 14.771,
+      "Grey-world": 7.543,
+      "White-patch (99th pct)": 7.308,
+      "White-patch (true max)": 7.616,
+      "Shades-of-grey (p=6)": 5.137,
+      "Grey-edge (p=6)": 5.137
+    }
+  ],
+  "assumption_failures": [
+    {
+      "scene": "Dominant colour, neutral light (breaks grey-world)",
+      "Do nothing (control)": 0.0,
+      "Grey-world": 23.034,
+      "White-patch (99th pct)": 4.349,
+      "White-patch (true max)": 2.649,
+      "Shades-of-grey (p=6)": 11.18,
+      "Grey-edge (p=6)": 3.201
+    },
+    {
+      "scene": "Clipped highlight, warm light (breaks white-patch)",
+      "Do nothing (control)": 15.949,
+      "Grey-world": 6.119,
+      "White-patch (99th pct)": 7.971,
+      "White-patch (true max)": 15.949,
+      "Shades-of-grey (p=6)": 5.607,
+      "Grey-edge (p=6)": 5.342
+    }
+  ],
+  "dominance_sweep": [
+    {
+      "dominant_fraction": 0.0,
+      "Do nothing (control)": 0.0,
+      "Grey-world": 1.169,
+      "White-patch (99th pct)": 6.038,
+      "White-patch (true max)": 2.934,
+      "Shades-of-grey (p=6)": 2.942,
+      "Grey-edge (p=6)": 6.144
+    },
+    {
+      "dominant_fraction": 0.2,
+      "Do nothing (control)": 0.0,
+      "Grey-world": 7.356,
+      "White-patch (99th pct)": 6.038,
+      "White-patch (true max)": 2.934,
+      "Shades-of-grey (p=6)": 6.588,
+      "Grey-edge (p=6)": 4.259
+    },
+    {
+      "dominant_fraction": 0.4,
+      "Do nothing (control)": 0.0,
+      "Grey-world": 13.936,
+      "White-patch (99th pct)": 6.038,
+      "White-patch (true max)": 2.934,
+      "Shades-of-grey (p=6)": 8.989,
+      "Grey-edge (p=6)": 4.724
+    },
+    {
+      "dominant_fraction": 0.6,
+      "Do nothing (control)": 0.0,
+      "Grey-world": 20.281,
+      "White-patch (99th pct)": 6.038,
+      "White-patch (true max)": 2.934,
+      "Shades-of-grey (p=6)": 10.791,
+      "Grey-edge (p=6)": 5.012
+    },
+    {
+      "dominant_fraction": 0.8,
+      "Do nothing (control)": 0.0,
+      "Grey-world": 26.211,
+      "White-patch (99th pct)": 6.038,
+      "White-patch (true max)": 2.934,
+      "Shades-of-grey (p=6)": 12.273,
+      "Grey-edge (p=6)": 4.512
+    }
+  ],
+  "minkowski_sweep": [
+    {
+      "p": 1.0,
+      "shades_of_grey_deg": 6.975,
+      "grey_edge_deg": 3.929
+    },
+    {
+      "p": 2.0,
+      "shades_of_grey_deg": 5.669,
+      "grey_edge_deg": 3.541
+    },
+    {
+      "p": 4.0,
+      "shades_of_grey_deg": 4.665,
+      "grey_edge_deg": 4.194
+    },
+    {
+      "p": 6.0,
+      "shades_of_grey_deg": 4.426,
+      "grey_edge_deg": 5.062
+    },
+    {
+      "p": 10.0,
+      "shades_of_grey_deg": 4.371,
+      "grey_edge_deg": 6.233
+    },
+    {
+      "p": 20.0,
+      "shades_of_grey_deg": 4.897,
+      "grey_edge_deg": 7.242
+    },
+    {
+      "p": 50.0,
+      "shades_of_grey_deg": 6.132,
+      "grey_edge_deg": 7.795
+    }
+  ],
+  "noise_sweep": [
+    {
+      "noise_sigma": 0.0,
+      "Do nothing (control)": 15.949,
+      "Grey-world": 6.977,
+      "White-patch (99th pct)": 6.212,
+      "White-patch (true max)": 7.884,
+      "Shades-of-grey (p=6)": 4.426,
+      "Grey-edge (p=6)": 5.062
+    },
+    {
+      "noise_sigma": 5.0,
+      "Do nothing (control)": 15.949,
+      "Grey-world": 6.964,
+      "White-patch (99th pct)": 6.347,
+      "White-patch (true max)": 8.379,
+      "Shades-of-grey (p=6)": 4.462,
+      "Grey-edge (p=6)": 5.184
+    },
+    {
+      "noise_sigma": 15.0,
+      "Do nothing (control)": 15.949,
+      "Grey-world": 6.816,
+      "White-patch (99th pct)": 6.816,
+      "White-patch (true max)": 10.612,
+      "Shades-of-grey (p=6)": 4.49,
+      "Grey-edge (p=6)": 5.317
+    },
+    {
+      "noise_sigma": 30.0,
+      "Do nothing (control)": 15.949,
+      "Grey-world": 6.375,
+      "White-patch (99th pct)": 8.024,
+      "White-patch (true max)": 14.734,
+      "Shades-of-grey (p=6)": 4.738,
+      "Grey-edge (p=6)": 5.805
+    }
+  ]
+}
