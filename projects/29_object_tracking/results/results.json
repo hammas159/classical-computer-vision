@@ -1,0 +1,523 @@
+{
+  "project": "29_object_tracking",
+  "generated_utc": "2026-09-18T05:27:48+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "video": "C:\\Users\\dell\\.cache\\classical-cv-images\\assets\\video\\vtest.avi",
+  "starts": [
+    50,
+    140,
+    170,
+    210,
+    240,
+    410,
+    490,
+    550,
+    580,
+    610,
+    640,
+    740
+  ],
+  "run_length": 50,
+  "survival_iou": 0.3,
+  "chain_quality": [
+    {
+      "start": 50,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 1.41,
+      "merge_events": 0
+    },
+    {
+      "start": 140,
+      "frames_tracked": 44,
+      "of": 50,
+      "max_area_jump": 2.22,
+      "merge_events": 2
+    },
+    {
+      "start": 170,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 1.26,
+      "merge_events": 0
+    },
+    {
+      "start": 210,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 1.27,
+      "merge_events": 0
+    },
+    {
+      "start": 240,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 1.26,
+      "merge_events": 0
+    },
+    {
+      "start": 410,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 1.27,
+      "merge_events": 0
+    },
+    {
+      "start": 490,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 1.41,
+      "merge_events": 0
+    },
+    {
+      "start": 550,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 2.9,
+      "merge_events": 1
+    },
+    {
+      "start": 580,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 2.9,
+      "merge_events": 1
+    },
+    {
+      "start": 610,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 1.25,
+      "merge_events": 0
+    },
+    {
+      "start": 640,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 1.44,
+      "merge_events": 0
+    },
+    {
+      "start": 740,
+      "frames_tracked": 50,
+      "of": 50,
+      "max_area_jump": 3.06,
+      "merge_events": 2
+    }
+  ],
+  "overall": [
+    {
+      "tracker": "Static box (control)",
+      "mean_iou": 0.248,
+      "centre_error_px": 92.86,
+      "survival_rate": 0.3289,
+      "frames_survived": 16.4
+    },
+    {
+      "tracker": "Template matching",
+      "mean_iou": 0.6079,
+      "centre_error_px": 27.22,
+      "survival_rate": 0.8206,
+      "frames_survived": 41.0
+    },
+    {
+      "tracker": "Mean shift",
+      "mean_iou": 0.2541,
+      "centre_error_px": 79.89,
+      "survival_rate": 0.3724,
+      "frames_survived": 18.6
+    },
+    {
+      "tracker": "CamShift",
+      "mean_iou": 0.1476,
+      "centre_error_px": 110.05,
+      "survival_rate": 0.0451,
+      "frames_survived": 2.2
+    },
+    {
+      "tracker": "Optical flow (LK)",
+      "mean_iou": 0.5516,
+      "centre_error_px": 22.47,
+      "survival_rate": 0.7072,
+      "frames_survived": 35.3
+    },
+    {
+      "tracker": "LK + Kalman",
+      "mean_iou": 0.5155,
+      "centre_error_px": 24.62,
+      "survival_rate": 0.4856,
+      "frames_survived": 24.2
+    },
+    {
+      "tracker": "MOSSE (from scratch)",
+      "mean_iou": 0.5671,
+      "centre_error_px": 32.09,
+      "survival_rate": 0.8272,
+      "frames_survived": 41.3
+    }
+  ],
+  "per_run": [
+    {
+      "start": 50,
+      "truth_frames": 50,
+      "Static box (control)": 0.0717,
+      "Template matching": 0.6481,
+      "Mean shift": 0.4965,
+      "CamShift": 0.3757,
+      "Optical flow (LK)": 0.3534,
+      "LK + Kalman": 0.3261,
+      "MOSSE (from scratch)": 0.5661
+    },
+    {
+      "start": 140,
+      "truth_frames": 49,
+      "Static box (control)": 0.2657,
+      "Template matching": 0.2657,
+      "Mean shift": 0.3016,
+      "CamShift": 0.0964,
+      "Optical flow (LK)": 0.2657,
+      "LK + Kalman": 0.2657,
+      "MOSSE (from scratch)": 0.2657
+    },
+    {
+      "start": 170,
+      "truth_frames": 50,
+      "Static box (control)": 0.0651,
+      "Template matching": 0.6829,
+      "Mean shift": 0.5801,
+      "CamShift": 0.1047,
+      "Optical flow (LK)": 0.538,
+      "LK + Kalman": 0.4642,
+      "MOSSE (from scratch)": 0.7249
+    },
+    {
+      "start": 210,
+      "truth_frames": 50,
+      "Static box (control)": 0.1245,
+      "Template matching": 0.7467,
+      "Mean shift": 0.3126,
+      "CamShift": 0.2453,
+      "Optical flow (LK)": 0.5039,
+      "LK + Kalman": 0.4883,
+      "MOSSE (from scratch)": 0.724
+    },
+    {
+      "start": 240,
+      "truth_frames": 50,
+      "Static box (control)": 0.0698,
+      "Template matching": 0.7886,
+      "Mean shift": 0.5635,
+      "CamShift": 0.0979,
+      "Optical flow (LK)": 0.6676,
+      "LK + Kalman": 0.6006,
+      "MOSSE (from scratch)": 0.7646
+    },
+    {
+      "start": 410,
+      "truth_frames": 50,
+      "Static box (control)": 0.7468,
+      "Template matching": 0.856,
+      "Mean shift": 0.4495,
+      "CamShift": 0.1352,
+      "Optical flow (LK)": 0.8593,
+      "LK + Kalman": 0.8442,
+      "MOSSE (from scratch)": 0.7651
+    },
+    {
+      "start": 490,
+      "truth_frames": 50,
+      "Static box (control)": 0.0637,
+      "Template matching": 0.7184,
+      "Mean shift": 0.0413,
+      "CamShift": 0.0623,
+      "Optical flow (LK)": 0.4239,
+      "LK + Kalman": 0.3694,
+      "MOSSE (from scratch)": 0.3574
+    },
+    {
+      "start": 550,
+      "truth_frames": 50,
+      "Static box (control)": 0.506,
+      "Template matching": 0.3697,
+      "Mean shift": 0.0864,
+      "CamShift": 0.1356,
+      "Optical flow (LK)": 0.5967,
+      "LK + Kalman": 0.5797,
+      "MOSSE (from scratch)": 0.518
+    },
+    {
+      "start": 580,
+      "truth_frames": 50,
+      "Static box (control)": 0.1331,
+      "Template matching": 0.448,
+      "Mean shift": 0.0249,
+      "CamShift": 0.1181,
+      "Optical flow (LK)": 0.3781,
+      "LK + Kalman": 0.3381,
+      "MOSSE (from scratch)": 0.4421
+    },
+    {
+      "start": 610,
+      "truth_frames": 50,
+      "Static box (control)": 0.4722,
+      "Template matching": 0.8212,
+      "Mean shift": 0.0223,
+      "CamShift": 0.0905,
+      "Optical flow (LK)": 0.8162,
+      "LK + Kalman": 0.7389,
+      "MOSSE (from scratch)": 0.8188
+    },
+    {
+      "start": 640,
+      "truth_frames": 50,
+      "Static box (control)": 0.2842,
+      "Template matching": 0.8144,
+      "Mean shift": 0.055,
+      "CamShift": 0.0626,
+      "Optical flow (LK)": 0.8134,
+      "LK + Kalman": 0.7816,
+      "MOSSE (from scratch)": 0.7984
+    },
+    {
+      "start": 740,
+      "truth_frames": 50,
+      "Static box (control)": 0.1734,
+      "Template matching": 0.135,
+      "Mean shift": 0.116,
+      "CamShift": 0.2471,
+      "Optical flow (LK)": 0.4031,
+      "LK + Kalman": 0.3897,
+      "MOSSE (from scratch)": 0.0601
+    }
+  ],
+  "survival_versus_accuracy": [
+    {
+      "tracker": "Static box (control)",
+      "iou_while_alive": 0.5893,
+      "survival_rate": 0.3289
+    },
+    {
+      "tracker": "Template matching",
+      "iou_while_alive": 0.7173,
+      "survival_rate": 0.8206
+    },
+    {
+      "tracker": "Mean shift",
+      "iou_while_alive": 0.3244,
+      "survival_rate": 0.3724
+    },
+    {
+      "tracker": "CamShift",
+      "iou_while_alive": 0.2167,
+      "survival_rate": 0.0451
+    },
+    {
+      "tracker": "Optical flow (LK)",
+      "iou_while_alive": 0.639,
+      "survival_rate": 0.7072
+    },
+    {
+      "tracker": "LK + Kalman",
+      "iou_while_alive": 0.5978,
+      "survival_rate": 0.4856
+    },
+    {
+      "tracker": "MOSSE (from scratch)",
+      "iou_while_alive": 0.6714,
+      "survival_rate": 0.8272
+    }
+  ],
+  "run_length_sweep": [
+    {
+      "length": 10,
+      "Static box (control)": 0.5452,
+      "Template matching": 0.8241,
+      "Mean shift": 0.6426,
+      "CamShift": 0.3403,
+      "Optical flow (LK)": 0.7949,
+      "LK + Kalman": 0.6074,
+      "MOSSE (from scratch)": 0.7775
+    },
+    {
+      "length": 25,
+      "Static box (control)": 0.3353,
+      "Template matching": 0.7549,
+      "Mean shift": 0.5682,
+      "CamShift": 0.227,
+      "Optical flow (LK)": 0.6809,
+      "LK + Kalman": 0.6017,
+      "MOSSE (from scratch)": 0.7112
+    },
+    {
+      "length": 50,
+      "Static box (control)": 0.2239,
+      "Template matching": 0.6647,
+      "Mean shift": 0.4506,
+      "CamShift": 0.1759,
+      "Optical flow (LK)": 0.5313,
+      "LK + Kalman": 0.4982,
+      "MOSSE (from scratch)": 0.6351
+    },
+    {
+      "length": 100,
+      "Static box (control)": 0.1882,
+      "Template matching": 0.6193,
+      "Mean shift": 0.416,
+      "CamShift": 0.1579,
+      "Optical flow (LK)": 0.472,
+      "LK + Kalman": 0.4431,
+      "MOSSE (from scratch)": 0.5983
+    },
+    {
+      "length": 200,
+      "Static box (control)": 0.1882,
+      "Template matching": 0.6193,
+      "Mean shift": 0.416,
+      "CamShift": 0.1579,
+      "Optical flow (LK)": 0.472,
+      "LK + Kalman": 0.4431,
+      "MOSSE (from scratch)": 0.5983
+    }
+  ],
+  "target_saturation": [
+    {
+      "start": 50,
+      "mean_saturation": 40.1,
+      "share_above_40": 0.275
+    },
+    {
+      "start": 140,
+      "mean_saturation": 71.0,
+      "share_above_40": 0.557
+    },
+    {
+      "start": 170,
+      "mean_saturation": 41.1,
+      "share_above_40": 0.424
+    },
+    {
+      "start": 210,
+      "mean_saturation": 29.5,
+      "share_above_40": 0.168
+    },
+    {
+      "start": 240,
+      "mean_saturation": 25.3,
+      "share_above_40": 0.12
+    },
+    {
+      "start": 410,
+      "mean_saturation": 37.8,
+      "share_above_40": 0.276
+    },
+    {
+      "start": 490,
+      "mean_saturation": 52.2,
+      "share_above_40": 0.401
+    },
+    {
+      "start": 550,
+      "mean_saturation": 160.8,
+      "share_above_40": 0.792
+    },
+    {
+      "start": 580,
+      "mean_saturation": 171.1,
+      "share_above_40": 0.881
+    },
+    {
+      "start": 610,
+      "mean_saturation": 138.5,
+      "share_above_40": 0.781
+    },
+    {
+      "start": 640,
+      "mean_saturation": 121.5,
+      "share_above_40": 0.715
+    },
+    {
+      "start": 740,
+      "mean_saturation": 25.5,
+      "share_above_40": 0.159
+    }
+  ],
+  "backprojection_contrast": [
+    {
+      "start": 50,
+      "inside": 0.12,
+      "outside": 0.01,
+      "ratio": 13.1
+    },
+    {
+      "start": 140,
+      "inside": 0.56,
+      "outside": 0.23,
+      "ratio": 2.41
+    },
+    {
+      "start": 170,
+      "inside": 0.38,
+      "outside": 0.17,
+      "ratio": 2.24
+    },
+    {
+      "start": 210,
+      "inside": 0.08,
+      "outside": 0.01,
+      "ratio": 6.0
+    },
+    {
+      "start": 240,
+      "inside": 0.32,
+      "outside": 0.1,
+      "ratio": 3.17
+    },
+    {
+      "start": 410,
+      "inside": 0.25,
+      "outside": 0.16,
+      "ratio": 1.56
+    },
+    {
+      "start": 490,
+      "inside": 0.25,
+      "outside": 0.16,
+      "ratio": 1.53
+    },
+    {
+      "start": 550,
+      "inside": 0.62,
+      "outside": 0.41,
+      "ratio": 1.5
+    },
+    {
+      "start": 580,
+      "inside": 0.71,
+      "outside": 0.4,
+      "ratio": 1.77
+    },
+    {
+      "start": 610,
+      "inside": 0.61,
+      "outside": 0.43,
+      "ratio": 1.41
+    },
+    {
+      "start": 640,
+      "inside": 0.53,
+      "outside": 0.43,
+      "ratio": 1.21
+    },
+    {
+      "start": 740,
+      "inside": 0.15,
+      "outside": 0.01,
+      "ratio": 15.14
+    }
+  ]
+}
