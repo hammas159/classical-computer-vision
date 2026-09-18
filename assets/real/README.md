@@ -121,7 +121,7 @@ Projects 16 onward each draw **twelve images nobody else uses**, selected on a
 instead, because no stock statistic measures what they are about: project 43
 ranks photographs by how much chroma survives inside one luminance bin, project
 38 by RANSAC inliers per megapixel between an image and a known warp of itself,
-and project 58 by how many small round red things a picture already contains. At twelve per project that needs hundreds of
+and project 57 by how many small round red things a picture already contains. At twelve per project that needs hundreds of
 distinct photographs, which is why the pool moved wholesale to BSDS500: it has
 500, and — decisively — it ships **five to seven human segmentations per
 image**.
@@ -300,7 +300,7 @@ into `~/.cache/classical-cv-images/assets/plates/`, from the
 
 **This is the only human annotation in the repository.** Each photograph comes
 with a one-line file — `filename, x, y, width, height, text` — giving a box
-somebody drew and the plate's characters typed out. Project 49 uses both, and the
+somebody drew and the plate's characters typed out. Project 48 uses both, and the
 text is what lets it check whether a box good enough to *score* is good enough to
 *read*.
 
@@ -309,7 +309,7 @@ Eleven are European (aspect ≈ 4.4) and three Brazilian (≈ 3.1). The plate sp
 difficulty axis.
 
 The annotation is one person's judgement about where a plate ends — at the
-characters, the painted edge, the pressed rim — and project 49 says so rather
+characters, the painted edge, the pressed rim — and project 48 says so rather
 than treating it as ground truth.
 
 ### OpenCV LBP cascades — 3 XML files
@@ -319,13 +319,13 @@ Fetched by `python tools/fetch_assets.py --set cascades` from
 (BSD 3-Clause). They are in the OpenCV repository but **not** inside the
 `opencv-python` wheel, which ships only `cv2.data.haarcascades`.
 
-Project 50 needs them because its first finding is about training-window size,
+Project 49 needs them because its first finding is about training-window size,
 and `lbpcascade_frontalface_improved` — at 45×45 against the Haar cascades'
 20×20 — is the case that makes the point.
 
 ### BSDS500 photographs with no human face in them — 11 images
 
-Project 50's empty-truth arm. These are BSDS500 images no other project uses, and
+Project 49's empty-truth arm. These are BSDS500 images no other project uses, and
 they were chosen **adversarially rather than conveniently**: six contain an
 animal looking straight at the camera (bear, penguin, two tigers, bobcat,
 leopard), one is a rack of wooden clogs, and the rest are zebras, a starfish, a
@@ -333,7 +333,7 @@ rowing boat and the pyramids at Giza.
 
 A twelfth — `101085`, three carved wooden totems — is deliberately in **neither**
 arm. Whether a detection on a carved face is a false alarm is a question about
-what the word means, and project 50 reports it separately rather than deciding.
+what the word means, and project 49 reports it separately rather than deciding.
 
 ### HGR1 hand gestures — 27 photographs
 
@@ -344,12 +344,12 @@ Galuszka).
 
 Eight different people, and **the gesture is the folder the dataset put each file
 in** — `3_P` is three fingers, `B_P` is the letter B. That is a real label, and
-project 56 uses only what it says: the five numbered gestures get a finger count
+project 55 uses only what it says: the five numbered gestures get a finger count
 and the letters deliberately do not, because whether the thumb counts as extended
 in `A` is a judgement rather than an annotation.
 
 They arrive **already cut out against pure black**, which is somebody else's
-segmentation. Project 56 inherits it rather than pretending to a truth of its
+segmentation. Project 55 inherits it rather than pretending to a truth of its
 own, and measures its error: the halo between backdrop and hand is 0.67% of the
 frame at the median and 11.3% on the worst photograph, which is named.
 
@@ -359,7 +359,7 @@ score that is not an opinion.
 
 ### BSDS500 backgrounds for the hand composites — 12 images
 
-Project 56's backgrounds, none used by any other project. Chosen to span a
+Project 55's backgrounds, none used by any other project. Chosen to span a
 measured axis rather than by eye: **how much of each a standard skin-colour rule
 already accepts with no hand on it**, which runs from 0.0% (dolphins in open
 water) to 98.6% (a sunlit sandy wall).
@@ -385,7 +385,7 @@ and is recorded here rather than left to be discovered:**
 | 57 pedestrian detection | where are the people in a single frame |
 
 The rule exists so that comparison figures do not start to look like each other.
-Projects 29, 30 and 57 each show frames of this plaza; project 55 was held back
+Projects 29, 30 and 57 each show frames of this plaza; project 54 was held back
 until last for that reason, and shows **timelines** instead — nothing in it is
 scored per pixel and none of its figures is a frame comparison.
 

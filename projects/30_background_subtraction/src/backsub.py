@@ -60,7 +60,7 @@ EPS = 1e-9
 #: the whole premise: background subtraction has nothing to subtract without one.
 VIDEO = Path.home() / ".cache" / "classical-cv-images" / "assets" / "video" / "vtest.avi"
 
-#: The twelve target frames. Different from project 57's twelve, and far enough
+#: The twelve target frames. Different from project 56's twelve, and far enough
 #: apart that no two show the same arrangement of people.
 #:
 #: They are **not twelve distinct images** in the sense the rest of this

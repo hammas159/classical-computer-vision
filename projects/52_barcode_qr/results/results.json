@@ -1,0 +1,371 @@
+{
+  "project": "52_barcode_qr",
+  "generated_utc": "2026-09-18T04:02:06+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "bomber_over_cloud",
+    "turquoise_lake",
+    "polar_bears_playing",
+    "zebra_herd",
+    "canoe_on_the_lake",
+    "cougar_among_birches",
+    "trocadero_statue",
+    "skiff_in_weed",
+    "saguaro_blossom",
+    "coiled_rope",
+    "giraffes_drinking",
+    "buffalo_in_the_river"
+  ],
+  "barcode_like_share": {
+    "bomber_over_cloud": 9.4,
+    "turquoise_lake": 18.9,
+    "polar_bears_playing": 22.2,
+    "zebra_herd": 26.1,
+    "canoe_on_the_lake": 29.7,
+    "cougar_among_birches": 30.4,
+    "trocadero_statue": 33.0,
+    "skiff_in_weed": 33.9,
+    "saguaro_blossom": 41.2,
+    "coiled_rope": 43.4,
+    "giraffes_drinking": 50.0,
+    "buffalo_in_the_river": 76.7
+  },
+  "payloads": [
+    "HELLO123",
+    "ABC789",
+    "CLASSICAL",
+    "VISION42"
+  ],
+  "background_comparison": [
+    {
+      "background": "Generated clutter",
+      "Gradient + morphology": 1.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "background": "Photographs",
+      "Gradient + morphology": 0.0208,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    }
+  ],
+  "per_photograph": [
+    {
+      "image": "bomber_over_cloud",
+      "barcode_like": 9.4,
+      "Gradient + morphology": 0.25,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "turquoise_lake",
+      "barcode_like": 18.9,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "polar_bears_playing",
+      "barcode_like": 22.2,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "zebra_herd",
+      "barcode_like": 26.1,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "canoe_on_the_lake",
+      "barcode_like": 29.7,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "cougar_among_birches",
+      "barcode_like": 30.4,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "trocadero_statue",
+      "barcode_like": 33.0,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "skiff_in_weed",
+      "barcode_like": 33.9,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "saguaro_blossom",
+      "barcode_like": 41.2,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "coiled_rope",
+      "barcode_like": 43.4,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "giraffes_drinking",
+      "barcode_like": 50.0,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    },
+    {
+      "image": "buffalo_in_the_river",
+      "barcode_like": 76.7,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "QRCodeDetector": 1.0,
+      "decoded": 1.0
+    }
+  ],
+  "blur": [
+    {
+      "blur_sigma": 0.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0,
+      "gap": 0.0
+    },
+    {
+      "blur_sigma": 1.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0,
+      "gap": 0.0
+    },
+    {
+      "blur_sigma": 2.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0,
+      "gap": 0.0
+    },
+    {
+      "blur_sigma": 3.5,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0,
+      "gap": 0.0
+    },
+    {
+      "blur_sigma": 5.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 0.0,
+      "gap": 1.0
+    },
+    {
+      "blur_sigma": 8.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 0.0,
+      "gap": 1.0
+    }
+  ],
+  "rotation": [
+    {
+      "rotation_deg": 0.0,
+      "decode_rate": 1.0,
+      "Gradient + morphology": 1.0,
+      "Local variance": 1.0,
+      "OpenCV QR detector": 1.0
+    },
+    {
+      "rotation_deg": 5.0,
+      "decode_rate": 1.0,
+      "Gradient + morphology": 1.0,
+      "Local variance": 1.0,
+      "OpenCV QR detector": 1.0
+    },
+    {
+      "rotation_deg": 15.0,
+      "decode_rate": 1.0,
+      "Gradient + morphology": 1.0,
+      "Local variance": 1.0,
+      "OpenCV QR detector": 1.0
+    },
+    {
+      "rotation_deg": 30.0,
+      "decode_rate": 1.0,
+      "Gradient + morphology": 1.0,
+      "Local variance": 1.0,
+      "OpenCV QR detector": 1.0
+    },
+    {
+      "rotation_deg": 45.0,
+      "decode_rate": 1.0,
+      "Gradient + morphology": 0.0,
+      "Local variance": 1.0,
+      "OpenCV QR detector": 1.0
+    },
+    {
+      "rotation_deg": 90.0,
+      "decode_rate": 1.0,
+      "Gradient + morphology": 1.0,
+      "Local variance": 1.0,
+      "OpenCV QR detector": 1.0
+    }
+  ],
+  "scale": [
+    {
+      "scale": 1.0,
+      "approx_px_per_module": 9.6,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0
+    },
+    {
+      "scale": 0.7,
+      "approx_px_per_module": 6.72,
+      "best_found_rate": 1.0,
+      "decode_rate": 0.0
+    },
+    {
+      "scale": 0.5,
+      "approx_px_per_module": 4.8,
+      "best_found_rate": 1.0,
+      "decode_rate": 0.0
+    },
+    {
+      "scale": 0.35,
+      "approx_px_per_module": 3.36,
+      "best_found_rate": 1.0,
+      "decode_rate": 0.0
+    },
+    {
+      "scale": 0.25,
+      "approx_px_per_module": 2.4,
+      "best_found_rate": 0.75,
+      "decode_rate": 0.0
+    }
+  ],
+  "perspective": [
+    {
+      "perspective": 0.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0
+    },
+    {
+      "perspective": 0.05,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0
+    },
+    {
+      "perspective": 0.12,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0
+    },
+    {
+      "perspective": 0.2,
+      "best_found_rate": 1.0,
+      "decode_rate": 0.75
+    },
+    {
+      "perspective": 0.3,
+      "best_found_rate": 1.0,
+      "decode_rate": 0.25
+    }
+  ],
+  "noise": [
+    {
+      "noise_sigma": 0.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0
+    },
+    {
+      "noise_sigma": 10.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0
+    },
+    {
+      "noise_sigma": 25.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 1.0
+    },
+    {
+      "noise_sigma": 50.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 0.25
+    },
+    {
+      "noise_sigma": 80.0,
+      "best_found_rate": 1.0,
+      "decode_rate": 0.0
+    }
+  ],
+  "barcode_1d": [
+    {
+      "blur_sigma": 0.0,
+      "mean_iou": 0.8624,
+      "found_rate": 1.0,
+      "decode_rate": 0.0,
+      "decoder_available": true
+    },
+    {
+      "blur_sigma": 1.0,
+      "mean_iou": 0.7789,
+      "found_rate": 1.0,
+      "decode_rate": 0.0,
+      "decoder_available": true
+    },
+    {
+      "blur_sigma": 2.0,
+      "mean_iou": 0.7686,
+      "found_rate": 1.0,
+      "decode_rate": 0.0,
+      "decoder_available": true
+    },
+    {
+      "blur_sigma": 3.5,
+      "mean_iou": 0.7243,
+      "found_rate": 1.0,
+      "decode_rate": 0.0,
+      "decoder_available": true
+    },
+    {
+      "blur_sigma": 5.0,
+      "mean_iou": 0.6753,
+      "found_rate": 1.0,
+      "decode_rate": 0.0,
+      "decoder_available": true
+    },
+    {
+      "blur_sigma": 8.0,
+      "mean_iou": 0.3248,
+      "found_rate": 0.0,
+      "decode_rate": 0.0,
+      "decoder_available": true
+    }
+  ],
+  "found_iou_threshold": 0.4
+}

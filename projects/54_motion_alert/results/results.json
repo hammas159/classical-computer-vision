@@ -1,0 +1,481 @@
+{
+  "project": "54_motion_alert",
+  "generated_utc": "2026-09-18T16:05:58+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "frames": 795,
+  "fps": 10.0,
+  "zone": [
+    0.55,
+    0.8,
+    1.0,
+    1.0
+  ],
+  "noise_floor": 3.6253750324249268,
+  "quiet_frames": 765,
+  "busy_frames": 30,
+  "plan": [
+    {
+      "first": 120,
+      "last": 150,
+      "frames": 31,
+      "overlaps_real_activity": 0,
+      "usable": true,
+      "start": [
+        0.62,
+        0.86
+      ],
+      "end": [
+        0.92,
+        0.86
+      ],
+      "seconds": 3.1
+    },
+    {
+      "first": 230,
+      "last": 258,
+      "frames": 29,
+      "overlaps_real_activity": 0,
+      "usable": true,
+      "start": [
+        0.95,
+        0.92
+      ],
+      "end": [
+        0.62,
+        0.84
+      ],
+      "seconds": 2.9
+    },
+    {
+      "first": 300,
+      "last": 325,
+      "frames": 26,
+      "overlaps_real_activity": 0,
+      "usable": true,
+      "start": [
+        0.95,
+        0.9
+      ],
+      "end": [
+        0.6,
+        0.82
+      ],
+      "seconds": 2.6
+    },
+    {
+      "first": 400,
+      "last": 430,
+      "frames": 31,
+      "overlaps_real_activity": 0,
+      "usable": true,
+      "start": [
+        0.6,
+        0.84
+      ],
+      "end": [
+        0.9,
+        0.92
+      ],
+      "seconds": 3.1
+    },
+    {
+      "first": 470,
+      "last": 505,
+      "frames": 36,
+      "overlaps_real_activity": 4,
+      "usable": false,
+      "start": [
+        0.6,
+        0.82
+      ],
+      "end": [
+        0.95,
+        0.92
+      ],
+      "seconds": 3.6
+    },
+    {
+      "first": 545,
+      "last": 575,
+      "frames": 31,
+      "overlaps_real_activity": 0,
+      "usable": true,
+      "start": [
+        0.92,
+        0.88
+      ],
+      "end": [
+        0.62,
+        0.86
+      ],
+      "seconds": 3.1
+    },
+    {
+      "first": 650,
+      "last": 672,
+      "frames": 23,
+      "overlaps_real_activity": 0,
+      "usable": true,
+      "start": [
+        0.9,
+        0.84
+      ],
+      "end": [
+        0.62,
+        0.9
+      ],
+      "seconds": 2.3
+    },
+    {
+      "first": 700,
+      "last": 730,
+      "frames": 31,
+      "overlaps_real_activity": 0,
+      "usable": true,
+      "start": [
+        0.62,
+        0.9
+      ],
+      "end": [
+        0.95,
+        0.84
+      ],
+      "seconds": 3.1
+    }
+  ],
+  "spans": [
+    [
+      120,
+      150
+    ],
+    [
+      230,
+      258
+    ],
+    [
+      300,
+      325
+    ],
+    [
+      400,
+      430
+    ],
+    [
+      545,
+      575
+    ],
+    [
+      650,
+      672
+    ],
+    [
+      700,
+      730
+    ]
+  ],
+  "rules": {
+    "Any motion in the zone": {
+      "alerts": 244,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 0.0,
+      "median_latency_seconds": 0.0,
+      "false_alerts": 12,
+      "false_per_minute": 9.056603773584905,
+      "alerts_per_minute": 184.1509433962264,
+      "unscored": 30
+    },
+    "+ minimum area": {
+      "alerts": 229,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 0.0,
+      "median_latency_seconds": 0.0,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 172.83018867924528,
+      "unscored": 27
+    },
+    "+ persistence 3": {
+      "alerts": 213,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 2.0,
+      "median_latency_seconds": 0.2,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 160.75471698113208,
+      "unscored": 25
+    },
+    "+ persistence 8": {
+      "alerts": 173,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 130.56603773584905,
+      "unscored": 20
+    },
+    "+ cooldown 50": {
+      "alerts": 8,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 6.037735849056604,
+      "unscored": 1
+    },
+    "+ cooldown 100": {
+      "alerts": 5,
+      "intrusions": 7,
+      "detected": 4,
+      "missed": 3,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 3.7735849056603774,
+      "unscored": 1
+    }
+  },
+  "controls": {
+    "Always alert (control)": {
+      "alerts": 795,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 0.0,
+      "median_latency_seconds": 0.0,
+      "false_alerts": 563,
+      "false_per_minute": 424.9056603773585,
+      "alerts_per_minute": 600.0,
+      "unscored": 30
+    },
+    "Never alert (control)": {
+      "alerts": 0,
+      "intrusions": 7,
+      "detected": 0,
+      "missed": 7,
+      "median_latency_frames": NaN,
+      "median_latency_seconds": NaN,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 0.0,
+      "unscored": 0
+    },
+    "Random, rate-matched (control)": {
+      "alerts": 8,
+      "intrusions": 7,
+      "detected": 3,
+      "missed": 4,
+      "median_latency_frames": 13.0,
+      "median_latency_seconds": 1.3,
+      "false_alerts": 4,
+      "false_per_minute": 3.018867924528302,
+      "alerts_per_minute": 6.037735849056604,
+      "unscored": 1
+    }
+  },
+  "cooldown_sweep": [
+    {
+      "cooldown": 0,
+      "seconds": 0.0,
+      "alerts": 173,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 130.56603773584905,
+      "unscored": 20
+    },
+    {
+      "cooldown": 10,
+      "seconds": 1.0,
+      "alerts": 20,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 15.09433962264151,
+      "unscored": 2
+    },
+    {
+      "cooldown": 20,
+      "seconds": 2.0,
+      "alerts": 13,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 9.81132075471698,
+      "unscored": 1
+    },
+    {
+      "cooldown": 30,
+      "seconds": 3.0,
+      "alerts": 8,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 6.037735849056604,
+      "unscored": 1
+    },
+    {
+      "cooldown": 50,
+      "seconds": 5.0,
+      "alerts": 8,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 6.037735849056604,
+      "unscored": 1
+    },
+    {
+      "cooldown": 75,
+      "seconds": 7.5,
+      "alerts": 6,
+      "intrusions": 7,
+      "detected": 5,
+      "missed": 2,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 4.528301886792453,
+      "unscored": 1
+    },
+    {
+      "cooldown": 100,
+      "seconds": 10.0,
+      "alerts": 5,
+      "intrusions": 7,
+      "detected": 4,
+      "missed": 3,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 3.7735849056603774,
+      "unscored": 1
+    },
+    {
+      "cooldown": 150,
+      "seconds": 15.0,
+      "alerts": 4,
+      "intrusions": 7,
+      "detected": 3,
+      "missed": 4,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 3.018867924528302,
+      "unscored": 1
+    }
+  ],
+  "causal": {
+    "Any motion in the zone": {
+      "alerts": 241,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 0.0,
+      "median_latency_seconds": 0.0,
+      "false_alerts": 9,
+      "false_per_minute": 6.7924528301886795,
+      "alerts_per_minute": 181.8867924528302,
+      "unscored": 30
+    },
+    "+ minimum area": {
+      "alerts": 229,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 0.0,
+      "median_latency_seconds": 0.0,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 172.83018867924528,
+      "unscored": 27
+    },
+    "+ persistence 3": {
+      "alerts": 213,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 2.0,
+      "median_latency_seconds": 0.2,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 160.75471698113208,
+      "unscored": 25
+    },
+    "+ persistence 8": {
+      "alerts": 173,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 130.56603773584905,
+      "unscored": 20
+    },
+    "+ cooldown 50": {
+      "alerts": 8,
+      "intrusions": 7,
+      "detected": 7,
+      "missed": 0,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 6.037735849056604,
+      "unscored": 1
+    },
+    "+ cooldown 100": {
+      "alerts": 5,
+      "intrusions": 7,
+      "detected": 4,
+      "missed": 3,
+      "median_latency_frames": 7.0,
+      "median_latency_seconds": 0.7,
+      "false_alerts": 0,
+      "false_per_minute": 0.0,
+      "alerts_per_minute": 3.7735849056603774,
+      "unscored": 1
+    }
+  }
+}

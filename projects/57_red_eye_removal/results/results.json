@@ -1,0 +1,578 @@
+{
+  "project": "57_red_eye_removal",
+  "generated_utc": "2026-09-18T04:28:06+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "photographs": [
+    "two_women_in_headdress",
+    "girl_with_tulips",
+    "woman_in_red_scarf",
+    "girl_in_pink_shirt",
+    "two_firefighters",
+    "woman_with_curly_hair",
+    "orange_lichen_on_rock",
+    "children_carrying_pots",
+    "feather_duster_worms",
+    "runners_in_the_stadium",
+    "scattered_sweets",
+    "red_brick_house"
+  ],
+  "portraits": {
+    "two_women_in_headdress": {
+      "pupils": [
+        [
+          324,
+          113,
+          5
+        ],
+        [
+          376,
+          107,
+          5
+        ],
+        [
+          72,
+          159,
+          5
+        ],
+        [
+          128,
+          162,
+          5
+        ]
+      ],
+      "source": [
+        "cascade",
+        "cascade",
+        "cascade",
+        "cascade"
+      ],
+      "note": "two frontal faces, four pupils; the headdresses are dense red and white"
+    },
+    "girl_with_tulips": {
+      "pupils": [
+        [
+          266,
+          87,
+          4
+        ],
+        [
+          303,
+          78,
+          4
+        ]
+      ],
+      "source": [
+        "cascade",
+        "hand"
+      ],
+      "note": "three red tulips fill the lower half of the frame"
+    },
+    "woman_in_red_scarf": {
+      "pupils": [
+        [
+          95,
+          107,
+          5
+        ],
+        [
+          127,
+          109,
+          5
+        ]
+      ],
+      "source": [
+        "cascade",
+        "cascade"
+      ],
+      "note": "a large red scarf directly below the face"
+    },
+    "girl_in_pink_shirt": {
+      "pupils": [
+        [
+          158,
+          101,
+          5
+        ],
+        [
+          187,
+          104,
+          4
+        ]
+      ],
+      "source": [
+        "cascade",
+        "cascade"
+      ],
+      "note": "an old scan with a magenta cast, which suppresses the redness cue"
+    },
+    "two_firefighters": {
+      "pupils": [
+        [
+          114,
+          98,
+          3
+        ],
+        [
+          144,
+          98,
+          3
+        ],
+        [
+          322,
+          144,
+          3
+        ],
+        [
+          347,
+          147,
+          3
+        ]
+      ],
+      "source": [
+        "cascade",
+        "hand",
+        "hand",
+        "hand"
+      ],
+      "note": "small faces under helmets, in front of a red fire engine"
+    },
+    "woman_with_curly_hair": {
+      "pupils": [
+        [
+          107,
+          169,
+          4
+        ],
+        [
+          153,
+          172,
+          4
+        ]
+      ],
+      "source": [
+        "cascade",
+        "cascade"
+      ],
+      "note": "red lipstick, the textbook false positive, in the same face"
+    }
+  },
+  "detectors_on_portraits": [
+    {
+      "detector": "Colour only (control)",
+      "iou": 0.0225,
+      "pupil_recall": 0.7277,
+      "false_positive_area_ratio": 64.155,
+      "median_ms": 1.67
+    },
+    {
+      "detector": "Colour + shape",
+      "iou": 0.1687,
+      "pupil_recall": 0.6918,
+      "false_positive_area_ratio": 14.589,
+      "median_ms": 1.84
+    },
+    {
+      "detector": "Face-constrained",
+      "iou": 0.5979,
+      "pupil_recall": 0.6918,
+      "false_positive_area_ratio": 0.295,
+      "median_ms": 17.3
+    },
+    {
+      "detector": "Eye-constrained",
+      "iou": 0.3899,
+      "pupil_recall": 0.4847,
+      "false_positive_area_ratio": 0.259,
+      "median_ms": 12.68
+    }
+  ],
+  "detectors_on_generated": [
+    {
+      "detector": "Colour only (control)",
+      "iou": 0.06,
+      "pupil_recall": 0.9842,
+      "false_positive_area_ratio": 15.754,
+      "median_ms": 2.47
+    },
+    {
+      "detector": "Colour + shape",
+      "iou": 0.0675,
+      "pupil_recall": 0.9842,
+      "false_positive_area_ratio": 14.417,
+      "median_ms": 2.66
+    },
+    {
+      "detector": "Face-constrained",
+      "iou": 0.9842,
+      "pupil_recall": 0.9842,
+      "false_positive_area_ratio": 0.0,
+      "median_ms": 16.89
+    },
+    {
+      "detector": "Eye-constrained",
+      "iou": 0.9842,
+      "pupil_recall": 0.9842,
+      "false_positive_area_ratio": 0.0,
+      "median_ms": 20.05
+    }
+  ],
+  "generated_versus_real": [
+    {
+      "detector": "Colour only (control)",
+      "generated_fp_area": 15.754,
+      "real_fp_area": 64.155,
+      "generated_iou": 0.06,
+      "real_iou": 0.0225
+    },
+    {
+      "detector": "Colour + shape",
+      "generated_fp_area": 14.417,
+      "real_fp_area": 14.589,
+      "generated_iou": 0.0675,
+      "real_iou": 0.1687
+    },
+    {
+      "detector": "Face-constrained",
+      "generated_fp_area": 0.0,
+      "real_fp_area": 0.295,
+      "generated_iou": 0.9842,
+      "real_iou": 0.5979
+    },
+    {
+      "detector": "Eye-constrained",
+      "generated_fp_area": 0.0,
+      "real_fp_area": 0.259,
+      "generated_iou": 0.9842,
+      "real_iou": 0.3899
+    }
+  ],
+  "per_portrait": [
+    {
+      "photograph": "two_women_in_headdress",
+      "pupils": 4,
+      "cascade_found": 4,
+      "pupil_like_blobs": 10,
+      "Colour only (control)": 0.0153,
+      "Colour + shape": 0.0581,
+      "Face-constrained": 0.7994,
+      "Eye-constrained": 0.3524
+    },
+    {
+      "photograph": "girl_with_tulips",
+      "pupils": 2,
+      "cascade_found": 1,
+      "pupil_like_blobs": 8,
+      "Colour only (control)": 0.0061,
+      "Colour + shape": 0.0119,
+      "Face-constrained": 0.7551,
+      "Eye-constrained": 0.3776
+    },
+    {
+      "photograph": "woman_in_red_scarf",
+      "pupils": 2,
+      "cascade_found": 2,
+      "pupil_like_blobs": 2,
+      "Colour only (control)": 0.0176,
+      "Colour + shape": 0.4276,
+      "Face-constrained": 0.784,
+      "Eye-constrained": 0.784
+    },
+    {
+      "photograph": "girl_in_pink_shirt",
+      "pupils": 2,
+      "cascade_found": 2,
+      "pupil_like_blobs": 3,
+      "Colour only (control)": 0.0087,
+      "Colour + shape": 0.3333,
+      "Face-constrained": 0.5696,
+      "Eye-constrained": 0.6
+    },
+    {
+      "photograph": "two_firefighters",
+      "pupils": 4,
+      "cascade_found": 1,
+      "pupil_like_blobs": 5,
+      "Colour only (control)": 0.0094,
+      "Colour + shape": 0.0971,
+      "Face-constrained": 0.251,
+      "Eye-constrained": 0.0
+    },
+    {
+      "photograph": "woman_with_curly_hair",
+      "pupils": 2,
+      "cascade_found": 2,
+      "pupil_like_blobs": 2,
+      "Colour only (control)": 0.0777,
+      "Colour + shape": 0.0844,
+      "Face-constrained": 0.4286,
+      "Eye-constrained": 0.2252
+    }
+  ],
+  "clean_photographs": [
+    {
+      "photograph": "orange_lichen_on_rock",
+      "pupil_like_blobs": 43,
+      "Colour only (control)": 6007,
+      "Colour + shape": 1714,
+      "Face-constrained": 0,
+      "Eye-constrained": 0
+    },
+    {
+      "photograph": "children_carrying_pots",
+      "pupil_like_blobs": 59,
+      "Colour only (control)": 34871,
+      "Colour + shape": 3259,
+      "Face-constrained": 98,
+      "Eye-constrained": 0
+    },
+    {
+      "photograph": "feather_duster_worms",
+      "pupil_like_blobs": 39,
+      "Colour only (control)": 33328,
+      "Colour + shape": 2984,
+      "Face-constrained": 0,
+      "Eye-constrained": 0
+    },
+    {
+      "photograph": "runners_in_the_stadium",
+      "pupil_like_blobs": 38,
+      "Colour only (control)": 5003,
+      "Colour + shape": 1951,
+      "Face-constrained": 0,
+      "Eye-constrained": 0
+    },
+    {
+      "photograph": "scattered_sweets",
+      "pupil_like_blobs": 12,
+      "Colour only (control)": 3613,
+      "Colour + shape": 2645,
+      "Face-constrained": 0,
+      "Eye-constrained": 47
+    },
+    {
+      "photograph": "red_brick_house",
+      "pupil_like_blobs": 19,
+      "Colour only (control)": 3472,
+      "Colour + shape": 775,
+      "Face-constrained": 0,
+      "Eye-constrained": 0
+    }
+  ],
+  "corrections_on_portraits": [
+    {
+      "photograph": "two_women_in_headdress",
+      "Zero red channel": 13.06,
+      "Mean of G and B": 20.56,
+      "Desaturate (feathered)": 20.94,
+      "did nothing": 12.21
+    },
+    {
+      "photograph": "girl_with_tulips",
+      "Zero red channel": 16.26,
+      "Mean of G and B": 22.89,
+      "Desaturate (feathered)": 18.72,
+      "did nothing": 11.79
+    },
+    {
+      "photograph": "woman_in_red_scarf",
+      "Zero red channel": 16.08,
+      "Mean of G and B": 21.76,
+      "Desaturate (feathered)": 20.25,
+      "did nothing": 12.24
+    },
+    {
+      "photograph": "girl_in_pink_shirt",
+      "Zero red channel": 10.28,
+      "Mean of G and B": 22.92,
+      "Desaturate (feathered)": 21.14,
+      "did nothing": 12.28
+    },
+    {
+      "photograph": "two_firefighters",
+      "Zero red channel": 9.55,
+      "Mean of G and B": 16.77,
+      "Desaturate (feathered)": 21.51,
+      "did nothing": 13.79
+    },
+    {
+      "photograph": "woman_with_curly_hair",
+      "Zero red channel": 10.27,
+      "Mean of G and B": 17.78,
+      "Desaturate (feathered)": 19.44,
+      "did nothing": 12.94
+    }
+  ],
+  "corrections_on_generated": [
+    {
+      "correction": "Zero red channel",
+      "pupil_psnr_db": 23.915,
+      "luminance_error": 0.0326,
+      "median_ms": 0.065
+    },
+    {
+      "correction": "Mean of G and B",
+      "pupil_psnr_db": 42.915,
+      "luminance_error": 0.0004,
+      "median_ms": 0.137
+    },
+    {
+      "correction": "Desaturate (feathered)",
+      "pupil_psnr_db": 12.15,
+      "luminance_error": 0.2242,
+      "median_ms": 13.91
+    }
+  ],
+  "threshold_on_portraits": [
+    {
+      "threshold": 0.1,
+      "Colour only (control) IoU": 0.0058,
+      "Colour + shape IoU": 0.0051,
+      "Face-constrained IoU": 0.0944,
+      "Eye-constrained IoU": 0.0765,
+      "clean-photo false positives": 0,
+      "colour-only false positives": 385006
+    },
+    {
+      "threshold": 0.18,
+      "Colour only (control) IoU": 0.0085,
+      "Colour + shape IoU": 0.1588,
+      "Face-constrained IoU": 0.3555,
+      "Eye-constrained IoU": 0.3798,
+      "clean-photo false positives": 0,
+      "colour-only false positives": 234228
+    },
+    {
+      "threshold": 0.25,
+      "Colour only (control) IoU": 0.0225,
+      "Colour + shape IoU": 0.1687,
+      "Face-constrained IoU": 0.5979,
+      "Eye-constrained IoU": 0.3899,
+      "clean-photo false positives": 98,
+      "colour-only false positives": 86294
+    },
+    {
+      "threshold": 0.35,
+      "Colour only (control) IoU": 0.0421,
+      "Colour + shape IoU": 0.1569,
+      "Face-constrained IoU": 0.5044,
+      "Eye-constrained IoU": 0.3758,
+      "clean-photo false positives": 0,
+      "colour-only false positives": 15741
+    },
+    {
+      "threshold": 0.5,
+      "Colour only (control) IoU": 0.1267,
+      "Colour + shape IoU": 0.1431,
+      "Face-constrained IoU": 0.2308,
+      "Eye-constrained IoU": 0.1877,
+      "clean-photo false positives": 0,
+      "colour-only false positives": 3136
+    }
+  ],
+  "pipeline_on_portraits": [
+    {
+      "detector": "Colour only (control)",
+      "correction": "Mean of G and B",
+      "pupil_psnr_db": 20.084
+    },
+    {
+      "detector": "Colour + shape",
+      "correction": "Mean of G and B",
+      "pupil_psnr_db": 20.208
+    },
+    {
+      "detector": "Face-constrained",
+      "correction": "Mean of G and B",
+      "pupil_psnr_db": 20.208
+    },
+    {
+      "detector": "Eye-constrained",
+      "correction": "Mean of G and B",
+      "pupil_psnr_db": 17.816
+    },
+    {
+      "detector": "Did nothing (control)",
+      "correction": "none",
+      "pupil_psnr_db": 12.542
+    }
+  ],
+  "distractor_sweep": [
+    {
+      "distractors": 0,
+      "Colour only (control)": 0.009,
+      "Colour + shape": 0.0,
+      "Face-constrained": 0.0,
+      "Eye-constrained": 0.0
+    },
+    {
+      "distractors": 2,
+      "Colour only (control)": 8.297,
+      "Colour + shape": 8.289,
+      "Face-constrained": 0.0,
+      "Eye-constrained": 0.0
+    },
+    {
+      "distractors": 4,
+      "Colour only (control)": 15.754,
+      "Colour + shape": 14.417,
+      "Face-constrained": 0.0,
+      "Eye-constrained": 0.0
+    },
+    {
+      "distractors": 8,
+      "Colour only (control)": 28.063,
+      "Colour + shape": 14.295,
+      "Face-constrained": 0.0,
+      "Eye-constrained": 0.0
+    }
+  ],
+  "pupil_size_sweep": [
+    {
+      "pupil_radius": 2,
+      "Colour only (control)": 0.0023,
+      "Colour + shape": 0.0,
+      "Face-constrained": 0.0,
+      "Eye-constrained": 0.0
+    },
+    {
+      "pupil_radius": 4,
+      "Colour only (control)": 0.0114,
+      "Colour + shape": 0.013,
+      "Face-constrained": 0.9184,
+      "Eye-constrained": 0.9184
+    },
+    {
+      "pupil_radius": 9,
+      "Colour only (control)": 0.06,
+      "Colour + shape": 0.0675,
+      "Face-constrained": 0.9842,
+      "Eye-constrained": 0.9842
+    },
+    {
+      "pupil_radius": 20,
+      "Colour only (control)": 0.2423,
+      "Colour + shape": 0.2644,
+      "Face-constrained": 0.9968,
+      "Eye-constrained": 0.4153
+    },
+    {
+      "pupil_radius": 32,
+      "Colour only (control)": 0.4487,
+      "Colour + shape": 0.4754,
+      "Face-constrained": 0.0,
+      "Eye-constrained": 0.0
+    },
+    {
+      "pupil_radius": 45,
+      "Colour only (control)": 0.6116,
+      "Colour + shape": 0.0,
+      "Face-constrained": 0.0,
+      "Eye-constrained": 0.0
+    }
+  ]
+}

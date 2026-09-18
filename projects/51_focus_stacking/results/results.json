@@ -1,0 +1,449 @@
+{
+  "project": "51_focus_stacking",
+  "generated_utc": "2026-09-18T07:18:56+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "whitewashed_bell_tower",
+    "mossy_boulders_in_a_valley",
+    "golfer_by_the_sea",
+    "wall_across_the_hills",
+    "partridge_on_gravel",
+    "two_jackals",
+    "race_cars_on_a_bend",
+    "picnic_in_the_snow",
+    "alpine_cottage_with_flowers",
+    "lily_pond_and_pagoda",
+    "waterfall_under_a_bridge",
+    "mountain_lake_and_scree"
+  ],
+  "stack": {
+    "frames": 5,
+    "max_sigma": 4.0,
+    "pooling_window": 9
+  },
+  "overall": [
+    {
+      "method": "Variance of Laplacian",
+      "psnr_db": 43.645,
+      "agreement_with_truth": 0.9724,
+      "is_control": false
+    },
+    {
+      "method": "Tenengrad",
+      "psnr_db": 43.347,
+      "agreement_with_truth": 0.9541,
+      "is_control": false
+    },
+    {
+      "method": "Modified Laplacian",
+      "psnr_db": 43.652,
+      "agreement_with_truth": 0.9763,
+      "is_control": false
+    },
+    {
+      "method": "Local variance",
+      "psnr_db": 42.325,
+      "agreement_with_truth": 0.9307,
+      "is_control": false
+    },
+    {
+      "method": "Wavelet detail",
+      "psnr_db": 42.209,
+      "agreement_with_truth": 0.9536,
+      "is_control": false
+    },
+    {
+      "method": "Random pick (control)",
+      "psnr_db": 26.711,
+      "agreement_with_truth": 0.2002,
+      "is_control": true
+    },
+    {
+      "method": "First frame (control)",
+      "psnr_db": 24.17,
+      "agreement_with_truth": 0.0248,
+      "is_control": true
+    },
+    {
+      "method": "Oracle (truth)",
+      "psnr_db": 43.686,
+      "agreement_with_truth": 1.0,
+      "is_control": true
+    }
+  ],
+  "per_image": [
+    {
+      "image": "whitewashed_bell_tower",
+      "detail": 103.1,
+      "flat_share": 0.0122,
+      "oracle_db": 48.613,
+      "random_db": 31.31,
+      "Variance of Laplacian": 48.516,
+      "Tenengrad": 47.349,
+      "Modified Laplacian": 48.521,
+      "Local variance": 44.988,
+      "Wavelet detail": 42.626
+    },
+    {
+      "image": "mossy_boulders_in_a_valley",
+      "detail": 152.1,
+      "flat_share": 0.0843,
+      "oracle_db": 46.609,
+      "random_db": 30.793,
+      "Variance of Laplacian": 46.467,
+      "Tenengrad": 46.146,
+      "Modified Laplacian": 46.486,
+      "Local variance": 45.03,
+      "Wavelet detail": 45.699
+    },
+    {
+      "image": "golfer_by_the_sea",
+      "detail": 186.3,
+      "flat_share": 0.0,
+      "oracle_db": 45.605,
+      "random_db": 29.046,
+      "Variance of Laplacian": 45.594,
+      "Tenengrad": 45.26,
+      "Modified Laplacian": 45.597,
+      "Local variance": 44.374,
+      "Wavelet detail": 45.506
+    },
+    {
+      "image": "wall_across_the_hills",
+      "detail": 213.1,
+      "flat_share": 0.0,
+      "oracle_db": 46.73,
+      "random_db": 30.152,
+      "Variance of Laplacian": 46.72,
+      "Tenengrad": 46.522,
+      "Modified Laplacian": 46.721,
+      "Local variance": 45.283,
+      "Wavelet detail": 46.685
+    },
+    {
+      "image": "partridge_on_gravel",
+      "detail": 225.2,
+      "flat_share": 0.0,
+      "oracle_db": 48.131,
+      "random_db": 29.132,
+      "Variance of Laplacian": 48.122,
+      "Tenengrad": 48.101,
+      "Modified Laplacian": 48.123,
+      "Local variance": 47.537,
+      "Wavelet detail": 48.071
+    },
+    {
+      "image": "two_jackals",
+      "detail": 246.9,
+      "flat_share": 0.0,
+      "oracle_db": 45.018,
+      "random_db": 28.744,
+      "Variance of Laplacian": 45.009,
+      "Tenengrad": 44.907,
+      "Modified Laplacian": 45.012,
+      "Local variance": 44.093,
+      "Wavelet detail": 44.967
+    },
+    {
+      "image": "race_cars_on_a_bend",
+      "detail": 302.4,
+      "flat_share": 0.0021,
+      "oracle_db": 43.301,
+      "random_db": 25.317,
+      "Variance of Laplacian": 43.244,
+      "Tenengrad": 42.746,
+      "Modified Laplacian": 43.256,
+      "Local variance": 40.789,
+      "Wavelet detail": 38.139
+    },
+    {
+      "image": "picnic_in_the_snow",
+      "detail": 330.6,
+      "flat_share": 0.0513,
+      "oracle_db": 43.305,
+      "random_db": 25.031,
+      "Variance of Laplacian": 43.225,
+      "Tenengrad": 42.727,
+      "Modified Laplacian": 43.242,
+      "Local variance": 40.911,
+      "Wavelet detail": 40.544
+    },
+    {
+      "image": "alpine_cottage_with_flowers",
+      "detail": 383.4,
+      "flat_share": 0.0109,
+      "oracle_db": 41.576,
+      "random_db": 24.273,
+      "Variance of Laplacian": 41.552,
+      "Tenengrad": 41.31,
+      "Modified Laplacian": 41.554,
+      "Local variance": 40.501,
+      "Wavelet detail": 39.148
+    },
+    {
+      "image": "lily_pond_and_pagoda",
+      "detail": 416.8,
+      "flat_share": 0.0009,
+      "oracle_db": 39.921,
+      "random_db": 23.157,
+      "Variance of Laplacian": 39.9,
+      "Tenengrad": 39.795,
+      "Modified Laplacian": 39.904,
+      "Local variance": 39.383,
+      "Wavelet detail": 39.828
+    },
+    {
+      "image": "waterfall_under_a_bridge",
+      "detail": 451.9,
+      "flat_share": 0.0,
+      "oracle_db": 39.432,
+      "random_db": 23.575,
+      "Variance of Laplacian": 39.421,
+      "Tenengrad": 39.37,
+      "Modified Laplacian": 39.425,
+      "Local variance": 39.254,
+      "Wavelet detail": 39.365
+    },
+    {
+      "image": "mountain_lake_and_scree",
+      "detail": 616.8,
+      "flat_share": 0.0015,
+      "oracle_db": 35.994,
+      "random_db": 20.008,
+      "Variance of Laplacian": 35.974,
+      "Tenengrad": 35.927,
+      "Modified Laplacian": 35.981,
+      "Local variance": 35.754,
+      "Wavelet detail": 35.928
+    }
+  ],
+  "pooling": [
+    {
+      "window": 1,
+      "psnr_db": 42.992,
+      "agreement_with_truth": 0.6581
+    },
+    {
+      "window": 3,
+      "psnr_db": 46.127,
+      "agreement_with_truth": 0.9223
+    },
+    {
+      "window": 5,
+      "psnr_db": 46.612,
+      "agreement_with_truth": 0.959
+    },
+    {
+      "window": 9,
+      "psnr_db": 46.738,
+      "agreement_with_truth": 0.972
+    },
+    {
+      "window": 15,
+      "psnr_db": 46.743,
+      "agreement_with_truth": 0.9731
+    },
+    {
+      "window": 25,
+      "psnr_db": 46.693,
+      "agreement_with_truth": 0.9675
+    },
+    {
+      "window": 41,
+      "psnr_db": 46.416,
+      "agreement_with_truth": 0.9482
+    }
+  ],
+  "spread": {
+    "measure_spread_db": 1.443,
+    "pooling_spread_db": 3.342,
+    "pooling_matters_more": true,
+    "best_measure_db": 43.652,
+    "worst_measure_db": 42.209
+  },
+  "disagreement": [
+    {
+      "image": "whitewashed_bell_tower",
+      "disagree_share": 0.1566,
+      "flat_share": 0.0122,
+      "disagreement_in_flat": 0.5782,
+      "disagreement_in_detailed": 0.1514
+    },
+    {
+      "image": "mossy_boulders_in_a_valley",
+      "disagree_share": 0.1394,
+      "flat_share": 0.0843,
+      "disagreement_in_flat": 0.5529,
+      "disagreement_in_detailed": 0.1014
+    },
+    {
+      "image": "golfer_by_the_sea",
+      "disagree_share": 0.0539,
+      "flat_share": 0.0,
+      "disagreement_in_flat": 0.0,
+      "disagreement_in_detailed": 0.0539
+    },
+    {
+      "image": "wall_across_the_hills",
+      "disagree_share": 0.06,
+      "flat_share": 0.0,
+      "disagreement_in_flat": 0.0,
+      "disagreement_in_detailed": 0.06
+    },
+    {
+      "image": "partridge_on_gravel",
+      "disagree_share": 0.0456,
+      "flat_share": 0.0,
+      "disagreement_in_flat": 0.0,
+      "disagreement_in_detailed": 0.0456
+    },
+    {
+      "image": "two_jackals",
+      "disagree_share": 0.0496,
+      "flat_share": 0.0,
+      "disagreement_in_flat": 0.0,
+      "disagreement_in_detailed": 0.0496
+    },
+    {
+      "image": "race_cars_on_a_bend",
+      "disagree_share": 0.1095,
+      "flat_share": 0.0021,
+      "disagreement_in_flat": 0.2277,
+      "disagreement_in_detailed": 0.1092
+    },
+    {
+      "image": "picnic_in_the_snow",
+      "disagree_share": 0.1411,
+      "flat_share": 0.0513,
+      "disagreement_in_flat": 0.571,
+      "disagreement_in_detailed": 0.1178
+    },
+    {
+      "image": "alpine_cottage_with_flowers",
+      "disagree_share": 0.0912,
+      "flat_share": 0.0109,
+      "disagreement_in_flat": 0.6342,
+      "disagreement_in_detailed": 0.0853
+    },
+    {
+      "image": "lily_pond_and_pagoda",
+      "disagree_share": 0.0499,
+      "flat_share": 0.0009,
+      "disagreement_in_flat": 0.7727,
+      "disagreement_in_detailed": 0.0493
+    },
+    {
+      "image": "waterfall_under_a_bridge",
+      "disagree_share": 0.0274,
+      "flat_share": 0.0,
+      "disagreement_in_flat": 0.0,
+      "disagreement_in_detailed": 0.0274
+    },
+    {
+      "image": "mountain_lake_and_scree",
+      "disagree_share": 0.1041,
+      "flat_share": 0.0015,
+      "disagreement_in_flat": 0.7457,
+      "disagreement_in_detailed": 0.1031
+    }
+  ],
+  "flat_regions": {
+    "agreement_in_flat_regions": 0.496,
+    "agreement_in_detailed_regions": 0.9822,
+    "images_with_any_flat_region": 7
+  },
+  "detail_predicts_ceiling": {
+    "pearson_r": -0.9691,
+    "detail_range": [
+      103.1,
+      616.8
+    ],
+    "oracle_db_range": [
+      35.994,
+      48.613
+    ]
+  },
+  "frames_sweep": [
+    {
+      "frames": 3,
+      "oracle_db": 36.701,
+      "variance_of_laplacian_db": 36.692,
+      "gap_db": 0.009
+    },
+    {
+      "frames": 5,
+      "oracle_db": 46.784,
+      "variance_of_laplacian_db": 46.738,
+      "gap_db": 0.047
+    },
+    {
+      "frames": 9,
+      "oracle_db": 51.394,
+      "variance_of_laplacian_db": 51.266,
+      "gap_db": 0.127
+    },
+    {
+      "frames": 17,
+      "oracle_db": 51.456,
+      "variance_of_laplacian_db": 51.29,
+      "gap_db": 0.166
+    }
+  ],
+  "blur_sweep": [
+    {
+      "max_sigma": 1.0,
+      "Variance of Laplacian": 0.5454,
+      "Tenengrad": 0.5173,
+      "Modified Laplacian": 0.4473,
+      "Local variance": 0.46,
+      "Wavelet detail": 0.4528
+    },
+    {
+      "max_sigma": 2.0,
+      "Variance of Laplacian": 0.9206,
+      "Tenengrad": 0.909,
+      "Modified Laplacian": 0.8689,
+      "Local variance": 0.8641,
+      "Wavelet detail": 0.855
+    },
+    {
+      "max_sigma": 4.0,
+      "Variance of Laplacian": 0.972,
+      "Tenengrad": 0.9555,
+      "Modified Laplacian": 0.9746,
+      "Local variance": 0.9311,
+      "Wavelet detail": 0.9568
+    },
+    {
+      "max_sigma": 8.0,
+      "Variance of Laplacian": 0.9724,
+      "Tenengrad": 0.9433,
+      "Modified Laplacian": 0.973,
+      "Local variance": 0.894,
+      "Wavelet detail": 0.9447
+    }
+  ],
+  "feathering": [
+    {
+      "feather": 0,
+      "psnr_db": 46.738
+    },
+    {
+      "feather": 5,
+      "psnr_db": 46.525
+    },
+    {
+      "feather": 11,
+      "psnr_db": 45.982
+    },
+    {
+      "feather": 21,
+      "psnr_db": 45.027
+    }
+  ]
+}

@@ -42,7 +42,7 @@ PLATES = "https://raw.githubusercontent.com/openalpr/benchmarks/master/endtoend/
 #: The opencv repository itself, for data files that are not in the wheel.
 OPENCV_REPO = "https://raw.githubusercontent.com/opencv/opencv/4.x/"
 
-#: The HGR1 hand-gesture subset, for project 56.
+#: The HGR1 hand-gesture subset, for project 55.
 HGR1 = ("https://raw.githubusercontent.com/"
         "lds217/Hand-Gesture-Recognition-using-small-HGR1-dataset/main/")
 
@@ -114,21 +114,21 @@ SETS: dict[str, dict[str, str]] = {
             "test3.jpg", "test4.jpg", "test5.jpg", "test6.jpg")},
     },
     # Photographs of cars with a licence plate, **and a human-annotated box and
-    # plate text for each one**, from the openalpr benchmark. Project 49.
+    # plate text for each one**, from the openalpr benchmark. Project 48.
     #
     # This is the rarest thing in the whole repository: a real photograph with a
     # real annotation, so the project can report an accuracy instead of scoring
     # against something it planted itself. The annotation is one tab-separated
     # line -- filename, x, y, width, height, text -- and the text means
     # localisation and reading can be measured separately, which is the same
-    # split project 53 found decisive for barcodes.
+    # split project 52 found decisive for barcodes.
     "plates": {
         **{f"eu{i}.jpg": PLATES + f"eu/eu{i}.jpg" for i in range(1, 41)},
         **{f"eu{i}.txt": PLATES + f"eu/eu{i}.txt" for i in range(1, 41)},
     },
     # The three LBP face cascades, which are in the opencv repository but NOT
     # inside the `opencv-python` wheel -- `cv2.data.haarcascades` has only the
-    # Haar ones. Project 50 needs them because the interesting comparison is
+    # Haar ones. Project 49 needs them because the interesting comparison is
     # between cascades trained at different window sizes, and the 45x45
     # `_improved` cascade is the whole point of that project's first finding.
     "cascades": {
@@ -140,7 +140,7 @@ SETS: dict[str, dict[str, str]] = {
     # 27 photographs of hands from the HGR1 gesture set -- eight people, the
     # gesture named in the folder the dataset put each file in. They arrive cut
     # out against pure black, which is somebody else's segmentation and is
-    # inherited rather than invented: it gives project 56 an **exact** matte, and
+    # inherited rather than invented: it gives project 55 an **exact** matte, and
     # therefore an exact truth once each hand is composited onto a real
     # background.
     "hands": {
@@ -174,7 +174,7 @@ SETS: dict[str, dict[str, str]] = {
     },
     # Eleven group photographs used by OpenCV's own cascade tests: several
     # faces per frame, at different scales, some in profile, one a painting.
-    # Project 50.
+    # Project 49.
     "faces": {
         n: EXTRA + "cv/cascadeandhog/images/" + n for n in (
             "addams-family.png", "audrybt1.png", "bttf301.png",

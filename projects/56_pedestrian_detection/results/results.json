@@ -1,0 +1,301 @@
+{
+  "project": "56_pedestrian_detection",
+  "generated_utc": "2026-09-18T04:12:26+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "video": "C:\\Users\\dell\\.cache\\classical-cv-images\\assets\\video\\vtest.avi",
+  "frames": [
+    50,
+    110,
+    170,
+    230,
+    290,
+    350,
+    410,
+    470,
+    530,
+    600,
+    670,
+    740
+  ],
+  "drawn_vs_real": [
+    {
+      "people": "Drawn silhouettes",
+      "detections": 13,
+      "mean_margin": 0.51,
+      "max_margin": 1.236,
+      "confident": 5
+    },
+    {
+      "people": "Real pedestrians",
+      "detections": 52,
+      "mean_margin": 1.591,
+      "max_margin": 4.444,
+      "confident": 40
+    }
+  ],
+  "synthetic": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "true_positives": 0,
+    "false_positives": 7,
+    "false_negatives": 24,
+    "mean_iou": 0.0,
+    "median_ms": 32.2
+  },
+  "video_frames": [
+    {
+      "frame": 50,
+      "hog_detections": 5,
+      "moving_regions": 2,
+      "hog_on_a_moving_region": 2,
+      "moving_regions_detected": 2,
+      "mean_score": 1.961
+    },
+    {
+      "frame": 110,
+      "hog_detections": 1,
+      "moving_regions": 1,
+      "hog_on_a_moving_region": 0,
+      "moving_regions_detected": 0,
+      "mean_score": 1.352
+    },
+    {
+      "frame": 170,
+      "hog_detections": 3,
+      "moving_regions": 3,
+      "hog_on_a_moving_region": 2,
+      "moving_regions_detected": 2,
+      "mean_score": 0.955
+    },
+    {
+      "frame": 230,
+      "hog_detections": 4,
+      "moving_regions": 4,
+      "hog_on_a_moving_region": 3,
+      "moving_regions_detected": 3,
+      "mean_score": 2.858
+    },
+    {
+      "frame": 290,
+      "hog_detections": 3,
+      "moving_regions": 1,
+      "hog_on_a_moving_region": 0,
+      "moving_regions_detected": 0,
+      "mean_score": 1.66
+    },
+    {
+      "frame": 350,
+      "hog_detections": 4,
+      "moving_regions": 3,
+      "hog_on_a_moving_region": 4,
+      "moving_regions_detected": 3,
+      "mean_score": 1.819
+    },
+    {
+      "frame": 410,
+      "hog_detections": 2,
+      "moving_regions": 0,
+      "hog_on_a_moving_region": 0,
+      "moving_regions_detected": 0,
+      "mean_score": 1.017
+    },
+    {
+      "frame": 470,
+      "hog_detections": 4,
+      "moving_regions": 4,
+      "hog_on_a_moving_region": 3,
+      "moving_regions_detected": 3,
+      "mean_score": 2.224
+    },
+    {
+      "frame": 530,
+      "hog_detections": 3,
+      "moving_regions": 4,
+      "hog_on_a_moving_region": 1,
+      "moving_regions_detected": 1,
+      "mean_score": 3.619
+    },
+    {
+      "frame": 600,
+      "hog_detections": 5,
+      "moving_regions": 5,
+      "hog_on_a_moving_region": 3,
+      "moving_regions_detected": 3,
+      "mean_score": 2.194
+    },
+    {
+      "frame": 670,
+      "hog_detections": 3,
+      "moving_regions": 4,
+      "hog_on_a_moving_region": 2,
+      "moving_regions_detected": 2,
+      "mean_score": 1.948
+    },
+    {
+      "frame": 740,
+      "hog_detections": 5,
+      "moving_regions": 6,
+      "hog_on_a_moving_region": 2,
+      "moving_regions_detected": 2,
+      "mean_score": 1.227
+    }
+  ],
+  "threshold_curve": [
+    {
+      "hit_threshold": -0.5,
+      "detections": 52,
+      "on_a_moving_region": 0.4808,
+      "moving_regions_covered": 0.6486
+    },
+    {
+      "hit_threshold": 0.0,
+      "detections": 42,
+      "on_a_moving_region": 0.5238,
+      "moving_regions_covered": 0.5676
+    },
+    {
+      "hit_threshold": 0.3,
+      "detections": 36,
+      "on_a_moving_region": 0.5556,
+      "moving_regions_covered": 0.5135
+    },
+    {
+      "hit_threshold": 0.6,
+      "detections": 26,
+      "on_a_moving_region": 0.6154,
+      "moving_regions_covered": 0.4324
+    },
+    {
+      "hit_threshold": 1.0,
+      "detections": 19,
+      "on_a_moving_region": 0.6316,
+      "moving_regions_covered": 0.3243
+    },
+    {
+      "hit_threshold": 1.5,
+      "detections": 11,
+      "on_a_moving_region": 0.6364,
+      "moving_regions_covered": 0.1892
+    }
+  ],
+  "scale_sweep": [
+    {
+      "scale": 1.01,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positives": 0,
+      "false_positives": 11,
+      "false_negatives": 24,
+      "mean_iou": 0.0,
+      "median_ms": 58.6
+    },
+    {
+      "scale": 1.03,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positives": 0,
+      "false_positives": 13,
+      "false_negatives": 24,
+      "mean_iou": 0.0,
+      "median_ms": 34.0
+    },
+    {
+      "scale": 1.05,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positives": 0,
+      "false_positives": 7,
+      "false_negatives": 24,
+      "mean_iou": 0.0,
+      "median_ms": 32.6
+    },
+    {
+      "scale": 1.1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positives": 0,
+      "false_positives": 3,
+      "false_negatives": 24,
+      "mean_iou": 0.0,
+      "median_ms": 15.9
+    },
+    {
+      "scale": 1.2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 24,
+      "mean_iou": 0.0,
+      "median_ms": 15.2
+    },
+    {
+      "scale": 1.4,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 24,
+      "mean_iou": 0.0,
+      "median_ms": 14.6
+    }
+  ],
+  "person_size": [
+    {
+      "height_range": "80-110",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positives": 0,
+      "false_positives": 6,
+      "false_negatives": 24,
+      "mean_iou": 0.0,
+      "median_ms": 31.5
+    },
+    {
+      "height_range": "110-150",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positives": 0,
+      "false_positives": 15,
+      "false_negatives": 24,
+      "mean_iou": 0.0,
+      "median_ms": 32.2
+    },
+    {
+      "height_range": "150-220",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positives": 0,
+      "false_positives": 6,
+      "false_negatives": 24,
+      "mean_iou": 0.0,
+      "median_ms": 31.7
+    },
+    {
+      "height_range": "220-320",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "true_positives": 0,
+      "false_positives": 1,
+      "false_negatives": 24,
+      "mean_iou": 0.0,
+      "median_ms": 32.0
+    }
+  ]
+}
