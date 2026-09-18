@@ -132,6 +132,7 @@ def scatter_plane(
     ylabel: str = "",
     title: str = "",
     target_label: str = "true value",
+    equal_aspect: bool = True,
 ) -> Path:
     """Estimates plotted in their own 2-D space, against the one right answer.
 
@@ -143,6 +144,13 @@ def scatter_plane(
     Used for the chromaticity plane in project 39, where the quantity being
     estimated is genuinely two-dimensional and collapsing it to an angle throws
     away the direction of the error.
+
+    ``equal_aspect`` is right whenever the two axes carry the **same unit** --
+    the chromaticity plane, a pixel offset -- because there a distance on the
+    plot is a real distance. Pass ``False`` when they do not: project 06 plots
+    pixels of vanishing-point spread against percent of frame width, where
+    forcing a square aspect squeezes every point into a tenth of the figure and
+    implies a diagonal that means nothing.
     """
     if not series:
         raise ValueError("scatter_plane() needs at least one series")
@@ -168,7 +176,8 @@ def scatter_plane(
     if title:
         ax.set_title(title, fontsize=_TITLE_SIZE + 1, wrap=True)
     ax.grid(alpha=0.25, linewidth=0.6)
-    ax.set_aspect("equal", adjustable="datalim")
+    if equal_aspect:
+        ax.set_aspect("equal", adjustable="datalim")
     ax.legend(fontsize=_TITLE_SIZE - 1, loc="best", framealpha=0.9)
 
     out_path = Path(out_path)
@@ -556,7 +565,20 @@ def comparison_matrix(
                 ax.text(j, i, "n/a", ha="center", va="center", fontsize=_TITLE_SIZE - 1,
                         color="#777777")
                 continue
-            text = f"{v:,.0f}" if abs(v) >= 100 else (f"{v:.3g}" if abs(v) >= 0.01 else f"{v:.2e}")
+            # Exact zero is written "0", not "0.00e+00". The scientific branch
+            # is there for a genuinely tiny non-zero value, and a count of zero
+            # -- which is what a "found nothing" cell holds -- was falling into
+            # it and rendering as the widest string in the figure.
+            if v == 0:
+                text = "0"
+            elif float(v).is_integer() and abs(v) < 1e6:
+                text = f"{v:,.0f}"
+            elif abs(v) >= 100:
+                text = f"{v:,.0f}"
+            elif abs(v) >= 0.01:
+                text = f"{v:.3g}"
+            else:
+                text = f"{v:.2e}"
             ax.text(j, i, text, ha="center", va="center", fontsize=_TITLE_SIZE - 1,
                     color="#141414")
 

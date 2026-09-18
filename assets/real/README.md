@@ -273,6 +273,68 @@ used where a project needs a surface rather than a scene, for instance project
 33's texture descriptors and project 38's brick wall, which is there precisely
 because it **cannot** be registered.
 
+### Udacity self-driving course — 14 dashcam photographs
+
+Not in `assets/real/`. These live in `~/.cache/classical-cv-images/assets/lanes/`
+and are fetched by `python tools/fetch_assets.py --set lanes`, because they are
+only used by one project and a road is not a general-purpose test image.
+
+| Source | Files | What they are |
+|---|---|---|
+| [`udacity/CarND-LaneLines-P1`](https://github.com/udacity/CarND-LaneLines-P1/tree/master/test_images) | 6 | 960×540 frames: white dashes and solid yellow, dry sunlit highway |
+| [`udacity/CarND-Advanced-Lane-Lines`](https://github.com/udacity/CarND-Advanced-Lane-Lines/tree/master/test_images) | 8 | 1280×720 frames from a second camera: a concrete bridge, heavy tree shadow, faint markings |
+
+Both repositories are MIT-licensed. **The two resolutions are the reason this set
+was chosen**: project 06's central claim is about a region of interest written in
+pixels rather than fractions, and that claim cannot be tested on one camera.
+
+They are fourteen frames from **two drives, not fourteen scenes** — both on
+sunlit Californian highway, with no rain, night, snow or city street. Project 06
+says so in its own limitations rather than leaving it to be noticed.
+
+### openalpr benchmark — 14 annotated plate photographs
+
+Not in `assets/real/`. Fetched by `python tools/fetch_assets.py --set plates`
+into `~/.cache/classical-cv-images/assets/plates/`, from the
+[openalpr benchmark](https://github.com/openalpr/benchmarks) (AGPL-3.0).
+
+**This is the only human annotation in the repository.** Each photograph comes
+with a one-line file — `filename, x, y, width, height, text` — giving a box
+somebody drew and the plate's characters typed out. Project 49 uses both, and the
+text is what lets it check whether a box good enough to *score* is good enough to
+*read*.
+
+Eleven are European (aspect ≈ 4.4) and three Brazilian (≈ 3.1). The plate spans
+0.27% to 18.31% of the frame, a 67× range in area, which is the project's
+difficulty axis.
+
+The annotation is one person's judgement about where a plate ends — at the
+characters, the painted edge, the pressed rim — and project 49 says so rather
+than treating it as ground truth.
+
+### OpenCV LBP cascades — 3 XML files
+
+Fetched by `python tools/fetch_assets.py --set cascades` from
+[`opencv/opencv/data/lbpcascades`](https://github.com/opencv/opencv/tree/4.x/data/lbpcascades)
+(BSD 3-Clause). They are in the OpenCV repository but **not** inside the
+`opencv-python` wheel, which ships only `cv2.data.haarcascades`.
+
+Project 50 needs them because its first finding is about training-window size,
+and `lbpcascade_frontalface_improved` — at 45×45 against the Haar cascades'
+20×20 — is the case that makes the point.
+
+### BSDS500 photographs with no human face in them — 11 images
+
+Project 50's empty-truth arm. These are BSDS500 images no other project uses, and
+they were chosen **adversarially rather than conveniently**: six contain an
+animal looking straight at the camera (bear, penguin, two tigers, bobcat,
+leopard), one is a rack of wooden clogs, and the rest are zebras, a starfish, a
+rowing boat and the pyramids at Giza.
+
+A twelfth — `101085`, three carved wooden totems — is deliberately in **neither**
+arm. Whether a detection on a carved face is a false alarm is a question about
+what the word means, and project 50 reports it separately rather than deciding.
+
 ### Source not recorded
 
 These 51 were added for projects 02 to 15 before `manifest.json`

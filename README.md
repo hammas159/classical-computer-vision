@@ -100,7 +100,7 @@ the unbuilt ones out would make the plan look smaller than it is.
 | [03](projects/03_low_light_enhancement/) | [**Low-light enhancement**](projects/03_low_light_enhancement/) | 8 methods: fixed/auto gamma, HE, CLAHE, SSR/MSR/MSRCR, LIME | The ceiling is **not** the algorithms: at gamma 3 only **158 of 256** tone levels survive, so even an exact inverse reaches **22.31 dB**. And an adaptive method beats a fixed constant by **+5.46 dB** where its assumption holds, loses by **−7.70 dB** where it does not — averaging to a number that describes neither | ✅ |
 | [04](projects/04_dehazing/) | [**Dehazing**](projects/04_dehazing/) | dark channel prior, guided refine, CLAHE, Retinex, gamma | A **more accurate** airlight and transmission map produce a **worse** image — 19.50 dB falls to 18.50 dB when the airlight error is cut from 0.063 to 0.051; the two errors cancel. And CLAHE wins the contrast column (0.181 vs 0.156) while losing by **6.6 dB** | ✅ |
 | [05](projects/05_old_photo_restoration/) | [**Old photo restoration**](projects/05_old_photo_restoration/) | Telea, Navier–Stokes, masked mean, harmonic diffusion, top-hat/black-hat, median residual, per-channel stretch | Choosing the best inpainting method is worth **1.1 dB**; knowing *where the damage is* is worth **14.0 dB**. Ranking detectors by IoU gets it **backwards** — the best-IoU detector restores to 9.88 dB, a worse-IoU one to 12.87 dB. And gray-world drives the no-reference cast to 0.04° while landing **further from the truth** (14.28°) than the faded input (7.72°) | ✅ |
-| 06 | **Lane detection** | colour mask + Canny + Hough + ROI | *needs a road clip* | ❌ |
+| [06](projects/06_lane_detection/) | [**Lane detection**](projects/06_lane_detection/) | colour/Lab masks, Canny, Sobel-x, Hough · ROI-only and fixed-guess controls | **The region of interest is the algorithm.** Keep only the trapezoid and fit lines to its brightest pixels — that control lands a median **0.32%** of frame width from the full five-step pipeline on one camera. Removing the ROI costs **23×** more than removing any other step; removing Canny costs **0.016%**. And vanishing-point consistency, the natural annotation-free score, ranks a **constant guess first at 0.0 px** — only a recorded camera yaw exposes it | ✅ |
 | [07](projects/07_copy_move_forgery/) | [**Copy-move forgery**](projects/07_copy_move_forgery/) | block matching, SIFT/ORB self-match, RANSAC similarity, dense verification | The best method on an exact copy is the worst at every other setting: block matching scores **0.9925 IoU** unrotated and **0.0000** at 2°. The decisive choice is the verifier's *hypothesis*, not the descriptor — identical SIFT matches score 0.794 vs 0.677 at 0° and 0.000 vs 0.499 at 90°. And rotation-robustness is paid for in false accusations: **6.3% of an untampered photo flagged**, vs 0.0% for block matching | ✅ |
 | [08](projects/08_video_stabilisation/) | [**Video stabilisation**](projects/08_video_stabilisation/) | features+LK, phase correlation, ECC, block matching · 3 smoothers · 2 controls | **The estimator is not the bottleneck.** The best recovers the camera path to **0.035 px/frame**, 62× finer than the shake; swapping estimators moves the result **0.076**, swapping the *smoother* **0.639** — 8.4× more. Pointed at footage that never moved, ECC invents **25.3 px of drift**. And σ 2→32 is 13× steadier for **5× more crop** | ✅ |
 | [09](projects/09_coin_counting/) | [**Coin counting & measurement**](projects/09_coin_counting/) | Otsu, top-hat illumination flattening, distance transform, local-maxima watershed, Hough circles | The OpenCV tutorial's seed rule (a fraction of the **global** distance maximum) counts **1 coin of 24** when a lighting artefact merges the mask; local-maxima seeding counts **24 of 24** on the same broken mask. And three methods count 24 while only **one** measures them plausibly — watershed's smallest basin implies a **5.75 mm** coin next to a 24.25 mm reference | ✅ |
@@ -143,8 +143,8 @@ the unbuilt ones out would make the plan look smaller than it is.
 | [46](projects/46_epipolar_geometry/) | [**Epipolar geometry**](projects/46_epipolar_geometry/) | 8-point raw/normalised, 7-point, LMedS, RANSAC + 3 controls | **The best estimate of F here has one parameter.** A control that assumes a rectified rig and fits a single vertical offset by a median scores **0.74 px** against RANSAC's 1.46. RANSAC reports an **81% inlier rate on a coplanar configuration that cannot determine F**. And the inlier rate *improves* as the real error doubles | ✅ |
 | [47](projects/47_colour_space_robustness/) | [**Colour space robustness**](projects/47_colour_space_robustness/) | RGB, HSV, Lab, YCrCb, normalised RGB | **"HSV is lighting robust" is exactly half true.** HSV is *exactly* brightness-invariant (0.487 → 0.487) and the **least accurate** space undegraded (Lab 0.784, YCrCb 0.790) — and a warm cast costs it **37%**. At cast level 0.5 **every space scores 0.000**, and a white balance restores four of five: a colour space is not a substitute for correcting the illuminant | ✅ |
 | 48 | **Chroma key / green screen** | colour keying, spill suppression, matting | *needs green-screen footage* | ❌ |
-| 49 | **License plate localisation** | edge + morphology + contour filtering | *needs plate images* | ❌ |
-| 50 | **Face recognition** | Eigenfaces (PCA), Fisherfaces (LDA), LBPH | *needs a face dataset* | ❌ |
+| [49](projects/49_plate_localisation/) | [**Licence-plate localisation**](projects/49_plate_localisation/) | Sobel+morphology, top-hat, MSER, contour+aspect, 2 Haar cascades · whole-frame and fixed-box controls | The repository's **only human annotation** — a drawn box *and* the typed plate text. **Two defensible metrics, two opposite orders**: `IoU >= 0.5` puts Sobel first at **8/14** and OpenCV's plate cascade at 5; coverage of the plate reverses it to **9** and 5. The metric introduced to fix IoU is the worse one — the character count, the only measure using the text, sides with IoU (**8** vs 4), and coverage is won outright by returning the whole photograph (**14/14**, IoU 0.01). Plate size (**67×** range) does not predict difficulty (r=+0.29), and the winner is the same at every threshold from 0.3 to 0.7 | ✅ |
+| [50](projects/50_face_detection/) | [**Face detection**](projects/50_face_detection/) | 6 OpenCV cascades (4 Haar, 2 LBP) · nothing / one-centre-box / every-box controls | **Retitled from *face recognition*** — see below. A cascade cannot see below its own **training window**: `lbpcascade_frontalface_improved` is 45×45 and finds **3 faces** where its 24×24 predecessor finds **90**; upscaling recovers it **28.7×** against a next best of 1.54×, and `minSize` 12 vs 24 is **byte-identical for all six** because minSize is a floor, not a resampling. At **20°** the best cascade keeps **48%** of its own detections, at 30° **3%** — and that score alone ranks a fixed centre box first at **1.00**. Six cascades agree unanimously on **2 of 104** boxes | ✅ |
 | [51](projects/51_demosaicing/) | [**Demosaicing / camera ISP**](projects/51_demosaicing/) | nearest, bilinear, Malvar, VNG, edge-aware | **Every method is 2.1–2.8 dB worse on edge pixels than over the whole frame** — whole-image PSNR averages the failure away. Cross-channel interpolation is the whole gain (**+4.86 dB**). OpenCV's edge-aware flag produces genuinely different pixels and scores **identically to its own bilinear on edges**, the pixels it is named for | ✅ |
 | [52](projects/52_focus_stacking/) | [**Focus stacking / depth from focus**](projects/52_focus_stacking/) | 5 focus measures × 7 pooling windows + 3 controls | **The pooling window matters 2.3× more than the focus measure** (3.34 dB against 1.44), and the best measure is **0.034 dB** from an oracle handed the answer. On flat regions no measure *can* be right: agreement 0.982 → 0.496, and the five disagree on 58% of those pixels. Detail predicts the ceiling at **r = −0.969** | ✅ |
 | [53](projects/53_barcode_qr/) | [**Barcode / QR detection**](projects/53_barcode_qr/) | gradient+morphology, variance, QR finder | **The synthetic background was hiding a useless localiser** — 1.000 on generated clutter, **0.021** on twelve real photographs, a 48× difference from changing nothing but the background. And **found is not decoded**: at 6.7 px per module the code is located 1.000 and decoded 0.000 | ✅ |
@@ -154,21 +154,29 @@ the unbuilt ones out would make the plan look smaller than it is.
 | [57](projects/57_pedestrian_detection/) | [**Pedestrian detection**](projects/57_pedestrian_detection/) | HOG + linear SVM, real footage vs drawn silhouettes | **Drawn silhouettes are not a benchmark.** HOG's SVM margin is **0.51** on drawings against **1.59** on real people, and recall on the composited scenes never exceeds 1 in 12 at any setting — so the project was rebuilt on real footage, checked against motion evidence that shares no information with it | ✅ |
 | [58](projects/58_red_eye_removal/) | [**Red-eye removal**](projects/58_red_eye_removal/) | colour, +shape, +face, +eye constraints + empty-truth control | **Pupil PSNR rates the naive detector within 0.124 dB of the best while it marks 217× more of the frame.** On six photographs with *no red-eye at all*, colour-only marks 86,294 px and the face constraint 98. And zeroing the red channel scores **below doing nothing** on half the portraits | ✅ |
 
-**58 projects spanning 14 algorithm families. 52 built, 6 not started.**
+**58 projects spanning 14 algorithm families. 55 built, 3 not started.**
 
-The split is not arbitrary and it is not where the interest ran out: **the 41
-built projects are exactly the 41 that need no download**, and the 17 unbuilt
-ones are exactly the 17 that need a video clip, a stereo pair, an exposure
-bracket or a labelled dataset. The build ran to the edge of what could be
-generated with exact ground truth and stopped there. Those 17 are next, with the
-data downloaded per project:
+**The three that remain all need moving pictures**, and none of them can be
+faked from a still without the project becoming a different project:
 
-| Kind | Projects | What has to be fetched |
-|---|---|---|
-| Video | **06**, **48**, **55** | a road clip and green-screen footage are still missing; 08, 29, 30 and 57 are built on `vtest.avi` |
-| Multi-image | — | all built. 38 uses the one real graffiti pair that downloaded, plus known homographies on real photographs, and says which is which |
-| Dataset | **49**, **50** | one plate image and six usable faces; 35, 43 and 54 are built |
-| Live input | **56** | webcam footage |
+| # | Project | What is actually missing |
+|---:|---|---|
+| **48** | Chroma key / green screen | footage shot against a green screen. A synthetic green background would make the spill-suppression half of the project meaningless, because spill is what a real screen bounces onto a real subject |
+| **55** | Motion-triggered security alert | a surveillance clip with something to trigger on. `vtest.avi` is already carrying projects 29, 30 and 57, and a fourth project on the same 795 frames would be measuring the clip rather than the method |
+| **56** | Hand gesture recognition | video of a hand. Skin-colour segmentation and convexity defects are a per-frame method, but the interesting failure is temporal — the moment a gesture is mid-transition |
+
+Two projects changed shape when the data was finally found, and both say so in
+their own README rather than quietly:
+
+* **50** was listed as *face recognition* (Eigenfaces, Fisherfaces, LBPH). The
+  eleven photographs that could be obtained are **group** photographs, which give
+  many faces and no repeated identity, and classical recognition needs several
+  images **per person**. It was built as face **detection** instead — six
+  cascades, two truth arms, three controls. The recognition project is not done
+  and is not claimed.
+* **06** is built on fourteen dashcam **stills** from two cameras rather than a
+  road clip, which turned out to be the better experiment: the two resolutions
+  are what expose a region of interest written in pixels.
 
 Where data was obtainable the project was built; where it was not, the row stays
 ❌ rather than being filled with something generated. Projects 08, 52 and 57 each

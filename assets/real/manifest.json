@@ -1874,6 +1874,66 @@
   "source": null,
   "distance": null
  },
+ "surface_brick_paving": {
+  "phash": 4712018388969546591,
+  "source": "sipi/textures_1.5.01",
+  "distance": 0
+ },
+ "surface_brick_wall": {
+  "phash": 4706383439898479155,
+  "source": "sipi/textures_1.3.12",
+  "distance": 4
+ },
+ "surface_coarse_cloth": {
+  "phash": 5307588833103921633,
+  "source": "sipi/textures_1.1.05",
+  "distance": 0
+ },
+ "surface_dry_grass": {
+  "phash": 7789079711925621838,
+  "source": "sipi/textures_1.2.01",
+  "distance": 2
+ },
+ "surface_field_mosaic": {
+  "phash": 1543787693742603849,
+  "source": "sipi/aerials_2.2.19",
+  "distance": 4
+ },
+ "surface_fine_weave": {
+  "phash": 6262366712987555252,
+  "source": null,
+  "distance": null
+ },
+ "surface_knitted_fabric": {
+  "phash": 129846307818861211,
+  "source": "sipi/textures_1.4.07",
+  "distance": 0
+ },
+ "surface_pebbled_render": {
+  "phash": 5746647676767989448,
+  "source": "sipi/textures_1.5.03",
+  "distance": 2
+ },
+ "surface_roof_slates": {
+  "phash": 3738907639323084126,
+  "source": "sipi/textures_1.4.02",
+  "distance": 2
+ },
+ "surface_sand_ripple": {
+  "phash": 3066226916856525337,
+  "source": "sipi/textures_1.1.07",
+  "distance": 4
+ },
+ "surface_straw_thatch": {
+  "phash": 1920075322427717388,
+  "source": "sipi/textures_1.1.03",
+  "distance": 2
+ },
+ "surface_water_ripples": {
+  "phash": 8017428783590536822,
+  "source": "sipi/textures_1.1.08",
+  "distance": 2
+ },
  "surfer_barrel": {
   "phash": 1916915903654426948,
   "source": "bsds/300091",

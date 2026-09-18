@@ -31,6 +31,17 @@ CACHE = Path.home() / ".cache" / "classical-cv-images" / "assets"
 OPENCV = "https://raw.githubusercontent.com/opencv/opencv/4.x/samples/data/"
 EXTRA = "https://raw.githubusercontent.com/opencv/opencv_extra/master/testdata/"
 
+#: Three more hosts on the same CDN, found by asking the GitHub API what a
+#: repository actually contains rather than guessing at filenames. Everything
+#: here is a real photograph taken by somebody else for the same purpose this
+#: repository needs it for.
+LANES = "https://raw.githubusercontent.com/udacity/CarND-LaneLines-P1/master/test_images/"
+LANES2 = "https://raw.githubusercontent.com/udacity/CarND-Advanced-Lane-Lines/master/test_images/"
+PLATES = "https://raw.githubusercontent.com/openalpr/benchmarks/master/endtoend/"
+
+#: The opencv repository itself, for data files that are not in the wheel.
+OPENCV_REPO = "https://raw.githubusercontent.com/opencv/opencv/4.x/"
+
 USER_AGENT = "Mozilla/5.0 (classical-computer-vision asset fetch)"
 RETRIES = 5
 TIMEOUT = 240
@@ -82,6 +93,55 @@ SETS: dict[str, dict[str, str]] = {
     # here that needs the resumable path.
     "video": {
         "vtest.avi": OPENCV + "vtest.avi",
+    },
+    # Fourteen dashcam photographs of real roads with painted lane markings,
+    # from the two Udacity self-driving course repositories. Project 06. Six are
+    # 960x540 and eight are 1280x720, which is useful rather than annoying: a
+    # region of interest expressed in pixels has to become one expressed in
+    # fractions of the frame, and that is the first thing a lane finder gets
+    # wrong.
+    "lanes": {
+        **{f"lane_{n}": LANES + n for n in (
+            "solidWhiteCurve.jpg", "solidWhiteRight.jpg", "solidYellowCurve.jpg",
+            "solidYellowCurve2.jpg", "solidYellowLeft.jpg",
+            "whiteCarLaneSwitch.jpg")},
+        **{f"lane_{n}": LANES2 + n for n in (
+            "straight_lines1.jpg", "straight_lines2.jpg", "test1.jpg", "test2.jpg",
+            "test3.jpg", "test4.jpg", "test5.jpg", "test6.jpg")},
+    },
+    # Photographs of cars with a licence plate, **and a human-annotated box and
+    # plate text for each one**, from the openalpr benchmark. Project 49.
+    #
+    # This is the rarest thing in the whole repository: a real photograph with a
+    # real annotation, so the project can report an accuracy instead of scoring
+    # against something it planted itself. The annotation is one tab-separated
+    # line -- filename, x, y, width, height, text -- and the text means
+    # localisation and reading can be measured separately, which is the same
+    # split project 53 found decisive for barcodes.
+    "plates": {
+        **{f"eu{i}.jpg": PLATES + f"eu/eu{i}.jpg" for i in range(1, 41)},
+        **{f"eu{i}.txt": PLATES + f"eu/eu{i}.txt" for i in range(1, 41)},
+    },
+    # The three LBP face cascades, which are in the opencv repository but NOT
+    # inside the `opencv-python` wheel -- `cv2.data.haarcascades` has only the
+    # Haar ones. Project 50 needs them because the interesting comparison is
+    # between cascades trained at different window sizes, and the 45x45
+    # `_improved` cascade is the whole point of that project's first finding.
+    "cascades": {
+        n: OPENCV_REPO + "data/lbpcascades/" + n for n in (
+            "lbpcascade_frontalface.xml",
+            "lbpcascade_frontalface_improved.xml",
+            "lbpcascade_profileface.xml")
+    },
+    # Eleven group photographs used by OpenCV's own cascade tests: several
+    # faces per frame, at different scales, some in profile, one a painting.
+    # Project 50.
+    "faces": {
+        n: EXTRA + "cv/cascadeandhog/images/" + n for n in (
+            "addams-family.png", "audrybt1.png", "bttf301.png",
+            "churchill-downs.png", "class57.png", "er.png",
+            "karen-and-rob.png", "larroquette.png", "mona-lisa.png",
+            "rehg-thanksgiving-1994.png", "waynesworld2.png")
     },
 }
 

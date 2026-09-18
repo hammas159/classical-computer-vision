@@ -1,0 +1,503 @@
+{
+  "project": "06_lane_detection",
+  "generated_utc": "2026-09-18T13:04:01+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": 14,
+  "cameras": {
+    "1280x720": 8,
+    "960x540": 6
+  },
+  "consistency": [
+    {
+      "detector": "Fixed guess (control)",
+      "cameras": {
+        "1280x720": {
+          "frames": 8,
+          "plausible": 8,
+          "vp_x_spread": 0.0,
+          "vp_y_spread": 0.0,
+          "width_spread": 0.0
+        },
+        "960x540": {
+          "frames": 6,
+          "plausible": 6,
+          "vp_x_spread": 5.684341886080802e-14,
+          "vp_y_spread": 0.0,
+          "width_spread": 0.0
+        }
+      },
+      "plausible_rate": 1.0,
+      "vp_x_spread": 2.842170943040401e-14,
+      "width_spread": 0.0
+    },
+    {
+      "detector": "Bright pixels in the ROI (control)",
+      "cameras": {
+        "1280x720": {
+          "frames": 8,
+          "plausible": 8,
+          "vp_x_spread": 41.811500830691855,
+          "vp_y_spread": 41.961535234365996,
+          "width_spread": 0.10403477000275452
+        },
+        "960x540": {
+          "frames": 6,
+          "plausible": 6,
+          "vp_x_spread": 1.6712711110584,
+          "vp_y_spread": 2.0098226738705867,
+          "width_spread": 0.006843061860626178
+        }
+      },
+      "plausible_rate": 1.0,
+      "vp_x_spread": 21.74138597087513,
+      "width_spread": 0.05543891593169035
+    },
+    {
+      "detector": "Canny + Hough",
+      "cameras": {
+        "1280x720": {
+          "frames": 8,
+          "plausible": 8,
+          "vp_x_spread": 13.251449890041798,
+          "vp_y_spread": 5.330416740724519,
+          "width_spread": 0.03930829865267836
+        },
+        "960x540": {
+          "frames": 6,
+          "plausible": 6,
+          "vp_x_spread": 1.9592769212356438,
+          "vp_y_spread": 1.8251375491589688,
+          "width_spread": 0.009517986718115875
+        }
+      },
+      "plausible_rate": 1.0,
+      "vp_x_spread": 7.6053634056387205,
+      "width_spread": 0.02441314268539712
+    },
+    {
+      "detector": "HLS colour + Canny + Hough",
+      "cameras": {
+        "1280x720": {
+          "frames": 8,
+          "plausible": 7,
+          "vp_x_spread": 9.009991177852894,
+          "vp_y_spread": 4.676875441229947,
+          "width_spread": 0.024446940161966472
+        },
+        "960x540": {
+          "frames": 6,
+          "plausible": 6,
+          "vp_x_spread": 1.3529196988332979,
+          "vp_y_spread": 2.2112025287741073,
+          "width_spread": 0.005957115058574587
+        }
+      },
+      "plausible_rate": 0.9285714285714286,
+      "vp_x_spread": 5.181455438343097,
+      "width_spread": 0.015202027610270528
+    },
+    {
+      "detector": "Lab colour + Canny + Hough",
+      "cameras": {
+        "1280x720": {
+          "frames": 8,
+          "plausible": 8,
+          "vp_x_spread": 12.059582924059212,
+          "vp_y_spread": 5.613577465808778,
+          "width_spread": 0.026923409877034957
+        },
+        "960x540": {
+          "frames": 6,
+          "plausible": 6,
+          "vp_x_spread": 1.9991781805118611,
+          "vp_y_spread": 1.9968151389220237,
+          "width_spread": 0.009649105409846773
+        }
+      },
+      "plausible_rate": 1.0,
+      "vp_x_spread": 7.029380552285536,
+      "width_spread": 0.018286257643440863
+    },
+    {
+      "detector": "HLS colour + Hough",
+      "cameras": {
+        "1280x720": {
+          "frames": 8,
+          "plausible": 7,
+          "vp_x_spread": 10.101922248535823,
+          "vp_y_spread": 4.1634381803537295,
+          "width_spread": 0.023871115121632973
+        },
+        "960x540": {
+          "frames": 6,
+          "plausible": 6,
+          "vp_x_spread": 2.0216443162474222,
+          "vp_y_spread": 2.6311469088673216,
+          "width_spread": 0.006250398475527508
+        }
+      },
+      "plausible_rate": 0.9285714285714286,
+      "vp_x_spread": 6.061783282391623,
+      "width_spread": 0.01506075679858024
+    },
+    {
+      "detector": "Sobel-x + Hough",
+      "cameras": {
+        "1280x720": {
+          "frames": 8,
+          "plausible": 7,
+          "vp_x_spread": 15.611477503528487,
+          "vp_y_spread": 1.1202039258030132,
+          "width_spread": 0.028276129508743565
+        },
+        "960x540": {
+          "frames": 6,
+          "plausible": 6,
+          "vp_x_spread": 2.1707384999640538,
+          "vp_y_spread": 2.187527306568341,
+          "width_spread": 0.0057672301425214815
+        }
+      },
+      "plausible_rate": 0.9285714285714286,
+      "vp_x_spread": 8.89110800174627,
+      "width_spread": 0.017021679825632522
+    }
+  ],
+  "yaw_repeatability": [
+    {
+      "detector": "Fixed guess (control)",
+      "shift_px": 40.0,
+      "median_error_pct": 2.637383900928789,
+      "n": 28
+    },
+    {
+      "detector": "Bright pixels in the ROI (control)",
+      "shift_px": 40.0,
+      "median_error_pct": 1.203431164900842,
+      "n": 28
+    },
+    {
+      "detector": "Canny + Hough",
+      "shift_px": 40.0,
+      "median_error_pct": 0.1704294826533766,
+      "n": 28
+    },
+    {
+      "detector": "HLS colour + Canny + Hough",
+      "shift_px": 40.0,
+      "median_error_pct": 0.12875878917035344,
+      "n": 27
+    },
+    {
+      "detector": "Lab colour + Canny + Hough",
+      "shift_px": 40.0,
+      "median_error_pct": 0.15213089550170977,
+      "n": 28
+    },
+    {
+      "detector": "HLS colour + Hough",
+      "shift_px": 40.0,
+      "median_error_pct": 0.29381827395315696,
+      "n": 27
+    },
+    {
+      "detector": "Sobel-x + Hough",
+      "shift_px": 40.0,
+      "median_error_pct": 0.11637428786626103,
+      "n": 27
+    }
+  ],
+  "distance_to_roi_control": [
+    {
+      "detector": "Fixed guess (control)",
+      "median_gap_pct": 3.5117992370990248,
+      "max_gap_pct": 20.68613697060247,
+      "n": 28
+    },
+    {
+      "detector": "Bright pixels in the ROI (control)",
+      "median_gap_pct": 0.0,
+      "max_gap_pct": 0.0,
+      "n": 28
+    },
+    {
+      "detector": "Canny + Hough",
+      "median_gap_pct": 1.7498008193232417,
+      "max_gap_pct": 22.09919247916405,
+      "n": 28
+    },
+    {
+      "detector": "HLS colour + Canny + Hough",
+      "median_gap_pct": 0.7240292054342135,
+      "max_gap_pct": 21.361247029728734,
+      "n": 27
+    },
+    {
+      "detector": "Lab colour + Canny + Hough",
+      "median_gap_pct": 0.8831851951716128,
+      "max_gap_pct": 25.034694662910116,
+      "n": 28
+    },
+    {
+      "detector": "HLS colour + Hough",
+      "median_gap_pct": 0.46364679485828714,
+      "max_gap_pct": 20.29026251347796,
+      "n": 27
+    },
+    {
+      "detector": "Sobel-x + Hough",
+      "median_gap_pct": 0.5428421220030799,
+      "max_gap_pct": 26.49612128424422,
+      "n": 27
+    }
+  ],
+  "control_gap_by_camera": [
+    {
+      "camera": "1280x720",
+      "frames": 8,
+      "median_gap_pct": 4.7130857340957455,
+      "max_gap_pct": 21.361247029728734,
+      "bright_is_paint": 0.6597515453385316
+    },
+    {
+      "camera": "960x540",
+      "frames": 6,
+      "median_gap_pct": 0.31844984912925867,
+      "max_gap_pct": 1.1021121488011687,
+      "bright_is_paint": 0.8113360993679605
+    }
+  ],
+  "fixed_guess_gap_pct": [
+    3.2097807980567046,
+    1.2540197932652042,
+    0.5016309869071142,
+    1.3829069753595213,
+    0.9775625800692171,
+    1.388643784726007,
+    0.9173599251345621,
+    3.3653877850894,
+    5.432439123697286,
+    0.6179121421989642,
+    1.9177669876600767,
+    2.4345360042567066,
+    2.9221791502932026,
+    2.8617071405322214
+  ],
+  "frames_a_constant_gets_right": 7,
+  "paint_share_vs_control_gap_r": -0.5413546371970948,
+  "ablation": [
+    {
+      "variant": "Full pipeline",
+      "plausible": 13,
+      "frames": 14,
+      "vp_x_spread_pct": 0.664043614183318,
+      "width_spread": 0.019434870707768778
+    },
+    {
+      "variant": "without the colour mask",
+      "plausible": 14,
+      "frames": 14,
+      "vp_x_spread_pct": 0.8129965558217319,
+      "width_spread": 0.03179694320348614
+    },
+    {
+      "variant": "without the edge detector",
+      "plausible": 13,
+      "frames": 14,
+      "vp_x_spread_pct": 0.6799464443280935,
+      "width_spread": 0.019495702396517066
+    },
+    {
+      "variant": "without the slope filter",
+      "plausible": 14,
+      "frames": 14,
+      "vp_x_spread_pct": 0.8488214718769338,
+      "width_spread": 0.1111209140635181
+    },
+    {
+      "variant": "without the region of interest",
+      "plausible": 12,
+      "frames": 14,
+      "vp_x_spread_pct": 5.027210370828534,
+      "width_spread": 0.059057388517693245
+    }
+  ],
+  "pixel_roi": [
+    {
+      "camera": "1280x720",
+      "frames": 8,
+      "fractional_plausible": 7,
+      "pixel_plausible": 6,
+      "fractional_vp_spread": 9.009991177852894,
+      "pixel_vp_spread": 15.966606042774657,
+      "pixel_roi_covers": 0.10776150173611111,
+      "fractional_roi_covers": 0.191181640625
+    },
+    {
+      "camera": "960x540",
+      "frames": 6,
+      "fractional_plausible": 6,
+      "pixel_plausible": 6,
+      "fractional_vp_spread": 1.3529196988332979,
+      "pixel_vp_spread": 1.3529196988332979,
+      "pixel_roi_covers": 0.19027777777777777,
+      "fractional_roi_covers": 0.19157600308641975
+    }
+  ],
+  "per_image": [
+    {
+      "image": "lane_solidWhiteCurve",
+      "camera": "960x540",
+      "paint_contrast": 141.0,
+      "shadow_fraction": 8.055340187085276e-05,
+      "bright_is_paint": 0.7510675709620699,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 0.378132218442199
+    },
+    {
+      "image": "lane_solidWhiteRight",
+      "camera": "960x540",
+      "paint_contrast": 143.0,
+      "shadow_fraction": 0.00011076092757242255,
+      "bright_is_paint": 0.7196684250188395,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 0.43624244870000456
+    },
+    {
+      "image": "lane_solidYellowCurve",
+      "camera": "960x540",
+      "paint_contrast": 96.0,
+      "shadow_fraction": 0.0,
+      "bright_is_paint": 0.6599949962471854,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 0.6771905957365002
+    },
+    {
+      "image": "lane_solidYellowCurve2",
+      "camera": "960x540",
+      "paint_contrast": 111.0,
+      "shadow_fraction": 0.0,
+      "bright_is_paint": 0.9678149358813176,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 0.5705308022433364
+    },
+    {
+      "image": "lane_solidYellowLeft",
+      "camera": "960x540",
+      "paint_contrast": 105.0,
+      "shadow_fraction": 0.0,
+      "bright_is_paint": 0.8503622283287534,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 0.4681993367970705
+    },
+    {
+      "image": "lane_straight_lines1",
+      "camera": "1280x720",
+      "paint_contrast": 105.0,
+      "shadow_fraction": 0.0008172855902334372,
+      "bright_is_paint": 0.5894978401727862,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 0.5629384729828946
+    },
+    {
+      "image": "lane_straight_lines2",
+      "camera": "1280x720",
+      "paint_contrast": 170.0,
+      "shadow_fraction": 0.000681071325194531,
+      "bright_is_paint": 0.7084865629420085,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 0.5257797257394436
+    },
+    {
+      "image": "lane_test1",
+      "camera": "1280x720",
+      "paint_contrast": 38.0,
+      "shadow_fraction": 0.08972547150000283,
+      "bright_is_paint": 0.9232133806386214,
+      "plausible": 4,
+      "detectors": 5,
+      "disagreement_pct": 3.7509842298268925
+    },
+    {
+      "image": "lane_test2",
+      "camera": "1280x720",
+      "paint_contrast": 82.0,
+      "shadow_fraction": 3.972916063634764e-05,
+      "bright_is_paint": 0.5634999292085516,
+      "plausible": 3,
+      "detectors": 5,
+      "disagreement_pct": 2.2248176763627736
+    },
+    {
+      "image": "lane_test3",
+      "camera": "1280x720",
+      "paint_contrast": 115.0,
+      "shadow_fraction": 0.00883690044439904,
+      "bright_is_paint": 0.754315144766147,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 0.6163450881126042
+    },
+    {
+      "image": "lane_test4",
+      "camera": "1280x720",
+      "paint_contrast": 111.0,
+      "shadow_fraction": 0.13782045824748998,
+      "bright_is_paint": 0.8243523316062176,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 2.8965770570504645
+    },
+    {
+      "image": "lane_test5",
+      "camera": "1280x720",
+      "paint_contrast": 23.0,
+      "shadow_fraction": 0.26905155142372283,
+      "bright_is_paint": 0.3532363271450075,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 2.0415084653246574
+    },
+    {
+      "image": "lane_test6",
+      "camera": "1280x720",
+      "paint_contrast": 108.0,
+      "shadow_fraction": 0.007315841151464587,
+      "bright_is_paint": 0.561410846228914,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 1.0459105496124277
+    },
+    {
+      "image": "lane_whiteCarLaneSwitch",
+      "camera": "960x540",
+      "paint_contrast": 110.0,
+      "shadow_fraction": 0.0,
+      "bright_is_paint": 0.9191084397695968,
+      "plausible": 5,
+      "detectors": 5,
+      "disagreement_pct": 0.8816332732965115
+    }
+  ],
+  "contrast_vs_disagreement_r": -0.6808764634476351,
+  "shadow_vs_disagreement_r": 0.6119987313344182,
+  "shown": [
+    "lane_solidWhiteRight",
+    "lane_solidYellowLeft",
+    "lane_test1",
+    "lane_test5",
+    "lane_test2"
+  ]
+}
