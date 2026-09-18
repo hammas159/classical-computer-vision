@@ -1,0 +1,590 @@
+{
+  "project": "35_camera_calibration",
+  "generated_utc": "2026-09-18T05:33:06+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "board": [
+    9,
+    6
+  ],
+  "image_size": [
+    640,
+    480
+  ],
+  "usable_views": {
+    "left": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      11,
+      12,
+      13,
+      14
+    ],
+    "right": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      11,
+      12,
+      13,
+      14
+    ]
+  },
+  "full_calibration": {
+    "side": "left",
+    "views": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      11,
+      12,
+      13,
+      14
+    ],
+    "rms": 0.4089,
+    "fx": 536.462,
+    "fy": 536.414,
+    "cx": 342.369,
+    "cy": 235.548,
+    "k1": -0.278647,
+    "k2": 0.067173,
+    "p1": 0.001824,
+    "p2": -0.000343,
+    "straightness_px": 0.0911,
+    "straightness_before_px": 0.686,
+    "K": [
+      [
+        536.4618776009279,
+        0.0,
+        342.36914247935425
+      ],
+      [
+        0.0,
+        536.4142608270171,
+        235.54830296855766
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "dist": [
+      -0.278646674221254,
+      0.06717321490460354,
+      0.001823946590272221,
+      -0.0003434139347547376,
+      0.0
+    ]
+  },
+  "model_comparison": {
+    "fit_views": [
+      1,
+      3,
+      5,
+      6,
+      8,
+      12,
+      14
+    ],
+    "held_out_views": [
+      2,
+      4,
+      7,
+      9,
+      11,
+      13
+    ],
+    "rows": [
+      {
+        "model": "No distortion model (control)",
+        "coefficients": 0,
+        "rms_fitted": 1.7342,
+        "rms_held_out": 1.4033,
+        "straightness_px": 0.686,
+        "fx": 578.57,
+        "fy": 586.52,
+        "cx": 361.4,
+        "cy": 235.61
+      },
+      {
+        "model": "k1 only",
+        "coefficients": 1,
+        "rms_fitted": 0.2107,
+        "rms_held_out": 0.5861,
+        "straightness_px": 0.0975,
+        "fx": 530.94,
+        "fy": 531.27,
+        "cx": 344.59,
+        "cy": 235.33
+      },
+      {
+        "model": "k1, k2",
+        "coefficients": 2,
+        "rms_fitted": 0.1885,
+        "rms_held_out": 0.5907,
+        "straightness_px": 0.0848,
+        "fx": 532.46,
+        "fy": 532.99,
+        "cx": 343.13,
+        "cy": 234.93
+      },
+      {
+        "model": "k1, k2, p1, p2 (OpenCV default)",
+        "coefficients": 4,
+        "rms_fitted": 0.1802,
+        "rms_held_out": 0.5776,
+        "straightness_px": 0.0816,
+        "fx": 534.39,
+        "fy": 534.61,
+        "cx": 343.21,
+        "cy": 234.11
+      },
+      {
+        "model": "k1, k2, k3, p1, p2",
+        "coefficients": 5,
+        "rms_fitted": 0.1801,
+        "rms_held_out": 0.5778,
+        "straightness_px": 0.0815,
+        "fx": 534.51,
+        "fy": 534.73,
+        "cx": 343.21,
+        "cy": 234.11
+      },
+      {
+        "model": "Rational (8 coefficients)",
+        "coefficients": 8,
+        "rms_fitted": 0.1792,
+        "rms_held_out": 0.577,
+        "straightness_px": 0.0815,
+        "fx": 534.16,
+        "fy": 534.37,
+        "cx": 343.22,
+        "cy": 234.12
+      },
+      {
+        "model": "Everything (14 coefficients, control)",
+        "coefficients": 14,
+        "rms_fitted": 0.1743,
+        "rms_held_out": 0.5746,
+        "straightness_px": 0.0818,
+        "fx": 530.29,
+        "fy": 537.05,
+        "cx": 276.0,
+        "cy": 241.45
+      }
+    ]
+  },
+  "view_count_sweep": [
+    {
+      "views": 3,
+      "rms_fitted": 0.2051,
+      "rms_held_out": 0.5571,
+      "straightness_px": 0.0933,
+      "fx_mean": 540.49,
+      "fx_spread": 13.71
+    },
+    {
+      "views": 4,
+      "rms_fitted": 0.3907,
+      "rms_held_out": 0.4051,
+      "straightness_px": 0.0994,
+      "fx_mean": 536.69,
+      "fx_spread": 2.29
+    },
+    {
+      "views": 5,
+      "rms_fitted": 0.501,
+      "rms_held_out": 0.3337,
+      "straightness_px": 0.1056,
+      "fx_mean": 538.28,
+      "fx_spread": 2.46
+    },
+    {
+      "views": 6,
+      "rms_fitted": 0.4022,
+      "rms_held_out": 0.3708,
+      "straightness_px": 0.0974,
+      "fx_mean": 536.03,
+      "fx_spread": 2.86
+    },
+    {
+      "views": 8,
+      "rms_fitted": 0.3905,
+      "rms_held_out": 0.3964,
+      "straightness_px": 0.0924,
+      "fx_mean": 536.39,
+      "fx_spread": 1.2
+    },
+    {
+      "views": 10,
+      "rms_fitted": 0.4117,
+      "rms_held_out": 0.3114,
+      "straightness_px": 0.0932,
+      "fx_mean": 536.74,
+      "fx_spread": 1.11
+    },
+    {
+      "views": 13,
+      "rms_fitted": 0.4089,
+      "rms_held_out": NaN,
+      "straightness_px": 0.0911,
+      "fx_mean": 536.46,
+      "fx_spread": 0.0
+    }
+  ],
+  "intrinsic_stability": [
+    {
+      "views": [
+        2,
+        8,
+        11,
+        12,
+        14
+      ],
+      "rms_fitted": 0.5703,
+      "fx": 536.53,
+      "fy": 536.0,
+      "cx": 344.4,
+      "cy": 239.39,
+      "k1": -0.25645
+    },
+    {
+      "views": [
+        2,
+        4,
+        7,
+        9,
+        11
+      ],
+      "rms_fitted": 0.5762,
+      "fx": 537.66,
+      "fy": 537.3,
+      "cx": 340.01,
+      "cy": 241.29,
+      "k1": -0.2573
+    },
+    {
+      "views": [
+        1,
+        4,
+        7,
+        9,
+        12
+      ],
+      "rms_fitted": 0.2243,
+      "fx": 535.27,
+      "fy": 535.42,
+      "cx": 341.16,
+      "cy": 234.65,
+      "k1": -0.27748
+    },
+    {
+      "views": [
+        2,
+        4,
+        6,
+        11,
+        12
+      ],
+      "rms_fitted": 0.569,
+      "fx": 537.47,
+      "fy": 536.95,
+      "cx": 341.41,
+      "cy": 237.51,
+      "k1": -0.27433
+    },
+    {
+      "views": [
+        7,
+        8,
+        12,
+        13,
+        14
+      ],
+      "rms_fitted": 0.2698,
+      "fx": 535.89,
+      "fy": 535.77,
+      "cx": 347.14,
+      "cy": 232.12,
+      "k1": -0.27483
+    },
+    {
+      "views": [
+        1,
+        2,
+        5,
+        11,
+        13
+      ],
+      "rms_fitted": 0.5899,
+      "fx": 537.49,
+      "fy": 537.3,
+      "cx": 342.18,
+      "cy": 240.85,
+      "k1": -0.24801
+    },
+    {
+      "views": [
+        4,
+        6,
+        9,
+        13,
+        14
+      ],
+      "rms_fitted": 0.2802,
+      "fx": 535.13,
+      "fy": 535.23,
+      "cx": 341.45,
+      "cy": 231.92,
+      "k1": -0.27322
+    },
+    {
+      "views": [
+        2,
+        3,
+        11,
+        12,
+        13
+      ],
+      "rms_fitted": 0.5956,
+      "fx": 536.42,
+      "fy": 535.96,
+      "cx": 342.22,
+      "cy": 238.39,
+      "k1": -0.25743
+    },
+    {
+      "views": [
+        2,
+        6,
+        7,
+        8,
+        11
+      ],
+      "rms_fitted": 0.573,
+      "fx": 537.93,
+      "fy": 537.2,
+      "cx": 344.05,
+      "cy": 240.52,
+      "k1": -0.27535
+    },
+    {
+      "views": [
+        5,
+        7,
+        11,
+        12,
+        14
+      ],
+      "rms_fitted": 0.1732,
+      "fx": 532.85,
+      "fy": 532.67,
+      "cx": 343.67,
+      "cy": 232.48,
+      "k1": -0.28507
+    },
+    {
+      "views": [
+        1,
+        4,
+        5,
+        8,
+        13
+      ],
+      "rms_fitted": 0.2702,
+      "fx": 537.63,
+      "fy": 537.88,
+      "cx": 343.07,
+      "cy": 233.55,
+      "k1": -0.28558
+    },
+    {
+      "views": [
+        4,
+        6,
+        7,
+        8,
+        9
+      ],
+      "rms_fitted": 0.2274,
+      "fx": 533.98,
+      "fy": 534.28,
+      "cx": 344.03,
+      "cy": 235.26,
+      "k1": -0.2888
+    }
+  ],
+  "stereo": {
+    "views": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      11,
+      12,
+      13,
+      14
+    ],
+    "rms": 0.4477,
+    "baseline_squares": 3.3447,
+    "rotation_deg": 0.3118,
+    "translation": [
+      -3.3441,
+      0.0416,
+      0.0487
+    ],
+    "left_fx": 536.46,
+    "right_fx": 542.27
+  },
+  "baseline_stability": [
+    {
+      "views": [
+        1,
+        3,
+        7,
+        8,
+        11,
+        12
+      ],
+      "rms": 0.2618,
+      "baseline_squares": 3.3612
+    },
+    {
+      "views": [
+        1,
+        4,
+        5,
+        6,
+        8,
+        9
+      ],
+      "rms": 0.3125,
+      "baseline_squares": 3.3273
+    },
+    {
+      "views": [
+        2,
+        4,
+        6,
+        7,
+        8,
+        11
+      ],
+      "rms": 0.5434,
+      "baseline_squares": 3.3531
+    },
+    {
+      "views": [
+        2,
+        7,
+        8,
+        11,
+        12,
+        13
+      ],
+      "rms": 0.5689,
+      "baseline_squares": 3.3586
+    },
+    {
+      "views": [
+        1,
+        3,
+        4,
+        9,
+        11,
+        14
+      ],
+      "rms": 0.2312,
+      "baseline_squares": 3.3311
+    },
+    {
+      "views": [
+        2,
+        3,
+        5,
+        8,
+        12,
+        13
+      ],
+      "rms": 0.5944,
+      "baseline_squares": 3.3599
+    },
+    {
+      "views": [
+        2,
+        5,
+        6,
+        11,
+        12,
+        13
+      ],
+      "rms": 0.5933,
+      "baseline_squares": 3.3509
+    },
+    {
+      "views": [
+        3,
+        4,
+        5,
+        8,
+        11,
+        12
+      ],
+      "rms": 0.278,
+      "baseline_squares": 3.3547
+    },
+    {
+      "views": [
+        1,
+        3,
+        8,
+        9,
+        12,
+        14
+      ],
+      "rms": 0.2563,
+      "baseline_squares": 3.3295
+    },
+    {
+      "views": [
+        1,
+        3,
+        6,
+        7,
+        9,
+        11
+      ],
+      "rms": 0.2455,
+      "baseline_squares": 3.3374
+    }
+  ]
+}

@@ -1,0 +1,414 @@
+{
+  "project": "38_panorama_stitching",
+  "generated_utc": "2026-09-18T08:44:24+00:00",
+  "versions": {
+    "python": "3.12.14",
+    "opencv": "4.14.0",
+    "scikit_image": "0.26.0",
+    "numpy": "2.2.6"
+  },
+  "images": [
+    "brick_wall_courses",
+    "roof_shingles",
+    "coastal_city_from_the_air",
+    "irrigated_fields_from_the_air",
+    "tugboat_under_the_bridge",
+    "coarse_woven_fabric",
+    "elephant_crossing_a_road",
+    "cyclists_on_a_track",
+    "tank_in_scrub",
+    "street_grid_from_the_air",
+    "fibrous_matting",
+    "hillside_town_from_the_air"
+  ],
+  "setup": {
+    "coverage": 0.65,
+    "exposure": 1.2,
+    "viewpoint": [
+      [
+        0.94,
+        -0.08,
+        12.0
+      ],
+      [
+        0.06,
+        0.97,
+        -9.0
+      ],
+      [
+        0.00016,
+        7e-05,
+        1.0
+      ]
+    ]
+  },
+  "registrability": [
+    {
+      "image": "brick_wall_courses",
+      "matches": 6,
+      "inliers": 5,
+      "inlier_rate": 0.8333,
+      "per_megapixel": 19.1
+    },
+    {
+      "image": "roof_shingles",
+      "matches": 1040,
+      "inliers": 972,
+      "inlier_rate": 0.9346,
+      "per_megapixel": 2373.0
+    },
+    {
+      "image": "coastal_city_from_the_air",
+      "matches": 1977,
+      "inliers": 1973,
+      "inlier_rate": 0.998,
+      "per_megapixel": 4816.9
+    },
+    {
+      "image": "irrigated_fields_from_the_air",
+      "matches": 806,
+      "inliers": 789,
+      "inlier_rate": 0.9789,
+      "per_megapixel": 1926.3
+    },
+    {
+      "image": "tugboat_under_the_bridge",
+      "matches": 318,
+      "inliers": 311,
+      "inlier_rate": 0.978,
+      "per_megapixel": 2014.2
+    },
+    {
+      "image": "coarse_woven_fabric",
+      "matches": 2460,
+      "inliers": 2457,
+      "inlier_rate": 0.9988,
+      "per_megapixel": 5998.5
+    },
+    {
+      "image": "elephant_crossing_a_road",
+      "matches": 397,
+      "inliers": 392,
+      "inlier_rate": 0.9874,
+      "per_megapixel": 2538.8
+    },
+    {
+      "image": "cyclists_on_a_track",
+      "matches": 560,
+      "inliers": 552,
+      "inlier_rate": 0.9857,
+      "per_megapixel": 3575.1
+    },
+    {
+      "image": "tank_in_scrub",
+      "matches": 1057,
+      "inliers": 1050,
+      "inlier_rate": 0.9934,
+      "per_megapixel": 4005.4
+    },
+    {
+      "image": "street_grid_from_the_air",
+      "matches": 1778,
+      "inliers": 1776,
+      "inlier_rate": 0.9989,
+      "per_megapixel": 6774.9
+    },
+    {
+      "image": "fibrous_matting",
+      "matches": 2199,
+      "inliers": 2197,
+      "inlier_rate": 0.9991,
+      "per_megapixel": 8380.9
+    },
+    {
+      "image": "hillside_town_from_the_air",
+      "matches": 743,
+      "inliers": 737,
+      "inlier_rate": 0.9919,
+      "per_megapixel": 11245.7
+    }
+  ],
+  "overall": [
+    {
+      "blender": "Keep the first frame (control)",
+      "psnr_db": 23.853,
+      "seam_step": 29.92,
+      "seam_visibility": 1.257,
+      "is_control": true
+    },
+    {
+      "blender": "Overwrite (control)",
+      "psnr_db": 21.608,
+      "seam_step": 20.5,
+      "seam_visibility": 1.477,
+      "is_control": true
+    },
+    {
+      "blender": "Average",
+      "psnr_db": 23.194,
+      "seam_step": 22.25,
+      "seam_visibility": 1.289,
+      "is_control": false
+    },
+    {
+      "blender": "Feather (41 px)",
+      "psnr_db": 22.198,
+      "seam_step": 19.79,
+      "seam_visibility": 1.125,
+      "is_control": false
+    },
+    {
+      "blender": "Multi-band (5 levels)",
+      "psnr_db": 22.259,
+      "seam_step": 19.5,
+      "seam_visibility": 1.132,
+      "is_control": false
+    }
+  ],
+  "metrics_disagree": {
+    "by_psnr": [
+      "Keep the first frame (control)",
+      "Average",
+      "Multi-band (5 levels)",
+      "Feather (41 px)",
+      "Overwrite (control)"
+    ],
+    "by_seam_step": [
+      "Multi-band (5 levels)",
+      "Feather (41 px)",
+      "Overwrite (control)",
+      "Average",
+      "Keep the first frame (control)"
+    ],
+    "psnr_winner": "Keep the first frame (control)",
+    "seam_winner": "Multi-band (5 levels)",
+    "psnr_winner_is_the_non_stitching_control": true,
+    "psnr_winner_seam_rank": 5
+  },
+  "per_image": [
+    {
+      "image": "brick_wall_courses",
+      "inliers_per_mpx": 19.1,
+      "inlier_rate": 0.8333,
+      "matches": 6,
+      "Keep the first frame (control)": 21.0,
+      "Overwrite (control)": 7.0,
+      "Average": 11.0,
+      "Feather (41 px)": 6.0,
+      "Multi-band (5 levels)": 6.0
+    },
+    {
+      "image": "roof_shingles",
+      "inliers_per_mpx": 2373.0,
+      "inlier_rate": 0.9346,
+      "matches": 1040,
+      "Keep the first frame (control)": 27.0,
+      "Overwrite (control)": 7.0,
+      "Average": 14.0,
+      "Feather (41 px)": 6.0,
+      "Multi-band (5 levels)": 6.0
+    },
+    {
+      "image": "coastal_city_from_the_air",
+      "inliers_per_mpx": 4816.9,
+      "inlier_rate": 0.998,
+      "matches": 1977,
+      "Keep the first frame (control)": 31.0,
+      "Overwrite (control)": 19.0,
+      "Average": 21.0,
+      "Feather (41 px)": 19.0,
+      "Multi-band (5 levels)": 19.0
+    },
+    {
+      "image": "irrigated_fields_from_the_air",
+      "inliers_per_mpx": 1926.3,
+      "inlier_rate": 0.9789,
+      "matches": 806,
+      "Keep the first frame (control)": 26.0,
+      "Overwrite (control)": 11.0,
+      "Average": 15.0,
+      "Feather (41 px)": 13.0,
+      "Multi-band (5 levels)": 12.0
+    },
+    {
+      "image": "tugboat_under_the_bridge",
+      "inliers_per_mpx": 2014.2,
+      "inlier_rate": 0.978,
+      "matches": 318,
+      "Keep the first frame (control)": 26.0,
+      "Overwrite (control)": 13.0,
+      "Average": 15.0,
+      "Feather (41 px)": 9.0,
+      "Multi-band (5 levels)": 9.0
+    },
+    {
+      "image": "coarse_woven_fabric",
+      "inliers_per_mpx": 5998.5,
+      "inlier_rate": 0.9988,
+      "matches": 2460,
+      "Keep the first frame (control)": 39.0,
+      "Overwrite (control)": 37.0,
+      "Average": 37.0,
+      "Feather (41 px)": 37.0,
+      "Multi-band (5 levels)": 36.0
+    },
+    {
+      "image": "elephant_crossing_a_road",
+      "inliers_per_mpx": 2538.8,
+      "inlier_rate": 0.9874,
+      "matches": 397,
+      "Keep the first frame (control)": 25.0,
+      "Overwrite (control)": 16.0,
+      "Average": 14.0,
+      "Feather (41 px)": 11.0,
+      "Multi-band (5 levels)": 11.0
+    },
+    {
+      "image": "cyclists_on_a_track",
+      "inliers_per_mpx": 3575.1,
+      "inlier_rate": 0.9857,
+      "matches": 560,
+      "Keep the first frame (control)": 28.0,
+      "Overwrite (control)": 24.0,
+      "Average": 24.0,
+      "Feather (41 px)": 24.0,
+      "Multi-band (5 levels)": 24.0
+    },
+    {
+      "image": "tank_in_scrub",
+      "inliers_per_mpx": 4005.4,
+      "inlier_rate": 0.9934,
+      "matches": 1057,
+      "Keep the first frame (control)": 21.0,
+      "Overwrite (control)": 16.0,
+      "Average": 16.0,
+      "Feather (41 px)": 16.0,
+      "Multi-band (5 levels)": 16.0
+    },
+    {
+      "image": "street_grid_from_the_air",
+      "inliers_per_mpx": 6774.9,
+      "inlier_rate": 0.9989,
+      "matches": 1778,
+      "Keep the first frame (control)": 32.0,
+      "Overwrite (control)": 16.0,
+      "Average": 20.0,
+      "Feather (41 px)": 16.0,
+      "Multi-band (5 levels)": 16.0
+    },
+    {
+      "image": "fibrous_matting",
+      "inliers_per_mpx": 8380.9,
+      "inlier_rate": 0.9991,
+      "matches": 2199,
+      "Keep the first frame (control)": 40.0,
+      "Overwrite (control)": 38.0,
+      "Average": 38.0,
+      "Feather (41 px)": 38.0,
+      "Multi-band (5 levels)": 38.0
+    },
+    {
+      "image": "hillside_town_from_the_air",
+      "inliers_per_mpx": 11245.7,
+      "inlier_rate": 0.9919,
+      "matches": 743,
+      "Keep the first frame (control)": 43.0,
+      "Overwrite (control)": 42.0,
+      "Average": 42.0,
+      "Feather (41 px)": 42.5,
+      "Multi-band (5 levels)": 41.0
+    }
+  ],
+  "exposure_sweep": [
+    {
+      "exposure": 1.0,
+      "Keep the first frame (control)": 17.92,
+      "Overwrite (control)": 17.67,
+      "Average": 17.5,
+      "Feather (41 px)": 17.58,
+      "Multi-band (5 levels)": 17.75
+    },
+    {
+      "exposure": 1.05,
+      "Keep the first frame (control)": 18.92,
+      "Overwrite (control)": 18.46,
+      "Average": 18.04,
+      "Feather (41 px)": 17.92,
+      "Multi-band (5 levels)": 17.88
+    },
+    {
+      "exposure": 1.1,
+      "Keep the first frame (control)": 22.08,
+      "Overwrite (control)": 19.54,
+      "Average": 19.17,
+      "Feather (41 px)": 18.67,
+      "Multi-band (5 levels)": 18.33
+    },
+    {
+      "exposure": 1.2,
+      "Keep the first frame (control)": 29.92,
+      "Overwrite (control)": 20.5,
+      "Average": 22.25,
+      "Feather (41 px)": 19.79,
+      "Multi-band (5 levels)": 19.5
+    },
+    {
+      "exposure": 1.4,
+      "Keep the first frame (control)": 49.67,
+      "Overwrite (control)": 21.58,
+      "Average": 29.38,
+      "Feather (41 px)": 21.17,
+      "Multi-band (5 levels)": 20.75
+    }
+  ],
+  "bands_sweep": [
+    {
+      "bands": 2,
+      "seam_step": 15.0
+    },
+    {
+      "bands": 3,
+      "seam_step": 15.0
+    },
+    {
+      "bands": 5,
+      "seam_step": 14.67
+    },
+    {
+      "bands": 7,
+      "seam_step": 15.5
+    }
+  ],
+  "feather_width_sweep": [
+    {
+      "width": 5,
+      "seam_step": 15.17
+    },
+    {
+      "width": 21,
+      "seam_step": 14.5
+    },
+    {
+      "width": 41,
+      "seam_step": 15.0
+    },
+    {
+      "width": 81,
+      "seam_step": 16.0
+    },
+    {
+      "width": 161,
+      "seam_step": 18.17
+    }
+  ],
+  "real_pair": {
+    "matches": 520,
+    "inliers": 355,
+    "inlier_rate": 0.6827,
+    "cycle_error_px": 3.1268,
+    "shape": [
+      640,
+      800
+    ]
+  }
+}
