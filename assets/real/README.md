@@ -1,8 +1,17 @@
 # Real photographs
 
-259 photographs, one pool per project and **no image shared between two
+457 photographs, one pool per project and **no image shared between two
 projects** — enforced by perceptual hash in `tools/check_image_reuse.py`, not by
 filename.
+
+Of these, **381 are traced to BSDS500** and
+**25 to the USC-SIPI image database** by perceptual hash.
+The remaining 51 are not traced: most were added for projects 02-15
+before the manifest existed, and they are listed under *Source not recorded* at
+the end. `tools/check_image_reuse.py` rebuilds
+`manifest.json`, which maps every committed file back to the cache entry it came
+from by perceptual hash — so the provenance is derived from the pixels rather
+than from a list somebody maintains by hand.
 
 There are three kinds of ground truth in this repository and they are not
 interchangeable. Which one a project has decides what it is allowed to report,
@@ -104,11 +113,15 @@ not equivalent to the OpenCV or Kodak material above. Stated here rather than
 left for someone to discover. If that is a problem for a given use, these twelve
 are the ones to replace.
 
-### BSDS500, the rest of it — 203 photographs
+### BSDS500, the rest of it — 381 photographs
 
 Projects 16 onward each draw **twelve images nobody else uses**, selected on a
 *measured* axis rather than by eye (`tools/select_images.py --axis detail`,
-`--axis texture`, and so on). At twelve per project that needs hundreds of
+`--axis texture`, and so on). Several of the later projects define their own axis
+instead, because no stock statistic measures what they are about: project 43
+ranks photographs by how much chroma survives inside one luminance bin, project
+38 by RANSAC inliers per megapixel between an image and a known warp of itself,
+and project 58 by how many small round red things a picture already contains. At twelve per project that needs hundreds of
 distinct photographs, which is why the pool moved wholesale to BSDS500: it has
 500, and — decisively — it ships **five to seven human segmentations per
 image**.
@@ -246,15 +259,43 @@ that is a problem for a given use, these are the images to replace.
 
 </details>
 
+### USC-SIPI image database — 25 images
+
+The aerial photographs, texture plates and the `misc` portraits come from the
+[USC-SIPI image database](https://sipi.usc.edu/database/), maintained by the
+University of Southern California's Signal and Image Processing Institute.
+
+Like BSDS500 it is a research corpus rather than public-domain material, and the
+same caveat applies: it is used here for measurement and is stated rather than
+left to be discovered. The texture plates in particular are the oldest material
+in this repository — several are scans of Brodatz prints from 1966 — and they are
+used where a project needs a surface rather than a scene, for instance project
+33's texture descriptors and project 38's brick wall, which is there precisely
+because it **cannot** be registered.
+
 ### Source not recorded
 
-These eight were added for project 02's subject-variety comparison and **their
-exact source was not written down at the time.** That is a gap, and it is stated
-here rather than backfilled with a guess:
+These 51 were added for projects 02 to 15 before `manifest.json`
+existed, and **their exact source was not written down at the time.** That is a
+gap, and it is stated here rather than backfilled with a guess:
 
-`girl.jpg`, `dog.jpg`, `coffee_cup.jpg`, `woman_field.jpg`, `leopard.jpg`,
-`man_camera.jpg`, `hiker.jpg`, `man_skyline.jpg` — all 700 × 525, no EXIF.
+```
+  apple_desk  boat_pier  boy_laughing  butterfly
+  caps_row  child_face_paint  clock_tower  coastal_city_from_the_air
+  coffee_cup  couple_beach  dog  fruits
+  girl  girl_red_hat  hiker  leopard
+  lighthouse_cliff  lighthouse_lawn  man_camera  man_glasses
+  man_glasses_dark  man_outdoors  man_skyline  messi5
+  moored_boat  motion_text  motocross  mountain_stream
+  office_block  old_street  painted_chalet  parrots
+  red_barn  red_door  sailboat_race  sailboats
+  sand_ripples  squirrel  stone_house  stone_statue
+  street_people  text_defocus  tropical_island  two_men
+  two_men_indoor  warplane  whitewater_raft  window_flowers
+  woman_dress  woman_field  young_woman
+```
 
-They are shown, never scored, and appear only in comparison figures. If their
-licence cannot be established they should be replaced with Kodak or OpenCV
-images, which carry explicit terms.
+Most are shown rather than scored. If their licence cannot be established they
+should be replaced with BSDS500, Kodak or OpenCV images, which carry explicit
+terms — and because `manifest.json` is rebuilt from the pixels rather than from a
+hand-kept list, this set can only shrink as more of them are matched.

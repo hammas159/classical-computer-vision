@@ -4,6 +4,11 @@
   "source": "bsds/253036",
   "distance": 0
  },
+ "aircrew_on_tarmac": {
+  "phash": 5966617677097128974,
+  "source": "bsds/245051",
+  "distance": 0
+ },
  "albatross_pair": {
   "phash": 5961971400472314254,
   "source": "bsds/103029",
@@ -19,10 +24,20 @@
   "source": "bsds/126007",
   "distance": 0
  },
+ "alpine_cottage_with_flowers": {
+  "phash": 1663486424501558323,
+  "source": "bsds/207038",
+  "distance": 2
+ },
  "angelfish_reef": {
   "phash": 5938050252296843069,
   "source": "bsds/306005",
   "distance": 0
+ },
+ "anteater_at_sunset": {
+  "phash": 1554927515476766390,
+  "source": "bsds/66039",
+  "distance": 2
  },
  "apple_desk": {
   "phash": 3658974168814306195,
@@ -49,9 +64,24 @@
   "source": "bsds/78098",
   "distance": 0
  },
+ "basket_of_grain": {
+  "phash": 6896475727482554670,
+  "source": "bsds/58060",
+  "distance": 0
+ },
  "bay_with_boats": {
   "phash": 1485208681588191801,
   "source": "bsds/68077",
+  "distance": 0
+ },
+ "beach_baseball": {
+  "phash": 971901797055040632,
+  "source": "bsds/151087",
+  "distance": 0
+ },
+ "beached_boats": {
+  "phash": 7682544891793308545,
+  "source": "bsds/393035",
   "distance": 0
  },
  "beached_dinghy": {
@@ -79,6 +109,11 @@
   "source": "bsds/100039",
   "distance": 0
  },
+ "bears_at_the_water": {
+  "phash": 4382341570492749171,
+  "source": "bsds/100075",
+  "distance": 0
+ },
  "bears_on_hillside": {
   "phash": 5607353508179639019,
   "source": "bsds/309004",
@@ -89,9 +124,39 @@
   "source": "bsds/346016",
   "distance": 0
  },
+ "bighorn_ram": {
+  "phash": 2621501481508826194,
+  "source": "bsds/168084",
+  "distance": 0
+ },
  "bighorn_rock": {
   "phash": 7011662778655728028,
   "source": "bsds/304074",
+  "distance": 0
+ },
+ "bird_in_a_meadow": {
+  "phash": 265939553569396236,
+  "source": "bsds/28096",
+  "distance": 2
+ },
+ "bison_in_snow": {
+  "phash": 2000890674171577443,
+  "source": "bsds/41029",
+  "distance": 0
+ },
+ "biwa_player": {
+  "phash": 1249348447497893574,
+  "source": "bsds/65074",
+  "distance": 0
+ },
+ "black_bear_wading": {
+  "phash": 8638396795862924499,
+  "source": "bsds/159091",
+  "distance": 0
+ },
+ "black_panther": {
+  "phash": 97553522459780919,
+  "source": "bsds/304034",
   "distance": 0
  },
  "blossom_pavilion": {
@@ -114,9 +179,19 @@
   "source": "bsds/140088",
   "distance": 0
  },
+ "bobcat_and_daisies": {
+  "phash": 1453857744708411573,
+  "source": "bsds/326025",
+  "distance": 0
+ },
  "bobcat_rock": {
   "phash": 8629179146657957102,
   "source": "bsds/41085",
+  "distance": 0
+ },
+ "bomber_over_cloud": {
+  "phash": 7096508648727672376,
+  "source": "bsds/3063",
   "distance": 0
  },
  "bomber_overcast": {
@@ -129,25 +204,80 @@
   "source": "bsds/217090",
   "distance": 0
  },
+ "boy_in_a_wide_hat": {
+  "phash": 7524325946199429234,
+  "source": "bsds/189011",
+  "distance": 0
+ },
  "boy_laughing": {
   "phash": 6400227951075812973,
   "source": null,
   "distance": null
+ },
+ "boy_with_a_fish_trap": {
+  "phash": 7507981947599671474,
+  "source": "bsds/187058",
+  "distance": 0
+ },
+ "brain_coral": {
+  "phash": 3664150290994646419,
+  "source": "bsds/45077",
+  "distance": 2
+ },
+ "brick_paving": {
+  "phash": 567837437509975259,
+  "source": "sipi/textures_1.1.12",
+  "distance": 0
+ },
+ "brick_wall_courses": {
+  "phash": 7641811182679747942,
+  "source": "sipi/textures_1.5.06",
+  "distance": 2
+ },
+ "buffalo_in_the_river": {
+  "phash": 8941846707273382066,
+  "source": "bsds/147062",
+  "distance": 0
+ },
+ "bugling_elk": {
+  "phash": 7015630621407856569,
+  "source": "bsds/41004",
+  "distance": 0
  },
  "butterfly": {
   "phash": 2360981448576744909,
   "source": null,
   "distance": null
  },
+ "buttressed_trunk": {
+  "phash": 5380175804347326708,
+  "source": "bsds/311081",
+  "distance": 0
+ },
  "camel_at_sunset": {
   "phash": 4742842796947460717,
   "source": "bsds/271031",
   "distance": 0
  },
+ "cannon_on_cobbles": {
+  "phash": 1699993467928372372,
+  "source": "bsds/385022",
+  "distance": 0
+ },
+ "canoe_on_the_lake": {
+  "phash": 6694675479400599014,
+  "source": "bsds/238025",
+  "distance": 2
+ },
  "caps_row": {
   "phash": 3450083036767326087,
   "source": null,
   "distance": null
+ },
+ "carved_boat_houses": {
+  "phash": 1843991206966110691,
+  "source": "bsds/76002",
+  "distance": 0
  },
  "carved_figurine": {
   "phash": 4963970153257334074,
@@ -157,6 +287,11 @@
  "carved_mask_thatch": {
   "phash": 7841474127538405531,
   "source": "bsds/296058",
+  "distance": 0
+ },
+ "carved_stone_relief": {
+  "phash": 2406569751254185611,
+  "source": "bsds/164046",
   "distance": 0
  },
  "castle_gatehouse": {
@@ -172,6 +307,11 @@
  "cheetah_walking": {
   "phash": 342614969150551078,
   "source": "bsds/134008",
+  "distance": 0
+ },
+ "chicks_in_a_nest": {
+  "phash": 5717170640670765086,
+  "source": "bsds/163085",
   "distance": 0
  },
  "child_face_paint": {
@@ -194,6 +334,26 @@
   "source": "bsds/187029",
   "distance": 2
  },
+ "children_carrying_pots": {
+  "phash": 7572247197222430834,
+  "source": "bsds/271008",
+  "distance": 0
+ },
+ "chipmunk_on_granite": {
+  "phash": 1276705902994102118,
+  "source": "bsds/123074",
+  "distance": 0
+ },
+ "church_spire": {
+  "phash": 5916103610714264027,
+  "source": "bsds/301007",
+  "distance": 2
+ },
+ "clapboard_houses": {
+  "phash": 6256599654180549276,
+  "source": "bsds/232038",
+  "distance": 0
+ },
  "climber_on_dome": {
   "phash": 2273870791695342559,
   "source": "bsds/14037",
@@ -214,15 +374,40 @@
   "source": "bsds/210088",
   "distance": 0
  },
+ "coarse_stucco": {
+  "phash": 2784960311141396730,
+  "source": "sipi/textures_1.1.10",
+  "distance": 2
+ },
+ "coarse_woven_fabric": {
+  "phash": 8108957799543826318,
+  "source": "sipi/textures_1.3.06",
+  "distance": 2
+ },
+ "coastal_city_from_the_air": {
+  "phash": 5263661177774081538,
+  "source": null,
+  "distance": null
+ },
  "coffee_cup": {
   "phash": 4009127521139541394,
   "source": null,
   "distance": null
  },
+ "coiled_rope": {
+  "phash": 5609689372367875228,
+  "source": "bsds/138032",
+  "distance": 0
+ },
  "collared_lizard": {
   "phash": 5115037427661496670,
   "source": "bsds/41096",
   "distance": 0
+ },
+ "collie_standing": {
+  "phash": 9123899638125365624,
+  "source": "bsds/247085",
+  "distance": 2
  },
  "conical_hat_worker": {
   "phash": 5122960223282385859,
@@ -232,6 +417,16 @@
  "coral_reef": {
   "phash": 5840779218565797630,
   "source": "bsds/101027",
+  "distance": 0
+ },
+ "cormorants_nesting": {
+  "phash": 2529996465987961725,
+  "source": "bsds/160006",
+  "distance": 0
+ },
+ "cougar_among_birches": {
+  "phash": 1327973666896585501,
+  "source": "bsds/42012",
   "distance": 0
  },
  "cougar_and_kitten": {
@@ -259,9 +454,34 @@
   "source": "bsds/109053",
   "distance": 0
  },
+ "cricket_on_the_green": {
+  "phash": 7305158041278497207,
+  "source": "bsds/368016",
+  "distance": 2
+ },
  "crocodile_bank": {
   "phash": 5510830040367132812,
   "source": "bsds/130026",
+  "distance": 0
+ },
+ "crushed_gravel": {
+  "phash": 3492947838799938027,
+  "source": "sipi/textures_1.5.05",
+  "distance": 2
+ },
+ "cyclists_on_a_lane": {
+  "phash": 102788834304563012,
+  "source": "bsds/344010",
+  "distance": 0
+ },
+ "cyclists_on_a_track": {
+  "phash": 660980929689909492,
+  "source": "bsds/226022",
+  "distance": 0
+ },
+ "damselfly_on_leaf": {
+  "phash": 4442731566626488528,
+  "source": "bsds/35070",
   "distance": 0
  },
  "deer_and_fawn": {
@@ -272,6 +492,11 @@
  "deer_bare_branches": {
   "phash": 6615849847304458124,
   "source": "bsds/77062",
+  "distance": 0
+ },
+ "deer_in_bare_woods": {
+  "phash": 6050719180118185801,
+  "source": "bsds/236017",
   "distance": 0
  },
  "deer_in_brush": {
@@ -289,6 +514,16 @@
   "source": "bsds/295087",
   "distance": 0
  },
+ "desert_dune_ripples": {
+  "phash": 118912173136692532,
+  "source": "bsds/178054",
+  "distance": 0
+ },
+ "diver_and_coral": {
+  "phash": 6066121728067733279,
+  "source": "bsds/156054",
+  "distance": 0
+ },
  "diver_dark_reef": {
   "phash": 4629481489816142619,
   "source": "bsds/45096",
@@ -303,6 +538,21 @@
   "phash": 8447789593901910403,
   "source": null,
   "distance": null
+ },
+ "dry_straw": {
+  "phash": 6245871048084464698,
+  "source": "sipi/textures_1.3.03",
+  "distance": 0
+ },
+ "drying_racks": {
+  "phash": 62763560216322303,
+  "source": "bsds/187071",
+  "distance": 2
+ },
+ "ducks_in_reeds": {
+  "phash": 593978487702729105,
+  "source": "bsds/43083",
+  "distance": 2
  },
  "eagle_flat_sky": {
   "phash": 5996289577215354419,
@@ -329,6 +579,11 @@
   "source": "bsds/187083",
   "distance": 0
  },
+ "elephant_crossing_a_road": {
+  "phash": 6112122643574797331,
+  "source": "bsds/296028",
+  "distance": 0
+ },
  "elephant_grass": {
   "phash": 1243793104721649015,
   "source": "bsds/107014",
@@ -349,6 +604,16 @@
   "source": "bsds/107045",
   "distance": 0
  },
+ "elephants_and_grooms": {
+  "phash": 7800616835772002403,
+  "source": "bsds/361084",
+  "distance": 0
+ },
+ "elk_in_long_grass": {
+  "phash": 6219204610164830631,
+  "source": "bsds/41006",
+  "distance": 0
+ },
  "elk_water": {
   "phash": 4956538837318278089,
   "source": "bsds/104055",
@@ -357,6 +622,21 @@
  "family_by_van": {
   "phash": 5783615048656449428,
   "source": "bsds/102062",
+  "distance": 2
+ },
+ "farmland_from_the_air": {
+  "phash": 1574512125727229229,
+  "source": "sipi/aerials_2.2.13",
+  "distance": 4
+ },
+ "feather_duster_worms": {
+  "phash": 1448586224904596233,
+  "source": "bsds/12084",
+  "distance": 0
+ },
+ "fibrous_matting": {
+  "phash": 5238395273113072416,
+  "source": "sipi/textures_1.1.06",
   "distance": 2
  },
  "fighter_jet": {
@@ -374,6 +654,11 @@
   "source": "bsds/23084",
   "distance": 0
  },
+ "firewalkers_at_night": {
+  "phash": 6857118242705224760,
+  "source": "bsds/285022",
+  "distance": 2
+ },
  "fjord_harbour": {
   "phash": 5972209146755835749,
   "source": "bsds/219090",
@@ -384,14 +669,39 @@
   "source": "bsds/145086",
   "distance": 0
  },
+ "flatfish_on_sand": {
+  "phash": 1735840124700423567,
+  "source": "bsds/141048",
+  "distance": 0
+ },
  "florence_duomo": {
   "phash": 1777904926477605799,
   "source": "bsds/24004",
   "distance": 2
  },
+ "flounder_on_gravel": {
+  "phash": 5929948938015558142,
+  "source": "bsds/141012",
+  "distance": 0
+ },
+ "four_children_on_a_wall": {
+  "phash": 5338600329183868140,
+  "source": "bsds/15011",
+  "distance": 0
+ },
+ "fox_and_daisies": {
+  "phash": 1747648563033039097,
+  "source": "bsds/159002",
+  "distance": 2
+ },
  "fox_cubs": {
   "phash": 1532418371412284461,
   "source": "bsds/159008",
+  "distance": 0
+ },
+ "foxes_under_a_ledge": {
+  "phash": 1482954687922125648,
+  "source": "bsds/109034",
   "distance": 0
  },
  "fruits": {
@@ -419,6 +729,11 @@
   "source": "bsds/145053",
   "distance": 0
  },
+ "gentoo_on_shingle": {
+  "phash": 2028716938331967307,
+  "source": "bsds/106047",
+  "distance": 0
+ },
  "geologist_rocks": {
   "phash": 8846256420929956963,
   "source": "bsds/89072",
@@ -434,10 +749,25 @@
   "source": "bsds/130014",
   "distance": 2
  },
+ "giraffe_head_on": {
+  "phash": 6691617075469265337,
+  "source": "bsds/253092",
+  "distance": 2
+ },
+ "giraffes_drinking": {
+  "phash": 5137512858706467610,
+  "source": "bsds/335088",
+  "distance": 0
+ },
  "girl": {
   "phash": 3725546493523063154,
   "source": null,
   "distance": null
+ },
+ "girl_in_pink_shirt": {
+  "phash": 237738034545771122,
+  "source": "sipi/misc_4.1.04",
+  "distance": 0
  },
  "girl_red_hat": {
   "phash": 2298437701823694231,
@@ -447,6 +777,16 @@
  "girl_with_basin": {
   "phash": 2233153071498804632,
   "source": "bsds/23025",
+  "distance": 0
+ },
+ "girl_with_tulips": {
+  "phash": 6247453201739255118,
+  "source": "bsds/258089",
+  "distance": 0
+ },
+ "glacier_cave_mouth": {
+  "phash": 5853573882543891161,
+  "source": "bsds/176051",
   "distance": 0
  },
  "glass_pyramid": {
@@ -464,10 +804,35 @@
   "source": "bsds/86000",
   "distance": 0
  },
+ "golden_pavilion": {
+  "phash": 5879386167058740728,
+  "source": "bsds/65010",
+  "distance": 0
+ },
+ "golfer_by_the_sea": {
+  "phash": 1789836993156880807,
+  "source": "bsds/286092",
+  "distance": 0
+ },
  "graffiti_wall": {
   "phash": 7920117351603865871,
   "source": "bsds/292066",
   "distance": 2
+ },
+ "greek_amphora": {
+  "phash": 5544829250685416268,
+  "source": "bsds/227092",
+  "distance": 2
+ },
+ "green_field_worker": {
+  "phash": 2419874577184519197,
+  "source": "bsds/51084",
+  "distance": 0
+ },
+ "green_mountain_ridge": {
+  "phash": 2568343519593450957,
+  "source": "bsds/28083",
+  "distance": 0
  },
  "gulls_on_ledge": {
   "phash": 4652850596562005652,
@@ -499,6 +864,11 @@
   "source": "bsds/70011",
   "distance": 0
  },
+ "hawk_on_a_branch": {
+  "phash": 3719845997164509122,
+  "source": "bsds/42049",
+  "distance": 0
+ },
  "hawk_on_stump": {
   "phash": 5721034122523449033,
   "source": "bsds/70090",
@@ -519,19 +889,39 @@
   "source": "bsds/185092",
   "distance": 0
  },
+ "helicopter_and_pilot": {
+  "phash": 5230504209128413714,
+  "source": "bsds/146074",
+  "distance": 0
+ },
  "helicopter_dusk": {
   "phash": 7266796709948307876,
   "source": "bsds/179084",
   "distance": 0
+ },
+ "herringbone_weave": {
+  "phash": 1293674934609093922,
+  "source": "sipi/textures_1.1.04",
+  "distance": 2
  },
  "hiker": {
   "phash": 1558784643900723756,
   "source": null,
   "distance": null
  },
+ "hillside_town_from_the_air": {
+  "phash": 8290259092396931292,
+  "source": "sipi/misc_5.1.10",
+  "distance": 0
+ },
  "hilltop_ruin": {
   "phash": 430544390814770744,
   "source": "bsds/20008",
+  "distance": 2
+ },
+ "hippo_in_green_water": {
+  "phash": 2549475879956331806,
+  "source": "bsds/80099",
   "distance": 2
  },
  "horse_blossom": {
@@ -539,9 +929,19 @@
   "source": "bsds/291000",
   "distance": 0
  },
+ "horses_in_a_meadow": {
+  "phash": 1149737470449721009,
+  "source": "bsds/197017",
+  "distance": 0
+ },
  "hotel_rossiya": {
   "phash": 5611439728101952523,
   "source": "bsds/274007",
+  "distance": 0
+ },
+ "husky_puppies": {
+  "phash": 888954826286552803,
+  "source": "bsds/247003",
   "distance": 0
  },
  "iceberg_cloud": {
@@ -569,15 +969,70 @@
   "source": "bsds/169012",
   "distance": 0
  },
+ "irrigated_fields_from_the_air": {
+  "phash": 2785349141213388330,
+  "source": "sipi/aerials_2.2.20",
+  "distance": 2
+ },
+ "kabuki_pair": {
+  "phash": 7655632221839398290,
+  "source": "bsds/145059",
+  "distance": 0
+ },
+ "kalmar_castle": {
+  "phash": 6605696204860305121,
+  "source": "bsds/201080",
+  "distance": 0
+ },
+ "kangaroo_resting": {
+  "phash": 5145814195997199512,
+  "source": "bsds/69020",
+  "distance": 0
+ },
+ "laden_donkey": {
+  "phash": 3290361349375406746,
+  "source": "bsds/187003",
+  "distance": 2
+ },
+ "ladybird_on_a_leaf": {
+  "phash": 7218800419399976378,
+  "source": "bsds/35058",
+  "distance": 2
+ },
  "lake_shrine": {
   "phash": 1625901478677665588,
   "source": "bsds/120003",
+  "distance": 0
+ },
+ "lakeside_verandah": {
+  "phash": 7629399716851561813,
+  "source": "bsds/61034",
+  "distance": 0
+ },
+ "layered_sandstone": {
+  "phash": 6299098933808141340,
+  "source": "bsds/254033",
   "distance": 0
  },
  "leopard": {
   "phash": 7888953516877858114,
   "source": null,
   "distance": null
+ },
+ "leopard_along_branch": {
+  "phash": 7033115286646700382,
+  "source": "bsds/134067",
+  "distance": 2
+ },
+ "leopard_in_bare_tree": {
+  "phash": 5360844777844818627,
+  "source": "bsds/335094",
+  "distance": 0
+ },
+ "leopard_in_dry_grass": {
+  "phash": 2035143027992021228,
+  "source": "bsds/134052",
+  "distance": 2
  },
  "leopard_in_tree": {
   "phash": 1684320628477562103,
@@ -594,6 +1049,11 @@
   "source": null,
   "distance": null
  },
+ "lily_pond_and_pagoda": {
+  "phash": 1281667271645026700,
+  "source": "bsds/145079",
+  "distance": 0
+ },
  "lioness_savanna": {
   "phash": 5368605096815747901,
   "source": "bsds/105027",
@@ -609,19 +1069,64 @@
   "source": "bsds/105019",
   "distance": 0
  },
+ "lizard_on_a_leaf": {
+  "phash": 7831896974894488116,
+  "source": "bsds/175083",
+  "distance": 0
+ },
  "lizard_on_gravel": {
   "phash": 5993719582639726895,
   "source": "bsds/87046",
   "distance": 2
+ },
+ "lizard_on_pebbles": {
+  "phash": 1088325433801899799,
+  "source": "bsds/87065",
+  "distance": 0
+ },
+ "llama_at_a_stone_wall": {
+  "phash": 2422266793261187755,
+  "source": "bsds/6046",
+  "distance": 0
+ },
+ "lobsters_and_wine": {
+  "phash": 1866362273147575592,
+  "source": "bsds/157032",
+  "distance": 0
  },
  "lone_palm_beach": {
   "phash": 8217331705446346098,
   "source": "bsds/46076",
   "distance": 2
  },
+ "lone_tree_on_a_hill": {
+  "phash": 6836641390313672156,
+  "source": "bsds/36046",
+  "distance": 0
+ },
+ "long_jetty": {
+  "phash": 7318477959387579527,
+  "source": "bsds/22013",
+  "distance": 0
+ },
  "longtail_boats": {
   "phash": 1247179831902155202,
   "source": "bsds/81095",
+  "distance": 0
+ },
+ "louvre_pyramid": {
+  "phash": 5830771274534855352,
+  "source": "bsds/223060",
+  "distance": 0
+ },
+ "lynx_on_birch": {
+  "phash": 6199841764096524224,
+  "source": "bsds/159029",
+  "distance": 0
+ },
+ "made_up_face": {
+  "phash": 6184137373599031737,
+  "source": "bsds/302003",
   "distance": 0
  },
  "man_camera": {
@@ -657,6 +1162,11 @@
  "man_green_parka": {
   "phash": 7751894380066099696,
   "source": "bsds/230098",
+  "distance": 0
+ },
+ "man_in_a_fez": {
+  "phash": 7559978825837680061,
+  "source": "bsds/189080",
   "distance": 0
  },
  "man_laying_paving": {
@@ -704,9 +1214,24 @@
   "source": "bsds/113044",
   "distance": 0
  },
+ "market_fruit_stall": {
+  "phash": 8150981253765371346,
+  "source": "bsds/16004",
+  "distance": 0
+ },
  "marmot_boulder": {
   "phash": 2769887172799210889,
   "source": "bsds/41069",
+  "distance": 0
+ },
+ "marmot_on_rock": {
+  "phash": 2571445806411375269,
+  "source": "bsds/105025",
+  "distance": 0
+ },
+ "mayan_stone_carving": {
+  "phash": 4813836113450659995,
+  "source": "bsds/33039",
   "distance": 0
  },
  "memorial_arch": {
@@ -723,6 +1248,11 @@
   "phash": 2046660735690566068,
   "source": null,
   "distance": null
+ },
+ "milking_the_cow": {
+  "phash": 6843326439354015104,
+  "source": "bsds/385039",
+  "distance": 0
  },
  "moated_chateau": {
   "phash": 4968661759420880953,
@@ -749,6 +1279,21 @@
   "source": "bsds/145014",
   "distance": 0
  },
+ "monk_under_a_tree": {
+  "phash": 7327369207828264986,
+  "source": "bsds/376020",
+  "distance": 0
+ },
+ "monks_at_a_noticeboard": {
+  "phash": 278797722476389561,
+  "source": "bsds/147080",
+  "distance": 0
+ },
+ "mono_lake_tufa": {
+  "phash": 9065977188700712368,
+  "source": "bsds/143090",
+  "distance": 2
+ },
  "moonlit_pines": {
   "phash": 546122720120131125,
   "source": "bsds/238011",
@@ -764,6 +1309,11 @@
   "source": "bsds/208078",
   "distance": 0
  },
+ "mossy_boulders_in_a_valley": {
+  "phash": 4818171161045756730,
+  "source": "bsds/241004",
+  "distance": 0
+ },
  "motion_text": {
   "phash": 3195613394655562040,
   "source": null,
@@ -774,10 +1324,20 @@
   "source": null,
   "distance": null
  },
+ "mountain_lake_and_scree": {
+  "phash": 3263445537755535353,
+  "source": "bsds/167083",
+  "distance": 2
+ },
  "mountain_stream": {
   "phash": 1951988928286746021,
   "source": null,
   "distance": null
+ },
+ "mushers_and_husky": {
+  "phash": 2202721585772456999,
+  "source": "bsds/309040",
+  "distance": 0
  },
  "ocelot_on_rock": {
   "phash": 3491237050233013031,
@@ -794,9 +1354,24 @@
   "source": null,
   "distance": null
  },
+ "orange_lichen_on_rock": {
+  "phash": 5830716904376736784,
+  "source": "bsds/35091",
+  "distance": 0
+ },
  "ostrich_head": {
   "phash": 5137336904720806540,
   "source": "bsds/66075",
+  "distance": 0
+ },
+ "otter_on_a_log": {
+  "phash": 220259650603212699,
+  "source": "bsds/173036",
+  "distance": 2
+ },
+ "otters_on_gravel": {
+  "phash": 5875902484857388205,
+  "source": "bsds/236037",
   "distance": 0
  },
  "owl_in_grass": {
@@ -807,6 +1382,16 @@
  "ox_in_pasture": {
   "phash": 5255578127935575952,
   "source": "bsds/296007",
+  "distance": 0
+ },
+ "packed_cobbles": {
+  "phash": 1987313082967593924,
+  "source": "sipi/textures_1.2.13",
+  "distance": 2
+ },
+ "packhorse_bridge": {
+  "phash": 5970675122378018228,
+  "source": "bsds/207049",
   "distance": 0
  },
  "painted_chalet": {
@@ -844,9 +1429,19 @@
   "source": "bsds/67079",
   "distance": 0
  },
+ "partridge_on_gravel": {
+  "phash": 6902691621843921123,
+  "source": "bsds/8023",
+  "distance": 2
+ },
  "penguin_dark_shore": {
   "phash": 5688945509866942777,
   "source": "bsds/106025",
+  "distance": 0
+ },
+ "penguin_on_pebbles": {
+  "phash": 5843957517989133202,
+  "source": "bsds/106020",
   "distance": 0
  },
  "penguin_pebbles": {
@@ -854,9 +1449,34 @@
   "source": "bsds/106005",
   "distance": 0
  },
+ "perforated_metal": {
+  "phash": 5806599583824210164,
+  "source": "sipi/textures_1.5.02",
+  "distance": 2
+ },
+ "picnic_in_the_snow": {
+  "phash": 3085723392902036660,
+  "source": "bsds/157087",
+  "distance": 0
+ },
+ "pintail_at_dusk": {
+  "phash": 1829418902575565875,
+  "source": "bsds/43051",
+  "distance": 0
+ },
+ "ploughing_with_oxen": {
+  "phash": 8126472749956623739,
+  "source": "bsds/202012",
+  "distance": 0
+ },
  "polar_bear_rail": {
   "phash": 3729346518750912519,
   "source": "bsds/183066",
+  "distance": 0
+ },
+ "polar_bears_playing": {
+  "phash": 5623443858627874827,
+  "source": "bsds/183087",
   "distance": 0
  },
  "polar_bears_snow": {
@@ -868,6 +1488,11 @@
   "phash": 5914380690229158259,
   "source": "bsds/361010",
   "distance": 2
+ },
+ "porcupine_on_a_branch": {
+  "phash": 5080953441475585996,
+  "source": "bsds/159022",
+  "distance": 0
  },
  "porcupine_on_branch": {
   "phash": 5034433475804670257,
@@ -889,6 +1514,11 @@
   "source": null,
   "distance": null
  },
+ "race_cars_on_a_bend": {
+  "phash": 5389231662555638981,
+  "source": "bsds/21077",
+  "distance": 0
+ },
  "raked_zen_garden": {
   "phash": 2371593351555938334,
   "source": "bsds/86016",
@@ -899,15 +1529,35 @@
   "source": null,
   "distance": null
  },
+ "red_brick_house": {
+  "phash": 8984823777819271755,
+  "source": "sipi/misc_4.1.05",
+  "distance": 2
+ },
  "red_canoes": {
   "phash": 2741973351502432842,
   "source": "bsds/232076",
   "distance": 0
  },
+ "red_chrysanthemums": {
+  "phash": 2560129895955397918,
+  "source": "bsds/124084",
+  "distance": 2
+ },
  "red_door": {
   "phash": 5739749972589885624,
   "source": null,
   "distance": null
+ },
+ "red_robed_figures": {
+  "phash": 3934285158177626941,
+  "source": "bsds/80090",
+  "distance": 2
+ },
+ "red_sports_car": {
+  "phash": 7968521855593322033,
+  "source": "bsds/29030",
+  "distance": 2
  },
  "regatta_spinnakers": {
   "phash": 5390023300455244103,
@@ -944,6 +1594,36 @@
   "source": "bsds/144067",
   "distance": 0
  },
+ "roller_coaster_loop": {
+  "phash": 861448720827450335,
+  "source": "bsds/235098",
+  "distance": 0
+ },
+ "roman_amphitheatre": {
+  "phash": 4662806324996771271,
+  "source": "bsds/166081",
+  "distance": 0
+ },
+ "roof_shingles": {
+  "phash": 284384917004316078,
+  "source": "sipi/textures_1.4.03",
+  "distance": 0
+ },
+ "runners_in_the_stadium": {
+  "phash": 6979589392265365021,
+  "source": "bsds/226033",
+  "distance": 2
+ },
+ "runners_on_track": {
+  "phash": 2155502530548271963,
+  "source": "bsds/226043",
+  "distance": 0
+ },
+ "saguaro_blossom": {
+  "phash": 1254932781549859737,
+  "source": "bsds/19021",
+  "distance": 0
+ },
  "sailboat_race": {
   "phash": 7075561447646539357,
   "source": null,
@@ -959,6 +1639,21 @@
   "source": "bsds/15088",
   "distance": 0
  },
+ "sand_ripples": {
+  "phash": 6262366712987555252,
+  "source": null,
+  "distance": null
+ },
+ "sandstone_ladder": {
+  "phash": 5509251600178824759,
+  "source": "bsds/54005",
+  "distance": 0
+ },
+ "scattered_sweets": {
+  "phash": 3445465092264112526,
+  "source": "sipi/misc_4.1.08",
+  "distance": 0
+ },
  "scuba_diver_fish": {
   "phash": 5330051970922112723,
   "source": "bsds/156079",
@@ -967,6 +1662,16 @@
  "sea_shell_coral": {
   "phash": 4849317776440363621,
   "source": "bsds/12074",
+  "distance": 0
+ },
+ "sea_stacks": {
+  "phash": 1061026239932181811,
+  "source": "bsds/117054",
+  "distance": 0
+ },
+ "seal_on_grey_ice": {
+  "phash": 4747287267584679132,
+  "source": "bsds/188091",
   "distance": 0
  },
  "shark_shallows": {
@@ -979,14 +1684,39 @@
   "source": null,
   "distance": null
  },
+ "skier_mid_air": {
+  "phash": 4915686101703835223,
+  "source": "bsds/225022",
+  "distance": 0
+ },
+ "skier_on_a_slope": {
+  "phash": 3573903476013644359,
+  "source": "bsds/61060",
+  "distance": 0
+ },
  "skiers_woods": {
   "phash": 6559922105889662681,
   "source": "bsds/277053",
   "distance": 0
  },
+ "skiff_in_weed": {
+  "phash": 1506534023645279595,
+  "source": "bsds/92059",
+  "distance": 0
+ },
+ "sled_dogs_on_ice": {
+  "phash": 2225165376840305405,
+  "source": "bsds/310007",
+  "distance": 0
+ },
  "snake_coiled": {
   "phash": 3679939359188798866,
   "source": "bsds/87015",
+  "distance": 0
+ },
+ "snake_on_needles": {
+  "phash": 3323469819641444449,
+  "source": "bsds/175032",
   "distance": 0
  },
  "snake_on_sand": {
@@ -999,14 +1729,44 @@
   "source": "bsds/225017",
   "distance": 0
  },
+ "snowshoes_on_snow": {
+  "phash": 2402596227179419513,
+  "source": "bsds/2018",
+  "distance": 0
+ },
+ "soldier_and_child": {
+  "phash": 4135646220426765884,
+  "source": "bsds/170054",
+  "distance": 0
+ },
+ "soldier_on_the_grass": {
+  "phash": 1283645176869452156,
+  "source": "bsds/376043",
+  "distance": 2
+ },
  "sparkler_family": {
   "phash": 337857234822904215,
   "source": "bsds/20069",
   "distance": 0
  },
+ "spear_fisher": {
+  "phash": 2300435147445139341,
+  "source": "bsds/101087",
+  "distance": 0
+ },
  "sphinx_and_pyramid": {
   "phash": 4172095357156694675,
   "source": "bsds/161045",
+  "distance": 0
+ },
+ "spotted_cat_on_a_log": {
+  "phash": 18365408440659379,
+  "source": "bsds/160068",
+  "distance": 0
+ },
+ "spotted_fish_head": {
+  "phash": 5797873285279183525,
+  "source": "bsds/164074",
   "distance": 0
  },
  "sprinter_start": {
@@ -1024,6 +1784,11 @@
   "source": "bsds/123057",
   "distance": 0
  },
+ "stacked_timber": {
+  "phash": 1246438724858679788,
+  "source": "bsds/250047",
+  "distance": 0
+ },
  "station_platform": {
   "phash": 1881358837170206263,
   "source": "bsds/249021",
@@ -1037,6 +1802,11 @@
  "steam_train_viaduct": {
   "phash": 7249495191269233532,
   "source": "bsds/182053",
+  "distance": 0
+ },
+ "stipple_plaster": {
+  "phash": 5379325263574211422,
+  "source": "sipi/textures_1.3.10",
   "distance": 0
  },
  "stone_arch": {
@@ -1059,6 +1829,11 @@
   "source": "bsds/101084",
   "distance": 0
  },
+ "stone_guardian": {
+  "phash": 5507575755650699571,
+  "source": "bsds/55073",
+  "distance": 0
+ },
  "stone_house": {
   "phash": 7261539107677473656,
   "source": null,
@@ -1069,15 +1844,30 @@
   "source": null,
   "distance": null
  },
+ "stone_viaduct": {
+  "phash": 121810398678577639,
+  "source": "bsds/374020",
+  "distance": 2
+ },
  "stone_wellhead": {
   "phash": 1428433747284201119,
   "source": "bsds/92014",
   "distance": 0
  },
+ "street_grid_from_the_air": {
+  "phash": 7748001679891931971,
+  "source": "sipi/aerials_2.1.12",
+  "distance": 2
+ },
  "street_people": {
   "phash": 1470370970496802288,
   "source": null,
   "distance": null
+ },
+ "street_piper": {
+  "phash": 6492400065530218028,
+  "source": "bsds/259060",
+  "distance": 0
  },
  "sudoku": {
   "phash": 4249823726562453961,
@@ -1089,19 +1879,59 @@
   "source": "bsds/300091",
   "distance": 2
  },
+ "swallow_tailed_gulls": {
+  "phash": 6015816527528165596,
+  "source": "bsds/103041",
+  "distance": 2
+ },
+ "swallowtail_on_phlox": {
+  "phash": 2718239162359143122,
+  "source": "bsds/35010",
+  "distance": 0
+ },
+ "taj_mahal_reflected": {
+  "phash": 1845752076547356274,
+  "source": "bsds/288024",
+  "distance": 0
+ },
+ "tank_in_scrub": {
+  "phash": 7025551123913284803,
+  "source": "sipi/misc_7.1.07",
+  "distance": 0
+ },
  "temple_dragon": {
   "phash": 3627489420805502536,
   "source": "bsds/120093",
   "distance": 0
+ },
+ "tent_on_the_ice": {
+  "phash": 6254190520685906147,
+  "source": "bsds/188063",
+  "distance": 0
+ },
+ "teotihuacan_pyramids": {
+  "phash": 761892972559489525,
+  "source": "bsds/33066",
+  "distance": 2
  },
  "text_defocus": {
   "phash": 4635878498040560837,
   "source": null,
   "distance": null
  },
+ "thatch_fibres": {
+  "phash": 8017446375810134630,
+  "source": "sipi/textures_1.2.08",
+  "distance": 0
+ },
  "three_astronauts": {
   "phash": 5866553095647770209,
   "source": "bsds/323016",
+  "distance": 0
+ },
+ "three_girls_by_hay": {
+  "phash": 4862889590781405029,
+  "source": "bsds/376001",
   "distance": 0
  },
  "three_owlets": {
@@ -1109,9 +1939,19 @@
   "source": "bsds/42044",
   "distance": 0
  },
+ "three_schoolchildren": {
+  "phash": 6853254441091739877,
+  "source": "bsds/368037",
+  "distance": 0
+ },
  "tiger_in_shade": {
   "phash": 6366802509107602658,
   "source": "bsds/108082",
+  "distance": 0
+ },
+ "tiger_in_the_shade": {
+  "phash": 1288705477946001276,
+  "source": "bsds/108070",
   "distance": 0
  },
  "tiger_rocks": {
@@ -1122,6 +1962,16 @@
  "tiger_wading": {
   "phash": 1592366184996367603,
   "source": "bsds/108041",
+  "distance": 0
+ },
+ "toadstool_in_moss": {
+  "phash": 770456001707613494,
+  "source": "bsds/208001",
+  "distance": 2
+ },
+ "tomato_stall": {
+  "phash": 2795757363946291164,
+  "source": "bsds/25098",
   "distance": 0
  },
  "tortoise_rock": {
@@ -1139,14 +1989,49 @@
   "source": "bsds/351093",
   "distance": 2
  },
+ "tree_against_tropical_sky": {
+  "phash": 4662104966526876854,
+  "source": "bsds/147091",
+  "distance": 2
+ },
+ "tree_bark_ridged": {
+  "phash": 6472841315882062405,
+  "source": "sipi/textures_1.1.02",
+  "distance": 0
+ },
+ "trocadero_statue": {
+  "phash": 1268207988428335901,
+  "source": "bsds/223004",
+  "distance": 0
+ },
  "tropical_island": {
   "phash": 3807320825087511474,
   "source": null,
   "distance": null
  },
+ "tugboat_under_the_bridge": {
+  "phash": 7242554430735106878,
+  "source": "bsds/48025",
+  "distance": 0
+ },
  "tulip_beds": {
   "phash": 1575878963099020085,
   "source": "bsds/140055",
+  "distance": 0
+ },
+ "turquoise_lake": {
+  "phash": 1494316400876828006,
+  "source": "bsds/176035",
+  "distance": 0
+ },
+ "two_at_a_railing": {
+  "phash": 1350866055576359324,
+  "source": "bsds/157055",
+  "distance": 0
+ },
+ "two_at_a_wagon": {
+  "phash": 2658090717959718719,
+  "source": "bsds/216081",
   "distance": 0
  },
  "two_beefeaters": {
@@ -1154,9 +2039,24 @@
   "source": "bsds/376086",
   "distance": 0
  },
+ "two_firefighters": {
+  "phash": 5994920914748053092,
+  "source": "bsds/285036",
+  "distance": 2
+ },
  "two_horses_field": {
   "phash": 6454359922286533435,
   "source": "bsds/28075",
+  "distance": 0
+ },
+ "two_in_headscarves": {
+  "phash": 970370517350733216,
+  "source": "bsds/122048",
+  "distance": 0
+ },
+ "two_jackals": {
+  "phash": 7598208704230057185,
+  "source": "bsds/196062",
   "distance": 0
  },
  "two_men": {
@@ -1174,9 +2074,39 @@
   "source": "bsds/112082",
   "distance": 0
  },
+ "two_women_in_headdress": {
+  "phash": 4958335421438731150,
+  "source": "bsds/189003",
+  "distance": 0
+ },
  "two_women_street": {
   "phash": 1422117329791014209,
   "source": "bsds/23050",
+  "distance": 0
+ },
+ "villa_on_the_lake": {
+  "phash": 4913835532273648887,
+  "source": "bsds/79073",
+  "distance": 2
+ },
+ "wall_across_the_hills": {
+  "phash": 608813446910620134,
+  "source": "bsds/374067",
+  "distance": 0
+ },
+ "wallaby_and_joey": {
+  "phash": 5898902161506879798,
+  "source": "bsds/69022",
+  "distance": 0
+ },
+ "wallaby_in_scrub": {
+  "phash": 5013126024673178813,
+  "source": "bsds/69040",
+  "distance": 2
+ },
+ "warbler_at_the_nest": {
+  "phash": 1831722825259185865,
+  "source": "bsds/163004",
   "distance": 0
  },
  "warplane": {
@@ -1184,9 +2114,34 @@
   "source": null,
   "distance": null
  },
+ "warthogs_drinking": {
+  "phash": 5732686729986655045,
+  "source": "bsds/16077",
+  "distance": 0
+ },
  "waterfall_cliff": {
   "phash": 682706659909551704,
   "source": "bsds/27059",
+  "distance": 0
+ },
+ "waterfall_under_a_bridge": {
+  "phash": 6679830218608750459,
+  "source": "bsds/176019",
+  "distance": 0
+ },
+ "weaver_at_her_loom": {
+  "phash": 5771193333766053549,
+  "source": "bsds/189096",
+  "distance": 0
+ },
+ "westminster_pair": {
+  "phash": 6686838516054820138,
+  "source": "bsds/368078",
+  "distance": 0
+ },
+ "whitewashed_bell_tower": {
+  "phash": 3448702480625111982,
+  "source": "bsds/24063",
   "distance": 0
  },
  "whitewashed_chapel": {
@@ -1214,6 +2169,11 @@
   "source": null,
   "distance": null
  },
+ "wine_bottles_in_a_rack": {
+  "phash": 9140199614663381898,
+  "source": "bsds/157036",
+  "distance": 0
+ },
  "wolf_dark_wood": {
   "phash": 2180715393726264128,
   "source": "bsds/42078",
@@ -1229,6 +2189,11 @@
   "source": "bsds/109055",
   "distance": 0
  },
+ "woman_among_roses": {
+  "phash": 148285769845913553,
+  "source": "bsds/239096",
+  "distance": 0
+ },
  "woman_and_child": {
   "phash": 8108534653510377633,
   "source": "bsds/189013",
@@ -1242,6 +2207,11 @@
  "woman_bundling_straw": {
   "phash": 907047719294710244,
   "source": "bsds/15004",
+  "distance": 0
+ },
+ "woman_by_a_wall": {
+  "phash": 7153361724930903398,
+  "source": "bsds/388016",
   "distance": 0
  },
  "woman_by_tree": {
@@ -1269,6 +2239,21 @@
   "source": "bsds/239007",
   "distance": 0
  },
+ "woman_in_a_red_top": {
+  "phash": 1027836696644720823,
+  "source": "bsds/388067",
+  "distance": 0
+ },
+ "woman_in_blue_dress": {
+  "phash": 556810617102775080,
+  "source": "bsds/216053",
+  "distance": 0
+ },
+ "woman_in_red_scarf": {
+  "phash": 3795861213551341923,
+  "source": "sipi/misc_4.1.01",
+  "distance": 0
+ },
  "woman_on_steps": {
   "phash": 5354099571151780325,
   "source": "bsds/181021",
@@ -1284,14 +2269,49 @@
   "source": "bsds/388018",
   "distance": 0
  },
+ "woman_with_curly_hair": {
+  "phash": 7811689480599841222,
+  "source": "bsds/198054",
+  "distance": 0
+ },
+ "wood_grain": {
+  "phash": 7772514983984313889,
+  "source": "sipi/textures_1.1.09",
+  "distance": 2
+ },
  "worker_with_pails": {
   "phash": 4863105459535065369,
   "source": "bsds/271035",
   "distance": 0
  },
+ "yacht_and_bridge": {
+  "phash": 71976570645921452,
+  "source": "bsds/22090",
+  "distance": 0
+ },
+ "yellow_trousers": {
+  "phash": 309874087948055192,
+  "source": "bsds/230063",
+  "distance": 0
+ },
+ "young_monks_crowding": {
+  "phash": 264069889614566359,
+  "source": "bsds/246053",
+  "distance": 2
+ },
  "young_woman": {
   "phash": 6409310731718687945,
   "source": null,
   "distance": null
+ },
+ "zebra_herd": {
+  "phash": 6000004662167501416,
+  "source": "bsds/253027",
+  "distance": 0
+ },
+ "zebra_in_grass": {
+  "phash": 3489248599164056390,
+  "source": "bsds/130066",
+  "distance": 0
  }
 }

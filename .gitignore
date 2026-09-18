@@ -9,3 +9,8 @@ __pycache__/
 
 # screenshot tool log
 .shot.log
+
+# infer.py scratch output: regenerable, not referenced by any README.
+# The deliverables are docs/images/*.png (shown in the README) and
+# results/results.json + results/tables.md (the record every number comes from).
+projects/*/results/*.png

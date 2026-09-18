@@ -124,6 +124,61 @@ def error_heatmap(
     return out_path
 
 
+def scatter_plane(
+    series: dict[str, Sequence[tuple[float, float]]],
+    target: tuple[float, float] | None,
+    out_path: str | Path,
+    xlabel: str = "",
+    ylabel: str = "",
+    title: str = "",
+    target_label: str = "true value",
+) -> Path:
+    """Estimates plotted in their own 2-D space, against the one right answer.
+
+    A bar chart of mean error says how wrong a method is. This says *how* it is
+    wrong, which is a different and often more useful question: a method whose
+    points cluster tightly in the wrong place has a bias that can be corrected,
+    and one whose points scatter around the right answer does not.
+
+    Used for the chromaticity plane in project 39, where the quantity being
+    estimated is genuinely two-dimensional and collapsing it to an angle throws
+    away the direction of the error.
+    """
+    if not series:
+        raise ValueError("scatter_plane() needs at least one series")
+
+    fig, ax = plt.subplots(figsize=(6.4, 6.0))
+    markers = ["o", "s", "^", "D", "v", "P", "X"]
+    for i, (label, points) in enumerate(series.items()):
+        pts = np.asarray(list(points), dtype=float)
+        if pts.size == 0:
+            continue
+        ax.scatter(pts[:, 0], pts[:, 1], s=34, alpha=0.75,
+                   marker=markers[i % len(markers)], label=label)
+        centre = pts.mean(axis=0)
+        ax.scatter(*centre, s=150, marker=markers[i % len(markers)],
+                   facecolors="none", edgecolors="#333333", linewidths=1.2)
+
+    if target is not None:
+        ax.scatter(*target, s=260, marker="+", color="#b03030", linewidths=2.4,
+                   label=target_label, zorder=5)
+
+    ax.set_xlabel(xlabel, fontsize=_TITLE_SIZE)
+    ax.set_ylabel(ylabel, fontsize=_TITLE_SIZE)
+    if title:
+        ax.set_title(title, fontsize=_TITLE_SIZE + 1, wrap=True)
+    ax.grid(alpha=0.25, linewidth=0.6)
+    ax.set_aspect("equal", adjustable="datalim")
+    ax.legend(fontsize=_TITLE_SIZE - 1, loc="best", framealpha=0.9)
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=_DPI, bbox_inches="tight")
+    plt.close(fig)
+    return out_path
+
+
 def lines(
     x: list[float],
     series: dict[str, list[float]],

@@ -1,0 +1,214 @@
+"""Download the non-photograph data the remaining projects need.
+
+    python tools/fetch_assets.py            # everything not already cached
+    python tools/fetch_assets.py --set video
+
+`tools/fetch_images.py` handles the photograph pools. This handles everything
+else: a video clip, a calibration series, a wide-baseline pair with a published
+homography. Those are the assets that decide whether a project can be built at
+all, so what is reachable is recorded here rather than discovered again later.
+
+Only two hosts answer from this machine -- ``raw.githubusercontent.com`` and
+``sipi.usc.edu`` -- which rules out most standard datasets and is why several
+projects below synthesise their ground truth from a real image rather than
+downloading an annotated one. Where that happens it is stated in the project's
+own README, because "generated from a photograph" and "annotated by a person"
+are different claims.
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+import time
+import urllib.error
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+CACHE = Path.home() / ".cache" / "classical-cv-images" / "assets"
+OPENCV = "https://raw.githubusercontent.com/opencv/opencv/4.x/samples/data/"
+EXTRA = "https://raw.githubusercontent.com/opencv/opencv_extra/master/testdata/"
+
+USER_AGENT = "Mozilla/5.0 (classical-computer-vision asset fetch)"
+RETRIES = 5
+TIMEOUT = 240
+
+#: Measured on this machine: ``raw.githubusercontent.com`` answers, but at a few
+#: kilobytes a second on a bad run -- 28 KB took 12 s. A single 8 MB file
+#: therefore cannot be fetched in one request, and a plain retry loop throws away
+#: everything it downloaded before the timeout. Anything above this size is
+#: fetched in ranged chunks and resumed from a ``.part`` file instead.
+RESUME_ABOVE = 1 << 20
+CHUNK = 256 * 1024
+
+#: What each still-unbuilt project needs, and where it comes from. Grouped by
+#: asset rather than by project because several projects share a source -- the
+#: one video clip serves tracking, background subtraction and the alarm project.
+#: Ordered smallest-first on purpose. The link to this host runs at a few
+#: kilobytes a second on a bad day, and putting the 8 MB video first meant
+#: nothing at all was on disk after half an hour. The three small sets unblock
+#: seven projects between them and finish in seconds.
+SETS: dict[str, dict[str, str]] = {
+    # Two synchronised series of a chessboard at different poses. The board's
+    # geometry is known exactly, which is what makes reprojection error a real
+    # number rather than a self-report. Projects 35 and 46.
+    "calibration": {
+        **{f"left{i:02d}.jpg": OPENCV + f"left{i:02d}.jpg" for i in range(1, 15)},
+        **{f"right{i:02d}.jpg": OPENCV + f"right{i:02d}.jpg" for i in range(1, 15)},
+    },
+    # The Oxford graffiti sequence: six views of one wall with the true
+    # homography between each pair published alongside. Project 38 needs exactly
+    # this -- a panorama scored against a known transform rather than by eye.
+    "graf": {
+        **{f"graf{i}.png": OPENCV + f"graf{i}.png" for i in range(1, 7)},
+        **{f"H1to{i}p": OPENCV + f"H1to{i}p" for i in (2, 3, 4, 5, 6)},
+    },
+    # Odds and ends each used by one project: a plate photographed in motion,
+    # a blob field, a textured still life.
+    "misc": {
+        "licenseplate_motion.jpg": OPENCV + "licenseplate_motion.jpg",
+        "detect_blob.png": OPENCV + "detect_blob.png",
+        "stuff.jpg": OPENCV + "stuff.jpg",
+        "blox.jpg": OPENCV + "blox.jpg",
+        "pic1.png": OPENCV + "pic1.png",
+        "pic3.png": OPENCV + "pic3.png",
+        "board.jpg": OPENCV + "board.jpg",
+        "baboon.jpg": OPENCV + "baboon.jpg",
+    },
+    # A 768x576 clip of people crossing a plaza: a static camera, real moving
+    # objects, real shadows. Projects 29, 30 and 55. 8 MB, and the only file
+    # here that needs the resumable path.
+    "video": {
+        "vtest.avi": OPENCV + "vtest.avi",
+    },
+}
+
+
+def fetch(url: str, *, retries: int = RETRIES, timeout: int = TIMEOUT) -> bytes | None:
+    last = ""
+    for attempt in range(retries):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return r.read()
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                return None
+            last = f"HTTP {e.code}"
+        except Exception as e:  # noqa: BLE001
+            last = type(e).__name__
+        time.sleep(2.0 * (attempt + 1))
+    print(f"  FAILED ({last}): {url[:95]}")
+    return None
+
+
+def remote_size(url: str) -> int | None:
+    try:
+        req = urllib.request.Request(url, method="HEAD",
+                                     headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return int(r.headers.get("Content-Length") or 0) or None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def fetch_resumable(url: str, dest: Path, *, attempts: int = 60) -> bool:
+    """Download in ranged chunks, resuming a ``.part`` file between attempts.
+
+    A whole-file GET over a 2 KB/s link times out and loses everything. A range
+    request that dies mid-chunk loses at most one chunk, so progress is
+    monotonic and the file eventually completes even on a link this bad.
+    """
+    total = remote_size(url)
+    part = dest.with_suffix(dest.suffix + ".part")
+    part.parent.mkdir(parents=True, exist_ok=True)
+    have = part.stat().st_size if part.exists() else 0
+    if total:
+        print(f"  {dest.name}: {total:,} bytes, {have:,} already on disk", flush=True)
+
+    stalled = 0
+    for _ in range(attempts):
+        if total and have >= total:
+            break
+        end = have + CHUNK - 1
+        req = urllib.request.Request(
+            url, headers={"User-Agent": USER_AGENT, "Range": f"bytes={have}-{end}"})
+        try:
+            with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+                block = r.read()
+                partial = r.status == 206
+        except Exception as e:  # noqa: BLE001
+            print(f"  {dest.name}: {type(e).__name__} at {have:,}, retrying", flush=True)
+            time.sleep(3.0)
+            stalled += 1
+            if stalled >= 8:
+                return False
+            continue
+
+        if not block:
+            break
+        stalled = 0
+        with open(part, "ab") as fh:
+            fh.write(block)
+        have += len(block)
+        if total:
+            print(f"  {dest.name}: {have:,}/{total:,} "
+                  f"({100 * have / total:.1f}%)", flush=True)
+        if not partial:  # server ignored the Range header and sent the whole file
+            break
+
+    if total and have < total:
+        return False
+    part.replace(dest)
+    return True
+
+
+def cache_set(name: str, workers: int = 3) -> tuple[int, int]:
+    items = SETS[name]
+    todo = {k: v for k, v in items.items() if not (CACHE / name / k).exists()}
+    print(f"{name}: {len(items)} files, {len(items) - len(todo)} cached, "
+          f"{len(todo)} to fetch")
+
+    def one(item):
+        key, url = item
+        path = CACHE / name / key
+        size = remote_size(url) or 0
+        if size > RESUME_ABOVE:
+            return fetch_resumable(url, path)
+        data = fetch(url)
+        if not data:
+            return False
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+        return True
+
+    got = 0
+    with ThreadPoolExecutor(workers) as ex:
+        for i, ok in enumerate(ex.map(one, todo.items()), start=1):
+            got += bool(ok)
+            if i % 5 == 0:
+                print(f"  {i}/{len(todo)} ...", flush=True)
+    return got, len(items)
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--set", dest="which", default="all",
+                    choices=["all", *SETS])
+    args = ap.parse_args()
+
+    CACHE.mkdir(parents=True, exist_ok=True)
+    wanted = list(SETS) if args.which == "all" else [args.which]
+    for name in wanted:
+        got, total = cache_set(name)
+        have = len(list((CACHE / name).glob("*"))) if (CACHE / name).exists() else 0
+        print(f"{name}: fetched {got}, {have}/{total} present\n", flush=True)
+    print(f"cache: {CACHE}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
