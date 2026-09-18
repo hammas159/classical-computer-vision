@@ -25,6 +25,8 @@ the SVM can be shown rather than described.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from typing import Callable
 
 import cv2
@@ -155,8 +157,19 @@ def detect(img: np.ndarray, win_stride=(8, 8), padding=(16, 16), scale: float = 
     scores = np.array([float(w) for w in np.asarray(weights).ravel()], np.float32)
     boxes = np.asarray(rects, np.int32)
 
+    # Two things were wrong with passing `hit_threshold` here.
+    #
+    # `detectMultiScale` has *already* applied it, so re-applying it in NMS
+    # double-filters — and it treats an SVM margin as if it were a confidence in
+    # [0, 1], which it is not. Worse, `cv2.dnn.NMSBoxes` asserts
+    # `score_threshold >= 0`, so every negative threshold in this project's own
+    # THRESHOLDS sweep raised instead of running.
+    #
+    # NMS only needs the scores for *ordering*, so shifting them to be
+    # non-negative changes nothing about which boxes survive.
+    shifted = scores - min(float(scores.min()), 0.0)
     keep = cv2.dnn.NMSBoxes(
-        boxes.tolist(), scores.tolist(), score_threshold=float(hit_threshold),
+        boxes.tolist(), shifted.tolist(), score_threshold=0.0,
         nms_threshold=float(nms_threshold),
     )
     if len(keep) == 0:
@@ -275,6 +288,205 @@ def match_detections(predicted, truth, iou_threshold: float = 0.5):
 # --------------------------------------------------------------------------- #
 # experiments
 # --------------------------------------------------------------------------- #
+
+# --------------------------------------------------------------------------- #
+# real pedestrians
+# --------------------------------------------------------------------------- #
+
+#: A 768x576 clip of people crossing a plaza: static camera, real pedestrians,
+#: real shadows. Cached by `tools/fetch_assets.py --set video`.
+VIDEO = Path.home() / ".cache" / "classical-cv-images" / "assets" / "video" / "vtest.avi"
+
+#: Frames sampled across the clip. Spread out rather than consecutive, so the
+#: twelve are twelve different arrangements of people rather than twelve views of
+#: one moment — and none earlier than 50, because `moving_blobs` needs 40 frames
+#: of history before the background model means anything. Frame 0 returns zero
+#: moving regions for that reason alone, which would read as "nobody moved".
+FRAMES = (50, 110, 170, 230, 290, 350, 410, 470, 530, 600, 670, 740)
+
+
+def video_available() -> bool:
+    """Whether the clip is cached. Reported rather than assumed."""
+    return VIDEO.exists()
+
+
+def load_frame(index: int) -> np.ndarray:
+    """One frame of the clip, RGB."""
+    if not video_available():
+        raise FileNotFoundError(
+            f"{VIDEO} is missing. Run `python tools/fetch_assets.py --set video`."
+        )
+    cap = cv2.VideoCapture(str(VIDEO))
+    try:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, int(index))
+        ok, frame = cap.read()
+        if not ok:
+            raise RuntimeError(f"could not read frame {index} of {VIDEO}")
+        return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    finally:
+        cap.release()
+
+
+#: Person-shaped constraints on a moving blob, used to turn background
+#: subtraction into a list of candidate people rather than a list of blobs.
+MIN_BLOB_AREA = 700
+BLOB_ASPECT_RANGE = (0.20, 0.85)
+BLOB_HEIGHT_RANGE = (60, 420)
+
+
+def moving_blobs(index: int, history: int = 60, warmup: int = 40):
+    """Person-sized moving regions in one frame, from background subtraction.
+
+    **This is not a human annotation and it is not called ground truth.** It is
+    *independent evidence*: the camera is static, so a region that moves is an
+    object, and that is established from the temporal signal alone with no
+    reference to appearance. HOG knows nothing about motion, so agreement
+    between the two is not circular.
+
+    What it cannot do: it merges people who walk together into one blob, it
+    includes their shadows, and it misses anyone standing still. Those are
+    stated in the README rather than corrected, because correcting them would
+    need the annotation this clip does not have.
+    """
+    if not video_available():
+        raise FileNotFoundError(f"{VIDEO} is missing.")
+
+    subtractor = cv2.createBackgroundSubtractorMOG2(
+        history=history, varThreshold=32, detectShadows=True)
+    cap = cv2.VideoCapture(str(VIDEO))
+    try:
+        start = max(0, int(index) - warmup)
+        cap.set(cv2.CAP_PROP_POS_FRAMES, start)
+        mask = None
+        for _ in range(start, int(index) + 1):
+            ok, frame = cap.read()
+            if not ok:
+                break
+            mask = subtractor.apply(frame)
+    finally:
+        cap.release()
+
+    if mask is None:
+        return np.zeros((0, 4), np.int32), np.zeros((0, 0), np.uint8)
+
+    # MOG2 marks shadows as 127; only 255 is foreground
+    binary = (mask == 255).astype(np.uint8) * 255
+    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN,
+                              cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
+    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE,
+                              cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 21)))
+
+    n, _, stats, _ = cv2.connectedComponentsWithStats(binary, 8)
+    boxes = []
+    for i in range(1, n):
+        x, y, w, h, area = stats[i]
+        if area < MIN_BLOB_AREA:
+            continue
+        if not (BLOB_HEIGHT_RANGE[0] <= h <= BLOB_HEIGHT_RANGE[1]):
+            continue
+        if not (BLOB_ASPECT_RANGE[0] <= w / max(h, 1) <= BLOB_ASPECT_RANGE[1]):
+            continue
+        boxes.append((int(x), int(y), int(w), int(h)))
+    return np.asarray(boxes, np.int32).reshape(-1, 4), binary
+
+
+#: OpenCV returns the 64x128 *window*, which includes the margin the INRIA
+#: training crops had around each person. Comparing it to a tight box without
+#: removing that margin costs about 0.1 of IoU; these are the usual factors.
+TIGHTEN_W, TIGHTEN_H = 0.15, 0.05
+
+
+def tighten_box(box, fw: float = TIGHTEN_W, fh: float = TIGHTEN_H):
+    """Convert a detector window to a tight person box."""
+    x, y, w, h = (int(v) for v in box)
+    dw, dh = int(w * fw), int(h * fh)
+    return (x + dw, y + dh, max(1, w - 2 * dw), max(1, h - 2 * dh))
+
+
+def evaluate_video(frames=FRAMES, hit_threshold: float = 0.0, scale: float = 1.05,
+                   iou_threshold: float = 0.3):
+    """HOG detections on real frames, checked against independent motion evidence.
+
+    Reports, per frame: how many people HOG found, how many person-sized moving
+    regions background subtraction found, and how many of each are supported by
+    the other. Neither is truth; where they disagree is the interesting part.
+    """
+    rows = []
+    for index in frames:
+        frame = load_frame(index)
+        boxes, scores = detect(frame, scale=scale, hit_threshold=hit_threshold)
+        tight = np.asarray([tighten_box(b) for b in boxes], np.int32).reshape(-1, 4)
+        blobs, _ = moving_blobs(index)
+
+        supported = sum(
+            1 for b in tight
+            if max((box_iou(b, m) for m in blobs), default=0.0) >= iou_threshold
+        )
+        found = sum(
+            1 for m in blobs
+            if max((box_iou(b, m) for b in tight), default=0.0) >= iou_threshold
+        )
+        rows.append({
+            "frame": int(index),
+            "hog_detections": int(len(tight)),
+            "moving_regions": int(len(blobs)),
+            "hog_on_a_moving_region": int(supported),
+            "moving_regions_detected": int(found),
+            "mean_score": round(float(scores.mean()), 3) if len(scores) else 0.0,
+        })
+    return rows
+
+
+def synthetic_versus_real(frames=FRAMES, scenes: int = 8, hit_threshold: float = -0.5):
+    """The SVM margin on drawn silhouettes and on real people.
+
+    The comparison that condemns the synthetic scene. HOG is a histogram of
+    gradient *orientations* and the SVM was trained on photographs: a flat
+    filled silhouette has a strong outline and nothing inside it, while a real
+    person has clothing folds, limb shading and hair. The margins come out an
+    order of magnitude apart.
+    """
+    drawn = []
+    for seed in range(scenes):
+        img, _ = make_scene(n_people=3, seed=seed)
+        _, scores = detect(img, hit_threshold=hit_threshold)
+        drawn.extend(float(s) for s in scores)
+
+    real = []
+    for index in frames:
+        _, scores = detect(load_frame(index), hit_threshold=hit_threshold)
+        real.extend(float(s) for s in scores)
+
+    def summarise(label, values):
+        arr = np.asarray(values, np.float64)
+        return {
+            "people": label,
+            "detections": int(arr.size),
+            "mean_margin": round(float(arr.mean()), 3) if arr.size else 0.0,
+            "max_margin": round(float(arr.max()), 3) if arr.size else 0.0,
+            "confident": int((arr > 0.5).sum()) if arr.size else 0,
+        }
+
+    return [summarise("Drawn silhouettes", drawn), summarise("Real pedestrians", real)]
+
+
+def sweep_video_threshold(frames=FRAMES, thresholds=(-0.5, 0.0, 0.3, 0.6, 1.0, 1.5)):
+    """How the threshold trades detections against agreement with motion."""
+    rows = []
+    for threshold in thresholds:
+        scored = evaluate_video(frames=frames, hit_threshold=float(threshold))
+        detections = sum(r["hog_detections"] for r in scored)
+        supported = sum(r["hog_on_a_moving_region"] for r in scored)
+        regions = sum(r["moving_regions"] for r in scored)
+        covered = sum(r["moving_regions_detected"] for r in scored)
+        rows.append({
+            "hit_threshold": float(threshold),
+            "detections": detections,
+            "on_a_moving_region": round(supported / max(detections, 1), 4),
+            "moving_regions_covered": round(covered / max(regions, 1), 4),
+        })
+    return rows
+
 
 SCALES = (1.01, 1.03, 1.05, 1.1, 1.2, 1.4)
 THRESHOLDS = (-1.0, -0.5, 0.0, 0.3, 0.6, 1.0)

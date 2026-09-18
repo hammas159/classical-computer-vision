@@ -18,9 +18,21 @@ The correction itself has a subtlety worth measuring too:
 > blue* preserves the pupil's luminance, so the eye still looks like an eye. The
 > difference is visible and scoreable against the pre-flash original.
 
-Everything is generated: a face with known pupil positions, red-eye painted in
-with a known intensity, and distractor red objects placed deliberately. So the
-true pupil mask is exact and false positives are counted rather than estimated.
+What is measured on what
+------------------------
+There are two arms, and they disagree, which is the point.
+
+The **generated** scene is a face with known pupil positions, red-eye painted in
+at a known intensity, and drawn red distractors. It gives an exact truth mask,
+and it flatters the geometric detectors: a drawn disc is something the shape
+filter is entitled to reject.
+
+The **real** arm is twelve photographs. Six are portraits with red-eye planted at
+recorded pupil positions — the face, the skin and every red object in the frame
+are photographed, and only the pupil recolouring is synthetic, because a
+photograph that already has red-eye carries no record of what it looked like
+before. The other six contain no red-eye at all, so truth is **empty** and every
+detection is a false positive with no metric choice to argue about.
 """
 
 from __future__ import annotations
@@ -31,7 +43,7 @@ import cv2
 import numpy as np
 
 from shared.bench import timeit
-from shared.io import to_float, to_gray, to_uint8
+from shared.io import ensure_rgb, to_float, to_gray, to_uint8
 from shared.metrics import iou, psnr
 
 EPS = 1e-9
@@ -289,10 +301,258 @@ def make_scene(size: int = 480, red_strength: float = 0.75, distractors: int = 4
 # experiments
 # --------------------------------------------------------------------------- #
 
+# --------------------------------------------------------------------------- #
+# real photographs
+# --------------------------------------------------------------------------- #
+
+#: The six portraits red-eye is planted in, with the pupil centres and radii.
+#:
+#: The centres were found once with OpenCV's eye cascade and then checked by
+#: eye against a pixel grid. The ones the cascade **missed** are marked `"hand"`
+#: and were read off that grid directly. Recording which is which
+#: matters: a table that mixes measured and hand-placed positions without saying
+#: so is not reproducible, and the cascade's misses are themselves a result (it
+#: found 12 of 16 pupils across these six photographs).
+PORTRAITS: dict[str, dict] = {
+    "two_women_in_headdress": {
+        "pupils": [(324, 113, 5), (376, 107, 5), (72, 159, 5), (128, 162, 5)],
+        "source": ["cascade"] * 4,
+        "note": "two frontal faces, four pupils; the headdresses are dense red and white",
+    },
+    "girl_with_tulips": {
+        "pupils": [(266, 87, 4), (303, 78, 4)],
+        "source": ["cascade", "hand"],
+        "note": "three red tulips fill the lower half of the frame",
+    },
+    "woman_in_red_scarf": {
+        "pupils": [(95, 107, 5), (127, 109, 5)],
+        "source": ["cascade", "cascade"],
+        "note": "a large red scarf directly below the face",
+    },
+    "girl_in_pink_shirt": {
+        "pupils": [(158, 101, 5), (187, 104, 4)],
+        "source": ["cascade", "cascade"],
+        "note": "an old scan with a magenta cast, which suppresses the redness cue",
+    },
+    "two_firefighters": {
+        "pupils": [(114, 98, 3), (144, 98, 3), (322, 144, 3), (347, 147, 3)],
+        "source": ["cascade", "hand", "hand", "hand"],
+        "note": "small faces under helmets, in front of a red fire engine",
+    },
+    "woman_with_curly_hair": {
+        "pupils": [(107, 169, 4), (153, 172, 4)],
+        "source": ["cascade", "cascade"],
+        "note": "red lipstick, the textbook false positive, in the same face",
+    },
+}
+
+#: Photographs with no face and no red-eye at all. Truth here is **empty**, so
+#: every detection is a false positive and no threshold choice can hide one.
+CLEAN_PHOTOGRAPHS = (
+    "orange_lichen_on_rock",
+    "children_carrying_pots",
+    "feather_duster_worms",
+    "runners_in_the_stadium",
+    "scattered_sweets",
+    "red_brick_house",
+)
+
+#: All twelve of this project's photographs.
+PHOTOGRAPHS = tuple(PORTRAITS) + CLEAN_PHOTOGRAPHS
+
+
+def pupil_like_blobs(img: np.ndarray, threshold: float = 0.25) -> int:
+    """How many small round red blobs a photograph already contains.
+
+    This project's selection axis, and it is the **method's own response** rather
+    than a proxy for it: `detect_colour_shape` up to the point where it would
+    accept a blob. A photograph scoring high here is one where the geometric
+    detector has somewhere to go wrong, and that is what the twelve were chosen
+    to span — from 0 on the brick house to 68 on the lichen.
+    """
+    shaped = detect_colour_shape(img, threshold)
+    n, _, _, _ = cv2.connectedComponentsWithStats((shaped > 0).astype(np.uint8), 8)
+    return int(n - 1)
+
+
+def plant_red_eye(img: np.ndarray, pupils, red_strength: float = 0.75):
+    """Put flash red-eye into a real photograph, at stated pupil positions.
+
+    Returns ``(flash, pre_flash, mask)`` to match `make_scene`, so both arms feed
+    the same experiments.
+
+    What is real and what is not, stated plainly: the face, the skin, the hair,
+    the lighting and every red object in the frame are photographed. The pupil
+    recolouring is synthetic, and it has to be — a photograph *with* red-eye
+    carries no record of what it looked like before, so there would be nothing to
+    score a correction against.
+
+    The effect is modelled the way the physics works: the retina returns the
+    flash, so red is *added* to the pupil rather than the pupil being painted a
+    flat colour. The falloff is radial and the existing specular highlight is
+    left alone, both of which a flat disc destroys.
+    """
+    pre_flash = ensure_rgb(img).copy()
+    mask = np.zeros(pre_flash.shape[:2], np.uint8)
+    glow = np.zeros(pre_flash.shape[:2], np.float32)
+
+    for (px, py, radius) in pupils:
+        cv2.circle(mask, (int(px), int(py)), int(radius), 255, -1)
+        # radial falloff: strongest at the pupil centre, gone at its edge
+        y0, y1 = max(0, py - radius), min(pre_flash.shape[0], py + radius + 1)
+        x0, x1 = max(0, px - radius), min(pre_flash.shape[1], px + radius + 1)
+        yy, xx = np.ogrid[y0:y1, x0:x1]
+        dist = np.hypot(yy - py, xx - px) / max(radius, 1)
+        glow[y0:y1, x0:x1] = np.maximum(glow[y0:y1, x0:x1],
+                                        np.clip(1.0 - dist**2, 0.0, 1.0))
+
+    flash = to_float(pre_flash).astype(np.float32)
+    flash[..., 0] = np.clip(flash[..., 0] + red_strength * glow, 0.0, 1.0)
+    # the retina reflects red, so green and blue fall slightly rather than hold
+    flash[..., 1] = np.clip(flash[..., 1] - 0.15 * red_strength * glow, 0.0, 1.0)
+    flash[..., 2] = np.clip(flash[..., 2] - 0.15 * red_strength * glow, 0.0, 1.0)
+    return to_uint8(flash), pre_flash, mask
+
+
+def portrait_scene(name: str, red_strength: float = 0.75):
+    """One of the six portraits with red-eye planted, and its ground truth."""
+    from shared import io
+
+    entry = PORTRAITS[name]
+    return plant_red_eye(io.real_photo(name), entry["pupils"], red_strength)
+
+
+def evaluate_on_portraits(threshold: float = 0.25, red_strength: float = 0.75,
+                          runs: int = 1):
+    """Every detector on the six real portraits, scored against the true pupils."""
+    acc = {n: {"iou": [], "recall": [], "fp_area": [], "ms": []} for n in DETECTORS}
+
+    for name in PORTRAITS:
+        flash, _, truth = portrait_scene(name, red_strength)
+        truth_area = max(float((truth > 0).sum()), 1.0)
+        for det, fn in DETECTORS.items():
+            pred, timing = timeit(lambda f=fn: f(flash, threshold), runs=runs, warmup=0)
+            acc[det]["iou"].append(iou(pred, truth))
+            acc[det]["recall"].append(float((pred[truth > 0] > 0).mean()))
+            acc[det]["fp_area"].append(
+                float(((pred > 0) & (truth == 0)).sum()) / truth_area)
+            acc[det]["ms"].append(timing.median_ms)
+
+    return [
+        {
+            "detector": n,
+            "iou": round(float(np.mean(a["iou"])), 4),
+            "pupil_recall": round(float(np.mean(a["recall"])), 4),
+            "false_positive_area_ratio": round(float(np.mean(a["fp_area"])), 3),
+            "median_ms": round(float(np.median(a["ms"])), 2),
+        }
+        for n, a in acc.items()
+    ]
+
+
+def per_portrait(threshold: float = 0.25, red_strength: float = 0.75):
+    """The same measurement, one row per photograph rather than averaged.
+
+    Averages hide the two cases worth looking at: the magenta-cast scan where the
+    redness cue is suppressed, and the portrait whose own lipstick is redder than
+    the planted pupils.
+    """
+    rows = []
+    for name, entry in PORTRAITS.items():
+        flash, _, truth = portrait_scene(name, red_strength)
+        row = {
+            "photograph": name,
+            "pupils": len(entry["pupils"]),
+            "cascade_found": entry["source"].count("cascade"),
+            "pupil_like_blobs": pupil_like_blobs(io_real(name)),
+        }
+        for det, fn in DETECTORS.items():
+            pred = fn(flash, threshold)
+            row[det] = round(iou(pred, truth), 4)
+        rows.append(row)
+    return rows
+
+
+def io_real(name: str) -> np.ndarray:
+    """`shared.io.real_photo`, imported lazily so the module stays cheap."""
+    from shared import io
+
+    return io.real_photo(name)
+
+
+def false_positives_on_clean_photographs(threshold: float = 0.25):
+    """Every detector on six photographs with **no red-eye in them at all**.
+
+    The control that the generated scene cannot provide. Truth is empty, so
+    every detected pixel is wrong and there is no metric choice to argue about.
+    A red-eye remover is run over ordinary holiday photographs far more often
+    than over photographs that need it, and what it does to them is the number
+    a user actually experiences.
+    """
+    rows = []
+    for name in CLEAN_PHOTOGRAPHS:
+        img = io_real(name)
+        row = {"photograph": name, "pupil_like_blobs": pupil_like_blobs(img, threshold)}
+        for det, fn in DETECTORS.items():
+            pred = fn(img, threshold)
+            row[det] = int((pred > 0).sum())
+        rows.append(row)
+    return rows
+
+
+def generated_versus_real_background(threshold: float = 0.25, scenes: int = 6):
+    """False-positive area on the generated scene against the real photographs.
+
+    The comparison that says whether the generated distractors are a fair stand-in
+    for the red things in a real photograph. They are drawn discs and rectangles,
+    which the shape filter is entitled to reject; lipstick, brake lights and
+    sugar-shelled sweets are round, small and red.
+    """
+    generated = {r["detector"]: r for r in evaluate_detectors(
+        scenes=scenes, threshold=threshold, runs=1)}
+    real = {r["detector"]: r for r in evaluate_on_portraits(threshold=threshold)}
+    return [
+        {
+            "detector": det,
+            "generated_fp_area": generated[det]["false_positive_area_ratio"],
+            "real_fp_area": real[det]["false_positive_area_ratio"],
+            "generated_iou": generated[det]["iou"],
+            "real_iou": real[det]["iou"],
+        }
+        for det in DETECTORS
+    ]
+
+
+def corrections_on_portraits(red_strength: float = 0.75):
+    """Each correction on real skin, scored against the real photograph.
+
+    The pre-flash here is a **photograph**, not a rendering, so the corrections
+    are being asked to restore a real pupil rather than a flat grey disc. The
+    true mask is used, so this measures correction alone.
+    """
+    rows = []
+    for name in PORTRAITS:
+        flash, pre_flash, truth = portrait_scene(name, red_strength)
+        sel = truth > 0
+        row = {"photograph": name}
+        for corr, fn in CORRECTIONS.items():
+            fixed = fn(flash, truth)
+            row[corr] = round(float(psnr(fixed[sel].reshape(-1, 1, 3),
+                                         pre_flash[sel].reshape(-1, 1, 3))), 2)
+        row["did nothing"] = round(float(psnr(flash[sel].reshape(-1, 1, 3),
+                                              pre_flash[sel].reshape(-1, 1, 3))), 2)
+        rows.append(row)
+    return rows
+
+
 THRESHOLDS = (0.1, 0.18, 0.25, 0.35, 0.5)
 STRENGTHS = (0.35, 0.5, 0.65, 0.8, 0.95)
 DISTRACTOR_COUNTS = (0, 2, 4, 8)
-PUPIL_RADII = (4, 6, 9, 14, 20)
+#: Chosen to straddle **both** ends of the shape filter's working range: at
+#: radius 2 the blob is below `min_area`, at 45 it is above `max_area`, and
+#: both report 0. A sweep that only spans the middle would show a filter that
+#: always works.
+PUPIL_RADII = (2, 4, 9, 20, 32, 45)
 
 
 def evaluate_detectors(scenes: int = 6, threshold: float = 0.25, distractors: int = 4,
@@ -466,3 +726,62 @@ def remove(img: np.ndarray, detector_name: str = "Face-constrained",
     """Detect and correct in one call, for the UI."""
     mask = DETECTORS[detector_name](img)
     return mask, CORRECTIONS[correction](img, mask)
+
+
+def sweep_threshold_on_portraits(thresholds=THRESHOLDS):
+    """The redness threshold, measured on real photographs.
+
+    Worth having separately from the generated sweep: the generated pupils are
+    painted at one known intensity, so the threshold that suits them is the one
+    that was painted in. Real skin, real pupils and real ambient colour move it.
+    """
+    rows = []
+    for t in thresholds:
+        scored = evaluate_on_portraits(threshold=t)
+        clean = false_positives_on_clean_photographs(threshold=t)
+        row: dict[str, float] = {"threshold": t}
+        for r in scored:
+            row[f"{r['detector']} IoU"] = r["iou"]
+        row["clean-photo false positives"] = int(
+            sum(c["Face-constrained"] for c in clean))
+        row["colour-only false positives"] = int(
+            sum(c["Colour only (control)"] for c in clean))
+        rows.append(row)
+    return rows
+
+
+def end_to_end_on_portraits(correction: str = "Mean of G and B"):
+    """Full pipeline on real photographs, with a *detected* mask.
+
+    The number a user would actually get. Compared with `corrections_on_portraits`
+    — which uses the true mask — it separates what detection costs from what the
+    correction costs.
+    """
+    rows = []
+    for name in DETECTORS:
+        psnrs = []
+        for photo in PORTRAITS:
+            flash, pre_flash, truth = portrait_scene(photo)
+            out = CORRECTIONS[correction](flash, DETECTORS[name](flash))
+            sel = truth > 0
+            mse = float(np.mean((to_float(out)[sel] - to_float(pre_flash)[sel]) ** 2))
+            psnrs.append(float("inf") if mse <= EPS else float(10.0 * np.log10(1.0 / mse)))
+        rows.append({
+            "detector": name,
+            "correction": correction,
+            "pupil_psnr_db": round(float(np.mean(psnrs)), 3),
+        })
+
+    # the control that makes the rest readable
+    nothing = []
+    for photo in PORTRAITS:
+        flash, pre_flash, truth = portrait_scene(photo)
+        sel = truth > 0
+        mse = float(np.mean((to_float(flash)[sel] - to_float(pre_flash)[sel]) ** 2))
+        nothing.append(float("inf") if mse <= EPS else float(10.0 * np.log10(1.0 / mse)))
+    rows.append({
+        "detector": "Did nothing (control)",
+        "correction": "none",
+        "pupil_psnr_db": round(float(np.mean(nothing)), 3),
+    })
+    return rows
