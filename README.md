@@ -149,19 +149,24 @@ the unbuilt ones out would make the plan look smaller than it is.
 | [52](projects/52_focus_stacking/) | [**Focus stacking / depth from focus**](projects/52_focus_stacking/) | 5 focus measures × 7 pooling windows + 3 controls | **The pooling window matters 2.3× more than the focus measure** (3.34 dB against 1.44), and the best measure is **0.034 dB** from an oracle handed the answer. On flat regions no measure *can* be right: agreement 0.982 → 0.496, and the five disagree on 58% of those pixels. Detail predicts the ceiling at **r = −0.969** | ✅ |
 | [53](projects/53_barcode_qr/) | [**Barcode / QR detection**](projects/53_barcode_qr/) | gradient+morphology, variance, QR finder | **The synthetic background was hiding a useless localiser** — 1.000 on generated clutter, **0.021** on twelve real photographs, a 48× difference from changing nothing but the background. And **found is not decoded**: at 6.7 px per module the code is located 1.000 and decoded 0.000 | ✅ |
 | [54](projects/54_defect_detection/) | [**Industrial defect detection**](projects/54_defect_detection/) | 6 residual/texture/spectral detectors · 4 defect kinds · clean-surface arm | **The detectors are complementary, not competing.** A **smear** — a local loss of texture at unchanged brightness — is found by the local standard deviation (0.58) and by **4 of the other 5 exactly never**. And on twelve surfaces with **nothing wrong with them** they mark **3.7% to 14.3%**; on brick paving one marks **76%**. Pixel accuracy is unusable: a defect covers 1.07%, so flagging nothing is right 98.9% of the time | ✅ |
-| 55 | **Motion-triggered security alert** | background subtraction + blob tracking | *needs a surveillance clip* | ❌ |
+| [55](projects/55_motion_alert/) | [**Motion-triggered security alert**](projects/55_motion_alert/) | 6 decision rules (area, persistence, cooldown) · always / never / rate-matched-random controls | **The mask is not the system, the decision is.** Given the *oracle* mask — exact per-pixel truth — "alert on any motion in the zone" fires **244 times for 7 intrusions**, 35 calls per intruder. A cooldown takes it to **8**, still 7/7, for 0.7 s of latency; one second of it removes **88%** of alerts at no cost at all. Swapped for a *causal* mask a camera could compute live, the tuned rule is **identical** — 8 alerts, 7/7 — so the mask quality project 30 optimises barely moves the alarm. A rate-matched random control fires 8 times and catches **3 of 7** | ✅ |
 | [56](projects/56_hand_gesture/) | [**Hand gesture recognition**](projects/56_hand_gesture/) | 7 segmenters (YCrCb/HSV/Lab skin, adaptive, Otsu, GrabCut) · oracle-mask, ellipse, whole-frame and nothing controls | **Settle the second stage first: it does not work.** Given a *perfect* mask, two classical finger rules over ten settings manage **3 of 5**. Then the first stage: over **324 composites** the spread across backgrounds is **0.831 IoU** against **0.425** across hands — the background moves the answer **2.0×** further than which hand it is, and how skin-coloured it is predicts the score at **r = −0.70** before anything runs. An ellipse drawn without reading the image scores 0.441 and beats **2 of the 7** | ✅ |
 | [57](projects/57_pedestrian_detection/) | [**Pedestrian detection**](projects/57_pedestrian_detection/) | HOG + linear SVM, real footage vs drawn silhouettes | **Drawn silhouettes are not a benchmark.** HOG's SVM margin is **0.51** on drawings against **1.59** on real people, and recall on the composited scenes never exceeds 1 in 12 at any setting — so the project was rebuilt on real footage, checked against motion evidence that shares no information with it | ✅ |
 | [58](projects/58_red_eye_removal/) | [**Red-eye removal**](projects/58_red_eye_removal/) | colour, +shape, +face, +eye constraints + empty-truth control | **Pupil PSNR rates the naive detector within 0.124 dB of the best while it marks 217× more of the frame.** On six photographs with *no red-eye at all*, colour-only marks 86,294 px and the face constraint 98. And zeroing the red channel scores **below doing nothing** on half the portraits | ✅ |
 
-**58 projects spanning 14 algorithm families. 56 built, 2 not started.**
+**58 projects spanning 14 algorithm families. 57 built, 1 not started.**
 
-**The two that remain:**
+**One remains:**
 
 | # | Project | What is actually missing |
 |---:|---|---|
 | **48** | Chroma key / green screen | a photograph shot against a real green screen. The subject could be composited onto green synthetically — that is how matting benchmarks are built — but then the spill model would be this repository's own, and spill is half the problem |
-| **55** | Motion-triggered security alert | a surveillance clip with something to trigger on. `vtest.avi` is already carrying projects 29, 30 and 57, and a fourth project on the same 795 frames would be measuring the clip rather than the method |
+
+**55 was built after all.** It was held back because `vtest.avi` already carries
+projects 29, 30 and 57. What made it worth building is that it asks a question
+none of them ask: not *which pixels changed* but *when should the alarm go off*.
+Nothing in it is scored per pixel, and the overlap is stated in its own README
+rather than left to be noticed.
 
 Two projects changed shape when the data was finally found, and both say so in
 their own README rather than quietly:

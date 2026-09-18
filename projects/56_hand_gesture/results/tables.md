@@ -12,7 +12,7 @@
 | YCrCb and HSV | 0.586 | 0.537 | 16/27 | 0.212 | 2/5 |
 | Adaptive Cr | 0.104 | 0.090 | 0/27 | 0.757 | 0/5 |
 | Otsu on grey | 0.135 | 0.096 | 0/27 | 0.461 | 0/5 |
-| GrabCut from a box | 0.665 | 0.670 | 20/27 | 0.186 | 2/5 |
+| GrabCut from a box | 0.685 | 0.689 | 21/27 | 0.154 | 2/5 |
 
 ### Finger counting on a perfect mask
 

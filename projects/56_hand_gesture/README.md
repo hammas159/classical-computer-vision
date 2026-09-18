@@ -147,7 +147,7 @@ orientations.
 | YCrCb ∩ HSV | 0.586 | 16/27 | 0.212 | 2/5 |
 | Adaptive Cr | 0.104 | 0/27 | 0.757 | 0/5 |
 | Otsu on grey | 0.135 | 0/27 | 0.461 | 0/5 |
-| GrabCut from a box | 0.665 | 20/27 | 0.186 | 2/5 |
+| GrabCut from a box | 0.685 | 21/27 | 0.154 | 2/5 |
 
 **The ellipse control at 0.441 beats `Adaptive Cr` and `Otsu on grey`**, neither
 of which reads colour at all. That is not a quirk of polarity — both directions
@@ -156,9 +156,17 @@ Cr 0.031 and 0.104) and the better is reported. A brightness threshold has **no
 way to know which side of the cut is the hand**, and choosing per image by
 looking at the answer would not be a method.
 
-`GrabCut` is told roughly where to look, which the others are not, so its 0.665
+`GrabCut` is told roughly where to look, which the others are not, so its 0.685
 is not a like-for-like win — the interesting part is that **`Lab skin` beats it
 anyway**, at 0.747.
+
+*That number was not reproducible until it was fixed.* GrabCut seeds its colour
+models from OpenCV's **global** RNG, so its answer depends on how much
+randomness anything else in the process consumed first — on one frame here the
+IoU ranged from **0.532 to 0.691** across runs that differed in nothing else. It
+surfaced as a test that passed alone and failed in the full suite. The call is
+now seeded, and a test churns the RNG in between and asserts the mask is
+identical.
 
 The *feature gap* column is what connects the two stages: how far the shape
 descriptors computed on a recovered mask sit from the ones the exact matte gives

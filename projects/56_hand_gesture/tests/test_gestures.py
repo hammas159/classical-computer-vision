@@ -129,6 +129,24 @@ def test_the_hand_lands_inside_the_frame():
 # --------------------------------------------------------------------------- #
 
 
+def test_grabcut_is_reproducible():
+    """A real bug, and the reason the test below can assert exact equality.
+
+    GrabCut seeds its colour models from OpenCV's **global** RNG, so its answer
+    depended on how much randomness the rest of the process had consumed first.
+    On one frame the IoU ranged from 0.532 to 0.691 across otherwise identical
+    runs, and the project's GrabCut column was not reproducible. It is now
+    seeded; this asserts that it stays so even when the RNG is churned in
+    between.
+    """
+    frame, truth = gs.composite(gs.hand_names()[0], list(gs.BACKGROUNDS)[0])
+    first = gs.segment_grabcut(frame)
+    for _ in range(3):
+        cv2.kmeans(np.random.rand(60, 2).astype(np.float32), 3, None,
+                   (cv2.TERM_CRITERIA_EPS, 10, 1.0), 1, cv2.KMEANS_RANDOM_CENTERS)
+    assert np.array_equal(first, gs.segment_grabcut(frame))
+
+
 def test_the_oracle_is_the_only_method_given_the_truth():
     """Every other entry must ignore the `truth` keyword entirely.
 

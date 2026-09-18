@@ -368,6 +368,29 @@ Two contain real human skin and one a bronze human figure. The bronze one turned
 out **not** to be hard, which is reported: being shaped like a person does not
 matter to a colour rule, only being coloured like one.
 
+### `vtest.avi` — one 795-frame clip, four projects
+
+Not in `assets/real/`. Fetched by `python tools/fetch_assets.py --set video` from
+OpenCV's own sample data (BSD 3-Clause): 795 frames at 10 fps, 768x576, a static
+camera over a campus plaza with people crossing it.
+
+**Four projects use it, which breaks this repository's one-image-per-project rule
+and is recorded here rather than left to be discovered:**
+
+| Project | What it asks of the clip |
+|---|---|
+| 29 object tracking | can a tracker follow one person across 50 frames |
+| 30 background subtraction | which pixels changed, scored per pixel |
+| 55 motion-triggered alert | **when should the alarm fire**, scored per event |
+| 57 pedestrian detection | where are the people in a single frame |
+
+The rule exists so that comparison figures do not start to look like each other.
+Projects 29, 30 and 57 each show frames of this plaza; project 55 was held back
+until last for that reason, and shows **timelines** instead — nothing in it is
+scored per pixel and none of its figures is a frame comparison.
+
+A fifth project on this clip would be measuring the clip.
+
 ### Source not recorded
 
 These 51 were added for projects 02 to 15 before `manifest.json`

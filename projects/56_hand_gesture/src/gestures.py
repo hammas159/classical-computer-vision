@@ -316,6 +316,14 @@ def segment_grabcut(frame, **kw):
         return np.zeros((h, w), np.uint8)
     mask = np.zeros((h, w), np.uint8)
     bgd, fgd = np.zeros((1, 65), np.float64), np.zeros((1, 65), np.float64)
+    # GrabCut initialises its colour models with k-means, which draws from
+    # OpenCV's **global** RNG. So its answer depends on how much randomness
+    # anything else in the process happened to consume first: on one frame here
+    # the IoU ranged from 0.532 to 0.691 across runs that differed in nothing
+    # else. That was caught by a test failing in the full suite and passing on
+    # its own. Seeding makes the number reproducible, which this repository's
+    # claim that every figure comes out of `run.py` requires.
+    cv2.setRNGSeed(0)
     try:
         cv2.grabCut(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR), mask, rect,
                     bgd, fgd, 3, cv2.GC_INIT_WITH_RECT)
