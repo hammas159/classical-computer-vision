@@ -1,4 +1,4 @@
-# Classical Computer Vision
+# Classical Computer Vision (OpenCV · scikit-image · NumPy · SciPy)
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![OpenCV 4.14](https://img.shields.io/badge/OpenCV-4.14-5C3EE8?logo=opencv&logoColor=white)](https://opencv.org/)
